@@ -92,20 +92,18 @@ Streamlit Dashboard
 
 📂 Project Structure
 
-crypto-data-pipeline/
 ├── src/
-│   ├── main.py
-│   ├── db.py
-│   ├── analytics.py
-│   ├── app.py
+│   ├── main.py          # Data pipeline
+│   ├── db.py            # Database connection
+│   ├── analytics.py     # Analytics & alerts
+│   ├── app.py           # Streamlit dashboard
 │
-├── logs/
-│   ├── launchd.out.log
-│   ├── launchd.err.log
+├── assets/              # Screenshots for README
+├── sql/                 # Database schema / queries
 │
-├── .venv/
 ├── requirements.txt
-└── README.md
+├── README.md
+└── .gitignore
 
 ⸻⸻⸻⸻⸻⸻⸻
 
