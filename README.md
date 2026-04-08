@@ -67,15 +67,7 @@ Transforms the dashboard from data display → decision support tool.
 
 🧱 Architecture
 
-CoinGecko API
-      ↓
-Data Pipeline (Python)
-      ↓
-MySQL Database
-      ↓
-Analytics Layer
-      ↓
-Streamlit Dashboard
+CoinGecko API → Data Pipeline (Python) → MySQL Database → Analytics Layer → Streamlit Dashboard
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -90,20 +82,29 @@ Streamlit Dashboard
 
 ⸻⸻⸻⸻⸻⸻
 
+```
 📂 Project Structure
 
+crypto-data-pipeline/
 ├── src/
-│   ├── main.py          # Data pipeline
-│   ├── db.py            # Database connection
-│   ├── analytics.py     # Analytics & alerts
-│   ├── app.py           # Streamlit dashboard
-│
-├── assets/              # Screenshots for README
-├── sql/                 # Database schema / queries
-│
+│   ├── main.py
+│   ├── fetch_data.py
+│   ├── insert_data.py
+│   ├── archive_data.py
+│   ├── db.py
+│   ├── analytics.py
+│   ├── app.py
+│   └── logger_config.py
+
+├── sql/
+│   └── schema.sql
+
+├── assets/
+
 ├── requirements.txt
 ├── README.md
 └── .gitignore
+```
 
 ⸻⸻⸻⸻⸻⸻⸻
 
