@@ -1,8 +1,14 @@
 📈 Crypto Analytics Dashboard
 
-A real-time cryptocurrency data pipeline and analytics dashboard built with Python, MySQL, and Streamlit.
+A production-ready cryptocurrency data pipeline and analytics dashboard built with Python, MySQL, and Streamlit.
 
-This project collects live market data, stores it efficiently, analyzes price movements, and presents insights through an interactive dashboard with alert detection.
+This project collects live market data, stores it in a cloud database, analyzes price movements, and presents insights through an interactive dashboard with alert detection.
+
+⸻⸻⸻⸻⸻⸻
+
+🌐 Live Demo
+
+👉 https://crypto-data-pipeline-production.up.railway.app
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -10,7 +16,7 @@ This project collects live market data, stores it efficiently, analyzes price mo
 
 🔄 Data Pipeline
 	•	Fetches real-time crypto data from CoinGecko API
-	•	Stores structured data in MySQL
+	•	Stores structured data in cloud-hosted MySQL (Railway)
 	•	Maintains:
 	•	coins
 	•	latest_prices
@@ -21,10 +27,11 @@ This project collects live market data, stores it efficiently, analyzes price mo
 ⸻⸻⸻⸻⸻⸻
 
 ⚙️ Automation & Reliability
-	•	Fully automated using macOS launchd
+	•	Fully automated using Railway Cron Jobs
+	•	Runs every 15 minutes
 	•	Continuous background data collection
 	•	Logging system for monitoring pipeline activity
-	•	Error tracking via log files
+	•	Error tracking via logs
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -38,12 +45,12 @@ This project collects live market data, stores it efficiently, analyzes price mo
 ⸻⸻⸻⸻⸻⸻
 
 📊 Dashboard (Streamlit UI)
-	•	Real-time updating interface
+	•	Cloud-hosted interactive dashboard
+	•	Auto-refresh every 2 minutes
 	•	Search & filter functionality
 	•	Clean formatted tables
 	•	Interactive charts
 	•	Multi-coin comparison with normalization
-
 ⸻⸻⸻⸻⸻⸻
 
 🧠 Advanced Comparison
@@ -67,7 +74,11 @@ Transforms the dashboard from data display → decision support tool.
 
 🧱 Architecture
 
-CoinGecko API → Data Pipeline (Python) → MySQL Database → Analytics Layer → Streamlit Dashboard
+CoinGecko API
+→ Python Data Pipeline (Worker Service)
+→ MySQL Database (Railway)
+→ Analytics Layer
+→ Streamlit Dashboard (Web Service)
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -78,7 +89,7 @@ CoinGecko API → Data Pipeline (Python) → MySQL Database → Analytics Layer 
 	•	Pandas
 	•	Altair
 	•	CoinGecko API
-	•	macOS launchd
+	•	Railway (Deployment & Hosting)
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -87,20 +98,19 @@ CoinGecko API → Data Pipeline (Python) → MySQL Database → Analytics Layer 
 
 crypto-data-pipeline/
 ├── src/
-│   ├── main.py
-│   ├── fetch_data.py
-│   ├── insert_data.py
-│   ├── archive_data.py
-│   ├── db.py
-│   ├── analytics.py
-│   ├── app.py
-│   └── logger_config.py
+│   ├── main.py              # Pipeline runner (worker)
+│   ├── fetch_data.py        # API data fetching
+│   ├── insert_data.py       # DB insert/update logic
+│   ├── archive_data.py      # Archiving old records
+│   ├── db.py                # Database connection
+│   ├── analytics.py         # Analytics & alerts
+│   ├── app.py               # Streamlit dashboard
+│   └── logger_config.py     # Logging config
 
 ├── sql/
-│   └── schema.sql
+│   └── schema.sql           # Database schema
 
-├── assets/
-
+├── assets/                  # Screenshots
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -108,21 +118,17 @@ crypto-data-pipeline/
 
 ⸻⸻⸻⸻⸻⸻⸻
 
-▶️ How to Run
+▶️ How to Run (Local)
 
-1. Clone the repository
-git clone https://github.com/AlperTuncOrtak/crypto-data-pipeline.git
+1. git clone https://github.com/AlperTuncOrtak/crypto-data-pipeline.git
 cd crypto-data-pipeline
 
-2. Create virtual environment
-python3 -m venv .venv
+2. python3 -m venv .venv
 source .venv/bin/activate
 
-3. Install dependencies
-pip install -r requirements.txt
+3. pip install -r requirements.txt
 
-4. Run the dashboard
-streamlit run src/app.py
+4. streamlit run src/app.py
 
 ⸻⸻⸻⸻⸻⸻⸻
 
@@ -143,12 +149,13 @@ streamlit run src/app.py
 ⸻⸻⸻⸻⸻⸻⸻
 
 🧠 What This Project Demonstrates
-	•	Building a full data pipeline from API → database → UI
+	•	Building an end-to-end data pipeline (API → DB → Dashboard)
 	•	Designing efficient database schemas for time-series data
 	•	Implementing real-time analytics
-	•	Creating user-friendly dashboards
-	•	Developing alert systems based on data patterns
-	•	Automation and reliability engineering
+	•	Deploying full-stack applications to the cloud
+	•	Working with scheduled background jobs (cron)
+	•	Creating production-ready dashboards
+
 
 ⸻⸻⸻⸻⸻⸻⸻
 
@@ -157,7 +164,7 @@ streamlit run src/app.py
 	•	Advanced anomaly detection
 	•	User-defined alert thresholds
 	•	Export (CSV / reports)
-	•	Deployment (cloud hosting)
+	•	Performance optimization (caching, query tuning)
 
 ⸻⸻⸻⸻⸻⸻⸻
 
@@ -169,5 +176,5 @@ Alper Tunc Ortak
 
 ⭐ Notes
 
-This project was built as part of a portfolio to demonstrate real-world data engineering, analytics, and dashboard development skills.
+This project was built as part of a portfolio to demonstrate real-world data engineering, analytics, and cloud deployment skills.
 

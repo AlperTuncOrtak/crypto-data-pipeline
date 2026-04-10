@@ -21,7 +21,7 @@ from db import get_connection
 st.set_page_config(page_title="Crypto Dashboard", layout="wide")
 
 # Auto refresh
-st_autorefresh(interval=60 * 1000, key="refresh")
+st_autorefresh(interval=120 * 1000, key="refresh")
 
 # -----------------------
 # HEADER
