@@ -1,4 +1,7 @@
-requests
+streamlit
+streamlit-autorefresh
 pandas
-mysql-connector-python
+requests
 python-dotenv
+mysql-connector-python
+altair
