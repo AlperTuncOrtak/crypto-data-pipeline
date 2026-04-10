@@ -27,8 +27,7 @@ st_autorefresh(interval=120 * 1000, key="refresh")
 # HEADER
 # -----------------------
 st.title("📈 Crypto Analytics Dashboard")
-st.caption("Built by Alper Ortak • Automated via launchd • CoinGecko API → MySQL → Real-time analytics dashboard")
-
+st.caption("Built by Alper Ortak • Deployed on Railway • Automated data pipeline • Powered by CoinGecko API")
 # -----------------------
 # HELPERS
 # -----------------------
