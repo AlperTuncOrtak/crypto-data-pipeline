@@ -1,6 +1,8 @@
+import streamlit as st
 from db import get_connection
 
 
+@st.cache_data(ttl=120)
 def get_total_tracked_coins():
     conn = get_connection()
     cursor = conn.cursor()
@@ -13,12 +15,13 @@ def get_total_tracked_coins():
     return result
 
 
+@st.cache_data(ttl=120)
 def get_latest_market_snapshot(limit=20):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
     query = """
-    SELECT c.symbol, c.name, lp.current_price, lp.total_volume,
+    SELECT c.symbol, c.name, lp.current_price, lp.market_cap, lp.total_volume,
            lp.price_change_percentage_24h, lp.updated_at
     FROM latest_prices lp
     JOIN coins c ON lp.coin_id = c.id
@@ -34,6 +37,7 @@ def get_latest_market_snapshot(limit=20):
     return results
 
 
+@st.cache_data(ttl=120)
 def get_top_gainers(limit=5):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -54,6 +58,7 @@ def get_top_gainers(limit=5):
     return results
 
 
+@st.cache_data(ttl=120)
 def get_top_losers(limit=5):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -74,6 +79,7 @@ def get_top_losers(limit=5):
     return results
 
 
+@st.cache_data(ttl=120)
 def get_highest_volume_coins(limit=5):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -94,6 +100,7 @@ def get_highest_volume_coins(limit=5):
     return results
 
 
+@st.cache_data(ttl=120)
 def get_recent_price_changes(limit=10):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -121,6 +128,7 @@ def get_recent_price_changes(limit=10):
     return results
 
 
+@st.cache_data(ttl=120)
 def get_multi_coin_history(symbols):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -143,6 +151,7 @@ def get_multi_coin_history(symbols):
     return results
 
 
+@st.cache_data(ttl=120)
 def get_multi_coin_performance(symbols):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -197,7 +206,12 @@ def get_multi_coin_performance(symbols):
     return results
 
 
-def get_alerts(strong_increase_threshold=5.0, sharp_drop_threshold=-5.0, rapid_movement_threshold=2.0):
+@st.cache_data(ttl=120)
+def get_alerts(
+    strong_increase_threshold=5.0,
+    sharp_drop_threshold=-5.0,
+    rapid_movement_threshold=2.0
+):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -219,12 +233,14 @@ def get_alerts(strong_increase_threshold=5.0, sharp_drop_threshold=-5.0, rapid_m
         if pct >= strong_increase_threshold:
             alerts.append({
                 "type": "🚀 Strong Increase",
+                "severity": "Medium",
                 "symbol": row["symbol"],
                 "message": f"{row['symbol']} increased by {pct:.2f}% in the last 24h"
             })
         elif pct <= sharp_drop_threshold:
             alerts.append({
                 "type": "🔻 Sharp Drop",
+                "severity": "High",
                 "symbol": row["symbol"],
                 "message": f"{row['symbol']} dropped by {abs(pct):.2f}% in the last 24h"
             })
@@ -261,6 +277,7 @@ def get_alerts(strong_increase_threshold=5.0, sharp_drop_threshold=-5.0, rapid_m
             direction = "upward" if pct > 0 else "downward"
             alerts.append({
                 "type": "⚡ Rapid Movement",
+                "severity": "Low",
                 "symbol": symbol,
                 "message": f"{symbol} shows {direction} movement of {pct:.2f}% between recent snapshots"
             })
@@ -268,5 +285,8 @@ def get_alerts(strong_increase_threshold=5.0, sharp_drop_threshold=-5.0, rapid_m
 
     cursor.close()
     conn.close()
+
+    severity_order = {"High": 0, "Medium": 1, "Low": 2}
+    alerts = sorted(alerts, key=lambda x: severity_order.get(x["severity"], 99))
 
     return alerts

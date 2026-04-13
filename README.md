@@ -1,8 +1,8 @@
-📈 Crypto Analytics Dashboard
+📈 Crypto Analytics Platform
 
-A production-ready cryptocurrency data pipeline and analytics dashboard built with Python, MySQL, and Streamlit.
+A production-ready end-to-end cryptocurrency data pipeline and analytics dashboard built with Python, MySQL, and Streamlit.
 
-This project collects live market data, stores it in a cloud database, analyzes price movements, and presents insights through an interactive dashboard with alert detection.
+This system continuously collects live market data, processes it into structured insights, and delivers a real-time interactive dashboard with alert detection and performance analytics.
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -15,70 +15,77 @@ This project collects live market data, stores it in a cloud database, analyzes 
 🚀 Features
 
 🔄 Data Pipeline
-	•	Fetches real-time crypto data from CoinGecko API
+	•	Fetches real-time market data from CoinGecko API
 	•	Stores structured data in cloud-hosted MySQL (Railway)
-	•	Maintains:
+	•	Maintains normalized tables:
 	•	coins
 	•	latest_prices
 	•	price_history
 	•	price_history_archive
-	•	Optimized insert logic to prevent duplicates
+	•	Optimized insert/update logic to prevent duplicates and ensure consistency
 
 ⸻⸻⸻⸻⸻⸻
 
 ⚙️ Automation & Reliability
-	•	Fully automated using Railway Cron Jobs
+	•	Fully automated via Railway Cron Jobs
 	•	Runs every 15 minutes
-	•	Continuous background data collection
+	•	Continuous background ingestion
 	•	Logging system for monitoring pipeline activity
-	•	Error tracking via logs
+	•	Error tracking for production stability
 
 ⸻⸻⸻⸻⸻⸻
 
 📊 Analytics Engine
-	•	Top gainers / losers
-	•	Highest volume coins
-	•	Short-term price movements
+	•	Top gainers / losers (24h)
+	•	Highest volume assets
+	•	Short-term price movement detection
 	•	Historical price tracking
-	•	Multi-coin performance comparison
+	•	Multi-asset performance comparison
 
 ⸻⸻⸻⸻⸻⸻
 
-📊 Dashboard (Streamlit UI)
-	•	Cloud-hosted interactive dashboard
+📊 Interactive Dashboard (Streamlit)
+	•	Fully cloud-hosted UI
 	•	Auto-refresh every 2 minutes
-	•	Search & filter functionality
-	•	Clean formatted tables
-	•	Interactive charts
-	•	Multi-coin comparison with normalization
+	•	Advanced filtering & search
+	•	Clean, formatted data tables
+	•	Interactive charts (Altair)
+	•	Real-time system status indicator
+
 ⸻⸻⸻⸻⸻⸻
 
-🧠 Advanced Comparison
-	•	Compare multiple coins in one chart
+🧠 Advanced Analysis
+	•	Multi-coin comparison in a single chart
 	•	Normalized performance (Base = 100)
 	•	Best / worst performer detection
-	•	Ranked performance summary
+	•	Ranked performance summaries
 
 ⸻⸻⸻⸻⸻⸻
 
 🚨 Alert System
 
-Detects significant market events:
-	•	🚀 Strong Increase → 24h price ≥ +5%
-	•	🔻 Sharp Drop → 24h price ≤ -5%
-	•	⚡ Rapid Movement → short-term price change ≥ 2%
+Detects significant market events and transforms raw data into actionable insights:
+	•	🚀 Strong Increase → 24h change ≥ +5%
+	•	🔻 Sharp Drop → 24h change ≤ -5%
+	•	⚡ Rapid Movement → short-term change ≥ 2%
 
-Transforms the dashboard from data display → decision support tool.
+This shifts the system from data visualization → decision support tool.
 
 ⸻⸻⸻⸻⸻⸻
 
+```
 🧱 Architecture
 
 CoinGecko API
-→ Python Data Pipeline (Worker Service)
-→ MySQL Database (Railway)
-→ Analytics Layer
-→ Streamlit Dashboard (Web Service)
+    ↓
+Python Data Pipeline (Worker)
+    ↓
+MySQL Database (Railway)
+    ↓
+Analytics Layer
+    ↓
+Streamlit Dashboard (Web App)
+```
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -89,7 +96,7 @@ CoinGecko API
 	•	Pandas
 	•	Altair
 	•	CoinGecko API
-	•	Railway (Deployment & Hosting)
+	•	Railway (Cloud Deployment & Cron Jobs)
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -134,47 +141,56 @@ source .venv/bin/activate
 
 📸 Screenshots
 
+### Sidebar Navigation & Intelligence Panel
+![Sidebar Navigation & Intelligence Panel](assets/sidebar.png)
+
 ### Alerts System
-![Alerts](assets/1.png)
+![Alerts](assets/alerts.png)
 
 ### Search & Filter
-![Search and Filter](assets/2.png)
+![Search and Filter](assets/filter.png)
 
 ### Multi-Coin Comparison
-![Multi-Coin Comparison](assets/3.png)
+![Multi-Coin Comparison](assets/analysis.png)
 
 ### Dashboard Overview
-![Main Dashboard](assets/4.png)
+![Main Dashboard](assets/dashboard.png)
 
 ⸻⸻⸻⸻⸻⸻⸻
 
 🧠 What This Project Demonstrates
 	•	Building an end-to-end data pipeline (API → DB → Dashboard)
-	•	Designing efficient database schemas for time-series data
-	•	Implementing real-time analytics
-	•	Deploying full-stack applications to the cloud
+	•	Designing efficient time-series database structures
+	•	Implementing real-time analytics systems
+	•	Creating interactive data dashboards
+	•	Deploying full-stack systems to the cloud
 	•	Working with scheduled background jobs (cron)
-	•	Creating production-ready dashboards
-
+	•	Writing production-ready, modular Python code
 
 ⸻⸻⸻⸻⸻⸻⸻
 
 🔮 Future Improvements
-	•	Discord alert integration
-	•	Advanced anomaly detection
+	•	Discord / Telegram alert integration
 	•	User-defined alert thresholds
-	•	Export (CSV / reports)
-	•	Performance optimization (caching, query tuning)
+	•	Advanced anomaly detection (ML-based)
+	•	Export features (CSV / reports)
+	•	Query optimization & caching improvements
+	•	Persistent user preferences (watchlist storage)
 
 ⸻⸻⸻⸻⸻⸻⸻
 
 👤 Author
 
 Alper Tunc Ortak
+🔗 https://github.com/AlperTuncOrtak
 
 ⸻⸻⸻⸻⸻⸻⸻
 
 ⭐ Notes
 
-This project was built as part of a portfolio to demonstrate real-world data engineering, analytics, and cloud deployment skills.
+This project was built as a portfolio piece to demonstrate real-world skills in:
+	•	Data Engineering
+	•	Backend Systems
+	•	Analytics
+	•	Cloud Deployment
 

@@ -1,7 +1,18 @@
 from db import get_connection
 import logging
+import pandas as pd
 
 logger = logging.getLogger("crypto_pipeline")
+
+
+def clean_value(value, cast_func=None):
+    """
+    Convert pandas NaN/None values to Python None for MySQL.
+    Optionally cast valid values with cast_func.
+    """
+    if pd.isna(value):
+        return None
+    return cast_func(value) if cast_func else value
 
 
 def get_or_create_coin(cursor, symbol, name):
@@ -52,11 +63,11 @@ def insert_price_history(cursor, coin_id, row):
     """
     values = (
         coin_id,
-        float(row["current_price"]) if row["current_price"] is not None else None,
-        int(row["market_cap"]) if row["market_cap"] is not None else None,
-        int(row["total_volume"]) if row["total_volume"] is not None else None,
-        float(row["price_change_24h"]) if row["price_change_24h"] is not None else None,
-        float(row["price_change_percentage_24h"]) if row["price_change_percentage_24h"] is not None else None,
+        clean_value(row["current_price"], float),
+        clean_value(row["market_cap"], int),
+        clean_value(row["total_volume"], int),
+        clean_value(row["price_change_24h"], float),
+        clean_value(row["price_change_percentage_24h"], float),
     )
     cursor.execute(query, values)
 
@@ -82,11 +93,11 @@ def upsert_latest_price(cursor, coin_id, row):
     """
     values = (
         coin_id,
-        float(row["current_price"]) if row["current_price"] is not None else None,
-        int(row["market_cap"]) if row["market_cap"] is not None else None,
-        int(row["total_volume"]) if row["total_volume"] is not None else None,
-        float(row["price_change_24h"]) if row["price_change_24h"] is not None else None,
-        float(row["price_change_percentage_24h"]) if row["price_change_percentage_24h"] is not None else None,
+        clean_value(row["current_price"], float),
+        clean_value(row["market_cap"], int),
+        clean_value(row["total_volume"], int),
+        clean_value(row["price_change_24h"], float),
+        clean_value(row["price_change_percentage_24h"], float),
     )
     cursor.execute(query, values)
 
