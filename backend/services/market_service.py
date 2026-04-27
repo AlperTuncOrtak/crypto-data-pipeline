@@ -2,7 +2,6 @@
 # market_service.py
 # ============================================================
 # Piyasa verisi ile ilgili DB sorgularini icerir.
-# Endpoint'lerin altinda calisan is mantigi burada.
 # ============================================================
 
 from shared.db import get_connection
@@ -17,8 +16,9 @@ def get_latest_market(limit=20):
     cursor = conn.cursor(DictCursor)
 
     query = """
-    SELECT c.symbol, c.name, c.slug, lp.current_price, lp.market_cap,
-           lp.total_volume, lp.price_change_percentage_24h, lp.updated_at
+    SELECT c.symbol, c.name, c.slug, c.image_url,
+           lp.current_price, lp.market_cap, lp.total_volume,
+           lp.price_change_percentage_24h, lp.updated_at
     FROM latest_prices lp
     JOIN coins c ON lp.coin_id = c.id
     ORDER BY lp.market_cap DESC
@@ -40,8 +40,8 @@ def get_top_gainers(limit=5):
     cursor = conn.cursor(DictCursor)
 
     query = """
-    SELECT c.symbol, c.name, c.slug, lp.current_price,
-           lp.price_change_percentage_24h
+    SELECT c.symbol, c.name, c.slug, c.image_url,
+           lp.current_price, lp.price_change_percentage_24h
     FROM latest_prices lp
     JOIN coins c ON lp.coin_id = c.id
     WHERE lp.price_change_percentage_24h IS NOT NULL
@@ -64,8 +64,8 @@ def get_top_losers(limit=5):
     cursor = conn.cursor(DictCursor)
 
     query = """
-    SELECT c.symbol, c.name, c.slug, lp.current_price,
-           lp.price_change_percentage_24h
+    SELECT c.symbol, c.name, c.slug, c.image_url,
+           lp.current_price, lp.price_change_percentage_24h
     FROM latest_prices lp
     JOIN coins c ON lp.coin_id = c.id
     WHERE lp.price_change_percentage_24h IS NOT NULL
@@ -88,7 +88,8 @@ def get_highest_volume(limit=5):
     cursor = conn.cursor(DictCursor)
 
     query = """
-    SELECT c.symbol, c.name, c.slug, lp.current_price, lp.total_volume
+    SELECT c.symbol, c.name, c.slug, c.image_url,
+           lp.current_price, lp.total_volume
     FROM latest_prices lp
     JOIN coins c ON lp.coin_id = c.id
     ORDER BY lp.total_volume DESC

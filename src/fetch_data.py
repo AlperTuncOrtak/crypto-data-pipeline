@@ -29,6 +29,7 @@ def fetch_crypto_data():
             # Ornek: "bitcoin", "ethereum", "wrapped-bitcoin".
             # URL'de /coin/{slug} olarak kullanilacak.
             "slug": coin.get("id", ""),
+            "image_url": coin.get("image", ""),
             "current_price": coin.get("current_price"),
             "market_cap": coin.get("market_cap"),
             "total_volume": coin.get("total_volume"),

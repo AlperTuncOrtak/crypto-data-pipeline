@@ -5,8 +5,8 @@
 //  - Top 100 coin (market cap'e gore)
 //  - Search box (sembol veya isim ile filtre)
 //  - Kolon basliklarina tiklayinca siralama (asc/desc)
-//  - Her satirda son 24h sparkline (rengi 24h % degisimle uyumlu)
-//  - Coin ismine tiklayinca /coin/:slug detail sayfasina gider
+//  - Her satirda logo + son 24h sparkline
+//  - Tum satir tıklanabilir → /coin/:slug
 // ============================================================
 
 import { useState, useMemo } from 'react'
@@ -14,10 +14,11 @@ import { useNavigate } from 'react-router-dom'
 import { useMarket } from '../hooks/useMarket'
 import { useSparklines } from '../hooks/useSparklines'
 import Sparkline from '../components/market/Sparkline'
+import { TableRowSkeleton } from '../components/ui/Skeleton'
 
 
 // -----------------------
-// HELPER FORMATTERS
+// FORMATTERS
 // -----------------------
 function formatLargeNumber(n) {
   const num = Number(n)
@@ -42,19 +43,18 @@ function formatPrice(n) {
 // -----------------------
 function sortRows(rows, key, direction) {
   if (!key) return rows
-  const sorted = [...rows].sort((a, b) => {
+  return [...rows].sort((a, b) => {
     const av = Number(a[key])
     const bv = Number(b[key])
     if (isNaN(av)) return 1
     if (isNaN(bv)) return -1
     return direction === 'asc' ? av - bv : bv - av
   })
-  return sorted
 }
 
 
 // -----------------------
-// SORTABLE COLUMN HEADER
+// SORTABLE HEADER
 // -----------------------
 function SortableHeader({ label, sortKey, currentSort, onSort, align = 'right' }) {
   const isActive = currentSort.key === sortKey
@@ -75,6 +75,34 @@ function SortableHeader({ label, sortKey, currentSort, onSort, align = 'right' }
 
 
 // -----------------------
+// COIN LOGO
+// -----------------------
+// Reusable logo komponenti. image_url varsa img, yoksa fallback harf.
+function CoinLogo({ imageUrl, symbol, size = 8 }) {
+  const sizeClass = `w-${size} h-${size}`
+
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt={symbol}
+        className={`${sizeClass} rounded-full shrink-0`}
+        onError={(e) => { e.target.style.display = 'none' }}
+      />
+    )
+  }
+
+  return (
+    <div className={`${sizeClass} rounded-full bg-slate-700 shrink-0 flex items-center justify-center`}>
+      <span className="text-xs text-slate-400 font-mono font-bold">
+        {symbol?.slice(0, 2)?.toUpperCase()}
+      </span>
+    </div>
+  )
+}
+
+
+// -----------------------
 // MAIN PAGE
 // -----------------------
 export default function Market() {
@@ -84,9 +112,7 @@ export default function Market() {
   const navigate = useNavigate()
 
 
-  // -----------------------
   // FILTER + SORT
-  // -----------------------
   const filteredAndSorted = useMemo(() => {
     if (!marketData) return []
     const term = search.trim().toLowerCase()
@@ -102,9 +128,7 @@ export default function Market() {
   }, [marketData, search, sort])
 
 
-  // -----------------------
-  // SPARKLINE FETCH
-  // -----------------------
+  // SPARKLINES
   const symbols = useMemo(
     () => filteredAndSorted.map((c) => c.symbol).filter(Boolean),
     [filteredAndSorted]
@@ -112,9 +136,7 @@ export default function Market() {
   const { data: sparklineData } = useSparklines(symbols, 24)
 
 
-  // -----------------------
   // SORT HANDLER
-  // -----------------------
   function handleSort(key) {
     setSort((prev) => {
       if (prev.key === key) {
@@ -136,7 +158,7 @@ export default function Market() {
       </div>
 
 
-      {/* SEARCH BAR */}
+      {/* SEARCH */}
       <div className="mb-6">
         <input
           type="text"
@@ -150,8 +172,17 @@ export default function Market() {
 
       {/* LOADING / ERROR */}
       {isLoading && (
-        <div className="text-slate-400">Loading market data...</div>
+        <div className="overflow-x-auto rounded-lg border border-slate-700">
+          <table className="w-full">
+            <tbody>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <TableRowSkeleton key={i} cols={7} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
+
 
       {isError && (
         <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400">
@@ -169,33 +200,11 @@ export default function Market() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400 w-12">#</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Name</th>
-                <SortableHeader
-                  label="Price"
-                  sortKey="current_price"
-                  currentSort={sort}
-                  onSort={handleSort}
-                />
-                <SortableHeader
-                  label="24h %"
-                  sortKey="price_change_percentage_24h"
-                  currentSort={sort}
-                  onSort={handleSort}
-                />
-                <SortableHeader
-                  label="Volume (24h)"
-                  sortKey="total_volume"
-                  currentSort={sort}
-                  onSort={handleSort}
-                />
-                <SortableHeader
-                  label="Market Cap"
-                  sortKey="market_cap"
-                  currentSort={sort}
-                  onSort={handleSort}
-                />
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Last 24h
-                </th>
+                <SortableHeader label="Price" sortKey="current_price" currentSort={sort} onSort={handleSort} />
+                <SortableHeader label="24h %" sortKey="price_change_percentage_24h" currentSort={sort} onSort={handleSort} />
+                <SortableHeader label="Volume (24h)" sortKey="total_volume" currentSort={sort} onSort={handleSort} />
+                <SortableHeader label="Market Cap" sortKey="market_cap" currentSort={sort} onSort={handleSort} />
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">Last 24h</th>
               </tr>
             </thead>
             <tbody>
@@ -207,25 +216,30 @@ export default function Market() {
                 return (
                   <tr
                     key={coin.symbol}
-                    className="border-t border-slate-700/50 hover:bg-slate-800/30 transition-colors"
+                    onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                    className="border-t border-slate-700/50 hover:bg-slate-800/30 transition-colors cursor-pointer"
                   >
                     {/* RANK */}
                     <td className="px-4 py-4 text-slate-500 text-sm">
                       {idx + 1}
                     </td>
 
-                    {/* NAME + SYMBOL - tiklayinca coin detail sayfasina git */}
-                    <td
-                      className="px-4 py-4 cursor-pointer"
-                      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    >
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-slate-100 hover:text-emerald-400 transition-colors">
-                          {coin.name}
-                        </span>
-                        <span className="text-xs text-slate-500 font-mono">
-                          {coin.symbol?.toUpperCase()}
-                        </span>
+                    {/* LOGO + NAME + SYMBOL */}
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <CoinLogo
+                          imageUrl={coin.image_url}
+                          symbol={coin.symbol}
+                          size={8}
+                        />
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-semibold text-slate-100 hover:text-emerald-400 transition-colors truncate">
+                            {coin.name}
+                          </span>
+                          <span className="text-xs text-slate-500 font-mono">
+                            {coin.symbol?.toUpperCase()}
+                          </span>
+                        </div>
                       </div>
                     </td>
 
@@ -269,7 +283,7 @@ export default function Market() {
       )}
 
 
-      {/* EMPTY SEARCH RESULT */}
+      {/* EMPTY SEARCH */}
       {marketData && marketData.length > 0 && filteredAndSorted.length === 0 && (
         <div className="p-8 bg-slate-800 border border-slate-700 rounded-lg text-slate-400 text-center">
           No coins match "{search}"

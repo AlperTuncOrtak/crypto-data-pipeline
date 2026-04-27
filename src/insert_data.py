@@ -15,16 +15,9 @@ def clean_value(value, cast_func=None):
     return cast_func(value) if cast_func else value
 
 
-def get_or_create_coin(cursor, symbol, name, slug=None):
-    """
-    Symbol'e gore coin kaydini getirir, yoksa olusturur.
-    Slug parametresi verilmisse:
-      - Yeni coin olusturuluyorsa slug'la beraber INSERT
-      - Mevcut coin'in slug'i NULL ise UPDATE ile doldur
-      - Mevcut coin'in slug'i zaten varsa dokunma
-    """
+def get_or_create_coin(cursor, symbol, name, slug=None, image_url=None):
     cursor.execute(
-        "SELECT id, slug FROM coins WHERE symbol = %s",
+        "SELECT id, slug, image_url FROM coins WHERE symbol = %s",
         (symbol,)
     )
     result = cursor.fetchone()
@@ -32,22 +25,32 @@ def get_or_create_coin(cursor, symbol, name, slug=None):
     if result:
         coin_id = result[0]
         existing_slug = result[1]
+        existing_image = result[2]
 
-        # Mevcut coin'in slug'i NULL ise ve elimizde slug varsa doldur
+        # Eksik alanlari guncelle
+        updates = []
+        values = []
         if existing_slug is None and slug:
-            cursor.execute(
-                "UPDATE coins SET slug = %s WHERE id = %s",
-                (slug, coin_id)
-            )
+            updates.append("slug = %s")
+            values.append(slug)
+        if existing_image is None and image_url:
+            updates.append("image_url = %s")
+            values.append(image_url)
 
+        if updates:
+            values.append(coin_id)
+            cursor.execute(
+                f"UPDATE coins SET {', '.join(updates)} WHERE id = %s",
+                tuple(values)
+            )
         return coin_id
 
-    # Yeni coin - slug'la beraber INSERT
     cursor.execute(
-        "INSERT INTO coins (symbol, name, slug) VALUES (%s, %s, %s)",
-        (symbol, name, slug)
+        "INSERT INTO coins (symbol, name, slug, image_url) VALUES (%s, %s, %s, %s)",
+        (symbol, name, slug, image_url)
     )
     return cursor.lastrowid
+
 
 
 def should_insert_history(cursor, coin_id, cooldown_seconds=60):
@@ -131,7 +134,7 @@ def insert_crypto_data(df):
         logger.info("Starting database insert process.")
 
         for _, row in df.iterrows():
-            coin_id = get_or_create_coin(cursor, row["symbol"], row["name"], row.get("slug"))
+            coin_id = get_or_create_coin(cursor, row["symbol"], row["name"], row.get("slug"), row.get("image_url"))
 
             # Insert into history only if the last row is older than 5 minutes
             if should_insert_history(cursor, coin_id, cooldown_seconds=300):

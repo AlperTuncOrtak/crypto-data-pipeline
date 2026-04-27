@@ -38,7 +38,7 @@ def get_coin_by_slug(slug):
 
     query = """
     SELECT
-        c.id, c.symbol, c.name, c.slug,
+        c.id, c.symbol, c.name, c.slug, c.image_url,
         lp.current_price, lp.market_cap, lp.total_volume,
         lp.price_change_24h, lp.price_change_percentage_24h,
         lp.updated_at
