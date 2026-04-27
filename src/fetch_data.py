@@ -25,6 +25,10 @@ def fetch_crypto_data():
         rows.append({
             "symbol": coin.get("symbol", "").upper(),
             "name": coin.get("name", ""),
+            # CoinGecko'nun "id"si bizim slug'imiz olacak.
+            # Ornek: "bitcoin", "ethereum", "wrapped-bitcoin".
+            # URL'de /coin/{slug} olarak kullanilacak.
+            "slug": coin.get("id", ""),
             "current_price": coin.get("current_price"),
             "market_cap": coin.get("market_cap"),
             "total_volume": coin.get("total_volume"),

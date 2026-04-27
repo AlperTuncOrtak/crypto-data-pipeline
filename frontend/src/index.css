@@ -1,0 +1,17 @@
+/* ============================================================
+   index.css
+   ============================================================
+   Tailwind v4 tek satirda import ediliyor. Eski v3 donemindeki
+   @tailwind base/components/utilities yazmak gerekmiyor.
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* Genel body stilleri - koyu tema */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #0f172a;  /* slate-900 */
+  color: #e2e8f0;              /* slate-200 */
+  min-height: 100vh;
+}
