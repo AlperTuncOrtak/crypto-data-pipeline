@@ -1,7 +1,13 @@
-streamlit
-streamlit-autorefresh
-pandas
+# Web API
+fastapi
+uvicorn[standard]
+
+# Database
+pymysql
+
+# Data ingestion (eski pipeline icin, Faz 2'de degisecek)
 requests
+pandas
+
+# Environment
 python-dotenv
-mysql-connector-python
-altair
