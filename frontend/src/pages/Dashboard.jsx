@@ -9,6 +9,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useMarket, useGainers, useLosers, useVolume } from '../hooks/useMarket'
 import CoinListCard from '../components/market/CoinListCard'
+import { CardSkeleton, TableRowSkeleton } from '../components/ui/Skeleton'
 
 
 // -----------------------
@@ -98,8 +99,17 @@ export default function Dashboard() {
         </h2>
 
         {market.isLoading && (
-          <div className="text-slate-400">Loading market data...</div>
+          <div className="overflow-x-auto rounded-lg border border-slate-700">
+            <table className="w-full">
+              <tbody>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <TableRowSkeleton key={i} cols={5} />
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+
 
         {market.isError && (
           <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400">
@@ -128,21 +138,38 @@ export default function Dashboard() {
                   return (
                     <tr
                       key={coin.symbol}
-                      className="border-t border-slate-700 hover:bg-slate-800/50"
+                      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                      className="border-t border-slate-700 hover:bg-slate-800/50 transition-colors cursor-pointer"
                     >
                       {/* SYMBOL */}
-                      <td className="px-4 py-3 font-mono font-semibold">
+                      <td className="px-4 py-3 font-mono font-semibold text-slate-300">
                         {coin.symbol?.toUpperCase()}
                       </td>
 
-                      {/* NAME - tiklayinca coin detail'e git */}
-                      <td
-                        className="px-4 py-3 cursor-pointer"
-                        onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                      >
-                        <span className="text-slate-300 hover:text-emerald-400 transition-colors">
-                          {coin.name}
-                        </span>
+                      {/* NAME + LOGO */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {coin.image_url ? (
+                            <img
+                              src={coin.image_url}
+                              alt={coin.symbol}
+                              className="w-6 h-6 rounded-full shrink-0"
+                              onError={(e) => { e.target.style.display = 'none' }}
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-slate-700 shrink-0 flex items-center justify-center">
+                              <span className="text-[10px] text-slate-400 font-mono">
+                                {coin.symbol?.slice(0, 1)}
+                              </span>
+                            </div>
+                          )}
+                          <span
+                            className="text-slate-300 hover:text-emerald-400 transition-colors cursor-pointer"
+                            onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                          >
+                            {coin.name}
+                          </span>
+                        </div>
                       </td>
 
                       {/* PRICE */}
