@@ -1,28 +1,22 @@
 # ============================================================
 # backend/services/coin_service.py
 # ============================================================
-# Coin Detail sayfasinin DB sorgulari:
-#  - get_coin_by_slug: Tek bir coin'in metadata + en guncel
-#    fiyatini doner
-#  - get_coin_history: Belirli bir time range icin price_history
-#    noktalari (chart icin)
-#  - get_coin_stats: 24h high/low gibi turetilmis stat'lar
+# Coin Detail sayfasi icin sorgular.
 #
-# NOT: Time range parametresi enum benzeri string:
-#   "1h" / "24h" / "7d" / "30d" / "all"
-# Her biri farkli bir SQL INTERVAL'a cevirilir.
+# Faz 2 hybrid yaklasim:
+#  - Guncel fiyat, high/low, volume: Redis
+#  - name, slug, image_url, market_cap: DB
+#  - price_history (chart): DB (snapshotter her 30s'de yaziyor)
 # ============================================================
 
 from shared.db import get_connection
 from pymysql.cursors import DictCursor
+from backend.services.redis_service import get_ticker
 
-
-# Frontend'den gelen string'i SQL INTERVAL'a ceviren tablo.
-# "all" durumunda hic INTERVAL filtresi yok, hepsini doner.
 RANGE_TO_INTERVAL = {
-    "1h": "1 HOUR",
+    "1h":  "1 HOUR",
     "24h": "1 DAY",
-    "7d": "7 DAY",
+    "7d":  "7 DAY",
     "30d": "30 DAY",
 }
 
@@ -30,43 +24,66 @@ RANGE_TO_INTERVAL = {
 # -----------------------
 # COIN BY SLUG
 # -----------------------
-# URL'den gelen slug ile coin'i bul, en guncel fiyat bilgisiyle birlestir.
-# 404 mantigini caller (endpoint) yapar - bu fonksiyon None doner.
 def get_coin_by_slug(slug):
+    # Once DB'den metadata al
     conn = get_connection()
     cursor = conn.cursor(DictCursor)
-
-    query = """
-    SELECT
-        c.id, c.symbol, c.name, c.slug, c.image_url,
-        lp.current_price, lp.market_cap, lp.total_volume,
-        lp.price_change_24h, lp.price_change_percentage_24h,
-        lp.updated_at
-    FROM coins c
-    LEFT JOIN latest_prices lp ON lp.coin_id = c.id
-    WHERE c.slug = %s
-    LIMIT 1
-    """
-
-    cursor.execute(query, (slug,))
-    result = cursor.fetchone()
-
+    cursor.execute("""
+        SELECT c.id, c.symbol, c.name, c.slug, c.image_url,
+               lp.market_cap
+        FROM coins c
+        LEFT JOIN latest_prices lp ON lp.coin_id = c.id
+        WHERE c.slug = %s
+        LIMIT 1
+    """, (slug,))
+    coin = cursor.fetchone()
     cursor.close()
     conn.close()
-    return result
+
+    if not coin:
+        return None
+
+    # Redis'ten live fiyat al
+    ticker = get_ticker(coin["symbol"])
+
+    if ticker:
+        return {
+            **coin,
+            "current_price":               ticker["current_price"],
+            "price_change_percentage_24h": ticker["price_change_percentage_24h"],
+            "total_volume":                ticker["total_volume"],
+            "high_24h":                    ticker["high_24h"],
+            "low_24h":                     ticker["low_24h"],
+            "updated_at":                  ticker["updated_at"],
+        }
+
+    # Redis'te yoksa DB'den fallback
+    conn = get_connection()
+    cursor = conn.cursor(DictCursor)
+    cursor.execute("""
+        SELECT lp.current_price, lp.total_volume,
+               lp.price_change_percentage_24h, lp.updated_at
+        FROM latest_prices lp
+        WHERE lp.coin_id = %s
+    """, (coin["id"],))
+    lp = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if lp:
+        return {**coin, **lp}
+
+    return coin
 
 
 # -----------------------
 # COIN HISTORY
 # -----------------------
-# Belirli bir zaman araligi icin coin'in fiyat geçmisi.
-# Range "all" ise hepsini doner, diger durumlarda INTERVAL filtresi.
 def get_coin_history(slug, range_key="24h"):
     conn = get_connection()
     cursor = conn.cursor(DictCursor)
 
     if range_key == "all":
-        # Tum geçmisi don
         query = """
         SELECT ph.current_price, ph.collected_at
         FROM price_history ph
@@ -76,11 +93,7 @@ def get_coin_history(slug, range_key="24h"):
         """
         cursor.execute(query, (slug,))
     else:
-        # INTERVAL ile filtrele
         interval = RANGE_TO_INTERVAL.get(range_key, "1 DAY")
-        # NOT: INTERVAL string'i parametre olarak gondermek riskli
-        # (SQL injection), ama biz kontrol ettigimiz bir whitelist'ten
-        # geliyor (RANGE_TO_INTERVAL), bu yuzden f-string kullaniyoruz.
         query = f"""
         SELECT ph.current_price, ph.collected_at
         FROM price_history ph
@@ -95,11 +108,10 @@ def get_coin_history(slug, range_key="24h"):
     cursor.close()
     conn.close()
 
-    # Frontend'in islemesini kolaylastirmak icin format
     return [
         {
             "price": float(r["current_price"]) if r["current_price"] else None,
-            "time": r["collected_at"].isoformat() if r["collected_at"] else None,
+            "time":  r["collected_at"].isoformat() if r["collected_at"] else None,
         }
         for r in results
     ]
@@ -108,26 +120,51 @@ def get_coin_history(slug, range_key="24h"):
 # -----------------------
 # COIN STATS
 # -----------------------
-# Turetilmis stat'lar: 24h high, 24h low, kac data point var.
-# Frontend'de coin sayfasinin ust kisminda kart olarak gosterilir.
 def get_coin_stats(slug):
+    # Redis'ten live high/low al
     conn = get_connection()
     cursor = conn.cursor(DictCursor)
+    cursor.execute("SELECT symbol FROM coins WHERE slug = %s", (slug,))
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
 
-    query = """
-    SELECT
-        MIN(ph.current_price) AS low_24h,
-        MAX(ph.current_price) AS high_24h,
-        COUNT(*) AS data_points
-    FROM price_history ph
-    JOIN coins c ON ph.coin_id = c.id
-    WHERE c.slug = %s
-      AND ph.collected_at >= NOW() - INTERVAL 1 DAY
-    """
+    if row:
+        ticker = get_ticker(row["symbol"])
+        if ticker:
+            # DB'den data_points say
+            conn = get_connection()
+            cursor = conn.cursor(DictCursor)
+            cursor.execute("""
+                SELECT COUNT(*) AS data_points
+                FROM price_history ph
+                JOIN coins c ON ph.coin_id = c.id
+                WHERE c.slug = %s
+                  AND ph.collected_at >= NOW() - INTERVAL 1 DAY
+            """, (slug,))
+            cnt = cursor.fetchone()
+            cursor.close()
+            conn.close()
 
-    cursor.execute(query, (slug,))
+            return {
+                "high_24h":    ticker["high_24h"],
+                "low_24h":     ticker["low_24h"],
+                "data_points": cnt["data_points"] if cnt else 0,
+            }
+
+    # Fallback: DB'den hesapla
+    conn = get_connection()
+    cursor = conn.cursor(DictCursor)
+    cursor.execute("""
+        SELECT MIN(ph.current_price) AS low_24h,
+               MAX(ph.current_price) AS high_24h,
+               COUNT(*) AS data_points
+        FROM price_history ph
+        JOIN coins c ON ph.coin_id = c.id
+        WHERE c.slug = %s
+          AND ph.collected_at >= NOW() - INTERVAL 1 DAY
+    """, (slug,))
     result = cursor.fetchone()
-
     cursor.close()
     conn.close()
 
@@ -135,7 +172,7 @@ def get_coin_stats(slug):
         return {"low_24h": None, "high_24h": None, "data_points": 0}
 
     return {
-        "low_24h": float(result["low_24h"]) if result["low_24h"] else None,
-        "high_24h": float(result["high_24h"]) if result["high_24h"] else None,
+        "low_24h":     float(result["low_24h"]) if result["low_24h"] else None,
+        "high_24h":    float(result["high_24h"]) if result["high_24h"] else None,
         "data_points": int(result["data_points"]),
     }

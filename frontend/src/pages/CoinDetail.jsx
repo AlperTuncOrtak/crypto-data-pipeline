@@ -1,29 +1,16 @@
 // ============================================================
 // pages/CoinDetail.jsx
 // ============================================================
-// Tek bir coin'in detay sayfasi. URL: /coin/:slug
-// Ornek: /coin/bitcoin, /coin/ethereum
-//
-// Icerik:
-//  1. Hero - isim, sembol, guncel fiyat, 24h degisim
-//  2. 4 stat karti - market cap, volume, 24h high, 24h low
-//  3. Time range seçici - 1H / 24H / 7D / 30D / ALL
-//  4. Fiyat chart'i - Recharts LineChart
-// ============================================================
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
     LineChart, Line, XAxis, YAxis, Tooltip,
     CartesianGrid, ResponsiveContainer,
 } from 'recharts'
-
 import { useCoinDetail, useCoinHistory, useCoinStats } from '../hooks/useCoin'
 
 
-// -----------------------
-// TIME RANGE SECENEKLERI
-// -----------------------
 const RANGES = [
     { label: '1H', value: '1h' },
     { label: '24H', value: '24h' },
@@ -33,15 +20,64 @@ const RANGES = [
 ]
 
 
-// -----------------------
-// FORMATTERS
-// -----------------------
 function formatPrice(n) {
     const num = Number(n)
     if (isNaN(num) || n === null) return '—'
     if (num >= 1) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
     return `$${num.toFixed(6)}`
 }
+
+// Iki fiyati karakter karakter karsilastir, degisen kismi renklendir
+function AnimatedPrice({ current, prev, flash }) {
+    const currentStr = formatPrice(current)
+    const prevStr = prev ? formatPrice(prev) : currentStr
+
+    const digitsOnly = (s) => s.replace(/[^0-9]/g, '')
+    const currentDigits = digitsOnly(currentStr)
+    const prevDigits = digitsOnly(prevStr)
+
+    const maxDigits = Math.max(currentDigits.length, prevDigits.length)
+    const paddedCurrent = currentDigits.padStart(maxDigits, '0')
+    const paddedPrev = prevDigits.padStart(maxDigits, '0')
+
+    // Soldan ilk farkli rakam pozisyonu (0-indexed, paddedCurrent'a gore)
+    let firstDiffDigit = maxDigits // hic fark yoksa hicbiri yanmasin
+    for (let i = 0; i < maxDigits; i++) {
+        if (paddedCurrent[i] !== paddedPrev[i]) {
+            firstDiffDigit = i
+            break
+        }
+    }
+
+    const color = flash === 'up' ? 'text-emerald-400' : 'text-red-400'
+
+    // Her karakterin kacinci rakam oldugunu onceden hesapla
+    let runningDigitIdx = maxDigits - currentDigits.length  // offset
+    const charMeta = currentStr.split('').map((char) => {
+        const isDigit = /[0-9]/.test(char)
+        const digitIdx = isDigit ? runningDigitIdx : runningDigitIdx - 1
+        if (isDigit) runningDigitIdx++
+        return { char, isDigit, digitIdx }
+    })
+
+    return (
+        <span>
+            {charMeta.map(({ char, digitIdx }, i) => {
+                const changed = flash && digitIdx >= firstDiffDigit
+                return (
+                    <span
+                        key={i}
+                        className={`transition-colors duration-500 ${changed ? `${color} animate-pulse` : 'text-slate-100'}`}
+                    >
+                        {char}
+                    </span>
+                )
+            })}
+        </span>
+    )
+}
+
+
 
 function formatLargeNumber(n) {
     const num = Number(n)
@@ -71,9 +107,6 @@ function formatTooltipTime(iso) {
 }
 
 
-// -----------------------
-// STAT KARTI
-// -----------------------
 function StatCard({ label, value, accent = 'slate' }) {
     const accentColors = {
         slate: 'border-slate-700',
@@ -81,23 +114,15 @@ function StatCard({ label, value, accent = 'slate' }) {
         red: 'border-red-500/30',
         blue: 'border-blue-500/30',
     }
-
     return (
         <div className={`bg-slate-800 border ${accentColors[accent]} rounded-lg p-4`}>
-            <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">
-                {label}
-            </div>
-            <div className="text-lg font-mono font-semibold text-slate-100">
-                {value}
-            </div>
+            <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">{label}</div>
+            <div className="text-lg font-mono font-semibold text-slate-100">{value}</div>
         </div>
     )
 }
 
 
-// -----------------------
-// CHART TOOLTIP
-// -----------------------
 function ChartTooltip({ active, payload, label }) {
     if (!active || !payload || payload.length === 0) return null
     return (
@@ -111,34 +136,42 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 
-// -----------------------
-// MAIN PAGE
-// -----------------------
 export default function CoinDetail() {
-    // URL'den slug al: /coin/bitcoin -> slug = "bitcoin"
     const { slug } = useParams()
     const navigate = useNavigate()
-
-    // Secili time range - default 24h
     const [range, setRange] = useState('24h')
 
-    // 3 hook - hepsi slug'a gore ceker
     const { data: coin, isLoading: coinLoading, isError: coinError } = useCoinDetail(slug)
     const { data: history, isLoading: historyLoading } = useCoinHistory(slug, range)
     const { data: stats } = useCoinStats(slug)
 
-    // Chart verisi: backend [{price, time}] -> Recharts [{time, price}]
-    const chartData = history || []
+    const prevPriceRef = useRef(null)
+    const [priceFlash, setPriceFlash] = useState(null)
+    const [prevPrice, setPrevPrice] = useState(null)
 
-    // 24h degisim rengi
+
+    useEffect(() => {
+        if (!coin?.current_price) return
+        const current = coin.current_price
+        const prev = prevPriceRef.current
+        if (prev !== null && current !== prev) {
+            console.log('prev:', prev, 'current:', current)
+            console.log('prevStr:', formatPrice(prev), 'currentStr:', formatPrice(current))
+            setPrevPrice(prev)
+            setPriceFlash(current > prev ? 'up' : 'down')
+            setTimeout(() => setPriceFlash(null), 800)
+        }
+        prevPriceRef.current = current
+    }, [coin?.current_price])
+
+
+
+    const chartData = history || []
     const change = Number(coin?.price_change_percentage_24h)
     const changeColor = change >= 0 ? 'text-emerald-400' : 'text-red-400'
     const chartStroke = change >= 0 ? '#34d399' : '#f87171'
 
 
-    // -----------------------
-    // LOADING
-    // -----------------------
     if (coinLoading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -147,10 +180,6 @@ export default function CoinDetail() {
         )
     }
 
-
-    // -----------------------
-    // 404
-    // -----------------------
     if (coinError || !coin) {
         return (
             <div className="flex flex-col items-center justify-center h-64 gap-4">
@@ -170,7 +199,7 @@ export default function CoinDetail() {
 
     return (
         <div>
-            {/* BACK LINK */}
+            {/* BACK */}
             <button
                 onClick={() => navigate(-1)}
                 className="text-slate-400 hover:text-slate-200 text-sm mb-6 flex items-center gap-1 transition-colors"
@@ -178,11 +207,9 @@ export default function CoinDetail() {
                 ← Back
             </button>
 
-
             {/* HERO */}
             <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
                 <div className="flex items-center gap-4">
-                    {/* LOGO */}
                     {coin.image_url ? (
                         <img
                             src={coin.image_url}
@@ -197,23 +224,23 @@ export default function CoinDetail() {
                             </span>
                         </div>
                     )}
-
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-4xl font-bold text-slate-100">
-                                {coin.name}
-                            </h1>
+                            <h1 className="text-4xl font-bold text-slate-100">{coin.name}</h1>
                             <span className="text-slate-500 font-mono text-lg">
                                 {coin.symbol?.toUpperCase()}
                             </span>
                         </div>
-                        {/* Rank veya ekstra bilgi buraya gelebilir */}
                     </div>
                 </div>
 
                 <div className="text-right">
-                    <div className="text-4xl font-mono font-bold text-slate-100">
-                        {formatPrice(coin.current_price)}
+                    <div className="text-4xl font-mono font-bold">
+                        <AnimatedPrice
+                            current={coin.current_price}
+                            prev={prevPrice}
+                            flash={priceFlash}
+                        />
                     </div>
                     <div className={`text-xl font-mono mt-1 ${changeColor}`}>
                         {formatPct(change)} <span className="text-sm text-slate-500">24h</span>
@@ -221,50 +248,26 @@ export default function CoinDetail() {
                 </div>
             </div>
 
-
             {/* STAT KARTLARI */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <StatCard
-                    label="Market Cap"
-                    value={formatLargeNumber(coin.market_cap)}
-                    accent="slate"
-                />
-                <StatCard
-                    label="Volume (24h)"
-                    value={formatLargeNumber(coin.total_volume)}
-                    accent="blue"
-                />
-                <StatCard
-                    label="24h High"
-                    value={formatPrice(stats?.high_24h)}
-                    accent="emerald"
-                />
-                <StatCard
-                    label="24h Low"
-                    value={formatPrice(stats?.low_24h)}
-                    accent="red"
-                />
+                <StatCard label="Market Cap" value={formatLargeNumber(coin.market_cap)} accent="slate" />
+                <StatCard label="Volume (24h)" value={formatLargeNumber(coin.total_volume)} accent="blue" />
+                <StatCard label="24h High" value={formatPrice(stats?.high_24h)} accent="emerald" />
+                <StatCard label="24h Low" value={formatPrice(stats?.low_24h)} accent="red" />
             </div>
 
-
-            {/* CHART KARTI */}
+            {/* CHART */}
             <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-
-                {/* CHART HEADER - baslik + range secici */}
                 <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-                    <h2 className="text-lg font-semibold text-slate-200">
-                        Price Chart
-                    </h2>
-
-                    {/* TIME RANGE BUTONLARI */}
+                    <h2 className="text-lg font-semibold text-slate-200">Price Chart</h2>
                     <div className="flex gap-1">
                         {RANGES.map((r) => (
                             <button
                                 key={r.value}
                                 onClick={() => setRange(r.value)}
                                 className={`px-3 py-1 text-xs font-semibold rounded transition-colors ${range === r.value
-                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                                        : 'text-slate-400 hover:text-slate-200 border border-transparent hover:border-slate-700'
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                    : 'text-slate-400 hover:text-slate-200 border border-transparent hover:border-slate-700'
                                     }`}
                             >
                                 {r.label}
@@ -273,8 +276,6 @@ export default function CoinDetail() {
                     </div>
                 </div>
 
-
-                {/* CHART BODY */}
                 {historyLoading && (
                     <div className="flex items-center justify-center h-64 text-slate-400">
                         Loading chart...
@@ -320,7 +321,6 @@ export default function CoinDetail() {
                     </ResponsiveContainer>
                 )}
 
-                {/* DATA POINTS BILGISI */}
                 {stats && (
                     <div className="mt-3 text-xs text-slate-600 text-right">
                         {stats.data_points} data points in last 24h
