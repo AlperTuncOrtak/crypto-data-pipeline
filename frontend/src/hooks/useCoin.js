@@ -19,18 +19,20 @@ import { apiClient } from '../api/client'
 // COIN DETAIL
 // -----------------------
 async function fetchCoinDetail(slug) {
-  const response = await apiClient.get(`/coin/${slug}`)
-  return response.data
+    const response = await apiClient.get(`/coin/${slug}`)
+    return response.data
 }
 
 export function useCoinDetail(slug) {
-  return useQuery({
-    queryKey: ['coin', slug],
-    queryFn: () => fetchCoinDetail(slug),
-    enabled: Boolean(slug),
-    retry: false,   // 404 durumunda tekrar deneme (bos sayfa gosterelim)
-    staleTime: 30 * 1000,
-  })
+    return useQuery({
+        queryKey: ['coin', slug],
+        queryFn: () => fetchCoinDetail(slug),
+        enabled: Boolean(slug),
+        retry: false,
+        staleTime: 1000,
+        refetchInterval: 2000,
+
+    })
 }
 
 
@@ -38,21 +40,21 @@ export function useCoinDetail(slug) {
 // COIN HISTORY
 // -----------------------
 async function fetchCoinHistory(slug, range) {
-  const response = await apiClient.get(`/coin/${slug}/history`, {
-    params: { range },
-  })
-  return response.data
+    const response = await apiClient.get(`/coin/${slug}/history`, {
+        params: { range },
+    })
+    return response.data
 }
 
 export function useCoinHistory(slug, range = '24h') {
-  return useQuery({
-    queryKey: ['coin-history', slug, range],
-    queryFn: () => fetchCoinHistory(slug, range),
-    enabled: Boolean(slug),
-    // History cok sik degismez, 60 saniye yeterli
-    refetchInterval: 60 * 1000,
-    staleTime: 30 * 1000,
-  })
+    return useQuery({
+        queryKey: ['coin-history', slug, range],
+        queryFn: () => fetchCoinHistory(slug, range),
+        enabled: Boolean(slug),
+        // History cok sik degismez, 60 saniye yeterli
+        refetchInterval: 60 * 1000,
+        staleTime: 30 * 1000,
+    })
 }
 
 
@@ -60,16 +62,16 @@ export function useCoinHistory(slug, range = '24h') {
 // COIN STATS
 // -----------------------
 async function fetchCoinStats(slug) {
-  const response = await apiClient.get(`/coin/${slug}/stats`)
-  return response.data
+    const response = await apiClient.get(`/coin/${slug}/stats`)
+    return response.data
 }
 
 export function useCoinStats(slug) {
-  return useQuery({
-    queryKey: ['coin-stats', slug],
-    queryFn: () => fetchCoinStats(slug),
-    enabled: Boolean(slug),
-    refetchInterval: 60 * 1000,
-    staleTime: 30 * 1000,
-  })
+    return useQuery({
+        queryKey: ['coin-stats', slug],
+        queryFn: () => fetchCoinStats(slug),
+        enabled: Boolean(slug),
+        refetchInterval: 60 * 1000,
+        staleTime: 30 * 1000,
+    })
 }

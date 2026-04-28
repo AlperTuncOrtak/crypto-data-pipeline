@@ -95,8 +95,9 @@ export default function Dashboard() {
       {/* FULL MARKET TABLE */}
       <div>
         <h2 className="text-xl font-semibold text-slate-200 mb-4">
-          Top 10 by Market Cap
+          Top 10 by Volume
         </h2>
+
 
         {market.isLoading && (
           <div className="overflow-x-auto rounded-lg border border-slate-700">
