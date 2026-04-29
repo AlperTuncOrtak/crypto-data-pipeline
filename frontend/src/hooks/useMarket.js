@@ -91,3 +91,31 @@ export function useVolume(limit = 5) {
     refetchInterval: 5 * 1000,
   })
 }
+
+async function fetchTrending() {
+  const response = await apiClient.get('/market/trending')
+  return response.data
+}
+
+export function useTrending() {
+  return useQuery({
+    queryKey: ['trending'],
+    queryFn: fetchTrending,
+    refetchInterval: 30 * 1000,
+    staleTime: 15 * 1000,
+  })
+}
+
+async function fetchStats() {
+  const response = await apiClient.get('/market/stats')
+  return response.data
+}
+
+export function useMarketStats() {
+  return useQuery({
+    queryKey: ['market-stats'],
+    queryFn: fetchStats,
+    refetchInterval: 60 * 1000,
+    staleTime: 30 * 1000,
+  })
+}
