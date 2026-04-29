@@ -8,25 +8,30 @@ function formatLargeNumber(n) {
   const num = Number(n)
   if (isNaN(num)) return '—'
   if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`
-  if (num >= 1e9)  return `$${(num / 1e9).toFixed(2)}B`
-  if (num >= 1e6)  return `$${(num / 1e6).toFixed(2)}M`
-  if (num >= 1e3)  return `$${(num / 1e3).toFixed(2)}K`
+  if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`
+  if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`
+  if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`
   return `$${num.toFixed(2)}`
 }
 
 function formatPrice(n) {
   const num = Number(n)
   if (isNaN(num)) return '—'
-  if (num >= 1) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-  return `$${num.toFixed(6)}`
+  if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+  if (num >= 1) return `$${num.toFixed(2)}`
+  if (num >= 0.01) return `$${num.toFixed(4)}`
+  if (num >= 0.0001) return `$${num.toFixed(6)}`
+  if (num >= 0.000001) return `$${num.toFixed(8)}`
+  return `<$0.000001`
 }
 
 
+
 export default function Dashboard() {
-  const market  = useMarket(10)
+  const market = useMarket(10)
   const gainers = useGainers(5)
-  const losers  = useLosers(5)
-  const volume  = useVolume(5)
+  const losers = useLosers(5)
+  const volume = useVolume(5)
   const navigate = useNavigate()
 
   return (
@@ -83,10 +88,20 @@ export default function Dashboard() {
 
 
       {/* TOP 10 TABLE */}
-      <div>
+      <div
+        className="rounded-xl"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          padding: '24px',
+          marginTop: '24px',
+        }}
+      >
+
         <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
           Top 10 by Volume
         </h2>
+
 
         {market.isLoading && (
           <table className="w-full">
@@ -105,15 +120,25 @@ export default function Dashboard() {
         )}
 
         {market.data && market.data.length > 0 && (
-          <div className="overflow-x-auto rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+          <div
+            className="overflow-x-auto rounded-xl"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+              padding: '0 4px',
+            }}
+          >
+
+
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)' }}>
                   {['Symbol', 'Name', 'Price', '24h Change', 'Volume'].map((h, i) => (
                     <th
                       key={h}
-                      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider ${i >= 2 ? 'text-right' : 'text-left'}`}
-                      style={{ color: 'var(--text-muted)' }}
+                      className={`px-5 py-4 text-xs font-semibold uppercase tracking-wider ${i >= 2 ? 'text-right' : 'text-left'}`}
+                      style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-elevated)', letterSpacing: '0.08em' }}
                     >
                       {h}
                     </th>
@@ -130,15 +155,16 @@ export default function Dashboard() {
                       key={coin.symbol}
                       onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                       className="transition-colors cursor-pointer"
-                      style={{ borderTop: '1px solid var(--border-soft)' }}
+                      style={{ borderTop: '1px solid var(--border)' }}
                       onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'}
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <td className="px-4 py-3 font-mono font-bold text-sm" style={{ color: 'var(--accent)' }}>
+
+                      <td className="px-5 py-4 font-mono font-bold text-sm" style={{ color: 'var(--accent)' }}>
                         {coin.symbol?.toUpperCase()}
                       </td>
 
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
                           {coin.image_url ? (
                             <img
@@ -161,15 +187,15 @@ export default function Dashboard() {
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 text-right font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
+                      <td className="px-5 py-4 text-right font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
                         {formatPrice(coin.current_price)}
                       </td>
 
-                      <td className="px-4 py-3 text-right font-mono text-sm font-semibold" style={{ color: changeColor }}>
+                      <td className="px-5 py-4 text-right font-mono text-sm font-semibold" style={{ color: changeColor }}>
                         {change >= 0 ? '+' : ''}{change.toFixed(2)}%
                       </td>
 
-                      <td className="px-4 py-3 text-right font-mono text-sm" style={{ color: 'var(--text-muted)' }}>
+                      <td className="px-5 py-4 text-right font-mono text-sm" style={{ color: 'var(--text-muted)' }}>
                         {formatLargeNumber(coin.total_volume)}
                       </td>
                     </tr>
