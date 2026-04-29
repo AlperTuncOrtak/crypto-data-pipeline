@@ -163,3 +163,25 @@ def coin_history(slug: str, range: str = Query("24h", pattern="^(1h|24h|7d|30d|a
 def coin_stats_endpoint(slug: str):
     """24h high/low ve data point sayisi."""
     return get_coin_stats(slug)
+
+@app.get("/market/trending")
+def market_trending():
+    """
+    Son 1 saatte en cok hacim artisi yasayan coinler.
+    Redis'ten anlık veri + DB'den metadata.
+    """
+    from backend.services.market_service import get_latest_market
+    data = get_latest_market(limit=500)
+    # Yüzde değişime göre sırala, top 6 al
+    sorted_data = sorted(
+        [c for c in data if c.get('price_change_percentage_24h') is not None],
+        key=lambda x: abs(float(x.get('price_change_percentage_24h', 0))),
+        reverse=True
+    )
+    return sorted_data[:6]
+
+@app.get("/market/stats")
+def market_stats():
+    from backend.services.redis_service import get_all_tickers
+    tickers = get_all_tickers()
+    return {"coin_count": len(tickers)}
