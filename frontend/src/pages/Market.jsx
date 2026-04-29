@@ -106,7 +106,7 @@ function CoinLogo({ imageUrl, symbol, size = 8 }) {
 // MAIN PAGE
 // -----------------------
 export default function Market() {
-  const { data: marketData, isLoading, isError, error } = useMarket(100)
+  const { data: marketData, isLoading, isError, error } = useMarket(500)
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState({ key: 'market_cap', direction: 'desc' })
   const navigate = useNavigate()
@@ -217,8 +217,12 @@ export default function Market() {
                   <tr
                     key={coin.symbol}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    className="border-t border-slate-700/50 hover:bg-slate-800/30 transition-colors cursor-pointer"
+                    className={`border-t border-slate-700/50 transition-colors ${coin.slug
+                        ? 'hover:bg-slate-800/30 cursor-pointer'
+                        : 'opacity-60 cursor-not-allowed'
+                      }`}
                   >
+
                     {/* RANK */}
                     <td className="px-4 py-4 text-slate-500 text-sm">
                       {idx + 1}

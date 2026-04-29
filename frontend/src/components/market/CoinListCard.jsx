@@ -1,62 +1,74 @@
-// ============================================================
-// components/market/CoinListCard.jsx
-// ============================================================
-// Dashboard'da kullanilan kucuk kartlar.
-// Gainers / Losers / Volume uculu hepsi bu komponenti kullanir.
-// Coin ismine tiklayinca /coin/:slug sayfasina gider.
-//
-// Props:
-//  - title: Kart basligi
-//  - accent: "emerald" | "red" | "blue"
-//  - data: backend'den gelen dizi
-//  - isLoading / isError
-//  - renderValue: (coin) => ReactNode
-// ============================================================
-
 import { useNavigate } from 'react-router-dom'
-import { Skeleton } from '../ui/Skeleton'
 
-const ACCENT_CLASSES = {
-  emerald: { title: 'text-emerald-400', border: 'border-emerald-500/20' },
-  red: { title: 'text-red-400', border: 'border-red-500/20' },
-  blue: { title: 'text-blue-400', border: 'border-blue-500/20' },
+const ACCENT_COLORS = {
+  orange:  '#f5a623',
+  red:     '#e74c3c',
+  blue:    '#3b82f6',
+  emerald: '#2ecc71',
 }
-
 
 export default function CoinListCard({
   title,
-  accent = 'emerald',
+  accent = 'orange',
   data,
   isLoading,
   isError,
   renderValue,
 }) {
-  const colors = ACCENT_CLASSES[accent] || ACCENT_CLASSES.emerald
+  const titleColor = ACCENT_COLORS[accent] || ACCENT_COLORS.orange
   const navigate = useNavigate()
 
   return (
-    <div className={`bg-slate-800 border ${colors.border} rounded-lg p-5`}>
-      <h3 className={`text-xs font-semibold uppercase tracking-wider mb-4 ${colors.title}`}>
+    <div
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
+        borderRadius: '12px',
+        padding: '20px',
+      }}
+    >
+      <h3
+        className="text-xs font-semibold uppercase tracking-wider mb-4"
+        style={{ color: titleColor, letterSpacing: '0.08em' }}
+      >
         {title}
       </h3>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
-      {isError && <p className="text-sm text-red-400">Failed to load</p>}
+      {isLoading && (
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex justify-between gap-4">
+              <div
+                className="h-4 rounded animate-pulse"
+                style={{ width: '60%', backgroundColor: 'var(--bg-elevated)' }}
+              />
+              <div
+                className="h-4 rounded animate-pulse"
+                style={{ width: '20%', backgroundColor: 'var(--bg-elevated)' }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isError && (
+        <p className="text-sm" style={{ color: 'var(--negative)' }}>Failed to load</p>
+      )}
 
       {data && data.length === 0 && (
-        <p className="text-sm text-slate-500">No data</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No data</p>
       )}
 
       {data && data.length > 0 && (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {data.map((coin) => (
             <li
               key={coin.symbol}
               onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-              className="flex items-center justify-between text-sm cursor-pointer group"
+              className="flex items-center justify-between text-sm cursor-pointer transition-all group"
+              style={{ padding: '4px 0' }}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                {/* LOGO */}
+              <div className="flex items-center gap-2.5 min-w-0">
                 {coin.image_url ? (
                   <img
                     src={coin.image_url}
@@ -65,21 +77,29 @@ export default function CoinListCard({
                     onError={(e) => { e.target.style.display = 'none' }}
                   />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-slate-700 shrink-0 flex items-center justify-center">
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {coin.symbol?.slice(0, 1)}
-                    </span>
+                  <div
+                    className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-mono"
+                    style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }}
+                  >
+                    {coin.symbol?.slice(0, 1)}
                   </div>
                 )}
 
-                <span className="font-mono font-semibold text-slate-200 group-hover:text-emerald-400 transition-colors">
+                <span
+                  className="font-mono font-bold transition-colors"
+                  style={{ color: 'var(--accent)' }}
+                >
                   {coin.symbol?.toUpperCase()}
                 </span>
-                <span className="text-slate-500 truncate">
+                <span
+                  className="truncate text-xs"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   {coin.name}
                 </span>
               </div>
-              <span className="font-mono text-slate-300 whitespace-nowrap ml-2">
+
+              <span className="font-mono whitespace-nowrap ml-2 font-semibold">
                 {renderValue(coin)}
               </span>
             </li>

@@ -15,6 +15,7 @@ import time
 import threading
 import logging
 from datetime import datetime
+import requests
 
 import redis
 import websocket
@@ -38,27 +39,45 @@ QUOTE_ASSET = "USDT"
 # -----------------------
 def get_symbols_from_db():
     """
-    coins tablosundaki sembolleri Binance formatina cevirir.
-    BTC -> BTCUSDT, ETH -> ETHUSDT, vs.
-    USDT, USDC gibi stable'lari atlar.
+    Binance'ten tum aktif USDT pairlerini cek.
+    DB'ye bagimli degil - Binance'in kendi listesini kullaniyoruz.
     """
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT symbol FROM coins")
-    rows = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    try:
+        response = requests.get(
+            "https://api.binance.com/api/v3/exchangeInfo",
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
 
-    skip = {"USDT", "USDC", "BUSD", "DAI", "TUSD", "FDUSD"}
-    symbols = []
-    for row in rows:
-        sym = row[0].upper()
-        if sym in skip:
-            continue
-        symbols.append(f"{sym}{QUOTE_ASSET}".lower())  # btcusdt
+        symbols = []
+        for s in data["symbols"]:
+            if (
+                s["quoteAsset"] == "USDT" and
+                s["status"] == "TRADING" and
+                s["isSpotTradingAllowed"]
+            ):
+                symbols.append(s["symbol"].lower())  # btcusdt
 
-    logger.info(f"Loaded {len(symbols)} symbols from DB.")
-    return symbols
+        logger.info(f"Loaded {len(symbols)} USDT pairs from Binance.")
+        return symbols
+
+    except Exception as e:
+        logger.error(f"Binance exchangeInfo error: {e}, falling back to DB.")
+        # Fallback: DB'den al
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT symbol FROM coins")
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        skip = {"USDT", "USDC", "BUSD", "DAI", "TUSD", "FDUSD"}
+        return [
+            f"{row[0].upper()}USDT".lower()
+            for row in rows
+            if row[0].upper() not in skip
+        ]
+
 
 
 # -----------------------
