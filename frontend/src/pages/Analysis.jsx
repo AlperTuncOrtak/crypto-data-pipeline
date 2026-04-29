@@ -172,7 +172,7 @@ function CustomTooltip({ active, payload, label }) {
 // MAIN PAGE
 // -----------------------
 export default function Analysis() {
-  const { data: allCoins } = useMarket(100)
+  const { data: allCoins } = useMarket(500)
   const [selected, setSelected] = useState([])
   const history = useMultiCoinHistory(selected)
   const performance = useMultiCoinPerformance(selected)

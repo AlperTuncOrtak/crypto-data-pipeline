@@ -1,27 +1,16 @@
-// ============================================================
-// pages/Dashboard.jsx
-// ============================================================
-// Ana ekran. Ust kisimda 3 kart: gainers / losers / volume.
-// Alt kisimda full market tablosu.
-// Coin ismine tiklayinca /coin/:slug detail sayfasina gider.
-// ============================================================
-
 import { useNavigate } from 'react-router-dom'
 import { useMarket, useGainers, useLosers, useVolume } from '../hooks/useMarket'
 import CoinListCard from '../components/market/CoinListCard'
-import { CardSkeleton, TableRowSkeleton } from '../components/ui/Skeleton'
+import { TableRowSkeleton } from '../components/ui/Skeleton'
 
 
-// -----------------------
-// FORMATTERS
-// -----------------------
 function formatLargeNumber(n) {
   const num = Number(n)
   if (isNaN(num)) return '—'
   if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`
-  if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`
-  if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`
-  if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`
+  if (num >= 1e9)  return `$${(num / 1e9).toFixed(2)}B`
+  if (num >= 1e6)  return `$${(num / 1e6).toFixed(2)}M`
+  if (num >= 1e3)  return `$${(num / 1e3).toFixed(2)}K`
   return `$${num.toFixed(2)}`
 }
 
@@ -33,24 +22,23 @@ function formatPrice(n) {
 }
 
 
-// -----------------------
-// MAIN PAGE
-// -----------------------
 export default function Dashboard() {
-  const market = useMarket(10)
+  const market  = useMarket(10)
   const gainers = useGainers(5)
-  const losers = useLosers(5)
-  const volume = useVolume(5)
+  const losers  = useLosers(5)
+  const volume  = useVolume(5)
   const navigate = useNavigate()
 
-
   return (
-    <div>
+    <div style={{ color: 'var(--text-primary)' }}>
+
       {/* HEADER */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-100">Dashboard</h1>
-        <p className="text-slate-400 mt-1">
-          Market overview — auto-refreshes every 30 seconds
+        <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          Dashboard
+        </h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
+          Live market data via Binance WebSocket
         </p>
       </div>
 
@@ -59,16 +47,15 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <CoinListCard
           title="Top Gainers (24h)"
-          accent="emerald"
+          accent="orange"
           data={gainers.data}
           isLoading={gainers.isLoading}
           isError={gainers.isError}
           renderValue={(coin) => {
             const pct = Number(coin.price_change_percentage_24h)
-            return <span className="text-emerald-400">+{pct.toFixed(2)}%</span>
+            return <span style={{ color: 'var(--positive)' }}>+{pct.toFixed(2)}%</span>
           }}
         />
-
         <CoinListCard
           title="Top Losers (24h)"
           accent="red"
@@ -77,77 +64,80 @@ export default function Dashboard() {
           isError={losers.isError}
           renderValue={(coin) => {
             const pct = Number(coin.price_change_percentage_24h)
-            return <span className="text-red-400">{pct.toFixed(2)}%</span>
+            return <span style={{ color: 'var(--negative)' }}>{pct.toFixed(2)}%</span>
           }}
         />
-
         <CoinListCard
           title="Highest Volume (24h)"
           accent="blue"
           data={volume.data}
           isLoading={volume.isLoading}
           isError={volume.isError}
-          renderValue={(coin) => formatLargeNumber(coin.total_volume)}
+          renderValue={(coin) => (
+            <span style={{ color: 'var(--text-secondary)' }}>
+              {formatLargeNumber(coin.total_volume)}
+            </span>
+          )}
         />
       </div>
 
 
-      {/* FULL MARKET TABLE */}
+      {/* TOP 10 TABLE */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-200 mb-4">
+        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
           Top 10 by Volume
         </h2>
 
-
         {market.isLoading && (
-          <div className="overflow-x-auto rounded-lg border border-slate-700">
-            <table className="w-full">
-              <tbody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <TableRowSkeleton key={i} cols={5} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <table className="w-full">
+            <tbody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <TableRowSkeleton key={i} cols={5} />
+              ))}
+            </tbody>
+          </table>
         )}
 
-
         {market.isError && (
-          <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400">
-            <p className="font-semibold">Failed to load market data</p>
-            <p className="text-sm mt-1 opacity-80">{market.error.message}</p>
+          <div className="p-4 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--negative)' }}>
+            Failed to load market data
           </div>
         )}
 
         {market.data && market.data.length > 0 && (
-          <div className="overflow-x-auto rounded-lg border border-slate-700">
+          <div className="overflow-x-auto rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
             <table className="w-full">
-              <thead className="bg-slate-800">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Symbol</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Name</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-slate-300">Price</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-slate-300">24h Change</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-slate-300">Market Cap</th>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  {['Symbol', 'Name', 'Price', '24h Change', 'Volume'].map((h, i) => (
+                    <th
+                      key={h}
+                      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider ${i >= 2 ? 'text-right' : 'text-left'}`}
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {market.data.map((coin) => {
                   const change = Number(coin.price_change_percentage_24h)
-                  const changeColor = change >= 0 ? 'text-emerald-400' : 'text-red-400'
+                  const changeColor = change >= 0 ? 'var(--positive)' : 'var(--negative)'
 
                   return (
                     <tr
                       key={coin.symbol}
                       onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                      className="border-t border-slate-700 hover:bg-slate-800/50 transition-colors cursor-pointer"
+                      className="transition-colors cursor-pointer"
+                      style={{ borderTop: '1px solid var(--border-soft)' }}
+                      onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'}
+                      onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      {/* SYMBOL */}
-                      <td className="px-4 py-3 font-mono font-semibold text-slate-300">
+                      <td className="px-4 py-3 font-mono font-bold text-sm" style={{ color: 'var(--accent)' }}>
                         {coin.symbol?.toUpperCase()}
                       </td>
 
-                      {/* NAME + LOGO */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           {coin.image_url ? (
@@ -158,34 +148,29 @@ export default function Dashboard() {
                               onError={(e) => { e.target.style.display = 'none' }}
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-slate-700 shrink-0 flex items-center justify-center">
-                              <span className="text-[10px] text-slate-400 font-mono">
-                                {coin.symbol?.slice(0, 1)}
-                              </span>
+                            <div
+                              className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-mono"
+                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }}
+                            >
+                              {coin.symbol?.slice(0, 1)}
                             </div>
                           )}
-                          <span
-                            className="text-slate-300 hover:text-emerald-400 transition-colors cursor-pointer"
-                            onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                          >
+                          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                             {coin.name}
                           </span>
                         </div>
                       </td>
 
-                      {/* PRICE */}
-                      <td className="px-4 py-3 text-right font-mono">
+                      <td className="px-4 py-3 text-right font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
                         {formatPrice(coin.current_price)}
                       </td>
 
-                      {/* 24H CHANGE */}
-                      <td className={`px-4 py-3 text-right font-mono ${changeColor}`}>
+                      <td className="px-4 py-3 text-right font-mono text-sm font-semibold" style={{ color: changeColor }}>
                         {change >= 0 ? '+' : ''}{change.toFixed(2)}%
                       </td>
 
-                      {/* MARKET CAP */}
-                      <td className="px-4 py-3 text-right font-mono text-slate-400">
-                        {formatLargeNumber(coin.market_cap)}
+                      <td className="px-4 py-3 text-right font-mono text-sm" style={{ color: 'var(--text-muted)' }}>
+                        {formatLargeNumber(coin.total_volume)}
                       </td>
                     </tr>
                   )

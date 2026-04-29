@@ -12,7 +12,7 @@ r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 QUOTE_ASSET = "USDT"
 
 
-def get_all_tickers(limit=100):
+def get_all_tickers(limit=500):
     """
     Redis'teki tum ticker'lari cek, market cap yoksa volume'a gore sirala.
     """

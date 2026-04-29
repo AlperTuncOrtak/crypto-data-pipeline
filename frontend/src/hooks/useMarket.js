@@ -42,7 +42,7 @@ export function useMarket(limit = 20) {
 
     // 30 saniyede bir otomatik yenile (Streamlit'teki auto-refresh
     // davranisinin karsiligi)
-    refetchInterval: 30 * 1000,
+    refetchInterval: 5 * 1000,
   })
 }
 async function fetchGainers(limit) {
@@ -56,7 +56,7 @@ export function useGainers(limit = 5) {
   return useQuery({
     queryKey: ['gainers', limit],
     queryFn: () => fetchGainers(limit),
-    refetchInterval: 30 * 1000,
+    refetchInterval: 5 * 1000,
   })
 }
 
@@ -72,7 +72,7 @@ export function useLosers(limit = 5) {
   return useQuery({
     queryKey: ['losers', limit],
     queryFn: () => fetchLosers(limit),
-    refetchInterval: 30 * 1000,
+    refetchInterval: 5 * 1000,
   })
 }
 
@@ -88,6 +88,6 @@ export function useVolume(limit = 5) {
   return useQuery({
     queryKey: ['volume', limit],
     queryFn: () => fetchVolume(limit),
-    refetchInterval: 30 * 1000,
+    refetchInterval: 5 * 1000,
   })
 }
