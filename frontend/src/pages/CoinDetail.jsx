@@ -1,15 +1,11 @@
-// ============================================================
-// pages/CoinDetail.jsx
-// ============================================================
-
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
     LineChart, Line, XAxis, YAxis, Tooltip,
-    CartesianGrid, ResponsiveContainer,
+    CartesianGrid, ResponsiveContainer, Area, AreaChart,
 } from 'recharts'
 import { useCoinDetail, useCoinHistory, useCoinStats } from '../hooks/useCoin'
-
+import { ArrowLeft } from 'lucide-react'
 
 const RANGES = [
     { label: '1H', value: '1h' },
@@ -19,65 +15,16 @@ const RANGES = [
     { label: 'ALL', value: 'all' },
 ]
 
-
 function formatPrice(n) {
     const num = Number(n)
     if (isNaN(num) || n === null) return '—'
-    if (num >= 1) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-    return `$${num.toFixed(6)}`
+    if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+    if (num >= 1) return `$${num.toFixed(2)}`
+    if (num >= 0.01) return `$${num.toFixed(4)}`
+    if (num >= 0.0001) return `$${num.toFixed(6)}`
+    if (num >= 0.000001) return `$${num.toFixed(8)}`
+    return `<$0.000001`
 }
-
-// Iki fiyati karakter karakter karsilastir, degisen kismi renklendir
-function AnimatedPrice({ current, prev, flash }) {
-    const currentStr = formatPrice(current)
-    const prevStr = prev ? formatPrice(prev) : currentStr
-
-    const digitsOnly = (s) => s.replace(/[^0-9]/g, '')
-    const currentDigits = digitsOnly(currentStr)
-    const prevDigits = digitsOnly(prevStr)
-
-    const maxDigits = Math.max(currentDigits.length, prevDigits.length)
-    const paddedCurrent = currentDigits.padStart(maxDigits, '0')
-    const paddedPrev = prevDigits.padStart(maxDigits, '0')
-
-    // Soldan ilk farkli rakam pozisyonu (0-indexed, paddedCurrent'a gore)
-    let firstDiffDigit = maxDigits // hic fark yoksa hicbiri yanmasin
-    for (let i = 0; i < maxDigits; i++) {
-        if (paddedCurrent[i] !== paddedPrev[i]) {
-            firstDiffDigit = i
-            break
-        }
-    }
-
-    const color = flash === 'up' ? 'text-emerald-400' : 'text-red-400'
-
-    // Her karakterin kacinci rakam oldugunu onceden hesapla
-    let runningDigitIdx = maxDigits - currentDigits.length  // offset
-    const charMeta = currentStr.split('').map((char) => {
-        const isDigit = /[0-9]/.test(char)
-        const digitIdx = isDigit ? runningDigitIdx : runningDigitIdx - 1
-        if (isDigit) runningDigitIdx++
-        return { char, isDigit, digitIdx }
-    })
-
-    return (
-        <span>
-            {charMeta.map(({ char, digitIdx }, i) => {
-                const changed = flash && digitIdx >= firstDiffDigit
-                return (
-                    <span
-                        key={i}
-                        className={`transition-colors duration-500 ${changed ? `${color} animate-pulse` : 'text-slate-100'}`}
-                    >
-                        {char}
-                    </span>
-                )
-            })}
-        </span>
-    )
-}
-
-
 
 function formatLargeNumber(n) {
     const num = Number(n)
@@ -106,35 +53,87 @@ function formatTooltipTime(iso) {
     return new Date(iso).toLocaleString()
 }
 
-
-function StatCard({ label, value, accent = 'slate' }) {
-    const accentColors = {
-        slate: 'border-slate-700',
-        emerald: 'border-emerald-500/30',
-        red: 'border-red-500/30',
-        blue: 'border-blue-500/30',
+// Digit-level animasyonlu fiyat
+function AnimatedPrice({ current, prev, flash }) {
+    const currentStr = formatPrice(current)
+    const prevStr = prev ? formatPrice(prev) : currentStr
+    const digitsOnly = (s) => s.replace(/[^0-9]/g, '')
+    const currentDigits = digitsOnly(currentStr)
+    const prevDigits = digitsOnly(prevStr)
+    const maxDigits = Math.max(currentDigits.length, prevDigits.length)
+    const paddedCurrent = currentDigits.padStart(maxDigits, '0')
+    const paddedPrev = prevDigits.padStart(maxDigits, '0')
+    let firstDiffDigit = maxDigits
+    for (let i = 0; i < maxDigits; i++) {
+        if (paddedCurrent[i] !== paddedPrev[i]) { firstDiffDigit = i; break }
     }
+    const color = flash === 'up' ? 'var(--positive)' : 'var(--negative)'
+    let runningDigitIdx = maxDigits - currentDigits.length
+    const charMeta = currentStr.split('').map((char) => {
+        const isDigit = /[0-9]/.test(char)
+        const digitIdx = isDigit ? runningDigitIdx : runningDigitIdx - 1
+        if (isDigit) runningDigitIdx++
+        return { char, isDigit, digitIdx }
+    })
     return (
-        <div className={`bg-slate-800 border ${accentColors[accent]} rounded-lg p-4`}>
-            <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">{label}</div>
-            <div className="text-lg font-mono font-semibold text-slate-100">{value}</div>
+        <span>
+            {charMeta.map(({ char, digitIdx }, i) => {
+                const changed = flash && digitIdx >= firstDiffDigit
+                return (
+                    <span
+                        key={i}
+                        style={{
+                            color: changed ? color : 'var(--text-primary)',
+                            transition: 'color 0.5s ease',
+                        }}
+                    >
+                        {char}
+                    </span>
+                )
+            })}
+        </span>
+    )
+}
+
+function StatCard({ label, value, sub }) {
+    return (
+        <div
+            className="rounded-xl"
+            style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                padding: '16px 20px',
+            }}
+        >
+            <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 6 }}>
+                {label}
+            </div>
+            <div className="text-lg font-mono font-bold" style={{ color: 'var(--text-primary)' }}>
+                {value}
+            </div>
+            {sub && <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{sub}</div>}
         </div>
     )
 }
 
-
 function ChartTooltip({ active, payload, label }) {
     if (!active || !payload || payload.length === 0) return null
     return (
-        <div className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm shadow-lg">
-            <div className="text-slate-400 text-xs mb-1">{formatTooltipTime(label)}</div>
-            <div className="font-mono font-semibold text-slate-100">
+        <div
+            className="rounded-xl text-sm shadow-xl"
+            style={{
+                backgroundColor: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                padding: '10px 14px',
+            }}
+        >
+            <div className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{formatTooltipTime(label)}</div>
+            <div className="font-mono font-bold" style={{ color: 'var(--accent)' }}>
                 {formatPrice(payload[0]?.value)}
             </div>
         </div>
     )
 }
-
 
 export default function CoinDetail() {
     const { slug } = useParams()
@@ -149,14 +148,11 @@ export default function CoinDetail() {
     const [priceFlash, setPriceFlash] = useState(null)
     const [prevPrice, setPrevPrice] = useState(null)
 
-
     useEffect(() => {
         if (!coin?.current_price) return
         const current = coin.current_price
         const prev = prevPriceRef.current
         if (prev !== null && current !== prev) {
-            console.log('prev:', prev, 'current:', current)
-            console.log('prevStr:', formatPrice(prev), 'currentStr:', formatPrice(current))
             setPrevPrice(prev)
             setPriceFlash(current > prev ? 'up' : 'down')
             setTimeout(() => setPriceFlash(null), 800)
@@ -164,18 +160,24 @@ export default function CoinDetail() {
         prevPriceRef.current = current
     }, [coin?.current_price])
 
-
-
     const chartData = history || []
     const change = Number(coin?.price_change_percentage_24h)
-    const changeColor = change >= 0 ? 'text-emerald-400' : 'text-red-400'
-    const chartStroke = change >= 0 ? '#34d399' : '#f87171'
+    const isPositive = change >= 0
+
+    // Chart rengi: periyot başı/sonu fiyat karşılaştırması
+    const chartTrend = (() => {
+        if (!chartData || chartData.length < 2) return isPositive
+        const first = Number(chartData[0]?.price)
+        const last = Number(chartData[chartData.length - 1]?.price)
+        return last >= first
+    })()
+    const chartStroke = chartTrend ? 'var(--positive)' : 'var(--negative)'
 
 
     if (coinLoading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-slate-400">Loading coin data...</div>
+            <div className="flex items-center justify-center h-64" style={{ color: 'var(--text-muted)' }}>
+                Loading...
             </div>
         )
     }
@@ -184,145 +186,157 @@ export default function CoinDetail() {
         return (
             <div className="flex flex-col items-center justify-center h-64 gap-4">
                 <div className="text-5xl">🔍</div>
-                <div className="text-slate-300 text-xl font-semibold">Coin not found</div>
-                <div className="text-slate-500 text-sm">"{slug}" does not exist in the database.</div>
+                <div className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Coin not found</div>
+                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>"{slug}" bulunamadı.</div>
                 <button
                     onClick={() => navigate('/market')}
-                    className="mt-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm hover:bg-emerald-500/20 transition-colors"
+                    className="px-4 py-2 rounded-lg text-sm transition-all"
+                    style={{
+                        backgroundColor: 'rgba(245,166,35,0.1)',
+                        border: '1px solid rgba(245,166,35,0.3)',
+                        color: 'var(--accent)',
+                    }}
                 >
-                    ← Back to Market
+                    ← Market'e Dön
                 </button>
             </div>
         )
     }
 
-
     return (
-        <div>
+        <div style={{ color: 'var(--text-primary)' }}>
+
             {/* BACK */}
             <button
                 onClick={() => navigate(-1)}
-                className="text-slate-400 hover:text-slate-200 text-sm mb-6 flex items-center gap-1 transition-colors"
+                className="flex items-center gap-1.5 text-sm transition-all mb-6"
+                style={{ color: 'var(--text-muted)' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
             >
-                ← Back
+                <ArrowLeft size={14} /> Back
             </button>
 
             {/* HERO */}
-            <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
+            <div className="flex items-start justify-between flex-wrap gap-4" style={{ marginBottom: 24 }}>
                 <div className="flex items-center gap-4">
                     {coin.image_url ? (
-                        <img
-                            src={coin.image_url}
-                            alt={coin.name}
-                            className="w-16 h-16 rounded-full shrink-0"
-                            onError={(e) => { e.target.style.display = 'none' }}
-                        />
+                        <img src={coin.image_url} alt={coin.name} className="w-14 h-14 rounded-full shrink-0" onError={(e) => { e.target.style.display = 'none' }} />
                     ) : (
-                        <div className="w-16 h-16 rounded-full bg-slate-700 shrink-0 flex items-center justify-center">
-                            <span className="text-xl text-slate-400 font-mono font-bold">
-                                {coin.symbol?.slice(0, 2)}
-                            </span>
+                        <div className="w-14 h-14 rounded-full shrink-0 flex items-center justify-center text-xl font-bold font-mono" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--accent)' }}>
+                            {coin.symbol?.slice(0, 2)}
                         </div>
                     )}
                     <div>
-                        <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-4xl font-bold text-slate-100">{coin.name}</h1>
-                            <span className="text-slate-500 font-mono text-lg">
-                                {coin.symbol?.toUpperCase()}
-                            </span>
-                        </div>
+                        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{coin.name}</h1>
+                        <span className="text-sm font-mono" style={{ color: 'var(--text-muted)' }}>{coin.symbol?.toUpperCase()}</span>
                     </div>
                 </div>
 
                 <div className="text-right">
                     <div className="text-4xl font-mono font-bold">
-                        <AnimatedPrice
-                            current={coin.current_price}
-                            prev={prevPrice}
-                            flash={priceFlash}
-                        />
+                        <AnimatedPrice current={coin.current_price} prev={prevPrice} flash={priceFlash} />
                     </div>
-                    <div className={`text-xl font-mono mt-1 ${changeColor}`}>
-                        {formatPct(change)} <span className="text-sm text-slate-500">24h</span>
+                    <div className="text-lg font-mono mt-1" style={{ color: isPositive ? 'var(--positive)' : 'var(--negative)' }}>
+                        {formatPct(change)} <span className="text-sm" style={{ color: 'var(--text-muted)' }}>24h</span>
                     </div>
                 </div>
             </div>
 
             {/* STAT KARTLARI */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <StatCard label="Market Cap" value={formatLargeNumber(coin.market_cap)} accent="slate" />
-                <StatCard label="Volume (24h)" value={formatLargeNumber(coin.total_volume)} accent="blue" />
-                <StatCard label="24h High" value={formatPrice(stats?.high_24h)} accent="emerald" />
-                <StatCard label="24h Low" value={formatPrice(stats?.low_24h)} accent="red" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginBottom: 24 }}>
+                <StatCard label="Market Cap" value={formatLargeNumber(coin.market_cap)} />
+                <StatCard label="Volume (24h)" value={formatLargeNumber(coin.total_volume)} />
+                <StatCard label="24h High" value={formatPrice(stats?.high_24h)} />
+                <StatCard label="24h Low" value={formatPrice(stats?.low_24h)} />
             </div>
 
             {/* CHART */}
-            <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-                    <h2 className="text-lg font-semibold text-slate-200">Price Chart</h2>
-                    <div className="flex gap-1">
+            <div
+                className="rounded-xl"
+                style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    padding: '24px',
+                }}
+            >
+                <div className="flex items-center justify-between flex-wrap gap-3" style={{ marginBottom: 24 }}>
+                    <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+                        Price Chart
+                    </h2>
+                    <div className="flex gap-1" style={{ backgroundColor: 'var(--bg-elevated)', borderRadius: 8, padding: 4 }}>
                         {RANGES.map((r) => (
                             <button
                                 key={r.value}
                                 onClick={() => setRange(r.value)}
-                                className={`px-3 py-1 text-xs font-semibold rounded transition-colors ${range === r.value
-                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                                    : 'text-slate-400 hover:text-slate-200 border border-transparent hover:border-slate-700'
-                                    }`}
+                                className="px-3 py-1 text-xs font-semibold rounded-lg transition-all"
+                                style={{
+                                    backgroundColor: range === r.value ? 'var(--bg-surface)' : 'transparent',
+                                    border: range === r.value ? '1px solid var(--border)' : '1px solid transparent',
+                                    color: range === r.value ? 'var(--accent)' : 'var(--text-muted)',
+                                    cursor: 'pointer',
+                                    boxShadow: range === r.value ? '0 1px 4px rgba(0,0,0,0.3)' : 'none',
+                                }}
                             >
                                 {r.label}
                             </button>
                         ))}
                     </div>
+
                 </div>
 
                 {historyLoading && (
-                    <div className="flex items-center justify-center h-64 text-slate-400">
+                    <div className="flex items-center justify-center h-64" style={{ color: 'var(--text-muted)' }}>
                         Loading chart...
                     </div>
                 )}
 
                 {!historyLoading && chartData.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-64 gap-2">
-                        <div className="text-slate-500">No data for this time range.</div>
-                        <div className="text-slate-600 text-xs">
-                            {stats?.data_points ?? 0} data points in last 24h.
-                        </div>
+                        <div style={{ color: 'var(--text-muted)' }}>Bu zaman aralığında veri yok.</div>
                     </div>
                 )}
 
                 {!historyLoading && chartData.length > 0 && (
                     <ResponsiveContainer width="100%" height={320}>
-                        <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                        <AreaChart data={chartData}>
+                            <defs>
+                                <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={chartStroke} stopOpacity={0.2} />
+                                    <stop offset="100%" stopColor={chartStroke} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                             <XAxis
                                 dataKey="time"
                                 tickFormatter={formatChartTime}
-                                stroke="#334155"
-                                tick={{ fill: '#64748b', fontSize: 11 }}
+                                stroke="var(--border)"
+                                tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
                             />
                             <YAxis
                                 tickFormatter={formatPrice}
-                                stroke="#334155"
-                                tick={{ fill: '#64748b', fontSize: 11 }}
-                                width={80}
+                                stroke="var(--border)"
+                                tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+                                width={90}
                                 domain={['auto', 'auto']}
                             />
                             <Tooltip content={<ChartTooltip />} />
-                            <Line
+                            <Area
                                 type="monotone"
                                 dataKey="price"
                                 stroke={chartStroke}
                                 strokeWidth={2}
+                                fill="url(#priceGradient)"
                                 dot={false}
-                                activeDot={{ r: 4, fill: chartStroke }}
+                                activeDot={{ r: 5, fill: '#f5a623', stroke: 'var(--bg-surface)', strokeWidth: 2 }}
+
                             />
-                        </LineChart>
+                        </AreaChart>
                     </ResponsiveContainer>
                 )}
 
                 {stats && (
-                    <div className="mt-3 text-xs text-slate-600 text-right">
+                    <div className="text-xs text-right mt-3" style={{ color: 'var(--text-muted)' }}>
                         {stats.data_points} data points in last 24h
                     </div>
                 )}
