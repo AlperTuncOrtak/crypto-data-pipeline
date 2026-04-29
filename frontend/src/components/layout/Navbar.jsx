@@ -3,9 +3,12 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   Search, BarChart2, Bell, LineChart, LayoutDashboard, X,
   ChevronDown, TrendingUp, TrendingDown, Activity, Layers,
-  History, PlusCircle, Combine, GitCompare, Network,
+  History, PlusCircle, Combine, GitCompare, Network, LogIn, LogOut, User,
 } from 'lucide-react'
 import { useMarket } from '../../hooks/useMarket'
+import AuthModal from '../ui/AuthModal'
+import { supabase } from '../../lib/supabase'
+
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', Icon: LayoutDashboard, dropdown: null },
@@ -206,6 +209,65 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState([])
   const [searchOpen, setSearchOpen] = useState(false)
 
+  // --- Wulfa Auth State ---
+  const [user, setUser] = useState(null)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const profileRef = useRef(null)
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    function handleClick(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function handleLogin() {
+    setAuthModalOpen(true)
+  }
+
+  // Google OAuth'tan döndükten sonra session'ı otomatik yakala
+  useEffect(() => {
+    // Mevcut oturumu kontrol et (sayfa yenilenince de çalışır)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const u = session.user
+        setUser({
+          name: u.user_metadata?.full_name || u.email,
+          email: u.email,
+          avatar: u.user_metadata?.avatar_url || null,
+        })
+      }
+    })
+
+    // Giriş/çıkış değişikliklerini dinle
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const u = session.user
+        setUser({
+          name: u.user_metadata?.full_name || u.email,
+          email: u.email,
+          avatar: u.user_metadata?.avatar_url || null,
+        })
+        setAuthModalOpen(false)
+      } else {
+        setUser(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    setUser(null)
+    setProfileOpen(false)
+  }
+
   const totalVolume = marketData?.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0
   const btcDom = marketData ? (() => {
     const btc = marketData.find(c => c.symbol === 'BTC')
@@ -229,6 +291,7 @@ export default function Navbar() {
   }, [search, marketData])
 
   return (
+    <>
     <header style={{ backgroundColor: '#111111', borderBottom: '1px solid #222' }}>
 
       <div style={{ borderBottom: '1px solid #1a1a1a' }}>
@@ -293,7 +356,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div className="ml-auto relative">
+        <div className="ml-auto flex items-center gap-3">
           <div
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all"
             style={{
@@ -363,8 +426,95 @@ export default function Navbar() {
               ))}
             </div>
           )}
+
+          {/* --- Wulfa Login Button --- */}
+          {user ? (
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(p => !p)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all"
+                style={{
+                  backgroundColor: profileOpen ? 'rgba(245,166,35,0.12)' : '#1a1a1a',
+                  border: `1px solid ${profileOpen ? 'rgba(245,166,35,0.4)' : '#2a2a2a'}`,
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer',
+                }}
+              >
+                {user.avatar ? (
+                  <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full" />
+                ) : (
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                    style={{ background: 'linear-gradient(135deg, #f5a623, #e8941a)', color: '#111' }}
+                  >
+                    {user.name?.[0]?.toUpperCase()}
+                  </div>
+                )}
+                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                  {user.name}
+                </span>
+                <ChevronDown size={11} style={{ color: '#555', transform: profileOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+              </button>
+
+              {profileOpen && (
+                <div
+                  className="absolute top-full mt-2 right-0 rounded-xl overflow-hidden z-50"
+                  style={{
+                    backgroundColor: 'rgba(20,20,20,0.97)',
+                    border: '1px solid #2a2a2a',
+                    boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+                    minWidth: 200,
+                    backdropFilter: 'blur(12px)',
+                  }}
+                >
+                  <div style={{ height: 2, background: 'linear-gradient(90deg, #f5a623, transparent)' }} />
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid #1e1e1e' }}>
+                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{user.name}</div>
+                    <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{user.email}</div>
+                  </div>
+                  <div style={{ padding: 6 }}>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all"
+                      style={{ color: '#ef4444', cursor: 'pointer', backgroundColor: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
+                      onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.08)'}
+                      onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <LogOut size={14} />
+                      Çıkış Yap
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, #f5a623, #e8941a)',
+                color: '#111',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 0 16px rgba(245,166,35,0.25)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(245,166,35,0.45)'}
+              onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 16px rgba(245,166,35,0.25)'}
+            >
+              <LogIn size={14} />
+              Giriş Yap
+            </button>
+          )}
+
         </div>
       </div>
     </header>
+
+    <AuthModal
+      isOpen={authModalOpen}
+      onClose={() => setAuthModalOpen(false)}
+      onLogin={(userData) => setUser(userData)}
+    />
+    </>
   )
-}
+}
