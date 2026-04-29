@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { X, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
-// Google SVG Icon
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
@@ -14,7 +13,6 @@ function GoogleIcon() {
   )
 }
 
-// Binance SVG Icon
 function BinanceIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
@@ -25,7 +23,7 @@ function BinanceIcon() {
 }
 
 export default function AuthModal({ isOpen, onClose, onLogin }) {
-  const [mode, setMode] = useState('login') // 'login' | 'signup'
+  const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
@@ -33,14 +31,12 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // ESC tuşuyla kapat
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') onClose() }
     if (isOpen) document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [isOpen, onClose])
 
-  // Scroll kilitle
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
@@ -60,12 +56,6 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
     setLoading(false)
   }
 
-  async function handleBinanceLogin() {
-    // Binance henüz Supabase'de desteklenmiyor — demo mod
-    onLogin({ name: 'Binance User', email: 'user@binance.com', avatar: null })
-    onClose()
-  }
-
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
@@ -82,7 +72,7 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
         })
         onClose()
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email, password,
           options: { data: { full_name: name } },
         })
@@ -103,13 +93,14 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 999,
-          backgroundColor: 'rgba(0,0,0,0.75)',
-          backdropFilter: 'blur(6px)',
-          animation: 'fadeIn 0.18s ease',
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          animation: 'fadeIn 0.2s ease',
         }}
       />
 
-      {/* Modal */}
+      {/* Modal Container */}
       <div
         style={{
           position: 'fixed',
@@ -117,243 +108,291 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
           transform: 'translate(-50%, -50%)',
           zIndex: 1000,
           width: '100%',
-          maxWidth: 420,
-          animation: 'slideUp 0.22s cubic-bezier(0.34,1.56,0.64,1)',
+          maxWidth: 440,
+          padding: '0 16px',
+          animation: 'slideUp 0.28s cubic-bezier(0.34, 1.26, 0.64, 1)',
         }}
       >
-        <div
-          style={{
-            backgroundColor: '#111',
-            border: '1px solid #222',
-            borderRadius: 20,
+        {/* Gradient border wrapper */}
+        <div style={{
+          position: 'relative',
+          borderRadius: 28,
+        }}>
+          {/* Animated gradient border */}
+          <div style={{
+            position: 'absolute',
+            inset: -1,
+            borderRadius: 29,
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.01) 70%, rgba(255,255,255,0.04) 100%)',
+            zIndex: -1,
+          }} />
+
+          {/* Modal Body */}
+          <div style={{
+            background: 'rgba(8, 8, 8, 0.96)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderRadius: 28,
             overflow: 'hidden',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(245,166,35,0.08)',
-          }}
-        >
-          {/* Top accent line */}
-          <div style={{ height: 2, background: 'linear-gradient(90deg, #f5a623, #e8941a, transparent)' }} />
+            boxShadow: '0 24px 80px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.4)',
+          }}>
+            {/* Top neon accent */}
+            <div style={{
+              height: 1,
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), rgba(255,255,255,0.05), transparent)',
+            }} />
 
-          <div style={{ padding: '28px 28px 24px' }}>
-            {/* Header */}
-            <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
-              <div>
-                <div
-                  className="text-lg font-bold"
-                  style={{ color: '#f0f0f0', letterSpacing: '-0.02em' }}
-                >
-                  {mode === 'login' ? 'Hoş Geldin 👋' : 'Hesap Oluştur ✨'}
+            <div style={{ padding: '32px 32px 28px' }}>
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
+                <div>
+                  <div style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#fff',
+                    letterSpacing: '-0.03em',
+                    lineHeight: 1.2,
+                    marginBottom: 6,
+                  }}>
+                    {mode === 'login' ? 'Hoş Geldin 👋' : 'Hesap Oluştur ✨'}
+                  </div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
+                    {mode === 'login'
+                      ? 'CryptoAnalytics platformuna giriş yap'
+                      : 'Ücretsiz hesabını oluştur'}
+                  </div>
                 </div>
-                <div className="text-xs mt-0.5" style={{ color: '#555' }}>
-                  {mode === 'login'
-                    ? 'CryptoAnalytics platformuna giriş yap'
-                    : 'Ücretsiz hesabını oluştur'}
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                style={{
-                  background: 'none', border: '1px solid #2a2a2a',
-                  borderRadius: 8, padding: '6px', cursor: 'pointer',
-                  color: '#555', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#3a3a3a'; e.currentTarget.style.color = '#999' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.color = '#555' }}
-              >
-                <X size={14} />
-              </button>
-            </div>
-
-            {/* OAuth Buttons */}
-            <div className="flex flex-col gap-2.5" style={{ marginBottom: 20 }}>
-              <button
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                style={{
-                  width: '100%', padding: '11px 16px',
-                  background: loading ? '#111' : '#1a1a1a',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: 12, cursor: loading ? 'not-allowed' : 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                  color: loading ? '#444' : '#d0d0d0', fontSize: 14, fontWeight: 500,
-                  transition: 'all 0.15s', opacity: loading ? 0.6 : 1,
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#3a3a3a'; e.currentTarget.style.background = '#222' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.background = '#1a1a1a' }}
-              >
-                <GoogleIcon />
-                Google ile devam et
-              </button>
-
-              <button
-                disabled
-                onClick={handleBinanceLogin}
-                style={{
-                  width: '100%', padding: '11px 16px',
-                  background: '#111',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: 12, cursor: 'not-allowed',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                  color: '#666', fontSize: 14, fontWeight: 500,
-                  position: 'relative'
-                }}
-              >
-                <div style={{ opacity: 0.5, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <BinanceIcon />
-                  Binance ile devam et
-                </div>
-                <span style={{
-                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                  fontSize: 10, fontWeight: 800, padding: '3px 6px', borderRadius: 6,
-                  backgroundColor: 'rgba(243,186,47,0.15)', color: '#F3BA2F', letterSpacing: '0.05em'
-                }}>
-                  SOON
-                </span>
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
-              <div style={{ flex: 1, height: 1, backgroundColor: '#1e1e1e' }} />
-              <span style={{ fontSize: 11, color: '#444', letterSpacing: '0.08em' }}>VEYA</span>
-              <div style={{ flex: 1, height: 1, backgroundColor: '#1e1e1e' }} />
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              {mode === 'signup' && (
-                <div style={{ position: 'relative' }}>
-                  <User size={14} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#444' }} />
-                  <input
-                    type="text"
-                    placeholder="İsmin"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    style={{
-                      width: '100%', padding: '11px 14px 11px 38px',
-                      background: '#1a1a1a', border: '1px solid #2a2a2a',
-                      borderRadius: 12, color: '#d0d0d0', fontSize: 14,
-                      outline: 'none', boxSizing: 'border-box',
-                    }}
-                    onFocus={e => e.target.style.borderColor = 'rgba(245,166,35,0.4)'}
-                    onBlur={e => e.target.style.borderColor = '#2a2a2a'}
-                  />
-                </div>
-              )}
-
-              <div style={{ position: 'relative' }}>
-                <Mail size={14} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#444' }} />
-                <input
-                  type="email"
-                  placeholder="E-posta adresin"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  style={{
-                    width: '100%', padding: '11px 14px 11px 38px',
-                    background: '#1a1a1a', border: '1px solid #2a2a2a',
-                    borderRadius: 12, color: '#d0d0d0', fontSize: 14,
-                    outline: 'none', boxSizing: 'border-box',
-                  }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(245,166,35,0.4)'}
-                  onBlur={e => e.target.style.borderColor = '#2a2a2a'}
-                />
-              </div>
-
-              <div style={{ position: 'relative' }}>
-                <Lock size={14} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#444' }} />
-                <input
-                  type={showPass ? 'text' : 'password'}
-                  placeholder="Şifren"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  style={{
-                    width: '100%', padding: '11px 42px 11px 38px',
-                    background: '#1a1a1a', border: '1px solid #2a2a2a',
-                    borderRadius: 12, color: '#d0d0d0', fontSize: 14,
-                    outline: 'none', boxSizing: 'border-box',
-                  }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(245,166,35,0.4)'}
-                  onBlur={e => e.target.style.borderColor = '#2a2a2a'}
-                />
                 <button
-                  type="button"
-                  onClick={() => setShowPass(p => !p)}
+                  onClick={onClose}
                   style={{
-                    position: 'absolute', right: 12, top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: '#444', display: 'flex', padding: 2,
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 10,
+                    padding: '7px',
+                    cursor: 'pointer',
+                    color: 'rgba(255,255,255,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.15s',
+                    flexShrink: 0,
+                    marginTop: 2,
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.7)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.3)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
                   }}
                 >
-                  {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                  <X size={14} />
                 </button>
               </div>
 
-              {/* Error / Info Message */}
-              {error && (
-                <div style={{
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  fontSize: 13,
-                  backgroundColor: error.includes('gönderildi') ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                  border: `1px solid ${error.includes('gönderildi') ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                  color: error.includes('gönderildi') ? '#22c55e' : '#ef4444',
-                  lineHeight: 1.5,
-                }}>
-                  {error}
+              {/* OAuth Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+                {/* Google Button */}
+                <button
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  style={{
+                    width: '100%', padding: '13px 18px',
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.09)',
+                    borderRadius: 14,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                    color: 'rgba(255,255,255,0.75)',
+                    fontSize: 14, fontWeight: 500,
+                    transition: 'all 0.18s ease',
+                    opacity: loading ? 0.5 : 1,
+                    fontFamily: 'Inter, sans-serif',
+                    letterSpacing: '-0.01em',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.07)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.16)'
+                    e.currentTarget.style.color = '#fff'
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(255,255,255,0.03)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.75)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                >
+                  <GoogleIcon />
+                  Google ile devam et
+                </button>
+
+                {/* Binance Button — SOON */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    disabled
+                    style={{
+                      width: '100%', padding: '13px 18px',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.05)',
+                      borderRadius: 14,
+                      cursor: 'not-allowed',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                      color: 'rgba(255,255,255,0.28)',
+                      fontSize: 14, fontWeight: 500,
+                      fontFamily: 'Inter, sans-serif',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    <div style={{ opacity: 0.4, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <BinanceIcon />
+                      Binance ile devam et
+                    </div>
+                  </button>
+                  {/* SOON badge */}
+                  <span style={{
+                    position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                    fontSize: 9, fontWeight: 800, padding: '3px 7px', borderRadius: 6,
+                    background: 'linear-gradient(135deg, rgba(243,186,47,0.2), rgba(243,186,47,0.1))',
+                    border: '1px solid rgba(243,186,47,0.25)',
+                    color: '#F3BA2F', letterSpacing: '0.08em',
+                    boxShadow: '0 0 10px rgba(243,186,47,0.15)',
+                  }}>
+                    SOON
+                  </span>
                 </div>
-              )}
+              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%', padding: '12px',
-                  background: 'linear-gradient(135deg, #f5a623, #e8941a)',
-                  border: 'none', borderRadius: 12, cursor: 'pointer',
-                  color: '#111', fontSize: 14, fontWeight: 700,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  marginTop: 4,
-                  boxShadow: '0 4px 20px rgba(245,166,35,0.3)',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 28px rgba(245,166,35,0.5)'}
-                onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(245,166,35,0.3)'}
-              >
-                {mode === 'login' ? 'Giriş Yap' : 'Hesap Oluştur'}
-                <ArrowRight size={15} />
-              </button>
-            </form>
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em' }}>VEYA</span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+              </div>
 
-            {/* Switch mode */}
-            <div className="text-center" style={{ marginTop: 18 }}>
-              <span style={{ fontSize: 13, color: '#555' }}>
-                {mode === 'login' ? 'Hesabın yok mu? ' : 'Zaten üye misin? '}
-              </span>
-              <button
-                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#f5a623', fontSize: 13, fontWeight: 600, padding: 0,
-                }}
-              >
-                {mode === 'login' ? 'Kayıt Ol' : 'Giriş Yap'}
-              </button>
+              {/* Form */}
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {mode === 'signup' && (
+                  <div style={{ position: 'relative' }}>
+                    <User size={14} style={{ position: 'absolute', left: 15, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
+                    <input
+                      type="text"
+                      placeholder="İsmin"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      className="interfere-input"
+                      style={{ width: '100%', padding: '13px 15px 13px 40px' }}
+                    />
+                  </div>
+                )}
+
+                <div style={{ position: 'relative' }}>
+                  <Mail size={14} style={{ position: 'absolute', left: 15, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
+                  <input
+                    type="email"
+                    placeholder="E-posta adresin"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    className="interfere-input"
+                    style={{ width: '100%', padding: '13px 15px 13px 40px' }}
+                  />
+                </div>
+
+                <div style={{ position: 'relative' }}>
+                  <Lock size={14} style={{ position: 'absolute', left: 15, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    placeholder="Şifren"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                    className="interfere-input"
+                    style={{ width: '100%', padding: '13px 44px 13px 40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(p => !p)}
+                    style={{
+                      position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'rgba(255,255,255,0.25)', display: 'flex', padding: 2,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
+                  >
+                    {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+
+                {error && (
+                  <div style={{
+                    padding: '11px 15px',
+                    borderRadius: 12,
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                    backgroundColor: error.includes('gönderildi') ? 'rgba(0,208,132,0.07)' : 'rgba(255,69,96,0.07)',
+                    border: `1px solid ${error.includes('gönderildi') ? 'rgba(0,208,132,0.2)' : 'rgba(255,69,96,0.2)'}`,
+                    color: error.includes('gönderildi') ? '#00d084' : '#ff4560',
+                  }}>
+                    {error}
+                  </div>
+                )}
+
+                {/* Submit — Neon Gold Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-neon"
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    marginTop: 6,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    opacity: loading ? 0.7 : 1,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    fontSize: 14,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {loading ? (
+                    <span style={{ opacity: 0.7 }}>Yükleniyor...</span>
+                  ) : (
+                    <>
+                      {mode === 'login' ? 'Giriş Yap' : 'Hesap Oluştur'}
+                      <ArrowRight size={15} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Switch mode */}
+              <div style={{ textAlign: 'center', marginTop: 20 }}>
+                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>
+                  {mode === 'login' ? 'Hesabın yok mu? ' : 'Zaten üye misin? '}
+                </span>
+                <button
+                  onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError('') }}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: '#f5a623', fontSize: 13, fontWeight: 600, padding: 0,
+                    transition: 'color 0.15s',
+                    letterSpacing: '-0.01em',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#ffb94a'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#f5a623'}
+                >
+                  {mode === 'login' ? 'Kayıt Ol' : 'Giriş Yap'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translate(-50%, calc(-50% + 16px)) }
-          to   { opacity: 1; transform: translate(-50%, -50%) }
-        }
-        input::placeholder { color: #3a3a3a !important; }
-      `}</style>
     </>
   )
 }

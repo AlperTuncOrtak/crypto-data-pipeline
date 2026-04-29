@@ -32,11 +32,12 @@ function StatCard({ icon: Icon, label, value, sub, accent = false }) {
     <div
       className="rounded-xl flex items-center gap-4"
       style={{
-        backgroundColor: 'var(--bg-surface)',
-        border: hovered ? '1px solid rgba(245,166,35,0.5)' : '1px solid var(--border)',
+        background: hovered ? 'rgba(245,166,35,0.05)' : 'rgba(255,255,255,0.025)',
+        border: hovered ? '1px solid rgba(245,166,35,0.3)' : '1px solid rgba(255,255,255,0.06)',
         padding: '20px',
+        borderRadius: 24,
         transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-        boxShadow: hovered ? '0 8px 24px rgba(245,166,35,0.12)' : 'none',
+        boxShadow: hovered ? '0 8px 32px rgba(245,166,35,0.1), 0 0 0 1px rgba(245,166,35,0.1)' : 'none',
         transition: 'all 0.2s ease',
         cursor: 'default',
       }}
@@ -46,25 +47,26 @@ function StatCard({ icon: Icon, label, value, sub, accent = false }) {
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
         style={{
-          background: accent || hovered
-            ? 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))'
-            : 'var(--bg-elevated)',
-          color: accent || hovered ? 'var(--accent)' : 'var(--text-muted)',
-          border: accent || hovered ? '1px solid rgba(245,166,35,0.2)' : '1px solid var(--border)',
+          background: hovered || accent
+            ? 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.06))'
+            : 'rgba(255,255,255,0.04)',
+          color: hovered || accent ? 'var(--accent)' : 'rgba(255,255,255,0.3)',
+          border: hovered || accent ? '1px solid rgba(245,166,35,0.25)' : '1px solid rgba(255,255,255,0.06)',
           transition: 'all 0.2s ease',
+          boxShadow: hovered ? '0 0 16px rgba(245,166,35,0.2)' : 'none',
         }}
       >
         <Icon size={18} />
       </div>
       <div className="min-w-0">
-        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</div>
+        <div className="text-xs" style={{ color: 'rgba(255,255,255,0.28)', letterSpacing: '-0.01em' }}>{label}</div>
         <div
           className="text-base font-bold font-mono leading-tight mt-0.5"
-          style={{ color: hovered ? 'var(--accent)' : 'var(--text-primary)', transition: 'color 0.2s ease' }}
+          style={{ color: hovered ? 'var(--accent)' : 'var(--text-primary)', transition: 'color 0.2s ease', letterSpacing: '-0.02em' }}
         >
           {value}
         </div>
-        {sub && <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{sub}</div>}
+        {sub && <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.2)' }}>{sub}</div>}
       </div>
     </div>
   )
@@ -117,7 +119,7 @@ function FearGreedGauge({ coins }) {
   return (
     <div
       className="rounded-xl"
-      style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '20px' }}
+      style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', padding: '20px', borderRadius: 24 }}
     >
       <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
         <h3
@@ -188,7 +190,7 @@ function FearGreedGauge({ coins }) {
       {/* Up/Down */}
       <div
         className="flex items-center justify-between rounded-lg"
-        style={{ backgroundColor: 'var(--bg-elevated)', padding: '8px 12px' }}
+        style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', padding: '12px', borderRadius: 16 }}
       >
         <span className="text-xs font-mono" style={{ color: 'var(--positive)' }}>↑ {up} up</span>
         <div style={{ width: 1, height: 12, backgroundColor: 'var(--border)' }} />
@@ -253,9 +255,15 @@ export default function Dashboard() {
                       key={coin.symbol}
                       onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                       className="flex items-center gap-3 rounded-xl cursor-pointer transition-all"
-                      style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-soft)', padding: '12px' }}
-                      onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(245,166,35,0.3)'}
-                      onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-soft)'}
+                      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', padding: '12px' }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)';
+                      }}
                     >
                       {coin.image_url ? (
                         <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full shrink-0" />
@@ -307,8 +315,8 @@ export default function Dashboard() {
                         key={coin.symbol}
                         onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                         className="transition-colors cursor-pointer"
-                        style={{ borderTop: '1px solid var(--border-soft)' }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(245,166,35,0.04)'}
+                        style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'}
                         onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         <td style={{ padding: '10px 12px 10px 0' }}>

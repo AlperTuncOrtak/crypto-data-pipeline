@@ -5,9 +5,13 @@ uvicorn[standard]
 # Database
 pymysql
 
-# Data ingestion (eski pipeline icin, Faz 2'de degisecek)
+# Data ingestion
 requests
 pandas
 
 # Environment
 python-dotenv
+
+# Faz 2 WebSocket
+redis
+websocket-client

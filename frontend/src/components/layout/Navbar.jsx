@@ -65,22 +65,26 @@ function NavItem({ item, isActive }) {
         >
             <div
                 onClick={() => navigate(item.to)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-150 cursor-pointer select-none"
+                className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none"
                 style={{
-                    color: isActive ? 'var(--accent)' : 'var(--text-muted)',
+                    color: isActive ? 'var(--accent)' : 'rgba(255,255,255,0.38)',
                     fontWeight: isActive ? '600' : '400',
-                    backgroundColor: isActive || open ? 'rgba(245,166,35,0.08)' : 'transparent',
+                    background: isActive ? 'rgba(245,166,35,0.08)' : 'transparent',
+                    borderRadius: 10,
+                    transition: 'all 0.15s ease',
+                    letterSpacing: '-0.01em',
+                    boxShadow: isActive ? '0 0 16px rgba(245,166,35,0.12)' : 'none',
                 }}
                 onMouseEnter={e => {
-                    if (!isActive && !item.dropdown) {
-                        e.currentTarget.style.color = 'var(--text-secondary)'
-                        e.currentTarget.style.backgroundColor = '#1a1a1a'
+                    if (!isActive) {
+                        e.currentTarget.style.color = 'rgba(255,255,255,0.75)'
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
                     }
                 }}
                 onMouseLeave={e => {
-                    if (!isActive && !open) {
-                        e.currentTarget.style.color = 'var(--text-muted)'
-                        e.currentTarget.style.backgroundColor = 'transparent'
+                    if (!isActive) {
+                        e.currentTarget.style.color = 'rgba(255,255,255,0.38)'
+                        e.currentTarget.style.background = 'transparent'
                     }
                 }}
             >
@@ -92,6 +96,7 @@ function NavItem({ item, isActive }) {
                         style={{
                             transform: open ? 'rotate(180deg)' : 'rotate(0)',
                             transition: 'transform 0.2s ease',
+                            opacity: 0.5,
                         }}
                     />
                 )}
@@ -99,22 +104,32 @@ function NavItem({ item, isActive }) {
 
             {item.dropdown && (
                 <div
-                    className="absolute top-full left-0 rounded-xl overflow-hidden z-50"
+                    className="absolute top-full left-0 z-50"
                     style={{
-                        backgroundColor: 'rgba(20,20,20,0.95)',
-                        backdropFilter: 'blur(12px)',
-                        WebkitBackdropFilter: 'blur(12px)',
-                        border: '1px solid #2a2a2a',
-                        boxShadow: '0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,166,35,0.05)',
+                        marginTop: 10,
                         minWidth: 320,
-                        marginTop: 8,
                         opacity: open ? 1 : 0,
-                        transform: open ? 'translateY(0) scale(1)' : 'translateY(-8px) scale(0.96)',
+                        transform: open ? 'translateY(0) scale(1)' : 'translateY(-10px) scale(0.97)',
                         pointerEvents: open ? 'auto' : 'none',
-                        transition: 'opacity 0.18s ease, transform 0.18s cubic-bezier(0.4, 0, 0.2, 1)',
+                        transition: 'opacity 0.18s ease, transform 0.2s cubic-bezier(0.34,1.2,0.64,1)',
                         transformOrigin: 'top left',
                     }}
                 >
+                {/* gradient border wrapper */}
+                <div style={{ position: 'relative', borderRadius: 20 }}>
+                  <div style={{
+                    position: 'absolute', inset: -1, borderRadius: 21,
+                    background: 'linear-gradient(135deg, rgba(245,166,35,0.5), rgba(255,255,255,0.06) 60%, rgba(245,166,35,0.1))',
+                    zIndex: -1,
+                  }} />
+                <div style={{
+                    background: 'rgba(6,6,6,0.97)',
+                    backdropFilter: 'blur(24px)',
+                    WebkitBackdropFilter: 'blur(24px)',
+                    borderRadius: 20,
+                    overflow: 'hidden',
+                    boxShadow: '0 24px 60px rgba(0,0,0,0.8)',
+                }}>
                     <div
                         style={{
                             height: 2,
@@ -194,6 +209,8 @@ function NavItem({ item, isActive }) {
                             )
                         })}
                     </div>
+                </div>
+                </div>
                 </div>
             )}
         </div>
@@ -291,38 +308,44 @@ export default function Navbar() {
     }, [search, marketData])
 
     return (
-        <header style={{ backgroundColor: '#111111', borderBottom: '1px solid #222' }}>
+        <>
+        <header style={{
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+        }}>
 
-            <div style={{ borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <div
                     className="flex items-center gap-6 text-xs overflow-x-auto"
                     style={{
-                        color: 'var(--text-muted)',
-                        padding: '8px 24px',
+                        color: 'rgba(255,255,255,0.25)',
+                        padding: '7px 24px',
                         maxWidth: '1440px',
                         margin: '0 auto',
+                        letterSpacing: '-0.01em',
                     }}
                 >
-                    <span>Coins: <strong style={{ color: 'var(--text-secondary)' }}>{statsData?.coin_count ?? coinCount}</strong></span>
-                    <span>24h Volume: <strong style={{ color: 'var(--text-secondary)' }}>{formatLarge(totalVolume)}</strong></span>
+                    <span>Coins: <strong style={{ color: 'rgba(255,255,255,0.55)' }}>{statsData?.coin_count ?? coinCount}</strong></span>
+                    <span>24h Vol: <strong style={{ color: 'rgba(255,255,255,0.55)' }}>{formatLarge(totalVolume)}</strong></span>
                     <span>BTC: <strong style={{ color: 'var(--accent)' }}>
                         {btcPrice ? `$${Number(btcPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '—'}
                     </strong></span>
-                    <span>BTC Dom: <strong style={{ color: 'var(--text-secondary)' }}>{btcDom}%</strong></span>
-
+                    <span>Dom: <strong style={{ color: 'rgba(255,255,255,0.55)' }}>{btcDom}%</strong></span>
                     <span>
-                        <strong style={{ color: 'var(--positive)' }}>↑</strong>
-                        {' '}
+                        <strong style={{ color: 'var(--positive)' }}>↑</strong>{' '}
                         {marketData?.filter(c => Number(c.price_change_percentage_24h) > 0).length || 0}
                         {' · '}
-                        <strong style={{ color: 'var(--negative)' }}>↓</strong>
-                        {' '}
+                        <strong style={{ color: 'var(--negative)' }}>↓</strong>{' '}
                         {marketData?.filter(c => Number(c.price_change_percentage_24h) < 0).length || 0}
                     </span>
-
                     <span className="ml-auto flex items-center gap-1.5 shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
-                        <span style={{ color: 'var(--accent)' }}>Live</span>
+                        <span style={{ color: 'var(--accent)', fontWeight: 600 }}>Live</span>
                     </span>
                 </div>
             </div>
@@ -501,18 +524,14 @@ export default function Navbar() {
                     ) : (
                         <button
                             onClick={handleLogin}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all shrink-0"
+                            className="btn-neon flex items-center gap-2 shrink-0"
                             style={{
-                                background: 'linear-gradient(135deg, #f5a623, #e8941a)',
-                                color: '#111',
-                                border: 'none',
-                                cursor: 'pointer',
-                                boxShadow: '0 0 16px rgba(245,166,35,0.25)',
+                                padding: '8px 16px',
+                                fontSize: 13,
+                                letterSpacing: '-0.01em',
                             }}
-                            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(245,166,35,0.45)'}
-                            onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 16px rgba(245,166,35,0.25)'}
                         >
-                            <LogIn size={14} />
+                            <LogIn size={13} />
                             Giriş Yap
                         </button>
                     )}

@@ -1,32 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Zeminler */
-  --bg-base:     #141414;
-  --bg-surface:  #1c1c1c;
-  --bg-elevated: #242424;
-  --bg-card:     #1e1e1e;
+  /* === INTERFERE DARK CORE === */
+  --bg-base:     #000000;
+  --bg-surface:  #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-card:     #0d0d0d;
 
-  /* Kenarlar */
-  --border:      #2a2a2a;
-  --border-soft: #222222;
+  /* === BORDERS === */
+  --border:      rgba(255,255,255,0.06);
+  --border-soft: rgba(255,255,255,0.04);
 
-  /* Yazı */
-  --text-primary:   #f0f0f0;
-  --text-secondary: #a0a0a0;
-  --text-muted:     #555555;
+  /* === TYPOGRAPHY === */
+  --text-primary:   #ffffff;
+  --text-secondary: rgba(255,255,255,0.55);
+  --text-muted:     rgba(255,255,255,0.28);
 
-  /* Altın/Turuncu vurgu */
-  --accent:         #f5a623;
-  --accent-hover:   #f7b944;
-  --accent-soft:    rgba(245,166,35,0.1);
-  --accent-border:  rgba(245,166,35,0.25);
+  /* === ACCENT — Soft Gold === */
+  --accent:         #e2a246;
+  --accent-hover:   #f0b257;
+  --accent-soft:    rgba(226,162,70,0.08);
+  --accent-border:  rgba(226,162,70,0.2);
+  --accent-glow:    rgba(226,162,70,0.15);
 
-  /* Finans renkleri */
-  --positive:       #2ecc71;
-  --positive-soft:  rgba(46,204,113,0.1);
-  --negative:       #e74c3c;
-  --negative-soft:  rgba(231,76,60,0.1);
+  /* === GRADIENT BORDER COLORS === */
+  --grad-border-start: rgba(226,162,70,0.3);
+  --grad-border-mid:   rgba(255,255,255,0.04);
+  --grad-border-end:   rgba(255,255,255,0.02);
+
+  /* === FINANS === */
+  --positive:       #00d084;
+  --positive-soft:  rgba(0,208,132,0.08);
+  --negative:       #ff4560;
+  --negative-soft:  rgba(255,69,96,0.08);
+
+  /* === RADIUS === */
+  --radius-card:   28px;
+  --radius-button: 14px;
+  --radius-input:  14px;
+  --radius-sm:     10px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,27 +50,111 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 }
 
-/* Altın scrollbar */
+/* === SCROLLBAR === */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* Tablo seçimi kaldır */
 ::selection {
-  background: var(--accent-soft);
+  background: rgba(245,166,35,0.2);
   color: var(--accent);
 }
 
+/* === GRADIENT BORDER CARD UTILITY === */
+.grad-border-card {
+  position: relative;
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+}
+.grad-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+  padding: 1px;
+  background: linear-gradient(135deg, var(--grad-border-start), var(--grad-border-mid), var(--grad-border-end));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* === SUBTLE BUTTON === */
+.btn-neon {
+  position: relative;
+  background: var(--text-primary);
+  color: var(--bg-base);
+  border: none;
+  border-radius: var(--radius-button);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: -0.01em;
+}
+.btn-neon:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+}
+
+/* === GLASSMORPHISM === */
+.glass {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* === ANIMATIONS === */
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 20px)) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(226,162,70,0.1); }
+  50%       { box-shadow: 0 0 16px rgba(226,162,70,0.2); }
+}
+
+@keyframes priceFlash {
+  0%   { background: rgba(255,255,255,0.08); }
+  100% { background: transparent; }
+}
+
+/* === PRICE FLASH === */
+.price-flash {
+  animation: priceFlash 0.6s ease-out;
+}
+
+/* === INPUT BASE === */
+.interfere-input {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-input);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+.interfere-input:focus {
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: none;
+}
+.interfere-input::placeholder {
+  color: rgba(255,255,255,0.2);
 }
