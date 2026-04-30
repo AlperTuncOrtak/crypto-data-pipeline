@@ -314,12 +314,22 @@ export default function CoinDetail() {
                                 tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
                             />
                             <YAxis
-                                tickFormatter={formatPrice}
+                                tickFormatter={(val) => {
+                                    const num = Number(val)
+                                    if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                                    if (num >= 1) return `$${num.toFixed(4)}`
+                                    if (num >= 0.01) return `$${num.toFixed(5)}`
+                                    return `$${num.toFixed(7)}`
+                                }}
                                 stroke="var(--border)"
                                 tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
                                 width={90}
-                                domain={['auto', 'auto']}
+                                domain={([dataMin, dataMax]) => {
+                                    const padding = (dataMax - dataMin) * 0.1 || dataMin * 0.001
+                                    return [dataMin - padding, dataMax + padding]
+                                }}
                             />
+
                             <Tooltip content={<ChartTooltip />} />
                             <Area
                                 type="monotone"
