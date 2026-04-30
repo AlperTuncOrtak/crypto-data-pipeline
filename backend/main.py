@@ -185,3 +185,9 @@ def market_stats():
     from backend.services.redis_service import get_all_tickers
     tickers = get_all_tickers()
     return {"coin_count": len(tickers)}
+
+@app.get("/ai/analyze/{slug}")
+def ai_analyze(slug: str):
+    """AI destekli teknik analiz endpoint'i."""
+    from backend.services.ai_analysis import analyze_coin
+    return analyze_coin(slug)
