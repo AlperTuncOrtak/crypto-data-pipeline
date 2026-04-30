@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMarket } from '../hooks/useMarket'
 import { useSparklines } from '../hooks/useSparklines'
 import Sparkline from '../components/market/Sparkline'
@@ -89,6 +89,15 @@ export default function Market() {
   const [sort, setSort] = useState({ key: 'total_volume', direction: 'desc' })
   const [page, setPage] = useState(1)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+   useEffect(() => {
+    const sortParam = searchParams.get('sort')
+    if (sortParam === 'gain') setSort({ key: 'price_change_percentage_24h', direction: 'desc' })
+    else if (sortParam === 'loss') setSort({ key: 'price_change_percentage_24h', direction: 'asc' })
+    else if (sortParam === 'vol') setSort({ key: 'total_volume', direction: 'desc' })
+  }, [searchParams])
+
 
   const filteredAndSorted = useMemo(() => {
     if (!marketData) return []

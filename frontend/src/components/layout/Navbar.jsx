@@ -6,6 +6,7 @@ import {
     History, PlusCircle, Combine, GitCompare, Network,
 } from 'lucide-react'
 import { useMarket, useMarketStats } from '../../hooks/useMarket'
+import AuthModal from '../ui/AuthModal'
 
 const NAV_ITEMS = [
     { to: '/', label: 'Dashboard', Icon: LayoutDashboard, dropdown: null },
@@ -113,21 +114,14 @@ function NavItem({ item, isActive }) {
                         transformOrigin: 'top left',
                     }}
                 >
-                    <div
-                        style={{
-                            height: 2,
-                            background: 'linear-gradient(90deg, #f5a623, transparent)',
-                        }}
-                    />
+                    <div style={{ height: 2, background: 'linear-gradient(90deg, #f5a623, transparent)' }} />
                     <div style={{ padding: 6 }}>
                         {item.dropdown.map((sub, idx) => {
                             const SubIcon = sub.Icon
                             return (
                                 <div
                                     key={sub.label}
-                                    onClick={() => {
-                                        if (!sub.soon) navigate(sub.to)
-                                    }}
+                                    onClick={() => { if (!sub.soon) navigate(sub.to) }}
                                     className="flex items-center gap-3 transition-all"
                                     style={{
                                         padding: '10px 12px',
@@ -152,12 +146,8 @@ function NavItem({ item, isActive }) {
                                     <div
                                         className="icon-wrap shrink-0"
                                         style={{
-                                            width: 36,
-                                            height: 36,
-                                            borderRadius: 10,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
+                                            width: 36, height: 36, borderRadius: 10,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             background: 'linear-gradient(135deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05))',
                                             color: 'var(--accent)',
                                             border: '1px solid rgba(245,166,35,0.2)',
@@ -174,19 +164,13 @@ function NavItem({ item, isActive }) {
                                             {sub.soon && (
                                                 <span
                                                     className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider"
-                                                    style={{
-                                                        backgroundColor: 'rgba(245,166,35,0.15)',
-                                                        color: 'var(--accent)',
-                                                        letterSpacing: '0.1em',
-                                                    }}
+                                                    style={{ backgroundColor: 'rgba(245,166,35,0.15)', color: 'var(--accent)', letterSpacing: '0.1em' }}
                                                 >
                                                     Soon
                                                 </span>
                                             )}
                                         </div>
-                                        <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                                            {sub.desc}
-                                        </div>
+                                        <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{sub.desc}</div>
                                     </div>
                                 </div>
                             )
@@ -206,6 +190,8 @@ export default function Navbar() {
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [searchOpen, setSearchOpen] = useState(false)
+    const [authOpen, setAuthOpen] = useState(false)
+    const [user, setUser] = useState(null)
 
     const totalVolume = marketData?.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0
     const btcDom = marketData ? (() => {
@@ -213,14 +199,10 @@ export default function Navbar() {
         const total = marketData.reduce((s, c) => s + (Number(c.total_volume) || 0), 0)
         return btc && total ? ((Number(btc.total_volume) / total) * 100).toFixed(1) : '—'
     })() : '—'
-    const coinCount = marketData?.length || 0
     const btcPrice = marketData?.find(c => c.symbol === 'BTC')?.current_price
 
     useEffect(() => {
-        if (!search.trim() || !marketData) {
-            setSearchResults([])
-            return
-        }
+        if (!search.trim() || !marketData) { setSearchResults([]); return }
         const term = search.toLowerCase()
         const results = marketData.filter(c =>
             c.symbol?.toLowerCase().includes(term) ||
@@ -232,33 +214,24 @@ export default function Navbar() {
     return (
         <header style={{ backgroundColor: '#111111', borderBottom: '1px solid #222' }}>
 
+            {/* STATS BAR */}
             <div style={{ borderBottom: '1px solid #1a1a1a' }}>
                 <div
                     className="flex items-center gap-6 text-xs overflow-x-auto"
-                    style={{
-                        color: 'var(--text-muted)',
-                        padding: '8px 24px',
-                        maxWidth: '1440px',
-                        margin: '0 auto',
-                    }}
+                    style={{ color: 'var(--text-muted)', padding: '8px 24px', maxWidth: '1440px', margin: '0 auto' }}
                 >
-                    <span>Coins: <strong style={{ color: 'var(--text-secondary)' }}>{statsData?.coin_count ?? coinCount}</strong></span>
+                    <span>Coins: <strong style={{ color: 'var(--text-secondary)' }}>{statsData?.coin_count ?? marketData?.length ?? 0}</strong></span>
                     <span>24h Volume: <strong style={{ color: 'var(--text-secondary)' }}>{formatLarge(totalVolume)}</strong></span>
                     <span>BTC: <strong style={{ color: 'var(--accent)' }}>
                         {btcPrice ? `$${Number(btcPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '—'}
                     </strong></span>
                     <span>BTC Dom: <strong style={{ color: 'var(--text-secondary)' }}>{btcDom}%</strong></span>
-
                     <span>
                         <strong style={{ color: 'var(--positive)' }}>↑</strong>
-                        {' '}
-                        {marketData?.filter(c => Number(c.price_change_percentage_24h) > 0).length || 0}
-                        {' · '}
+                        {' '}{marketData?.filter(c => Number(c.price_change_percentage_24h) > 0).length || 0}{' · '}
                         <strong style={{ color: 'var(--negative)' }}>↓</strong>
-                        {' '}
-                        {marketData?.filter(c => Number(c.price_change_percentage_24h) < 0).length || 0}
+                        {' '}{marketData?.filter(c => Number(c.price_change_percentage_24h) < 0).length || 0}
                     </span>
-
                     <span className="ml-auto flex items-center gap-1.5 shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
                         <span style={{ color: 'var(--accent)' }}>Live</span>
@@ -266,18 +239,13 @@ export default function Navbar() {
                 </div>
             </div>
 
+            {/* MAIN NAV */}
             <div
                 className="flex items-center gap-8"
-                style={{
-                    padding: '0 24px',
-                    maxWidth: '1440px',
-                    margin: '0 auto',
-                }}
+                style={{ padding: '0 24px', maxWidth: '1440px', margin: '0 auto' }}
             >
-                <div
-                    className="flex items-center gap-2.5 py-3 cursor-pointer shrink-0"
-                    onClick={() => navigate('/')}
-                >
+                {/* LOGO */}
+                <div className="flex items-center gap-2.5 py-3 cursor-pointer shrink-0" onClick={() => navigate('/')}>
                     <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
                         style={{ background: 'linear-gradient(135deg, #f5a623, #e8941a)', color: '#111' }}
@@ -292,90 +260,145 @@ export default function Navbar() {
 
                 <div className="w-px h-6 shrink-0" style={{ backgroundColor: '#222' }} />
 
+                {/* NAV */}
                 <nav className="flex items-center gap-3">
                     {NAV_ITEMS.map((item) => {
-                        const isActive =
-                            item.to === '/'
-                                ? location.pathname === '/'
-                                : location.pathname.startsWith(item.to)
-                        return (
-                            <NavItem key={item.to} item={item} isActive={isActive} />
-                        )
+                        const isActive = item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to)
+                        return <NavItem key={item.to} item={item} isActive={isActive} />
                     })}
                 </nav>
 
-                <div className="ml-auto relative">
-                    <div
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all"
-                        style={{
-                            backgroundColor: '#1a1a1a',
-                            border: `1px solid ${searchOpen ? 'rgba(245,166,35,0.4)' : '#2a2a2a'}`,
-                            width: searchOpen ? 240 : 120,
-                            transition: 'width 0.2s ease, border-color 0.2s ease',
-                        }}
-                    >
-                        <Search size={13} style={{ color: '#555' }} />
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            onFocus={() => setSearchOpen(true)}
-                            onBlur={() => setTimeout(() => { setSearchOpen(false); setSearch('') }, 150)}
-                            className="bg-transparent outline-none text-sm w-full"
-                            style={{ color: 'var(--text-primary)', caretColor: 'var(--accent)' }}
-                        />
-                        {search && (
-                            <X size={12} style={{ color: '#555', cursor: 'pointer' }} onClick={() => setSearch('')} />
+                {/* SEARCH + AUTH */}
+                <div className="ml-auto flex items-center gap-3">
+
+                    {/* SEARCH */}
+                    <div className="relative">
+                        <div
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all"
+                            style={{
+                                backgroundColor: '#1a1a1a',
+                                border: `1px solid ${searchOpen ? 'rgba(245,166,35,0.4)' : '#2a2a2a'}`,
+                                width: searchOpen ? 240 : 120,
+                                transition: 'width 0.2s ease, border-color 0.2s ease',
+                            }}
+                        >
+                            <Search size={13} style={{ color: '#555' }} />
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                onFocus={() => setSearchOpen(true)}
+                                onBlur={() => setTimeout(() => { setSearchOpen(false); setSearch('') }, 150)}
+                                className="bg-transparent outline-none text-sm w-full"
+                                style={{ color: 'var(--text-primary)', caretColor: 'var(--accent)' }}
+                            />
+                            {search && <X size={12} style={{ color: '#555', cursor: 'pointer' }} onClick={() => setSearch('')} />}
+                        </div>
+
+                        {searchResults.length > 0 && (
+                            <div
+                                className="absolute top-full mt-1 right-0 rounded-xl overflow-hidden z-50"
+                                style={{
+                                    backgroundColor: '#1a1a1a',
+                                    border: '1px solid #2a2a2a',
+                                    boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+                                    minWidth: 240,
+                                }}
+                            >
+                                {searchResults.map(coin => (
+                                    <div
+                                        key={coin.symbol}
+                                        className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors"
+                                        style={{ borderBottom: '1px solid #222' }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#222'}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                                        onClick={() => { if (coin.slug) navigate(`/coin/${coin.slug}`); setSearch(''); setSearchOpen(false) }}
+                                    >
+                                        {coin.image_url ? (
+                                            <img src={coin.image_url} alt={coin.symbol} className="w-6 h-6 rounded-full" />
+                                        ) : (
+                                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: '#2a2a2a', color: 'var(--accent)' }}>
+                                                {coin.symbol?.slice(0, 1)}
+                                            </div>
+                                        )}
+                                        <div>
+                                            <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{coin.name}</div>
+                                            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{coin.symbol?.toUpperCase()}</div>
+                                        </div>
+                                        <div className="ml-auto text-xs font-mono" style={{ color: 'var(--accent)' }}>
+                                            {coin.current_price ? `$${Number(coin.current_price).toLocaleString(undefined, { maximumFractionDigits: 4 })}` : '—'}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
 
-                    {searchResults.length > 0 && (
+                    {/* AUTH */}
+                    {user ? (
                         <div
-                            className="absolute top-full mt-1 right-0 rounded-xl overflow-hidden z-50"
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all"
                             style={{
-                                backgroundColor: '#1a1a1a',
-                                border: '1px solid #2a2a2a',
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-                                minWidth: 240,
+                                backgroundColor: 'rgba(245,166,35,0.1)',
+                                border: '1px solid rgba(245,166,35,0.3)',
+                            }}
+                            onClick={() => setUser(null)}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(245,166,35,0.15)'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(245,166,35,0.1)'}
+                        >
+                            {user.avatar ? (
+                                <img src={user.avatar} className="w-5 h-5 rounded-full" alt={user.name} />
+                            ) : (
+                                <div
+                                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                                    style={{ backgroundColor: 'var(--accent)', color: '#111' }}
+                                >
+                                    {user.name?.slice(0, 1).toUpperCase()}
+                                </div>
+                            )}
+                            <span className="text-xs font-medium" style={{ color: 'var(--accent)' }}>
+                                {user.name?.split(' ')[0]}
+                            </span>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setAuthOpen(true)}
+                            className="flex items-center gap-2 text-xs font-semibold transition-all"
+                            style={{
+                                padding: '6px 14px',
+                                borderRadius: 8,
+                                background: 'linear-gradient(135deg, #f5a623, #e8941a)',
+                                color: '#111',
+                                border: '1px solid rgba(255,255,255,0.15)',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 12px rgba(245,166,35,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
+                                letterSpacing: '0.02em',
+                                fontSize: 12,
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.boxShadow = '0 4px 24px rgba(245,166,35,0.5), inset 0 1px 0 rgba(255,255,255,0.25)'
+                                e.currentTarget.style.transform = 'translateY(-1px)'
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.boxShadow = '0 2px 12px rgba(245,166,35,0.25), inset 0 1px 0 rgba(255,255,255,0.2)'
+                                e.currentTarget.style.transform = 'translateY(0)'
                             }}
                         >
-                            {searchResults.map(coin => (
-                                <div
-                                    key={coin.symbol}
-                                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors"
-                                    style={{ borderBottom: '1px solid #222' }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#222'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                                    onClick={() => {
-                                        if (coin.slug) navigate(`/coin/${coin.slug}`)
-                                        setSearch('')
-                                        setSearchOpen(false)
-                                    }}
-                                >
-                                    {coin.image_url ? (
-                                        <img src={coin.image_url} alt={coin.symbol} className="w-6 h-6 rounded-full" />
-                                    ) : (
-                                        <div
-                                            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-                                            style={{ backgroundColor: '#2a2a2a', color: 'var(--accent)' }}
-                                        >
-                                            {coin.symbol?.slice(0, 1)}
-                                        </div>
-                                    )}
-                                    <div>
-                                        <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{coin.name}</div>
-                                        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{coin.symbol?.toUpperCase()}</div>
-                                    </div>
-                                    <div className="ml-auto text-xs font-mono" style={{ color: 'var(--accent)' }}>
-                                        {coin.current_price ? `$${Number(coin.current_price).toLocaleString(undefined, { maximumFractionDigits: 4 })}` : '—'}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                            <span>Sign In</span>
+                            <span style={{ opacity: 0.7, fontSize: 10 }}>→</span>
+                        </button>
+
                     )}
                 </div>
             </div>
+
+            {/* AUTH MODAL */}
+            <AuthModal
+                isOpen={authOpen}
+                onClose={() => setAuthOpen(false)}
+                onLogin={(u) => { setUser(u); setAuthOpen(false) }}
+            />
         </header>
     )
 }
