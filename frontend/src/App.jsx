@@ -9,6 +9,8 @@ import Analysis from './pages/Analysis'
 import CoinDetail from './pages/CoinDetail'
 import { useWatchlist } from './hooks/useWatchlist'
 import { useMarket } from './hooks/useMarket'
+import AIAnalysis from './pages/AIAnalysis'
+
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -35,6 +37,8 @@ export default function App() {
             <Route path="/alerts"     element={<Alerts />} />
             <Route path="/analysis"   element={<Analysis />} />
             <Route path="/coin/:slug" element={<CoinDetail />} />
+            <Route path="/analysis/ai" element={<AIAnalysis />} />
+
           </Routes>
         </main>
 

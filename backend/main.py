@@ -187,7 +187,21 @@ def market_stats():
     return {"coin_count": len(tickers)}
 
 @app.get("/ai/analyze/{slug}")
-def ai_analyze(slug: str):
-    """AI destekli teknik analiz endpoint'i."""
+def ai_analyze(
+    slug: str,
+    entry_price: float = None,
+    quantity: float = None,
+    position_type: str = "long",
+    risk_tolerance: str = "balanced",
+    timeframe: str = "short"
+):
     from backend.services.ai_analysis import analyze_coin
-    return analyze_coin(slug)
+    return analyze_coin(
+        slug,
+        entry_price=entry_price,
+        quantity=quantity,
+        position_type=position_type,
+        risk_tolerance=risk_tolerance,
+        timeframe=timeframe,
+    )
+
