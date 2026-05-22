@@ -61,3 +61,11 @@ body {
     transform: translateX(0);
   }
 }
+
+html {
+  overflow-x: hidden;
+}
+body {
+  overflow-x: hidden;
+  position: relative;
+}

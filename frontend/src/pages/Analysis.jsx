@@ -1,339 +1,361 @@
-// ============================================================
-// pages/Analysis.jsx
-// ============================================================
-// Multi-coin karsilastirma sayfasi:
-//
-//  1. CoinSelector ile 2-5 coin sec
-//  2. Performance tablosu: her coin'in toplam getirisi (%)
-//  3. Recharts ile zaman serisi chart - normalize edilmis (% degisim)
-//  4. Tooltip: tum secili coinlerin o andaki degerini gosterir (CMC stili)
-//
-// NORMALIZE NEDEN: Coinlerin fiyat aralıklari cok farkli olabilir
-// (BTC $78000, JST $0.08). Mutlak fiyat gostersek JST duz cizgi
-// gibi gorunur. Bu yuzden her coin'i baslangic noktasina gore
-// yuzde degisime cevirip birlikte gosteriyoruz.
-//
-// TODO (sonra): "Mouse hangi cizgi uzerinde" algilama deneyimi.
-// Recharts native olarak bunu vermiyor, manuel Y koordinat hesabi
-// denedik ama plot area boyutunu disardan dogru tahmin etmek zor
-// (ResponsiveContainer'in ic state'ine erisim yok). Coin Detail
-// sayfasinda zaten benzer bir chart olacak, orada daha saglam bir
-// yaklasim deneriz - ya kendi SVG line chart'imizi yazariz, ya da
-// echarts/chartjs gibi alternatif kutuphaneye bakariz.
-// ============================================================
-
 import { useState, useMemo } from 'react'
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
-  CartesianGrid, ResponsiveContainer, Legend,
+  CartesianGrid, ResponsiveContainer, ReferenceLine,
 } from 'recharts'
-
 import { useMarket } from '../hooks/useMarket'
-import {
-  useMultiCoinHistory,
-  useMultiCoinPerformance,
-} from '../hooks/useAnalysis'
-import CoinSelector from '../components/analysis/CoinSelector'
+import { useMultiCoinHistory, useMultiCoinPerformance } from '../hooks/useAnalysis'
+import { GitCompare, X, TrendingUp, TrendingDown, Search } from 'lucide-react'
 
+const CHART_COLORS = ['#2ecc71', '#3498db', '#f5a623', '#e91e8c', '#9b59b6']
 
-const CHART_COLORS = [
-  '#34d399',  // emerald-400
-  '#60a5fa',  // blue-400
-  '#fbbf24',  // amber-400
-  '#f472b6',  // pink-400
-  '#a78bfa',  // violet-400
+const TIME_RANGES = [
+  { label: '1H',  hours: 1   },
+  { label: '24H', hours: 24  },
+  { label: '7D',  hours: 168 },
+  { label: '30D', hours: 720 },
 ]
 
-
-// -----------------------
-// FORMATTERS
-// -----------------------
 function formatPrice(n) {
   const num = Number(n)
   if (isNaN(num)) return '—'
-  if (num >= 1) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+  if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+  if (num >= 1)    return `$${num.toFixed(2)}`
+  if (num >= 0.01) return `$${num.toFixed(4)}`
   return `$${num.toFixed(6)}`
 }
 
-function formatPct(n) {
-  const num = Number(n)
-  if (isNaN(num)) return '—'
-  return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`
-}
-
-
-// -----------------------
-// CHART VERISI
-// -----------------------
 function buildChartData(historyRows, symbols) {
   if (!historyRows || historyRows.length === 0) return []
-
   const grouped = {}
   const firstPrices = {}
-
   for (const row of historyRows) {
     const sym = row.symbol
-    if (!grouped[sym]) {
-      grouped[sym] = []
-      firstPrices[sym] = Number(row.current_price)
-    }
-    grouped[sym].push({
-      time: row.collected_at,
-      price: Number(row.current_price),
-    })
+    if (!grouped[sym]) { grouped[sym] = []; firstPrices[sym] = Number(row.current_price) }
+    grouped[sym].push({ time: row.collected_at, price: Number(row.current_price) })
   }
-
   for (const sym of Object.keys(grouped)) {
     const first = firstPrices[sym]
-    grouped[sym] = grouped[sym].map((p) => ({
-      ...p,
-      normalized: first ? ((p.price - first) / first) * 100 : 0,
-    }))
+    grouped[sym] = grouped[sym].map(p => ({ ...p, normalized: first ? ((p.price - first) / first) * 100 : 0 }))
   }
-
   const allTimes = new Set()
-  for (const sym of Object.keys(grouped)) {
-    grouped[sym].forEach((p) => allTimes.add(p.time))
-  }
-  const sortedTimes = [...allTimes].sort()
-
-  return sortedTimes.map((time) => {
+  for (const sym of Object.keys(grouped)) grouped[sym].forEach(p => allTimes.add(p.time))
+  return [...allTimes].sort().map(time => {
     const row = { time }
     for (const sym of symbols) {
-      const point = grouped[sym]?.find((p) => p.time === time)
+      const point = grouped[sym]?.find(p => p.time === time)
       if (point) row[sym] = Number(point.normalized.toFixed(2))
     }
     return row
   })
 }
 
-
-// -----------------------
-// AXIS / TOOLTIP FORMAT
-// -----------------------
-function formatTimeAxis(iso) {
+function formatTimeAxis(iso, hours) {
   if (!iso) return ''
   const d = new Date(iso)
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  if (hours <= 24) return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:00`
 }
 
-function formatTooltipLabel(iso) {
-  if (!iso) return ''
-  const d = new Date(iso)
-  return d.toLocaleString()
-}
-
-
-// -----------------------
-// CUSTOM TOOLTIP
-// -----------------------
-// Tum secili coinlerin o andaki degerini birden gosterir.
-// Recharts'in default tooltip'i sadece en yakin tek bir noktayi
-// gosteriyor, biz CMC stili istiyoruz.
 function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload || payload.length === 0) return null
-
+  if (!active || !payload || !payload.length) return null
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-3 min-w-[180px]">
-      <div className="text-xs text-slate-400 mb-2">
-        {formatTooltipLabel(label)}
+    <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '12px 16px', minWidth: 180, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>
+        {new Date(label).toLocaleString()}
       </div>
-      <div className="space-y-1">
-        {payload.map((entry) => (
-          <div
-            key={entry.dataKey}
-            className="flex items-center justify-between gap-3 text-sm"
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className="inline-block w-2 h-2 rounded-full"
-                style={{ backgroundColor: entry.stroke || entry.color }}
-              />
-              <span className="font-mono font-semibold text-slate-200">
-                {entry.dataKey}
-              </span>
-            </div>
-            <span
-              className="font-mono"
-              style={{ color: entry.stroke || entry.color }}
-            >
-              {Number(entry.value) >= 0 ? '+' : ''}
-              {Number(entry.value).toFixed(2)}%
-            </span>
+      {payload.map(entry => (
+        <div key={entry.dataKey} className="flex items-center justify-between gap-4" style={{ marginBottom: 4 }}>
+          <div className="flex items-center gap-2">
+            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.stroke, display: 'inline-block' }} />
+            <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{entry.dataKey}</span>
           </div>
-        ))}
-      </div>
+          <span style={{ fontSize: 12, fontFamily: 'monospace', color: Number(entry.value) >= 0 ? '#2ecc71' : '#e74c3c', fontWeight: 700 }}>
+            {Number(entry.value) >= 0 ? '+' : ''}{Number(entry.value).toFixed(2)}%
+          </span>
+        </div>
+      ))}
     </div>
   )
 }
 
-
-// -----------------------
-// MAIN PAGE
-// -----------------------
-export default function Analysis() {
-  const { data: allCoins } = useMarket(500)
-  const [selected, setSelected] = useState([])
-  const history = useMultiCoinHistory(selected)
-  const performance = useMultiCoinPerformance(selected)
-
-  const chartData = useMemo(
-    () => buildChartData(history.data, selected),
-    [history.data, selected]
-  )
-
+function CoinSearchDropdown({ allCoins, selected, onAdd }) {
+  const [search, setSearch] = useState('')
+  const [open, setOpen] = useState(false)
+  const filtered = search.trim()
+    ? allCoins.filter(c =>
+        c.symbol?.toLowerCase().includes(search.toLowerCase()) ||
+        c.name?.toLowerCase().includes(search.toLowerCase())
+      ).slice(0, 8)
+    : []
 
   return (
-    <div>
-      {/* HEADER */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-100">Analysis</h1>
-        <p className="text-slate-400 mt-1">
-          Compare price performance across multiple coins
-        </p>
-      </div>
-
-
-      {/* COIN SELECTOR */}
-      <div className="mb-8">
-        <CoinSelector
-          allCoins={allCoins || []}
-          selected={selected}
-          onChange={setSelected}
-          maxSelection={5}
+    <div className="relative" style={{ width: 280 }}>
+      <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{
+        backgroundColor: 'var(--bg-elevated)',
+        border: `1px solid ${open ? 'rgba(245,166,35,0.4)' : 'var(--border)'}`,
+        transition: 'border-color 0.2s',
+      }}>
+        <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+        <input
+          type="text"
+          placeholder="Add coin to compare..."
+          value={search}
+          onChange={e => { setSearch(e.target.value); setOpen(true) }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          className="bg-transparent outline-none text-sm w-full"
+          style={{ color: 'var(--text-primary)', caretColor: 'var(--accent)' }}
         />
       </div>
+      {open && filtered.length > 0 && (
+        <div className="absolute top-full mt-1 left-0 right-0 rounded-xl overflow-hidden z-50" style={{
+          backgroundColor: '#1a1a1a', border: '1px solid var(--border)',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+        }}>
+          {filtered.map(coin => {
+            const isSelected = selected.includes(coin.symbol)
+            return (
+              <div
+                key={coin.symbol}
+                onClick={() => { if (!isSelected && selected.length < 5) { onAdd(coin.symbol); setSearch(''); setOpen(false) } }}
+                className="flex items-center gap-3 px-4 py-3 transition-all"
+                style={{ opacity: isSelected ? 0.4 : 1, cursor: isSelected ? 'not-allowed' : 'pointer' }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)' }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
+              >
+                {coin.image_url
+                  ? <img src={coin.image_url} style={{ width: 24, height: 24, borderRadius: '50%' }} />
+                  : <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>{coin.symbol?.slice(0,1)}</div>
+                }
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{coin.name}</div>
+                  <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{coin.symbol?.toUpperCase()}</div>
+                </div>
+                <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{formatPrice(coin.current_price)}</div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
 
+export default function Analysis() {
+  const { data: allCoins } = useMarket(2000)
+  const [selected, setSelected] = useState([])
+  const [activeRange, setActiveRange] = useState(1)  // index into TIME_RANGES
+  const hours = TIME_RANGES[activeRange].hours
+
+  const history     = useMultiCoinHistory(selected, hours)
+  const performance = useMultiCoinPerformance(selected, hours)
+
+  const chartData = useMemo(() => buildChartData(history.data, selected), [history.data, selected])
+
+  function addCoin(symbol) {
+    if (!selected.includes(symbol) && selected.length < 5) setSelected(prev => [...prev, symbol])
+  }
+  function removeCoin(symbol) {
+    setSelected(prev => prev.filter(s => s !== symbol))
+  }
+
+  const coinData = useMemo(() => {
+    if (!allCoins) return {}
+    return Object.fromEntries(allCoins.map(c => [c.symbol, c]))
+  }, [allCoins])
+
+  return (
+    <div style={{ color: 'var(--text-primary)', maxWidth: 1100, margin: '0 auto' }}>
+
+      {/* HEADER */}
+      <div style={{ marginBottom: 28 }}>
+        <div className="flex items-center gap-3 mb-2">
+          <div style={{
+            width: 48, height: 48, borderRadius: 16,
+            background: 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))',
+            border: '1px solid rgba(245,166,35,0.3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <GitCompare size={22} style={{ color: 'var(--accent)' }} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Compare Coins</h1>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              Normalized performance comparison · Up to 5 coins
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* COIN SEÇİCİ */}
+      <div className="rounded-2xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '20px', marginBottom: 24 }}>
+        <div className="flex items-center gap-3 flex-wrap">
+          <CoinSearchDropdown allCoins={allCoins || []} selected={selected} onAdd={addCoin} />
+          {selected.map((sym, i) => {
+            const coin = coinData[sym]
+            return (
+              <div key={sym} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{
+                backgroundColor: `${CHART_COLORS[i]}15`,
+                border: `1px solid ${CHART_COLORS[i]}40`,
+              }}>
+                {coin?.image_url && <img src={coin.image_url} style={{ width: 20, height: 20, borderRadius: '50%' }} />}
+                <span className="text-sm font-bold font-mono" style={{ color: CHART_COLORS[i] }}>{sym}</span>
+                <button onClick={() => removeCoin(sym)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: CHART_COLORS[i], display: 'flex', padding: 0, opacity: 0.7 }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )
+          })}
+          {selected.length === 0 && <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Select 2-5 coins to compare</span>}
+          {selected.length === 5 && <span className="text-xs" style={{ color: 'var(--accent)' }}>Maximum 5 coins</span>}
+        </div>
+      </div>
 
       {/* EMPTY STATE */}
-      {selected.length === 0 && (
-        <div className="p-8 bg-slate-800 border border-slate-700 rounded-lg text-slate-400 text-center">
-          <div className="text-3xl mb-2">📊</div>
-          <p>Select 2 or more coins above to compare their performance.</p>
+      {selected.length < 2 && (
+        <div className="flex flex-col items-center justify-center rounded-2xl" style={{
+          backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)',
+          padding: '64px 24px', textAlign: 'center',
+        }}>
+          <GitCompare size={40} style={{ color: 'var(--text-muted)', opacity: 0.3, marginBottom: 16 }} />
+          <div className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
+            {selected.length === 0 ? 'Select at least 2 coins to compare' : 'Add one more coin to start comparing'}
+          </div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Performance normalized to start = 0% for fair comparison</div>
         </div>
       )}
 
-
-      {/* TEK SECIM UYARISI */}
-      {selected.length === 1 && (
-        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400 text-sm">
-          Add at least one more coin to see performance comparison.
-        </div>
-      )}
-
-
-      {/* PERFORMANCE TABLE */}
       {selected.length >= 2 && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-slate-200 mb-3">
-            Performance
-          </h2>
+        <div className="flex flex-col gap-4">
 
-          {performance.isLoading && (
-            <div className="text-slate-400">Calculating performance...</div>
-          )}
-
-          {performance.isError && (
-            <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
-              Failed to load performance data.
-            </div>
-          )}
-
-          {performance.data && performance.data.length === 0 && (
-            <div className="p-4 bg-slate-800 border border-slate-700 rounded-lg text-slate-400 text-sm">
-              Not enough data points yet. Each coin needs at least 2 snapshots
-              in price history for performance calculation.
-            </div>
-          )}
-
+          {/* PERFORMANCE CARDS */}
           {performance.data && performance.data.length > 0 && (
-            <div className="overflow-x-auto rounded-lg border border-slate-700">
-              <table className="w-full">
-                <thead className="bg-slate-800/50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Symbol</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">Start Price</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">Latest Price</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">Total Return</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {performance.data.map((row) => {
-                    const ret = Number(row.total_return_pct)
-                    const color = ret >= 0 ? 'text-emerald-400' : 'text-red-400'
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(performance.data.length, 5)}, 1fr)`, gap: 12 }}>
+              {performance.data.map((row, i) => {
+                const ret  = Number(row.total_return_pct)
+                const isUp = ret >= 0
+                const coin = coinData[row.symbol]
+                const colorIdx = selected.indexOf(row.symbol)
+                const color = CHART_COLORS[colorIdx >= 0 ? colorIdx : i]
+                return (
+                  <div key={row.symbol} className="rounded-2xl" style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    border: `1px solid ${color}30`,
+                    padding: '20px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}>
+                    {/* bg glow */}
+                    <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', backgroundColor: `${color}10`, filter: 'blur(20px)', pointerEvents: 'none' }} />
 
-                    return (
-                      <tr
-                        key={row.symbol}
-                        className="border-t border-slate-700/50 hover:bg-slate-800/30"
-                      >
-                        <td className="px-4 py-3 font-mono font-semibold text-slate-100">
-                          {row.symbol?.toUpperCase()}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-slate-400">
-                          {formatPrice(row.start_price)}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-slate-200">
-                          {formatPrice(row.latest_price)}
-                        </td>
-                        <td className={`px-4 py-3 text-right font-mono ${color}`}>
-                          {formatPct(ret)}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+                    <div className="flex items-center gap-2 mb-4">
+                      {coin?.image_url && <img src={coin.image_url} style={{ width: 28, height: 28, borderRadius: '50%' }} />}
+                      <div>
+                        <div className="font-bold font-mono text-sm" style={{ color }}>{row.symbol}</div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{coin?.name}</div>
+                      </div>
+                    </div>
 
+                    <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      {TIME_RANGES[activeRange].label} Return
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {isUp ? <TrendingUp size={16} style={{ color: '#2ecc71' }} /> : <TrendingDown size={16} style={{ color: '#e74c3c' }} />}
+                      <span style={{ fontSize: 24, fontWeight: 900, fontFamily: 'monospace', color: isUp ? '#2ecc71' : '#e74c3c' }}>
+                        {isUp ? '+' : ''}{ret.toFixed(2)}%
+                      </span>
+                    </div>
 
-      {/* CHART */}
-      {selected.length >= 2 && (
-        <div>
-          <h2 className="text-xl font-semibold text-slate-200 mb-3">
-            Price Comparison <span className="text-sm font-normal text-slate-500">(normalized to start = 0%)</span>
-          </h2>
+                    <div style={{ height: 1, backgroundColor: 'var(--border-soft)', margin: '12px 0' }} />
 
-          {history.isLoading && (
-            <div className="text-slate-400">Loading chart data...</div>
-          )}
-
-          {history.isError && (
-            <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
-              Failed to load history data.
+                    <div className="flex justify-between">
+                      <div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Start</div>
+                        <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{formatPrice(row.start_price)}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Current</div>
+                        <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-primary)', fontWeight: 700 }}>{formatPrice(row.latest_price)}</div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           )}
 
-          {chartData.length === 0 && history.data && (
-            <div className="p-4 bg-slate-800 border border-slate-700 rounded-lg text-slate-400 text-sm">
-              No history data available yet.
-            </div>
-          )}
+          {/* CHART */}
+          <div className="rounded-2xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '24px' }}>
+            {/* Chart header */}
+            <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+              <div>
+                <div className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>Price Comparison</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6, marginTop: 2 }}>Normalized to start = 0%</div>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Coin legend */}
+                <div className="flex items-center gap-3">
+                  {selected.map((sym, i) => (
+                    <div key={sym} className="flex items-center gap-1.5">
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: CHART_COLORS[i], display: 'inline-block' }} />
+                      <span style={{ fontSize: 12, fontFamily: 'monospace', fontWeight: 700, color: CHART_COLORS[i] }}>{sym}</span>
+                    </div>
+                  ))}
+                </div>
 
-          {chartData.length > 0 && (
-            <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                {/* Time range */}
+                <div className="flex items-center gap-1 rounded-xl p-1" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                  {TIME_RANGES.map((range, idx) => (
+                    <button
+                      key={range.label}
+                      onClick={() => setActiveRange(idx)}
+                      style={{
+                        padding: '4px 12px', borderRadius: 8, border: 'none',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        backgroundColor: activeRange === idx ? 'var(--accent)' : 'transparent',
+                        color: activeRange === idx ? '#111' : 'var(--text-muted)',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      {range.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {history.isLoading && (
+              <div className="flex items-center justify-center" style={{ height: 400 }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading chart data...</div>
+              </div>
+            )}
+
+            {chartData.length > 0 && (
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
                   <XAxis
                     dataKey="time"
-                    tickFormatter={formatTimeAxis}
-                    stroke="#64748b"
-                    tick={{ fill: '#94a3b8', fontSize: 12 }}
+                    tickFormatter={t => formatTimeAxis(t, hours)}
+                    stroke="var(--border)"
+                    tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+                    interval="preserveStartEnd"
                   />
                   <YAxis
-                    tickFormatter={(v) => `${v.toFixed(0)}%`}
-                    stroke="#64748b"
-                    tick={{ fill: '#94a3b8', fontSize: 12 }}
+                    tickFormatter={v => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`}
+                    stroke="var(--border)"
+                    tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+                    width={65}
                   />
+                  <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" strokeDasharray="4 4" />
                   <Tooltip
-                    cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '3 3' }}
+                    cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '3 3' }}
                     content={<CustomTooltip />}
                   />
-                  <Legend wrapperStyle={{ color: '#cbd5e1' }} />
                   {selected.map((sym, i) => (
                     <Line
                       key={sym}
@@ -342,14 +364,20 @@ export default function Analysis() {
                       stroke={CHART_COLORS[i % CHART_COLORS.length]}
                       strokeWidth={2}
                       dot={false}
-                      activeDot={{ r: 4 }}
+                      activeDot={{ r: 4, fill: CHART_COLORS[i] }}
                       connectNulls
                     />
                   ))}
                 </LineChart>
               </ResponsiveContainer>
-            </div>
-          )}
+            )}
+
+            {chartData.length === 0 && !history.isLoading && (
+              <div className="flex items-center justify-center" style={{ height: 400 }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>No history data available for this time range</div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

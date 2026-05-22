@@ -1,22 +1,19 @@
 # ============================================================
 # src/catalog_sync.py
 # ============================================================
-# Gunluk CoinGecko senkronizasyonu.
-# Binance WebSocket sadece fiyat veriyor, metadata yok.
-# Bu script CoinGecko'dan name, slug, image_url cekip
-# coins tablosunu gunceller.
+# CoinGecko'dan coin metadata'sini cekip coins tablosunu
+# gunceller. Gunluk 1 kere calistirmak yeterli.
 #
 # Calistirma: python src/catalog_sync.py
-# Cron icin: gunde 1 kere calistir (deploy sonrasi)
 # ============================================================
 
 import requests
 import logging
+from datetime import datetime
 from db import get_connection
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("catalog_sync")
 
@@ -30,18 +27,41 @@ def fetch_coingecko(page=1, per_page=250):
         "per_page": per_page,
         "page": page,
         "sparkline": "false",
+        # ATH/ATL icin price_change_percentage gerekmiyor ama
+        # CoinGecko markets endpoint'i ath/atl'yi varsayilan doner
     }
     response = requests.get(COINGECKO_URL, params=params, timeout=15)
     response.raise_for_status()
     return response.json()
 
 
+def parse_date(date_str):
+    """CoinGecko ISO8601 tarihini MySQL DATE'e cevirir."""
+    if not date_str:
+        return None
+    try:
+        return datetime.fromisoformat(date_str.replace("Z", "+00:00")).strftime(
+            "%Y-%m-%d"
+        )
+    except Exception:
+        return None
+
+
+def safe_int(val):
+    """Float supply degerlerini INT'e cevirir, None'u korur."""
+    if val is None:
+        return None
+    try:
+        return int(float(val))
+    except (ValueError, TypeError, OverflowError):
+        return None
+
+
 def sync():
     logger.info("Catalog sync started.")
 
-    # CoinGecko'dan top 500 coin cek (2 sayfa)
     coins = []
-    for page in range(1, 5):
+    for page in range(1, 5):  # top 1000 coin (4 × 250)
         try:
             data = fetch_coingecko(page=page)
             coins.extend(data)
@@ -62,50 +82,81 @@ def sync():
 
     try:
         for coin in coins:
-            symbol    = coin.get("symbol", "").upper()
-            name      = coin.get("name", "")
-            slug      = coin.get("id", "")
+            symbol = coin.get("symbol", "").upper()
+            name = coin.get("name", "")
+            slug = coin.get("id", "")
             image_url = coin.get("image", "")
+            rank = coin.get("market_cap_rank")
+            ath = coin.get("ath")
+            ath_date = parse_date(coin.get("ath_date"))
+            atl = coin.get("atl")
+            atl_date = parse_date(coin.get("atl_date"))
+            circ = safe_int(coin.get("circulating_supply"))
+            total = safe_int(coin.get("total_supply"))
+            max_s = safe_int(coin.get("max_supply"))
 
             if not symbol:
                 continue
 
-            # Mevcut kaydi kontrol et
-            cursor.execute(
-                "SELECT id, slug, image_url FROM coins WHERE symbol = %s",
-                (symbol,)
-            )
+            cursor.execute("SELECT id FROM coins WHERE symbol = %s", (symbol,))
             result = cursor.fetchone()
 
             if result:
-                coin_id        = result[0]
-                existing_slug  = result[1]
-                existing_image = result[2]
-
-                updates = []
-                values  = []
-
-                if not existing_slug and slug:
-                    updates.append("slug = %s")
-                    values.append(slug)
-                if not existing_image and image_url:
-                    updates.append("image_url = %s")
-                    values.append(image_url)
-                # Her zaman name guncelle (degismis olabilir)
-                updates.append("name = %s")
-                values.append(name)
-
-                values.append(coin_id)
                 cursor.execute(
-                    f"UPDATE coins SET {', '.join(updates)} WHERE id = %s",
-                    tuple(values)
+                    """
+                    UPDATE coins SET
+                        name               = %s,
+                        slug               = COALESCE(NULLIF(%s,''), slug),
+                        image_url          = COALESCE(NULLIF(%s,''), image_url),
+                        market_cap_rank    = COALESCE(%s, market_cap_rank),
+                        ath                = COALESCE(%s, ath),
+                        ath_date           = COALESCE(%s, ath_date),
+                        atl                = COALESCE(%s, atl),
+                        atl_date           = COALESCE(%s, atl_date),
+                        circulating_supply = COALESCE(%s, circulating_supply),
+                        total_supply       = COALESCE(%s, total_supply),
+                        max_supply         = COALESCE(%s, max_supply)
+                    WHERE symbol = %s
+                """,
+                    (
+                        name,
+                        slug,
+                        image_url,
+                        rank,
+                        ath,
+                        ath_date,
+                        atl,
+                        atl_date,
+                        circ,
+                        total,
+                        max_s,
+                        symbol,
+                    ),
                 )
                 updated += 1
             else:
-                # Yeni coin - insert
                 cursor.execute(
-                    "INSERT INTO coins (symbol, name, slug, image_url) VALUES (%s, %s, %s, %s)",
-                    (symbol, name, slug, image_url)
+                    """
+                    INSERT INTO coins
+                        (symbol, name, slug, image_url, market_cap_rank,
+                         ath, ath_date, atl, atl_date,
+                         circulating_supply, total_supply, max_supply)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """,
+                    (
+                        symbol,
+                        name,
+                        slug,
+                        image_url,
+                        rank,
+                        ath,
+                        ath_date,
+                        atl,
+                        atl_date,
+                        circ,
+                        total,
+                        max_s,
+                    ),
                 )
                 inserted += 1
 

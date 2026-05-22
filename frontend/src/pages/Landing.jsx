@@ -1,0 +1,1958 @@
+// ============================================================
+// pages/Landing.jsx — v2
+// ============================================================
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Brain,
+  BarChart2,
+  Wallet,
+  Bell,
+  TrendingUp,
+  TrendingDown,
+  ChevronRight,
+  Shield,
+  Zap,
+  Globe,
+  ArrowRight,
+  Check,
+  Star,
+} from "lucide-react";
+
+function Counter({ to, suffix = "", prefix = "", duration = 2000 }) {
+  const [val, setVal] = useState(0);
+  const ref = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        const start = Date.now();
+        const tick = () => {
+          const p = Math.min((Date.now() - start) / duration, 1);
+          setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        observer.disconnect();
+      },
+      { threshold: 0.5 },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [to]);
+  return (
+    <span ref={ref}>
+      {prefix}
+      {val.toLocaleString()}
+      {suffix}
+    </span>
+  );
+}
+
+const TICKERS = [
+  { symbol: "BTC", price: 80734, change: -0.91, color: "#f7931a" },
+  { symbol: "ETH", price: 2279, change: -2.29, color: "#627eea" },
+  { symbol: "SOL", price: 134, change: +3.14, color: "#9945ff" },
+  { symbol: "BNB", price: 598, change: +0.82, color: "#f3ba2f" },
+  { symbol: "XRP", price: 2.14, change: +1.44, color: "#346aa9" },
+  { symbol: "ADA", price: 0.712, change: -1.03, color: "#0033ad" },
+  { symbol: "DOGE", price: 0.168, change: +5.21, color: "#c2a633" },
+  { symbol: "AVAX", price: 22.4, change: +2.87, color: "#e84142" },
+  { symbol: "LINK", price: 13.2, change: +1.92, color: "#375bd2" },
+  { symbol: "DOT", price: 4.81, change: -0.44, color: "#e6007a" },
+];
+
+function FaqList() {
+  const [open, setOpen] = useState(null);
+  const faqs = [
+    {
+      q: "How does the AI analysis work?",
+      a: "We combine Altfins pre-computed signals (150+ technical indicators across 2,500+ coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA, Fear & Greed Index and news sentiment — then produces a bullish/bearish/neutral signal with confidence score.",
+    },
+    {
+      q: "Is CryptoNeko really free?",
+      a: "Yes. The free plan includes live market data for 2,500+ coins, market heatmap, coin comparison, watchlist (up to 10 coins) and basic price alerts — forever. No credit card required. Pro plan ($10/mo) unlocks AI analysis, portfolio tracker, tax reports and unlimited alerts.",
+    },
+    {
+      q: "Is my data safe and private?",
+      a: "Completely. Your portfolio and trade data never leaves your browser — CSV files are parsed locally in JavaScript. We never store, sell or transmit your financial information. Only your email address is stored for authentication via Supabase.",
+    },
+    {
+      q: "Which exchanges are supported for portfolio import?",
+      a: "We support CSV exports from Binance, Bybit, OKX, Coinbase and Kraken. Simply export your trade history from your exchange and drag & drop the file into the Portfolio Tracker. P&L and tax calculations happen instantly in your browser.",
+    },
+    {
+      q: "Is this financial advice?",
+      a: "No. CryptoNeko is a technical analysis tool only. All signals, scores and analysis are based on technical indicators and are for informational purposes only. Never make investment decisions based solely on this tool. Always do your own research and consult a financial advisor.",
+    },
+    {
+      q: "How often is the market data updated?",
+      a: "Live prices are streamed via WebSocket from multiple exchanges and update every few seconds. The AI analysis uses Altfins signals which are refreshed continuously. Fear & Greed Index is updated daily from Alternative.me.",
+    },
+    {
+      q: "Can I cancel my Pro subscription anytime?",
+      a: "Yes, you can cancel at any time. Your Pro access continues until the end of your billing period, then automatically reverts to the free plan — no questions asked.",
+    },
+  ];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {faqs.map((faq, i) => (
+        <div
+          key={i}
+          style={{
+            borderRadius: 14,
+            border: `1px solid ${open === i ? "rgba(245,166,35,.25)" : "rgba(255,255,255,.07)"}`,
+            background:
+              open === i ? "rgba(245,166,35,.04)" : "rgba(255,255,255,.02)",
+            overflow: "hidden",
+            transition: "all .2s",
+          }}
+        >
+          <button
+            onClick={() => setOpen(open === i ? null : i)}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "18px 22px",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              textAlign: "left",
+              gap: 16,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color:
+                  open === i ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.7)",
+                lineHeight: 1.4,
+              }}
+            >
+              {faq.q}
+            </span>
+            <div
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: "50%",
+                background:
+                  open === i ? "rgba(245,166,35,.15)" : "rgba(255,255,255,.06)",
+                border: `1px solid ${open === i ? "rgba(245,166,35,.3)" : "rgba(255,255,255,.1)"}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                transition: "all .2s",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 14,
+                  color: open === i ? "#f5a623" : "rgba(255,255,255,.4)",
+                  lineHeight: 1,
+                  transform: open === i ? "rotate(45deg)" : "rotate(0)",
+                  display: "block",
+                  transition: "transform .2s",
+                }}
+              >
+                +
+              </span>
+            </div>
+          </button>
+          {open === i && (
+            <div style={{ padding: "0 22px 18px" }}>
+              <div
+                style={{
+                  height: 1,
+                  background: "rgba(255,255,255,.06)",
+                  marginBottom: 14,
+                }}
+              />
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "rgba(255,255,255,.45)",
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                {faq.a}
+              </p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function Landing({ onAuthOpen }) {
+  const navigate = useNavigate();
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const fn = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  return (
+    <div
+      style={{
+        background: "#07070f",
+        color: "#f0f0f0",
+        minHeight: "100vh",
+        overflowX: "hidden",
+      }}
+    >
+      <style>{`
+        @keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-33.33%)} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+        @keyframes glow { 0%,100%{opacity:.5} 50%{opacity:1} }
+        .lp-primary { transition:all .2s ease !important }
+        .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(245,166,35,.55) !important }
+        .lp-ghost:hover { border-color:rgba(245,166,35,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(245,166,35,.05) !important }
+        .feat:hover { transform:translateY(-5px) !important; }
+      `}</style>
+
+      {/* NAVBAR */}
+      <nav
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 200,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 48px",
+          height: 58,
+          background: scrollY > 30 ? "rgba(7,7,15,.94)" : "transparent",
+          backdropFilter: scrollY > 30 ? "blur(20px)" : "none",
+          borderBottom:
+            scrollY > 30 ? "1px solid rgba(255,255,255,.06)" : "none",
+          transition: "all .3s",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              background: "linear-gradient(135deg,#f5a623,#e8941a)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 13,
+              fontWeight: 900,
+              color: "#111",
+              boxShadow: "0 4px 12px rgba(245,166,35,.3)",
+            }}
+          >
+            N
+          </div>
+          <span
+            style={{ fontSize: 15, fontWeight: 800, letterSpacing: "-0.02em" }}
+          >
+            <span style={{ color: "#f5a623" }}>Crypto</span>Neko
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => onAuthOpen?.()}
+            className="lp-ghost"
+            style={{
+              padding: "7px 18px",
+              borderRadius: 9,
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,.1)",
+              color: "rgba(255,255,255,.5)",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all .2s",
+            }}
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => onAuthOpen?.()}
+            className="lp-primary"
+            style={{
+              padding: "7px 20px",
+              borderRadius: 9,
+              background: "linear-gradient(135deg,#f5a623,#e8941a)",
+              color: "#111",
+              fontSize: 13,
+              fontWeight: 700,
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 4px 14px rgba(245,166,35,.3)",
+            }}
+          >
+            Get Started Free
+          </button>
+        </div>
+      </nav>
+
+      {/* TICKER */}
+      <div
+        style={{
+          paddingTop: 58,
+          overflow: "hidden",
+          background: "rgba(0,0,0,.5)",
+          borderBottom: "1px solid rgba(255,255,255,.04)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            animation: "tickerScroll 40s linear infinite",
+            width: "max-content",
+            padding: "7px 0",
+          }}
+        >
+          {[...TICKERS, ...TICKERS, ...TICKERS].map((t, i) => (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "0 20px",
+                borderRight: "1px solid rgba(255,255,255,.04)",
+                flexShrink: 0,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  color: t.color,
+                  fontFamily: "monospace",
+                }}
+              >
+                {t.symbol}
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontFamily: "monospace",
+                  color: "rgba(255,255,255,.5)",
+                }}
+              >
+                $
+                {t.price < 1
+                  ? t.price.toFixed(3)
+                  : t.price < 100
+                    ? t.price.toFixed(2)
+                    : t.price.toLocaleString()}
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontFamily: "monospace",
+                  color: t.change >= 0 ? "#2ecc71" : "#e74c3c",
+                  fontWeight: 700,
+                }}
+              >
+                {t.change >= 0 ? "▲" : "▼"}
+                {Math.abs(t.change)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* HERO */}
+      <section
+        style={{
+          position: "relative",
+          padding: "88px 48px 64px",
+          textAlign: "center",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "radial-gradient(rgba(255,255,255,.022) 1px,transparent 1px)",
+            backgroundSize: "36px 36px",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "5%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 700,
+            height: 420,
+            background:
+              "radial-gradient(ellipse,rgba(245,166,35,.07) 0%,transparent 65%)",
+            pointerEvents: "none",
+            animation: "glow 5s ease infinite",
+          }}
+        />
+
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "5px 14px",
+            borderRadius: 20,
+            background: "rgba(46,204,113,.08)",
+            border: "1px solid rgba(46,204,113,.2)",
+            marginBottom: 30,
+            animation: "fadeUp .5s ease both",
+          }}
+        >
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "#2ecc71",
+              boxShadow: "0 0 8px #2ecc71",
+              animation: "glow 2s infinite",
+            }}
+          />
+          <span
+            style={{
+              fontSize: 12,
+              color: "rgba(255,255,255,.5)",
+              fontWeight: 600,
+            }}
+          >
+            Live · 2,500+ coins tracked in real-time
+          </span>
+        </div>
+
+        <h1
+          style={{
+            fontSize: "clamp(42px,7vw,82px)",
+            fontWeight: 900,
+            lineHeight: 1.0,
+            letterSpacing: "-0.04em",
+            margin: "0 auto 20px",
+            maxWidth: 860,
+            animation: "fadeUp .55s ease .08s both",
+          }}
+        >
+          <span style={{ color: "rgba(255,255,255,.96)" }}>
+            The smartest way
+            <br />
+            to analyze{" "}
+          </span>
+          <span
+            style={{
+              background:
+                "linear-gradient(135deg,#f5a623 0%,#f7c948 40%,#e8941a 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundSize: "200%",
+              animation: "gradShift 5s ease infinite",
+            }}
+          >
+            crypto.
+          </span>
+        </h1>
+
+        <p
+          style={{
+            fontSize: "clamp(15px,1.8vw,19px)",
+            color: "rgba(255,255,255,.36)",
+            maxWidth: 500,
+            margin: "0 auto 44px",
+            lineHeight: 1.65,
+            animation: "fadeUp .55s ease .16s both",
+          }}
+        >
+          AI-powered signals, live market data, portfolio tracking and smart
+          alerts. Built for traders who want an edge — free to start.
+        </p>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
+            flexWrap: "wrap",
+            animation: "fadeUp .55s ease .24s both",
+          }}
+        >
+          <button
+            onClick={() => onAuthOpen?.()}
+            className="lp-primary"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 9,
+              padding: "15px 32px",
+              borderRadius: 13,
+              background: "linear-gradient(135deg,#f5a623,#e8941a)",
+              color: "#111",
+              fontSize: 15,
+              fontWeight: 800,
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 8px 28px rgba(245,166,35,.38)",
+            }}
+          >
+            Start for Free <ArrowRight size={16} />
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="lp-ghost"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "15px 28px",
+              borderRadius: 13,
+              background: "rgba(255,255,255,.04)",
+              color: "rgba(255,255,255,.5)",
+              fontSize: 15,
+              fontWeight: 600,
+              border: "1px solid rgba(255,255,255,.1)",
+              cursor: "pointer",
+              transition: "all .2s",
+            }}
+          >
+            View Live Demo <ChevronRight size={15} />
+          </button>
+        </div>
+
+        <div
+          style={{
+            marginTop: 22,
+            fontSize: 12,
+            color: "rgba(255,255,255,.2)",
+            animation: "fadeUp .55s ease .32s both",
+          }}
+        >
+          No credit card required · Free plan available forever
+        </div>
+
+        <div
+          style={{
+            marginTop: 56,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "fadeUp .55s ease .4s both",
+          }}
+        >
+          {[
+            { value: 2500, suffix: "+", prefix: "", label: "Coins Tracked" },
+            { value: 5, suffix: "+", prefix: "", label: "AI Indicators" },
+            { value: 99, suffix: "%", prefix: "", label: "Uptime" },
+            { value: 0, suffix: "", prefix: "$", label: "To Get Started" },
+          ].map((s, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "0 36px",
+                borderRight: i < 3 ? "1px solid rgba(255,255,255,.07)" : "none",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "clamp(26px,3vw,38px)",
+                  fontWeight: 900,
+                  color: "#f5a623",
+                  fontFamily: "monospace",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1,
+                }}
+              >
+                <Counter to={s.value} suffix={s.suffix} prefix={s.prefix} />
+              </div>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: "rgba(255,255,255,.28)",
+                  marginTop: 5,
+                  letterSpacing: ".06em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* DASHBOARD PREVIEW */}
+      <section
+        style={{ padding: "0 48px 80px", maxWidth: 1100, margin: "0 auto" }}
+      >
+        <div
+          style={{
+            position: "relative",
+            animation: "fadeUp .7s ease .5s both",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: -24,
+              background:
+                "radial-gradient(ellipse at center,rgba(245,166,35,.07) 0%,transparent 65%)",
+              pointerEvents: "none",
+              filter: "blur(24px)",
+            }}
+          />
+          <div
+            style={{
+              position: "relative",
+              borderRadius: 18,
+              overflow: "hidden",
+              border: "1px solid rgba(255,255,255,.08)",
+              boxShadow: "0 40px 100px rgba(0,0,0,.9)",
+            }}
+          >
+            <div
+              style={{
+                background: "#0e0e18",
+                padding: "10px 16px",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                borderBottom: "1px solid rgba(255,255,255,.05)",
+              }}
+            >
+              {["#ff5f57", "#febc2e", "#28c840"].map((c, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: c,
+                  }}
+                />
+              ))}
+              <div
+                style={{
+                  flex: 1,
+                  marginLeft: 8,
+                  height: 20,
+                  borderRadius: 5,
+                  background: "rgba(255,255,255,.04)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,.18)" }}>
+                  cryptoneko.app · AI Technical Analysis
+                </span>
+              </div>
+            </div>
+            <div style={{ background: "#0c0c16", padding: "20px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1.8fr 1fr",
+                  gap: 12,
+                  marginBottom: 12,
+                }}
+              >
+                <div
+                  style={{
+                    padding: "20px 24px",
+                    borderRadius: 14,
+                    background: "rgba(46,204,113,.07)",
+                    border: "1px solid rgba(46,204,113,.18)",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: -30,
+                      right: -30,
+                      width: 120,
+                      height: 120,
+                      borderRadius: "50%",
+                      background: "rgba(46,204,113,.08)",
+                      filter: "blur(30px)",
+                    }}
+                  />
+                  <div
+                    style={{
+                      fontSize: 9,
+                      fontWeight: 800,
+                      color: "rgba(46,204,113,.5)",
+                      letterSpacing: ".18em",
+                      marginBottom: 6,
+                    }}
+                  >
+                    TECHNICAL OUTLOOK
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 44,
+                      fontWeight: 900,
+                      color: "#2ecc71",
+                      letterSpacing: "-0.03em",
+                      lineHeight: 1,
+                    }}
+                  >
+                    BULLISH
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "rgba(255,255,255,.3)",
+                      marginTop: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <span>Bitcoin</span>
+                    <span
+                      style={{
+                        color: "rgba(255,255,255,.5)",
+                        fontFamily: "monospace",
+                        fontWeight: 600,
+                      }}
+                    >
+                      $80,734
+                    </span>
+                    <span style={{ color: "#2ecc71", fontFamily: "monospace" }}>
+                      +2.14%
+                    </span>
+                  </div>
+                </div>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      padding: "14px 16px",
+                      borderRadius: 12,
+                      background: "rgba(255,255,255,.03)",
+                      border: "1px solid rgba(255,255,255,.06)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 9,
+                        color: "rgba(255,255,255,.3)",
+                        letterSpacing: ".1em",
+                      }}
+                    >
+                      CONFIDENCE
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 28,
+                        fontWeight: 900,
+                        color: "#2ecc71",
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      79%
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      flex: 1,
+                      padding: "14px 16px",
+                      borderRadius: 12,
+                      background: "rgba(255,255,255,.03)",
+                      border: "1px solid rgba(255,255,255,.06)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 9,
+                        color: "rgba(255,255,255,.3)",
+                        letterSpacing: ".1em",
+                      }}
+                    >
+                      RISK LEVEL
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 900,
+                        color: "#f5a623",
+                      }}
+                    >
+                      MEDIUM
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(5,1fr)",
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
+                {[
+                  {
+                    label: "RSI",
+                    val: 67,
+                    color: "#f5a623",
+                    status: "Neutral",
+                  },
+                  {
+                    label: "MACD",
+                    val: 80,
+                    color: "#2ecc71",
+                    status: "Bullish",
+                  },
+                  { label: "BB", val: 45, color: "#3498db", status: "Middle" },
+                  {
+                    label: "Stoch",
+                    val: 72,
+                    color: "#f5a623",
+                    status: "Neutral",
+                  },
+                  {
+                    label: "EMA",
+                    val: 90,
+                    color: "#2ecc71",
+                    status: "Bullish",
+                  },
+                ].map((ind) => (
+                  <div
+                    key={ind.label}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      background: "rgba(255,255,255,.025)",
+                      border: "1px solid rgba(255,255,255,.05)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: 6,
+                      }}
+                    >
+                      <span
+                        style={{ fontSize: 9, color: "rgba(255,255,255,.3)" }}
+                      >
+                        {ind.label}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          color: ind.color,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {ind.status}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        height: 3,
+                        borderRadius: 2,
+                        background: "rgba(255,255,255,.06)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${ind.val}%`,
+                          height: "100%",
+                          background: `linear-gradient(90deg,${ind.color}70,${ind.color})`,
+                          borderRadius: 2,
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: ind.color,
+                        fontWeight: 700,
+                        marginTop: 4,
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      {ind.val}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3,1fr)",
+                  gap: 8,
+                }}
+              >
+                {[
+                  {
+                    label: "Fear & Greed",
+                    value: "48",
+                    sub: "Neutral",
+                    color: "#f5a623",
+                  },
+                  {
+                    label: "7-Day Trend",
+                    value: "+0.2%",
+                    sub: "Sideways",
+                    color: "#3498db",
+                  },
+                  {
+                    label: "Stop Loss",
+                    value: "$74,374",
+                    sub: "−8% from entry",
+                    color: "#e74c3c",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: 10,
+                      background: "rgba(255,255,255,.02)",
+                      border: "1px solid rgba(255,255,255,.05)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 9,
+                        color: "rgba(255,255,255,.3)",
+                        marginBottom: 4,
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 800,
+                        color: item.color,
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      {item.value}
+                    </div>
+                    <div
+                      style={{ fontSize: 10, color: "rgba(255,255,255,.25)" }}
+                    >
+                      {item.sub}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section
+        style={{ padding: "60px 48px", maxWidth: 1160, margin: "0 auto" }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#f5a623",
+              letterSpacing: ".22em",
+              textTransform: "uppercase",
+              marginBottom: 12,
+            }}
+          >
+            Everything you need
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(28px,4vw,50px)",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.05,
+            }}
+          >
+            Professional tools.
+            <br />
+            <span style={{ color: "rgba(255,255,255,.22)" }}>
+              Zero complexity.
+            </span>
+          </h2>
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+            gap: 14,
+          }}
+        >
+          {[
+            {
+              icon: Brain,
+              color: "#9b59b6",
+              badge: "AI POWERED",
+              title: "AI Technical Analysis",
+              desc: "Groq Llama 3.3 processes RSI, MACD, Bollinger Bands, Stochastic & EMA. Get bullish/bearish signals with stop-loss and take-profit levels tailored to your position.",
+            },
+            {
+              icon: BarChart2,
+              color: "#3498db",
+              badge: "LIVE DATA",
+              title: "Live Market Data",
+              desc: "Track 2,500+ cryptocurrencies with real-time prices, volume, market cap, trending coins and an interactive heatmap — updating every 2 seconds.",
+            },
+            {
+              icon: Wallet,
+              color: "#2ecc71",
+              badge: "TAX REPORTS",
+              title: "Portfolio Tracker",
+              desc: "Import trades from Binance, Bybit, OKX, Coinbase & Kraken. Automatic FIFO P&L calculation, short vs long-term classification and exportable tax reports.",
+            },
+            {
+              icon: Bell,
+              color: "#f5a623",
+              badge: "INSTANT",
+              title: "Smart Price Alerts",
+              desc: "Set price targets, % change triggers and volume spike alerts. Get browser push notifications the moment your conditions are met.",
+            },
+            {
+              icon: Globe,
+              color: "#1abc9c",
+              badge: "FREE",
+              title: "Market Sentiment",
+              desc: "Real-time Fear & Greed Index, 7-day trend analysis and volume anomaly detection — all automatically injected into your AI analysis for richer context.",
+            },
+            {
+              icon: Shield,
+              color: "#e74c3c",
+              badge: "PRIVATE",
+              title: "Privacy First",
+              desc: "Your trade data never leaves your browser. CSV files are parsed locally, positions stay private. We never store, sell or transmit your financial information.",
+            },
+          ].map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <div
+                key={i}
+                className="feat"
+                style={{
+                  padding: "26px",
+                  borderRadius: 18,
+                  background: "rgba(255,255,255,.02)",
+                  border: "1px solid rgba(255,255,255,.06)",
+                  transition: "all .3s ease",
+                  position: "relative",
+                  overflow: "hidden",
+                  animation: `fadeUp .6s ease ${0.1 + i * 0.07}s both`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = `${f.color}30`;
+                  e.currentTarget.style.background = `${f.color}05`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,.06)";
+                  e.currentTarget.style.background = "rgba(255,255,255,.02)";
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -40,
+                    right: -40,
+                    width: 130,
+                    height: 130,
+                    borderRadius: "50%",
+                    background: `${f.color}08`,
+                    filter: "blur(30px)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    marginBottom: 18,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      background: `${f.color}14`,
+                      border: `1px solid ${f.color}22`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon size={19} style={{ color: f.color }} />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 8,
+                      fontWeight: 900,
+                      padding: "3px 8px",
+                      borderRadius: 20,
+                      background: `${f.color}14`,
+                      color: f.color,
+                      border: `1px solid ${f.color}22`,
+                      letterSpacing: ".12em",
+                    }}
+                  >
+                    {f.badge}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: "rgba(255,255,255,.9)",
+                    marginBottom: 9,
+                  }}
+                >
+                  {f.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: 12.5,
+                    color: "rgba(255,255,255,.33)",
+                    lineHeight: 1.65,
+                  }}
+                >
+                  {f.desc}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section
+        style={{
+          padding: "60px 48px",
+          maxWidth: 860,
+          margin: "0 auto",
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 800,
+            color: "#f5a623",
+            letterSpacing: ".22em",
+            textTransform: "uppercase",
+            marginBottom: 12,
+          }}
+        >
+          Simple workflow
+        </div>
+        <h2
+          style={{
+            fontSize: "clamp(24px,3.5vw,42px)",
+            fontWeight: 900,
+            letterSpacing: "-0.03em",
+            marginBottom: 56,
+          }}
+        >
+          From data to decision
+          <br />
+          <span style={{ color: "rgba(255,255,255,.22)" }}>in seconds.</span>
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: 24,
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 30,
+              left: "17%",
+              right: "17%",
+              height: 1,
+              background:
+                "linear-gradient(to right,transparent,rgba(245,166,35,.2),transparent)",
+              pointerEvents: "none",
+            }}
+          />
+          {[
+            {
+              step: "01",
+              Icon: BarChart2,
+              color: "#3498db",
+              title: "Pick a coin",
+              desc: "Search from 2,500+ live cryptocurrencies with real-time prices.",
+            },
+            {
+              step: "02",
+              Icon: Brain,
+              color: "#9b59b6",
+              title: "Run AI analysis",
+              desc: "AI processes 5+ indicators, news sentiment and Fear & Greed Index instantly.",
+            },
+            {
+              step: "03",
+              Icon: Zap,
+              color: "#f5a623",
+              title: "Act with confidence",
+              desc: "Clear signal, stop-loss level and personalized advice for your position.",
+            },
+          ].map((s, i) => (
+            <div key={i} style={{ padding: "0 16px" }}>
+              <div
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  background: `${s.color}12`,
+                  border: `1px solid ${s.color}22`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                <s.Icon size={22} style={{ color: s.color }} />
+              </div>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 800,
+                  color: `${s.color}55`,
+                  letterSpacing: ".15em",
+                  marginBottom: 8,
+                }}
+              >
+                STEP {s.step}
+              </div>
+              <div
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "rgba(255,255,255,.9)",
+                  marginBottom: 8,
+                }}
+              >
+                {s.title}
+              </div>
+              <div
+                style={{
+                  fontSize: 12.5,
+                  color: "rgba(255,255,255,.3)",
+                  lineHeight: 1.65,
+                }}
+              >
+                {s.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* STATS */}
+      <section
+        style={{ padding: "60px 48px", maxWidth: 1060, margin: "0 auto" }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#f5a623",
+              letterSpacing: ".22em",
+              textTransform: "uppercase",
+              marginBottom: 12,
+            }}
+          >
+            By the numbers
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(24px,3.5vw,42px)",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Built for serious traders
+          </h2>
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: 14,
+          }}
+        >
+          {[
+            {
+              value: 2500,
+              suffix: "+",
+              prefix: "",
+              label: "Coins Tracked",
+              desc: "Real-time prices, 24h changes, volume & market cap",
+              color: "#f5a623",
+              Icon: BarChart2,
+            },
+            {
+              value: 5,
+              suffix: "+",
+              prefix: "",
+              label: "AI Indicators",
+              desc: "RSI, MACD, Bollinger Bands, Stochastic & EMA",
+              color: "#9b59b6",
+              Icon: Brain,
+            },
+            {
+              value: 99,
+              suffix: "%",
+              prefix: "",
+              label: "Uptime",
+              desc: "Always-on live data pipeline with Redis caching",
+              color: "#3498db",
+              Icon: Zap,
+            },
+            {
+              value: 5,
+              suffix: "",
+              prefix: "",
+              label: "Exchanges Supported",
+              desc: "Binance, Bybit, OKX, Coinbase & Kraken CSV import",
+              color: "#2ecc71",
+              Icon: Globe,
+            },
+            {
+              value: 0,
+              suffix: "",
+              prefix: "$",
+              label: "To Get Started",
+              desc: "Full free plan — no credit card required",
+              color: "#1abc9c",
+              Icon: Star,
+            },
+            {
+              value: 100,
+              suffix: "%",
+              prefix: "",
+              label: "Private by Design",
+              desc: "Trade data never leaves your browser — zero servers",
+              color: "#e74c3c",
+              Icon: Shield,
+            },
+          ].map((s, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "28px 24px",
+                borderRadius: 16,
+                background: "rgba(255,255,255,.02)",
+                border: "1px solid rgba(255,255,255,.06)",
+                animation: `fadeUp .6s ease ${0.05 + i * 0.07}s both`,
+                transition: "all .3s ease",
+                position: "relative",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "center",
+                gap: 20,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = `${s.color}30`;
+                e.currentTarget.style.background = `${s.color}05`;
+                e.currentTarget.style.transform = "translateY(-3px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,.06)";
+                e.currentTarget.style.background = "rgba(255,255,255,.02)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: -20,
+                  right: -20,
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: `${s.color}08`,
+                  filter: "blur(20px)",
+                  pointerEvents: "none",
+                }}
+              />
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 13,
+                  background: `${s.color}12`,
+                  border: `1px solid ${s.color}20`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <s.Icon size={20} style={{ color: s.color }} />
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontSize: "clamp(22px,2.5vw,32px)",
+                    fontWeight: 900,
+                    color: s.color,
+                    fontFamily: "monospace",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
+                    marginBottom: 4,
+                  }}
+                >
+                  <Counter to={s.value} suffix={s.suffix} prefix={s.prefix} />
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: "rgba(255,255,255,.75)",
+                    marginBottom: 3,
+                  }}
+                >
+                  {s.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "rgba(255,255,255,.28)",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {s.desc}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section
+        style={{ padding: "60px 48px", maxWidth: 820, margin: "0 auto" }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#f5a623",
+              letterSpacing: ".22em",
+              textTransform: "uppercase",
+              marginBottom: 12,
+            }}
+          >
+            Pricing
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(24px,3.5vw,42px)",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Start free, upgrade when ready
+          </h2>
+          <p
+            style={{
+              fontSize: 14,
+              color: "rgba(255,255,255,.28)",
+              marginTop: 10,
+            }}
+          >
+            No credit card required. Cancel anytime.
+          </p>
+        </div>
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
+        >
+          <div
+            style={{
+              padding: "30px",
+              borderRadius: 20,
+              background: "rgba(255,255,255,.025)",
+              border: "1px solid rgba(255,255,255,.07)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: "rgba(255,255,255,.3)",
+                textTransform: "uppercase",
+                letterSpacing: ".12em",
+                marginBottom: 14,
+              }}
+            >
+              Free
+            </div>
+            <div
+              style={{
+                fontSize: 46,
+                fontWeight: 900,
+                letterSpacing: "-0.03em",
+                marginBottom: 6,
+              }}
+            >
+              Free
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                color: "rgba(255,255,255,.28)",
+                marginBottom: 26,
+                lineHeight: 1.5,
+              }}
+            >
+              Everything you need to explore crypto markets.
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                marginBottom: 26,
+              }}
+            >
+              {[
+                "Live market data — 2,500+ coins",
+                "Market heatmap & coin compare",
+                "Watchlist (up to 10 coins)",
+                "Basic price alerts",
+              ].map((f, i) => (
+                <div
+                  key={i}
+                  style={{ display: "flex", alignItems: "center", gap: 9 }}
+                >
+                  <div
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      background: "rgba(255,255,255,.05)",
+                      border: "1px solid rgba(255,255,255,.09)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Check
+                      size={9}
+                      style={{ color: "rgba(255,255,255,.35)" }}
+                    />
+                  </div>
+                  <span
+                    style={{ fontSize: 13, color: "rgba(255,255,255,.42)" }}
+                  >
+                    {f}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => onAuthOpen?.()}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: 11,
+                background: "rgba(255,255,255,.05)",
+                color: "rgba(255,255,255,.5)",
+                fontWeight: 700,
+                fontSize: 14,
+                border: "1px solid rgba(255,255,255,.08)",
+                cursor: "pointer",
+                transition: "all .2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,.09)";
+                e.currentTarget.style.color = "rgba(255,255,255,.75)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,.05)";
+                e.currentTarget.style.color = "rgba(255,255,255,.5)";
+              }}
+            >
+              Get Started Free
+            </button>
+          </div>
+          <div
+            style={{
+              padding: "30px",
+              borderRadius: 20,
+              background:
+                "linear-gradient(135deg,rgba(245,166,35,.1),rgba(245,166,35,.04))",
+              border: "1px solid rgba(245,166,35,.28)",
+              position: "relative",
+              boxShadow: "0 0 60px rgba(245,166,35,.07)",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 14,
+                fontSize: 9,
+                fontWeight: 900,
+                padding: "3px 10px",
+                borderRadius: 20,
+                background: "#f5a623",
+                color: "#111",
+                letterSpacing: ".1em",
+              }}
+            >
+              MOST POPULAR
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: "#f5a623",
+                textTransform: "uppercase",
+                letterSpacing: ".12em",
+                marginBottom: 14,
+              }}
+            >
+              Pro
+            </div>
+            <div style={{ marginBottom: 6 }}>
+              <span
+                style={{
+                  fontSize: 46,
+                  fontWeight: 900,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                $10
+              </span>
+              <span
+                style={{
+                  fontSize: 14,
+                  color: "rgba(255,255,255,.28)",
+                  marginLeft: 4,
+                }}
+              >
+                /month
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                color: "rgba(255,255,255,.32)",
+                marginBottom: 26,
+                lineHeight: 1.5,
+              }}
+            >
+              Unlock AI analysis, portfolio tracking and unlimited features.
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                marginBottom: 26,
+              }}
+            >
+              {[
+                "Everything in Free",
+                "AI Technical Analysis (unlimited)",
+                "Portfolio Tracker & Tax Reports",
+                "Unlimited watchlist & alerts",
+                "News sentiment analysis",
+                "Priority support",
+              ].map((f, i) => (
+                <div
+                  key={i}
+                  style={{ display: "flex", alignItems: "center", gap: 9 }}
+                >
+                  <div
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      background: "rgba(245,166,35,.14)",
+                      border: "1px solid rgba(245,166,35,.28)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Check size={9} style={{ color: "#f5a623" }} />
+                  </div>
+                  <span
+                    style={{ fontSize: 13, color: "rgba(255,255,255,.62)" }}
+                  >
+                    {f}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => navigate("/pricing")}
+              className="lp-primary"
+              style={{
+                width: "100%",
+                padding: "13px",
+                borderRadius: 11,
+                background: "linear-gradient(135deg,#f5a623,#e8941a)",
+                color: "#111",
+                fontWeight: 800,
+                fontSize: 14,
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 8px 24px rgba(245,166,35,.3)",
+              }}
+            >
+              Start Pro Trial →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section
+        style={{ padding: "60px 48px", maxWidth: 760, margin: "0 auto" }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#f5a623",
+              letterSpacing: ".22em",
+              textTransform: "uppercase",
+              marginBottom: 12,
+            }}
+          >
+            FAQ
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(24px,3.5vw,42px)",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Common questions
+          </h2>
+        </div>
+        <FaqList />
+      </section>
+
+      {/* FINAL CTA */}
+      <section
+        style={{
+          padding: "80px 48px",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+            width: 600,
+            height: 300,
+            background:
+              "radial-gradient(ellipse,rgba(245,166,35,.07) 0%,transparent 65%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ position: "relative" }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#f5a623",
+              letterSpacing: ".22em",
+              textTransform: "uppercase",
+              marginBottom: 16,
+            }}
+          >
+            Get started today
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(28px,5vw,58px)",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+              marginBottom: 16,
+              lineHeight: 1.05,
+            }}
+          >
+            Ready to trade
+            <br />
+            smarter?
+          </h2>
+          <p
+            style={{
+              fontSize: 15,
+              color: "rgba(255,255,255,.28)",
+              maxWidth: 400,
+              margin: "0 auto 40px",
+              lineHeight: 1.65,
+            }}
+          >
+            Free account. No credit card. Upgrade to Pro when you're ready.
+          </p>
+          <button
+            onClick={() => onAuthOpen?.()}
+            className="lp-primary"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 9,
+              padding: "16px 38px",
+              borderRadius: 14,
+              background: "linear-gradient(135deg,#f5a623,#e8941a)",
+              color: "#111",
+              fontSize: 16,
+              fontWeight: 800,
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 8px 32px rgba(245,166,35,.35)",
+            }}
+          >
+            Create Free Account <ArrowRight size={17} />
+          </button>
+          <div
+            style={{
+              marginTop: 16,
+              fontSize: 12,
+              color: "rgba(255,255,255,.2)",
+            }}
+          >
+            Free forever · No credit card required
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer
+        style={{
+          padding: "24px 48px",
+          borderTop: "1px solid rgba(255,255,255,.05)",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1160,
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 6,
+                background: "linear-gradient(135deg,#f5a623,#e8941a)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 900,
+                color: "#111",
+              }}
+            >
+              N
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 700 }}>
+              <span style={{ color: "#f5a623" }}>Crypto</span>Neko
+            </span>
+            <span
+              style={{
+                fontSize: 11,
+                color: "rgba(255,255,255,.15)",
+                marginLeft: 6,
+              }}
+            >
+              © 2025
+            </span>
+          </div>
+          <div
+            style={{
+              fontSize: 11,
+              color: "rgba(255,255,255,.16)",
+              maxWidth: 360,
+              textAlign: "center",
+            }}
+          >
+            Technical analysis tools only. Not financial advice.
+          </div>
+          <div style={{ display: "flex", gap: 20 }}>
+            {["Privacy Policy", "Terms of Use", "Contact"].map((link) => (
+              <span
+                key={link}
+                style={{
+                  fontSize: 12,
+                  color: "rgba(255,255,255,.2)",
+                  cursor: "pointer",
+                  transition: "color .15s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,.6)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,.2)")
+                }
+              >
+                {link}
+              </span>
+            ))}
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

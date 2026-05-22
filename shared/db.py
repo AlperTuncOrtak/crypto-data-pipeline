@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 import pymysql
 from pymysql.cursors import DictCursor
 
-
 # .env dosyasini proje root'undan yukle
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / ".env"
@@ -30,5 +29,6 @@ def get_connection():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME"),
-        autocommit=True,  # ufak optimizasyon
+        autocommit=True,
+        init_command="SET time_zone = '+00:00'",
     )

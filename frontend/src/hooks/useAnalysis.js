@@ -23,22 +23,23 @@ import { apiClient } from '../api/client'
 // -----------------------
 // HISTORY
 // -----------------------
-async function fetchHistory(symbols) {
+async function fetchHistory(symbols, hours = 24) {
   const response = await apiClient.get('/analysis/history', {
-    params: { symbols },
-    paramsSerializer: { indexes: null },   // ?symbols=A&symbols=B
+    params: { symbols, hours },
+    paramsSerializer: { indexes: null },
   })
   return response.data
 }
 
-export function useMultiCoinHistory(symbols = []) {
+export function useMultiCoinHistory(symbols = [], hours = 24) {
   return useQuery({
-    queryKey: ['analysis-history', [...symbols].sort().join(',')],
-    queryFn: () => fetchHistory(symbols),
+    queryKey: ['analysis-history', [...symbols].sort().join(','), hours],
+    queryFn: () => fetchHistory(symbols, hours),
     enabled: symbols.length > 0,
     refetchInterval: 60 * 1000,
   })
 }
+
 
 
 // -----------------------

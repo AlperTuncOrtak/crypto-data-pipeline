@@ -5,9 +5,23 @@ uvicorn[standard]
 # Database
 pymysql
 
-# Data ingestion (eski pipeline icin, Faz 2'de degisecek)
+# Auth & HTTP
+httpx
+supabase
+
+# AI integrations
+google-genai
+groq
+
+# Data ingestion
 requests
 pandas
 
 # Environment
 python-dotenv
+
+# Payments
+stripe
+
+# Rate limiting
+slowapi

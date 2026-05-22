@@ -1,31 +1,29 @@
 // ============================================================
 // api/client.js
 // ============================================================
-// Axios instance. Tum backend istekleri bu instance uzerinden
-// yapilacak. Base URL tek bir yerden yonetiliyor - ileride
-// production'a tasirken sadece burayi degistirmemiz gerekecek.
-// ============================================================
+import axios from "axios";
+import { supabase } from "../lib/supabase";
 
-import axios from 'axios'
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-
-// -----------------------
-// BASE URL
-// -----------------------
-// Development'ta localhost:8000 (FastAPI uvicorn). Production'a
-// gecince environment variable'dan okuyacagiz (ileride .env.production
-// dosyasi eklenecek).
-const BASE_URL = 'http://localhost:8000'
-
-
-// -----------------------
-// AXIOS INSTANCE
-// -----------------------
-// Tum backend istekleri icin ortak header ve timeout ayarlari.
 export const apiClient = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,              // 10 saniye - uzun surerse iptal
+  timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+});
+
+// ── Auth interceptor ──────────────────────────────────────────
+// Her istekten önce Supabase session'dan token alıp
+// Authorization header'a ekler. Token yoksa header eklenmez
+// (public endpoint'ler etkilenmez).
+apiClient.interceptors.request.use(async (config) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers["Authorization"] = `Bearer ${session.access_token}`;
+  }
+  return config;
+});

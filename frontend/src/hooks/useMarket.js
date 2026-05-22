@@ -11,9 +11,8 @@
 //  - Loading/error state'leri doner
 // ============================================================
 
-import { useQuery } from '@tanstack/react-query'
-import { apiClient } from '../api/client'
-
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../api/client";
 
 // -----------------------
 // FETCH FUNCTION
@@ -21,21 +20,20 @@ import { apiClient } from '../api/client'
 // Saf bir async function. React Query bunu cagiracak.
 // Hook mantigina karistirmiyoruz ki test edebilir kalsin.
 async function fetchMarket(limit) {
-  const response = await apiClient.get('/market', {
+  const response = await apiClient.get("/market", {
     params: { limit },
-  })
-  return response.data
+  });
+  return response.data;
 }
-
 
 // -----------------------
 // HOOK
 // -----------------------
-export function useMarket(limit = 20) {
+export function useMarket(limit = 3000) {
   return useQuery({
     // queryKey React Query icin cache anahtari. limit degisirse
     // yeni bir cache entry olur, eski verimiz kalir.
-    queryKey: ['market', limit],
+    queryKey: ["market", limit],
 
     // Asil fetch fonksiyonu
     queryFn: () => fetchMarket(limit),
@@ -43,79 +41,81 @@ export function useMarket(limit = 20) {
     // 30 saniyede bir otomatik yenile (Streamlit'teki auto-refresh
     // davranisinin karsiligi)
     refetchInterval: 5 * 1000,
-  })
+  });
 }
 async function fetchGainers(limit) {
-  const response = await apiClient.get('/market/gainers', {
+  const response = await apiClient.get("/market/gainers", {
     params: { limit },
-  })
-  return response.data
+  });
+  return response.data;
 }
 
 export function useGainers(limit = 5) {
   return useQuery({
-    queryKey: ['gainers', limit],
+    queryKey: ["gainers", limit],
     queryFn: () => fetchGainers(limit),
-    refetchInterval: 5 * 1000,
-  })
+    // 24h değişim verisi — 5 saniyede biri yenilemek gürültü katar.
+    // 60 saniye yeterli; staleTime önce önbelleği gösterir.
+    refetchInterval: 60 * 1000,
+    staleTime: 30 * 1000,
+  });
 }
 
-
 async function fetchLosers(limit) {
-  const response = await apiClient.get('/market/losers', {
+  const response = await apiClient.get("/market/losers", {
     params: { limit },
-  })
-  return response.data
+  });
+  return response.data;
 }
 
 export function useLosers(limit = 5) {
   return useQuery({
-    queryKey: ['losers', limit],
+    queryKey: ["losers", limit],
     queryFn: () => fetchLosers(limit),
-    refetchInterval: 5 * 1000,
-  })
+    refetchInterval: 60 * 1000,
+    staleTime: 30 * 1000,
+  });
 }
 
-
 async function fetchVolume(limit) {
-  const response = await apiClient.get('/market/volume', {
+  const response = await apiClient.get("/market/volume", {
     params: { limit },
-  })
-  return response.data
+  });
+  return response.data;
 }
 
 export function useVolume(limit = 5) {
   return useQuery({
-    queryKey: ['volume', limit],
+    queryKey: ["volume", limit],
     queryFn: () => fetchVolume(limit),
     refetchInterval: 5 * 1000,
-  })
+  });
 }
 
 async function fetchTrending() {
-  const response = await apiClient.get('/market/trending')
-  return response.data
+  const response = await apiClient.get("/market/trending");
+  return response.data;
 }
 
 export function useTrending() {
   return useQuery({
-    queryKey: ['trending'],
+    queryKey: ["trending"],
     queryFn: fetchTrending,
     refetchInterval: 30 * 1000,
     staleTime: 15 * 1000,
-  })
+  });
 }
 
 async function fetchStats() {
-  const response = await apiClient.get('/market/stats')
-  return response.data
+  const response = await apiClient.get("/market/stats");
+  return response.data;
 }
 
 export function useMarketStats() {
   return useQuery({
-    queryKey: ['market-stats'],
+    queryKey: ["market-stats"],
     queryFn: fetchStats,
     refetchInterval: 60 * 1000,
     staleTime: 30 * 1000,
-  })
+  });
 }
