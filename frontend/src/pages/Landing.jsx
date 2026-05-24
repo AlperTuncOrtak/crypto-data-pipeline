@@ -1917,7 +1917,7 @@ export default function Landing({ onAuthOpen }) {
                 marginLeft: 6,
               }}
             >
-              © 2025
+              &copy; {new Date().getFullYear()}
             </span>
           </div>
           <div

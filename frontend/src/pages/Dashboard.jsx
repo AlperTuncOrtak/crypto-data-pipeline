@@ -9,6 +9,7 @@ import {
   useMarketStats,
 } from "../hooks/useMarket";
 import CoinListCard from "../components/market/CoinListCard";
+import MarketOracle from "../components/market/MarketOracle";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import { TrendingUp, Activity, DollarSign, Flame, Clock } from "lucide-react";
 
@@ -599,6 +600,7 @@ export default function Dashboard() {
         {/* SAĞ KOLON (1/3) */}
         <div className="flex flex-col gap-4">
           {coins.length > 0 && <FearGreedGauge coins={coins} />}
+          <MarketOracle />
           <CoinListCard
             title="Top Gainers (24h)"
             accent="orange"

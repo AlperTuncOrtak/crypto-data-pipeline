@@ -466,6 +466,29 @@ def volume_spikes(limit: int = 10):
     return get_recent_spikes(limit)
 
 
+# -----------------------
+# MARKET ORACLE
+# -----------------------
+@app.get("/oracle-feed")
+def oracle_feed():
+    """
+    Market Oracle — Sentiment + AI Gossip Radar.
+
+    Aggregates Reddit r/CryptoCurrency hot posts + CoinDesk/Cointelegraph
+    RSS headlines (zero API keys), processes them through the AI pipeline
+    (Groq → Gemini → static fallback), and returns:
+      {
+        "sentiment": {"score": int, "label": str, "updated_at": str},
+        "insights":  [{"id", "tag", "direction", "text", "source", "url", "age"}, ...]
+      }
+
+    Result is cached for 5 minutes to avoid hammering free endpoints.
+    """
+    from backend.services.oracle_service import get_oracle_feed
+
+    return get_oracle_feed()
+
+
 # ── STRIPE ────────────────────────────────────────────────────
 @app.post("/create-checkout-session")
 def create_checkout_session(payload: dict, user: dict = Depends(verify_token)):

@@ -16,6 +16,7 @@ groq
 # Data ingestion
 requests
 pandas
+feedparser
 
 # Environment
 python-dotenv
@@ -25,3 +26,8 @@ stripe
 
 # Rate limiting
 slowapi
+
+# Async & Realtime databases
+aiomysql
+redis
+websockets
