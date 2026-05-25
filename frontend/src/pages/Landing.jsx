@@ -214,10 +214,16 @@ export default function Landing({ onAuthOpen }) {
         @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
         @keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
         @keyframes glow { 0%,100%{opacity:.5} 50%{opacity:1} }
+        @keyframes floatY { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-14px)} }
+        @keyframes floatY2 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
+        @keyframes floatY3 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-10px)} }
         .lp-primary { transition:all .2s ease !important }
         .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(245,166,35,.55) !important }
         .lp-ghost:hover { border-color:rgba(245,166,35,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(245,166,35,.05) !important }
         .feat:hover { transform:translateY(-5px) !important; }
+        .fcoin { transition: filter .35s ease, transform .35s ease, box-shadow .35s ease !important; }
+        .fcoin:hover { filter: blur(0px) !important; transform: scale(1.12) !important; box-shadow: 0 0 32px var(--fcoin-glow) !important; }
+        .fcoin:hover .fcoin-label { opacity:1 !important; transform:translateX(0) !important; pointer-events:none; }
       `}</style>
 
       {/* NAVBAR */}
@@ -371,7 +377,7 @@ export default function Landing({ onAuthOpen }) {
         </div>
       </div>
 
-      {/* HERO */}
+      {/* FLOATING COINS HERO LAYER */}
       <section
         style={{
           position: "relative",
@@ -380,6 +386,90 @@ export default function Landing({ onAuthOpen }) {
           overflow: "hidden",
         }}
       >
+        {/* ── FLOATING COIN ORBS ─────────────────────────────────────────── */}
+        {[
+          { slug: "bitcoin",  sym: "BTC", change: -0.91, color: "#f7931a", img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",        top: "12%", left: "6%",  size: 58, anim: "floatY 6s ease-in-out infinite",              delay: "0s"    },
+          { slug: "ethereum", sym: "ETH", change: -2.29, color: "#627eea", img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",      top: "55%", left: "3%",  size: 48, anim: "floatY2 7.5s ease-in-out infinite",            delay: "1.2s"  },
+          { slug: "solana",   sym: "SOL", change: +3.14, color: "#9945ff", img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",       top: "78%", left: "12%", size: 44, anim: "floatY3 5.5s ease-in-out infinite",            delay: "0.4s"  },
+          { slug: "binancecoin", sym: "BNB", change: +0.82, color: "#f3ba2f", img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "22%", left: "88%", size: 54, anim: "floatY 8s ease-in-out infinite",               delay: "0.8s"  },
+          { slug: "ripple",  sym: "XRP", change: +1.44, color: "#346aa9", img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "60%", left: "91%", size: 44, anim: "floatY2 6.5s ease-in-out infinite",       delay: "2s"    },
+          { slug: "dogecoin", sym: "DOGE", change: +5.21, color: "#c2a633", img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",        top: "82%", left: "82%", size: 42, anim: "floatY3 7s ease-in-out infinite",              delay: "1.6s"  },
+          { slug: "cardano", sym: "ADA", change: -1.03, color: "#0033ad",  img: "https://assets.coingecko.com/coins/images/975/small/cardano.png",        top: "38%", left: "93%", size: 38, anim: "floatY 5s ease-in-out infinite",               delay: "0.6s"  },
+          { slug: "avalanche-2", sym: "AVAX", change: +2.87, color: "#e84142", img: "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png", top: "14%", left: "82%", size: 46, anim: "floatY2 9s ease-in-out infinite", delay: "1s" },
+        ].map((coin) => (
+          <div
+            key={coin.slug}
+            className="fcoin"
+            onClick={() => navigate(`/coin/${coin.slug}`)}
+            style={{
+              position:  "absolute",
+              top:       coin.top,
+              left:      coin.left,
+              width:     coin.size,
+              height:    coin.size,
+              borderRadius: "50%",
+              cursor:    "pointer",
+              filter:    "blur(3px)",
+              animation: coin.anim,
+              animationDelay: coin.delay,
+              zIndex:    2,
+              "--fcoin-glow": `${coin.color}66`,
+            }}
+          >
+            {/* Logo bubble */}
+            <img
+              src={coin.img}
+              alt={coin.sym}
+              style={{
+                width:  "100%",
+                height: "100%",
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: `2px solid ${coin.color}44`,
+                boxShadow: `0 0 18px ${coin.color}33`,
+                display: "block",
+                backgroundColor: "rgba(255,255,255,.05)",
+              }}
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
+
+            {/* Hover label — slides in from right */}
+            <div
+              className="fcoin-label"
+              style={{
+                position:   "absolute",
+                top:        "50%",
+                left:       "calc(100% + 10px)",
+                transform:  "translateX(-8px)",
+                opacity:    0,
+                transition: "opacity .3s ease, transform .3s ease",
+                pointerEvents: "none",
+                whiteSpace: "nowrap",
+                display:    "flex",
+                alignItems: "center",
+                gap:        6,
+                marginTop:  "-16px",
+              }}
+            >
+              <span style={{
+                fontSize:   12,
+                fontWeight: 800,
+                color:      coin.color,
+                fontFamily: "monospace",
+                letterSpacing: ".04em",
+              }}>{coin.sym}</span>
+              <span style={{
+                fontSize:   11,
+                fontWeight: 700,
+                color:      coin.change >= 0 ? "#2ecc71" : "#e74c3c",
+                fontFamily: "monospace",
+              }}>
+                {coin.change >= 0 ? "+" : ""}{coin.change}%
+              </span>
+            </div>
+          </div>
+        ))}
+
         <div
           style={{
             position: "absolute",
@@ -974,87 +1064,114 @@ export default function Landing({ onAuthOpen }) {
         </div>
       </section>
 
-      {/* FEATURES */}
       <section
-        style={{ padding: "60px 48px", maxWidth: 1160, margin: "0 auto" }}
+        style={{ padding: "60px 48px", maxWidth: 1220, margin: "0 auto" }}
       >
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div
             style={{
-              fontSize: 10,
-              fontWeight: 800,
-              color: "#f5a623",
-              letterSpacing: ".22em",
-              textTransform: "uppercase",
-              marginBottom: 12,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "5px 14px",
+              borderRadius: 20,
+              background: "rgba(245,166,35,.08)",
+              border: "1px solid rgba(245,166,35,.2)",
+              marginBottom: 20,
             }}
           >
-            Everything you need
+            <span style={{ fontSize: 10, fontWeight: 800, color: "#f5a623", letterSpacing: ".22em", textTransform: "uppercase" }}>
+              Everything you need
+            </span>
           </div>
           <h2
             style={{
-              fontSize: "clamp(28px,4vw,50px)",
+              fontSize: "clamp(30px,4vw,54px)",
               fontWeight: 900,
               letterSpacing: "-0.03em",
-              lineHeight: 1.05,
+              lineHeight: 1.08,
+              margin: 0,
             }}
           >
             Professional tools.
             <br />
-            <span style={{ color: "rgba(255,255,255,.22)" }}>
+            <span style={{
+              background: "linear-gradient(135deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.15) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}>
               Zero complexity.
             </span>
           </h2>
         </div>
+
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
-            gap: 14,
+            gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
+            gap: 18,
           }}
         >
           {[
             {
               icon: Brain,
               color: "#9b59b6",
+              gradFrom: "#9b59b6",
+              gradTo: "#6c3483",
               badge: "AI POWERED",
               title: "AI Technical Analysis",
-              desc: "Groq Llama 3.3 processes RSI, MACD, Bollinger Bands, Stochastic & EMA. Get bullish/bearish signals with stop-loss and take-profit levels tailored to your position.",
+              desc: "Groq Llama 3.3 processes RSI, MACD, Bollinger Bands, Stochastic & EMA. Get bullish/bearish signals with stop-loss and take-profit levels.",
+              stat: { label: "Indicators analyzed", value: "150+" },
             },
             {
               icon: BarChart2,
               color: "#3498db",
+              gradFrom: "#3498db",
+              gradTo: "#1a5276",
               badge: "LIVE DATA",
               title: "Live Market Data",
-              desc: "Track 2,500+ cryptocurrencies with real-time prices, volume, market cap, trending coins and an interactive heatmap — updating every 2 seconds.",
+              desc: "Track 2,500+ cryptocurrencies with real-time prices, volume, market cap, trending coins and an interactive heatmap.",
+              stat: { label: "Coins tracked", value: "2,500+" },
             },
             {
               icon: Wallet,
               color: "#2ecc71",
+              gradFrom: "#2ecc71",
+              gradTo: "#1a7a43",
               badge: "TAX REPORTS",
               title: "Portfolio Tracker",
-              desc: "Import trades from Binance, Bybit, OKX, Coinbase & Kraken. Automatic FIFO P&L calculation, short vs long-term classification and exportable tax reports.",
+              desc: "Import trades from Binance, Bybit, OKX & more. Automatic FIFO P&L calculation and exportable tax reports — all in your browser.",
+              stat: { label: "Supported exchanges", value: "5+" },
             },
             {
               icon: Bell,
               color: "#f5a623",
+              gradFrom: "#f5a623",
+              gradTo: "#b7770d",
               badge: "INSTANT",
               title: "Smart Price Alerts",
               desc: "Set price targets, % change triggers and volume spike alerts. Get browser push notifications the moment your conditions are met.",
+              stat: { label: "Alert delivery", value: "<1s" },
             },
             {
               icon: Globe,
               color: "#1abc9c",
+              gradFrom: "#1abc9c",
+              gradTo: "#0e6655",
               badge: "FREE",
               title: "Market Sentiment",
-              desc: "Real-time Fear & Greed Index, 7-day trend analysis and volume anomaly detection — all automatically injected into your AI analysis for richer context.",
+              desc: "Real-time Fear & Greed Index, 7-day trend analysis and volume anomaly detection — injected into your AI analysis automatically.",
+              stat: { label: "Update interval", value: "Daily" },
             },
             {
               icon: Shield,
               color: "#e74c3c",
+              gradFrom: "#e74c3c",
+              gradTo: "#922b21",
               badge: "PRIVATE",
               title: "Privacy First",
-              desc: "Your trade data never leaves your browser. CSV files are parsed locally, positions stay private. We never store, sell or transmit your financial information.",
+              desc: "Your trade data never leaves your browser. CSV files are parsed locally — we never store, sell or transmit your financial information.",
+              stat: { label: "Data stored on server", value: "Zero" },
             },
           ].map((f, i) => {
             const Icon = f.icon;
@@ -1063,92 +1180,115 @@ export default function Landing({ onAuthOpen }) {
                 key={i}
                 className="feat"
                 style={{
-                  padding: "26px",
-                  borderRadius: 18,
-                  background: "rgba(255,255,255,.02)",
-                  border: "1px solid rgba(255,255,255,.06)",
-                  transition: "all .3s ease",
+                  padding: "32px",
+                  borderRadius: 20,
+                  background: "rgba(255,255,255,.025)",
+                  border: "1px solid rgba(255,255,255,.07)",
+                  transition: "all .4s cubic-bezier(0.4, 0, 0.2, 1)",
                   position: "relative",
                   overflow: "hidden",
                   animation: `fadeUp .6s ease ${0.1 + i * 0.07}s both`,
+                  display: "flex",
+                  flexDirection: "column",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = `${f.color}30`;
-                  e.currentTarget.style.background = `${f.color}05`;
+                  e.currentTarget.style.transform = "translateY(-6px) scale(1.015)";
+                  e.currentTarget.style.borderColor = `${f.color}50`;
+                  e.currentTarget.style.boxShadow = `0 20px 60px -15px ${f.color}30, inset 0 1px 0 ${f.color}20`;
+                  const glow = e.currentTarget.querySelector('.feat-bg-glow');
+                  if (glow) { glow.style.transform = "translate(-50%, -50%) scale(1.5)"; glow.style.opacity = "1"; }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,.06)";
-                  e.currentTarget.style.background = "rgba(255,255,255,.02)";
+                  e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,.07)";
+                  e.currentTarget.style.boxShadow = "none";
+                  const glow = e.currentTarget.querySelector('.feat-bg-glow');
+                  if (glow) { glow.style.transform = "translate(-50%, -50%) scale(0)"; glow.style.opacity = "0"; }
                 }}
               >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -40,
-                    right: -40,
-                    width: 130,
-                    height: 130,
-                    borderRadius: "50%",
-                    background: `${f.color}08`,
-                    filter: "blur(30px)",
-                    pointerEvents: "none",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    marginBottom: 18,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 12,
-                      background: `${f.color}14`,
-                      border: `1px solid ${f.color}22`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon size={19} style={{ color: f.color }} />
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 8,
-                      fontWeight: 900,
-                      padding: "3px 8px",
-                      borderRadius: 20,
-                      background: `${f.color}14`,
+                {/* Inside-out radial glow */}
+                <div className="feat-bg-glow" style={{
+                  position: "absolute", top: "50%", left: "50%",
+                  width: "130%", height: "130%",
+                  background: `radial-gradient(circle, ${f.color}18 0%, transparent 65%)`,
+                  transform: "translate(-50%, -50%) scale(0)", opacity: 0,
+                  transition: "transform .55s cubic-bezier(0.4, 0, 0.2, 1), opacity .4s ease",
+                  pointerEvents: "none", zIndex: 0,
+                }} />
+
+                {/* Top-right decorative blur blob */}
+                <div style={{
+                  position: "absolute", top: -50, right: -50, width: 160, height: 160,
+                  borderRadius: "50%", background: `${f.color}0d`,
+                  filter: "blur(40px)", pointerEvents: "none", zIndex: 0,
+                }} />
+
+                {/* Content */}
+                <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
+
+                  {/* Top row: icon + badge */}
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+                    {/* Icon with gradient bg */}
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 16,
+                      background: `linear-gradient(135deg, ${f.color}25, ${f.color}08)`,
+                      border: `1px solid ${f.color}30`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      boxShadow: `0 4px 20px ${f.color}15`,
+                    }}>
+                      <Icon size={24} style={{ color: f.color }} />
+                    </div>
+
+                    {/* Badge */}
+                    <span style={{
+                      fontSize: 9, fontWeight: 900,
+                      padding: "4px 10px", borderRadius: 20,
+                      background: `${f.color}12`,
                       color: f.color,
-                      border: `1px solid ${f.color}22`,
-                      letterSpacing: ".12em",
-                    }}
-                  >
-                    {f.badge}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: "rgba(255,255,255,.9)",
-                    marginBottom: 9,
-                  }}
-                >
-                  {f.title}
-                </div>
-                <div
-                  style={{
-                    fontSize: 12.5,
-                    color: "rgba(255,255,255,.33)",
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {f.desc}
+                      border: `1px solid ${f.color}28`,
+                      letterSpacing: ".14em",
+                    }}>
+                      {f.badge}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <div style={{
+                    fontSize: 18, fontWeight: 800,
+                    color: "rgba(255,255,255,.95)",
+                    marginBottom: 10,
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1.2,
+                  }}>
+                    {f.title}
+                  </div>
+
+                  {/* Description */}
+                  <div style={{
+                    fontSize: 13, color: "rgba(255,255,255,.38)",
+                    lineHeight: 1.7, flexGrow: 1, marginBottom: 24,
+                  }}>
+                    {f.desc}
+                  </div>
+
+                  {/* Stat bar — the "proof" line */}
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    paddingTop: 16,
+                    borderTop: `1px solid ${f.color}18`,
+                  }}>
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: ".04em" }}>
+                      {f.stat.label}
+                    </span>
+                    <span style={{
+                      fontSize: 14, fontWeight: 900,
+                      color: f.color,
+                      fontFamily: "monospace",
+                      letterSpacing: "-0.02em",
+                    }}>
+                      {f.stat.value}
+                    </span>
+                  </div>
                 </div>
               </div>
             );

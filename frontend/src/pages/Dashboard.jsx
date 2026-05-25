@@ -10,6 +10,7 @@ import {
 } from "../hooks/useMarket";
 import CoinListCard from "../components/market/CoinListCard";
 import MarketOracle from "../components/market/MarketOracle";
+import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import { TrendingUp, Activity, DollarSign, Flame, Clock } from "lucide-react";
 
@@ -120,46 +121,44 @@ function LastUpdated({ marketData }) {
 }
 
 function FearGreedGauge({ coins }) {
-  const score = (() => {
-    if (!coins || coins.length === 0) return 50;
-    const positives = coins.filter(
-      (c) => Number(c.price_change_percentage_24h) > 0,
-    ).length;
-    const ratio = positives / coins.length;
-    const avgChange =
-      coins.reduce(
-        (s, c) => s + Math.abs(Number(c.price_change_percentage_24h) || 0),
-        0,
-      ) / coins.length;
-    const volatilityFactor = Math.min(avgChange / 10, 1);
-    return Math.round(ratio * 70 + volatilityFactor * 30);
-  })();
+  const [score, setScore] = useState(50);
+  const [text, setText] = useState("Neutral");
+  const [color, setColor] = useState("#f5a623");
+  const [bg, setBg] = useState("rgba(245,166,35,0.1)");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getLabel = (s) => {
-    if (s <= 20)
-      return {
-        text: "Extreme Fear",
-        color: "#e74c3c",
-        bg: "rgba(231,76,60,0.1)",
-      };
-    if (s <= 40)
-      return { text: "Fear", color: "#e67e22", bg: "rgba(230,126,34,0.1)" };
-    if (s <= 60)
-      return { text: "Neutral", color: "#f5a623", bg: "rgba(245,166,35,0.1)" };
-    if (s <= 80)
-      return { text: "Greed", color: "#2ecc71", bg: "rgba(46,204,113,0.1)" };
-    return {
-      text: "Extreme Greed",
-      color: "#27ae60",
-      bg: "rgba(39,174,96,0.1)",
-    };
-  };
+  useEffect(() => {
+    async function fetchFnG() {
+      try {
+        const res = await fetch("https://api.alternative.me/fng/?limit=1");
+        const json = await res.json();
+        if (json && json.data && json.data.length > 0) {
+          const val = parseInt(json.data[0].value, 10);
+          setScore(val);
+          
+          if (val <= 20) {
+            setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)");
+          } else if (val <= 40) {
+            setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)");
+          } else if (val <= 60) {
+            setText("Neutral"); setColor("#f5a623"); setBg("rgba(245,166,35,0.1)");
+          } else if (val <= 80) {
+            setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)");
+          } else {
+            setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch Fear and Greed index", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchFnG();
+  }, []);
 
-  const { text, color, bg } = getLabel(score);
-  const up =
-    coins?.filter((c) => Number(c.price_change_percentage_24h) > 0).length || 0;
-  const down =
-    coins?.filter((c) => Number(c.price_change_percentage_24h) < 0).length || 0;
+  const up = coins?.filter((c) => Number(c.price_change_percentage_24h) > 0).length || 0;
+  const down = coins?.filter((c) => Number(c.price_change_percentage_24h) < 0).length || 0;
 
   return (
     <div
@@ -170,29 +169,28 @@ function FearGreedGauge({ coins }) {
         padding: "20px",
       }}
     >
-      <div
-        className="flex items-center justify-between"
-        style={{ marginBottom: 16 }}
-      >
+      <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
         <h3
           className="text-xs font-semibold uppercase tracking-wider"
           style={{ color: "var(--text-muted)", letterSpacing: "0.08em" }}
         >
           Fear & Greed
         </h3>
-        <span
-          className="text-xs font-semibold px-2 py-0.5 rounded-full"
-          style={{ backgroundColor: bg, color }}
-        >
-          {text}
-        </span>
+        {!isLoading && (
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: bg, color }}
+          >
+            {text}
+          </span>
+        )}
       </div>
       <div className="flex items-end gap-3" style={{ marginBottom: 16 }}>
         <div
           className="text-5xl font-bold font-mono leading-none"
-          style={{ color }}
+          style={{ color: isLoading ? "var(--text-muted)" : color }}
         >
-          {score}
+          {isLoading ? "--" : score}
         </div>
         <div
           className="flex flex-col pb-1"
@@ -213,28 +211,31 @@ function FearGreedGauge({ coins }) {
         <div
           className="absolute inset-0 rounded-full"
           style={{
-            background:
-              "linear-gradient(90deg, #e74c3c 0%, #e67e22 25%, #f5a623 50%, #2ecc71 75%, #27ae60 100%)",
+            background: "linear-gradient(90deg, #e74c3c 0%, #e67e22 25%, #f5a623 50%, #2ecc71 75%, #27ae60 100%)",
             opacity: 0.3,
           }}
         />
-        <div
-          className="absolute top-0 left-0 h-full rounded-full"
-          style={{
-            width: `${score}%`,
-            background: `linear-gradient(90deg, #e74c3c, ${color})`,
-            transition: "width 1s cubic-bezier(0.4,0,0.2,1)",
-          }}
-        />
-        <div
-          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full shadow-lg"
-          style={{
-            left: `calc(${score}% - 6px)`,
-            backgroundColor: color,
-            border: "2px solid var(--bg-surface)",
-            transition: "left 1s cubic-bezier(0.4,0,0.2,1)",
-          }}
-        />
+        {!isLoading && (
+          <>
+            <div
+              className="absolute top-0 left-0 h-full rounded-full"
+              style={{
+                width: `${score}%`,
+                background: `linear-gradient(90deg, #e74c3c, ${color})`,
+                transition: "width 1s cubic-bezier(0.4,0,0.2,1)",
+              }}
+            />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full shadow-lg"
+              style={{
+                left: `calc(${score}% - 6px)`,
+                backgroundColor: color,
+                border: "2px solid var(--bg-surface)",
+                transition: "left 1s cubic-bezier(0.4,0,0.2,1)",
+              }}
+            />
+          </>
+        )}
       </div>
       <div className="flex justify-between" style={{ marginBottom: 16 }}>
         <span style={{ fontSize: 10, color: "#e74c3c" }}>Extreme Fear</span>
@@ -244,19 +245,11 @@ function FearGreedGauge({ coins }) {
         className="flex items-center justify-between rounded-lg"
         style={{ backgroundColor: "var(--bg-elevated)", padding: "8px 12px" }}
       >
-        <span
-          className="text-xs font-mono"
-          style={{ color: "var(--positive)" }}
-        >
+        <span className="text-xs font-mono" style={{ color: "var(--positive)" }}>
           ↑ {up} up
         </span>
-        <div
-          style={{ width: 1, height: 12, backgroundColor: "var(--border)" }}
-        />
-        <span
-          className="text-xs font-mono"
-          style={{ color: "var(--negative)" }}
-        >
+        <div style={{ width: 1, height: 12, backgroundColor: "var(--border)" }} />
+        <span className="text-xs font-mono" style={{ color: "var(--negative)" }}>
           ↓ {down} down
         </span>
       </div>
@@ -311,8 +304,13 @@ export default function Dashboard() {
           >
             Dashboard
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-            Live market data · Gate.io · Bybit · OKX
+          <p className="mt-1 text-sm flex items-center gap-1.5 flex-wrap" style={{ color: "var(--text-muted)" }}>
+            <span>Live market data ·</span>
+            <a href="https://www.gate.io/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors decoration-white/20 hover:decoration-[#f5a623]/50 underline underline-offset-4">Gate.io</a>
+            <span>·</span>
+            <a href="https://www.bybit.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors decoration-white/20 hover:decoration-[#f5a623]/50 underline underline-offset-4">Bybit</a>
+            <span>·</span>
+            <a href="https://www.okx.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors decoration-white/20 hover:decoration-[#f5a623]/50 underline underline-offset-4">OKX</a>
           </p>
         </div>
         <LastUpdated marketData={market.data} />
@@ -600,6 +598,7 @@ export default function Dashboard() {
         {/* SAĞ KOLON (1/3) */}
         <div className="flex flex-col gap-4">
           {coins.length > 0 && <FearGreedGauge coins={coins} />}
+          <VolumeSpikeRadar />
           <MarketOracle />
           <CoinListCard
             title="Top Gainers (24h)"

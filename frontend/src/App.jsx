@@ -10,6 +10,7 @@ import { ToastProvider, useAlertMonitor } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
 import RightSidebar from "./components/layout/WatchlistSidebar";
+import Footer from "./components/layout/Footer";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Market from "./pages/Market";
@@ -222,6 +223,8 @@ function AppInner() {
           />
         </Routes>
       </main>
+
+      {location.pathname !== "/" || isLoggedIn ? <Footer /> : null}
 
       <RightSidebar
         isOpen={sidebarOpen}
