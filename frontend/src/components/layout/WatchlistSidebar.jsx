@@ -438,13 +438,17 @@ function WatchlistPanel({
               return (
                 <div
                   key={coin.symbol}
-                  style={{ borderRadius: 10, transition: "background 0.15s" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "var(--bg-elevated)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "transparent")
-                  }
+                  style={{ borderRadius: 10, transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)", border: "1px solid transparent" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "var(--bg-elevated)";
+                    e.currentTarget.style.borderColor = "rgba(245,166,35,0.2)";
+                    e.currentTarget.style.transform = "translateX(2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.borderColor = "transparent";
+                    e.currentTarget.style.transform = "translateX(0)";
+                  }}
                 >
                   <div
                     style={{
@@ -1108,9 +1112,22 @@ function AlertsPanel({ marketData, onClose }) {
                   style={{
                     padding: "10px 12px",
                     borderRadius: 10,
-                    background: isTriggered ? `${color}08` : "transparent",
-                    border: `1px solid ${isTriggered ? color + "30" : "var(--border)"}`,
-                    transition: "all 0.15s",
+                    background: isTriggered ? `${color}15` : "var(--bg-surface)",
+                    border: `1px solid ${isTriggered ? color + "50" : "var(--border)"}`,
+                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                    boxShadow: isTriggered ? `0 0 16px ${color}20` : "none"
+                  }}
+                  onMouseEnter={e => {
+                    if(!isTriggered) {
+                      e.currentTarget.style.background = "var(--bg-elevated)";
+                      e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if(!isTriggered) {
+                      e.currentTarget.style.background = "var(--bg-surface)";
+                      e.currentTarget.style.borderColor = "var(--border)";
+                    }
                   }}
                 >
                   <div
@@ -1312,10 +1329,13 @@ export default function RightSidebar({
           flexDirection: "column",
           gap: 4,
           padding: "8px 6px",
-          backgroundColor: "#111111",
-          border: "1px solid #222",
+          backgroundColor: "rgba(12, 12, 22, 0.85)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.08)",
           borderRight: "none",
           borderRadius: "12px 0 0 12px",
+          boxShadow: "-8px 0 32px rgba(0,0,0,0.5)",
         }}
       >
         {PANELS.map(({ key, Icon, label }) => {
@@ -1414,8 +1434,11 @@ export default function RightSidebar({
           bottom: 0,
           width: 320,
           zIndex: 151,
-          backgroundColor: "#111111",
-          borderLeft: "1px solid #222",
+          backgroundColor: "rgba(12, 12, 22, 0.85)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderLeft: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "-12px 0 48px rgba(0,0,0,0.6)",
           transform: isOpen ? "translateX(0)" : "translateX(calc(100% + 44px))",
           transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           display: "flex",

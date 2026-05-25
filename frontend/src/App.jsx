@@ -27,6 +27,7 @@ import Settings from "./pages/Settings";
 import Landing from "./pages/Landing";
 import { useWatchlist } from "./hooks/useWatchlist";
 import { useMarket } from "./hooks/useMarket";
+import AIChatWidget from "./components/ai/AIChatWidget";
 
 function AppInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -239,6 +240,7 @@ function AppInner() {
         isAtLimit={isAtLimit}
         limit={limit}
       />
+      <AIChatWidget />
       </div>
     </div>
   );

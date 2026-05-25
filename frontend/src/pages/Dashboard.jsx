@@ -45,11 +45,12 @@ function StatCard({ icon: Icon, label, value, sub, accent = false }) {
         backgroundColor: "var(--bg-surface)",
         border: hovered
           ? "1px solid rgba(245,166,35,0.5)"
-          : "1px solid var(--border)",
+          : "1px solid rgba(255,255,255,0.08)",
         padding: "20px",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hovered ? "0 8px 24px rgba(245,166,35,0.12)" : "none",
-        transition: "all 0.2s ease",
+        boxShadow: hovered ? "0 8px 32px rgba(245,166,35,0.2), inset 0 0 16px rgba(245,166,35,0.05)" : "0 8px 24px rgba(0,0,0,0.3)",
+        backgroundImage: "radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)",
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         cursor: "default",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -165,8 +166,10 @@ function FearGreedGauge({ coins }) {
       className="rounded-xl"
       style={{
         backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border)",
+        border: "1px solid rgba(255,255,255,0.08)",
         padding: "20px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+        backgroundImage: "radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)",
       }}
     >
       <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
@@ -357,8 +360,10 @@ export default function Dashboard() {
               className="rounded-xl"
               style={{
                 backgroundColor: "var(--bg-surface)",
-                border: "1px solid var(--border)",
+                border: "1px solid rgba(255,255,255,0.08)",
                 padding: "20px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                backgroundImage: "radial-gradient(circle at top left, rgba(255,255,255,0.03), transparent)",
               }}
             >
               <div
@@ -390,15 +395,18 @@ export default function Dashboard() {
                         backgroundColor: "var(--bg-elevated)",
                         border: "1px solid var(--border-soft)",
                         padding: "12px",
+                        transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "rgba(245,166,35,0.3)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "var(--border-soft)")
-                      }
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
+                        e.currentTarget.style.boxShadow = "inset 0 0 16px rgba(245,166,35,0.08)";
+                        e.currentTarget.style.transform = "scale(1.02)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "var(--border-soft)";
+                        e.currentTarget.style.boxShadow = "none";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }}
                     >
                       {coin.image_url ? (
                         <img
@@ -463,8 +471,10 @@ export default function Dashboard() {
             className="rounded-xl"
             style={{
               backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border)",
+              border: "1px solid rgba(255,255,255,0.08)",
               padding: "20px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+              backgroundImage: "radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)",
             }}
           >
             <h2
@@ -513,15 +523,17 @@ export default function Dashboard() {
                           coin.slug && navigate(`/coin/${coin.slug}`)
                         }
                         className="transition-colors cursor-pointer"
-                        style={{ borderTop: "1px solid var(--border-soft)" }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor =
-                            "rgba(245,166,35,0.04)")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor =
-                            "transparent")
-                        }
+                        style={{ borderTop: "1px solid var(--border-soft)", transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "rgba(245,166,35,0.04)";
+                          e.currentTarget.style.transform = "scale(1.005)";
+                          e.currentTarget.style.boxShadow = "inset 0 0 24px rgba(245,166,35,0.08)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
                       >
                         <td style={{ padding: "10px 12px 10px 0" }}>
                           <div className="flex items-center gap-2">
