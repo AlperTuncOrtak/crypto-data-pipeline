@@ -1,196 +1,106 @@
-📈 Crypto Analytics Platform
+# 📈 CryptoNeko Analytics Platform
 
-A production-ready end-to-end cryptocurrency data pipeline and analytics dashboard built with Python, MySQL, and Streamlit.
-
-This system continuously collects live market data, processes it into structured insights, and delivers a real-time interactive dashboard with alert detection and performance analytics.
+A production-ready, modern cryptocurrency analytics dashboard and data pipeline built with React (Vite), TailwindCSS, and Supabase. Features a premium glassmorphism UI, real-time market data, and an integrated AI Copilot.
 
 ⸻⸻⸻⸻⸻⸻
 
-🌐 Live Demo
+## 🚀 Features
 
-👉 https://crypto-data-pipeline-production.up.railway.app
+### 💎 Premium Glassmorphism UI
+- High-end dark mode aesthetics with neon hover effects (`var(--accent)`).
+- Cyberpunk/Bloomberg Terminal inspired interactive components.
+- Seamless transitions, blurred backgrounds (`backdrop-filter`), and radial-gradient lighting.
 
-⸻⸻⸻⸻⸻⸻
+### 🧠 AI Copilot Widget
+- Integrated AI assistant available on every page.
+- Context-aware quick actions like "Analyze BTC" or "Market Sentiment".
+- Typing indicators and a floating terminal-style UI.
 
-🚀 Features
+### 📊 Real-Time Market Dashboard
+- Live market stats (Total Volume, BTC Dominance, ETH Dominance).
+- Top 10 coins by market cap with dynamic hover animations.
+- Trending coins and Fear & Greed Index integration.
+- Custom Volume Spike Radar and Market Oracle panels.
 
-🔄 Data Pipeline
-	•	Fetches real-time market data from CoinGecko API
-	•	Stores structured data in cloud-hosted MySQL (Railway)
-	•	Maintains normalized tables:
-	•	coins
-	•	latest_prices
-	•	price_history
-	•	price_history_archive
-	•	Optimized insert/update logic to prevent duplicates and ensure consistency
+### 🚨 Advanced Alerts & Watchlist
+- **Audio Notifications:** Synth/Sonar ping audio alerts powered by the browser's `AudioContext` API.
+- Neon-glowing alert rows for high-priority market movements.
+- Interactive Watchlist Sidebar with smooth slide-in animations.
 
-⸻⸻⸻⸻⸻⸻
-
-⚙️ Automation & Reliability
-	•	Fully automated via Railway Cron Jobs
-	•	Runs every 15 minutes
-	•	Continuous background ingestion
-	•	Logging system for monitoring pipeline activity
-	•	Error tracking for production stability
-
-⸻⸻⸻⸻⸻⸻
-
-📊 Analytics Engine
-	•	Top gainers / losers (24h)
-	•	Highest volume assets
-	•	Short-term price movement detection
-	•	Historical price tracking
-	•	Multi-asset performance comparison
+### 🔐 Authentication (Supabase)
+- Secure email/password login and signup.
+- Google OAuth integration.
+- Password strength meter, hCaptcha integration, and rate-limiting protection.
 
 ⸻⸻⸻⸻⸻⸻
 
-📊 Interactive Dashboard (Streamlit)
-	•	Fully cloud-hosted UI
-	•	Auto-refresh every 2 minutes
-	•	Advanced filtering & search
-	•	Clean, formatted data tables
-	•	Interactive charts (Altair)
-	•	Real-time system status indicator
+## 🛠 Tech Stack
+
+- **Frontend:** React 18, Vite, React Router DOM
+- **Styling:** CSS Variables (Design System), TailwindCSS (`@import`), Glassmorphism techniques
+- **Icons:** Lucide React
+- **Backend & Auth:** Supabase (Auth & Database)
+- **Security:** hCaptcha
 
 ⸻⸻⸻⸻⸻⸻
 
-🧠 Advanced Analysis
-	•	Multi-coin comparison in a single chart
-	•	Normalized performance (Base = 100)
-	•	Best / worst performer detection
-	•	Ranked performance summaries
-
-⸻⸻⸻⸻⸻⸻
-
-🚨 Alert System
-
-Detects significant market events and transforms raw data into actionable insights:
-	•	🚀 Strong Increase → 24h change ≥ +5%
-	•	🔻 Sharp Drop → 24h change ≤ -5%
-	•	⚡ Rapid Movement → short-term change ≥ 2%
-
-This shifts the system from data visualization → decision support tool.
-
-⸻⸻⸻⸻⸻⸻
+## 📂 Project Structure
 
 ```
-🧱 Architecture
-
-CoinGecko API
-    ↓
-Python Data Pipeline (Worker)
-    ↓
-MySQL Database (Railway)
-    ↓
-Analytics Layer
-    ↓
-Streamlit Dashboard (Web App)
-```
-
-⸻⸻⸻⸻⸻⸻
-
-🛠 Tech Stack
-	•	Python
-	•	MySQL
-	•	Streamlit
-	•	Pandas
-	•	Altair
-	•	CoinGecko API
-	•	Railway (Cloud Deployment & Cron Jobs)
-
-⸻⸻⸻⸻⸻⸻
-
-```
-📂 Project Structure
-
 crypto-data-pipeline/
-├── src/
-│   ├── main.py              # Pipeline runner (worker)
-│   ├── fetch_data.py        # API data fetching
-│   ├── insert_data.py       # DB insert/update logic
-│   ├── archive_data.py      # Archiving old records
-│   ├── db.py                # Database connection
-│   ├── analytics.py         # Analytics & alerts
-│   ├── app.py               # Streamlit dashboard
-│   └── logger_config.py     # Logging config
-
-├── sql/
-│   └── schema.sql           # Database schema
-
-├── assets/                  # Screenshots
-├── requirements.txt
-├── README.md
-└── .gitignore
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ai/            # AI Chat Widget
+│   │   │   ├── layout/        # Navbar, Footer, WatchlistSidebar
+│   │   │   ├── market/        # Oracle, Radar, CoinList cards
+│   │   │   └── ui/            # AuthModal, Skeletons
+│   │   ├── hooks/             # Custom hooks (useAuth, useMarket, etc.)
+│   │   ├── lib/               # Supabase client setup
+│   │   ├── pages/             # Dashboard, Alerts, Portfolio, etc.
+│   │   ├── App.jsx            # Main application routing
+│   │   ├── index.css          # Core design system and variables
+│   │   └── main.jsx           # React entry point
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+└── README.md
 ```
 
-⸻⸻⸻⸻⸻⸻⸻
+⸻⸻⸻⸻⸻⸻
 
-▶️ How to Run (Local)
+## ▶️ How to Run (Local)
 
-1. git clone https://github.com/AlperTuncOrtak/crypto-data-pipeline.git
-cd crypto-data-pipeline
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/AlperTuncOrtak/crypto-data-pipeline.git
+   cd crypto-data-pipeline/frontend
+   ```
 
-2. python3 -m venv .venv
-source .venv/bin/activate
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-3. pip install -r requirements.txt
+3. **Configure Environment Variables:**
+   Create a `.env` file in the `frontend` directory and add your Supabase and hCaptcha keys:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key
+   ```
 
-4. streamlit run src/app.py
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   Open your browser and navigate to `http://localhost:5173`.
 
-⸻⸻⸻⸻⸻⸻⸻
+> **Note for Local Auth:** To test Google Login locally, ensure `http://localhost:5173` is added to the "Redirect URIs" section in your Supabase Authentication settings.
 
-📸 Screenshots
+⸻⸻⸻⸻⸻⸻
 
-### Sidebar Navigation & Intelligence Panel
-![Sidebar Navigation & Intelligence Panel](assets/sidebar.png)
+## 👤 Author
 
-### Alerts System
-![Alerts](assets/alerts.png)
-
-### Search & Filter
-![Search and Filter](assets/filter.png)
-
-### Multi-Coin Comparison
-![Multi-Coin Comparison](assets/analysis.png)
-
-### Dashboard Overview
-![Main Dashboard](assets/dashboard.png)
-
-⸻⸻⸻⸻⸻⸻⸻
-
-🧠 What This Project Demonstrates
-	•	Building an end-to-end data pipeline (API → DB → Dashboard)
-	•	Designing efficient time-series database structures
-	•	Implementing real-time analytics systems
-	•	Creating interactive data dashboards
-	•	Deploying full-stack systems to the cloud
-	•	Working with scheduled background jobs (cron)
-	•	Writing production-ready, modular Python code
-
-⸻⸻⸻⸻⸻⸻⸻
-
-🔮 Future Improvements
-	•	Discord / Telegram alert integration
-	•	User-defined alert thresholds
-	•	Advanced anomaly detection (ML-based)
-	•	Export features (CSV / reports)
-	•	Query optimization & caching improvements
-	•	Persistent user preferences (watchlist storage)
-
-⸻⸻⸻⸻⸻⸻⸻
-
-👤 Author
-
-Alper Tunc Ortak
-🔗 https://github.com/AlperTuncOrtak
-
-⸻⸻⸻⸻⸻⸻⸻
-
-⭐ Notes
-
-This project was built as a portfolio piece to demonstrate real-world skills in:
-	•	Data Engineering
-	•	Backend Systems
-	•	Analytics
-	•	Cloud Deployment
-
+**Alper Tunc Ortak**
+🔗 [GitHub Profile](https://github.com/AlperTuncOrtak)
