@@ -459,6 +459,136 @@ ANALYSIS RULES:
     return result
 
 
+@app.post("/ai/chat")
+def ai_chat(payload: dict):
+    """
+    Genel amaçlı AI kripto asistanı.
+    Body: { message: str, history?: [{role, content}] }
+    Groq (llama-3.3-70b) → Gemini flash fallback.
+    Canlı piyasa verisi otomatik eklenir (context injection).
+    """
+    import os, json, httpx, math
+
+    message = (payload.get("message") or "").strip()
+    history = payload.get("history") or []
+
+    if not message:
+        raise HTTPException(status_code=400, detail="message is required")
+
+    GROQ_KEY = os.getenv("GROQ_API_KEY", "")
+    GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
+
+    if not GROQ_KEY and not GEMINI_KEY:
+        raise HTTPException(status_code=500, detail="No AI API key configured")
+
+    # ── Canlı piyasa verisi ─────────────────────────────────────
+    market_ctx = ""
+    try:
+        from backend.services.market_service import get_latest_market
+        coins = get_latest_market(limit=50)
+        btc = next((c for c in coins if c.get("symbol") == "BTC"), None)
+        eth = next((c for c in coins if c.get("symbol") == "ETH"), None)
+
+        gainers = sorted(
+            [c for c in coins if float(c.get("price_change_percentage_24h") or 0) > 0],
+            key=lambda c: float(c.get("price_change_percentage_24h") or 0),
+            reverse=True,
+        )[:3]
+        losers = sorted(
+            [c for c in coins if float(c.get("price_change_percentage_24h") or 0) < 0],
+            key=lambda c: float(c.get("price_change_percentage_24h") or 0),
+        )[:3]
+
+        total_vol = sum(float(c.get("total_volume") or 0) for c in coins)
+
+        lines = ["=== LIVE MARKET SNAPSHOT (right now) ==="]
+        if btc:
+            lines.append(f"BTC: ${float(btc.get('current_price',0)):,.0f}  ({float(btc.get('price_change_percentage_24h',0)):+.2f}% 24h)")
+        if eth:
+            lines.append(f"ETH: ${float(eth.get('current_price',0)):,.0f}  ({float(eth.get('price_change_percentage_24h',0)):+.2f}% 24h)")
+        lines.append(f"Total 24h Volume (top 50): ${total_vol/1e9:.2f}B")
+
+        if gainers:
+            g_str = ", ".join(f"{c['symbol']} {float(c.get('price_change_percentage_24h',0)):+.1f}%" for c in gainers)
+            lines.append(f"Top gainers: {g_str}")
+        if losers:
+            l_str = ", ".join(f"{c['symbol']} {float(c.get('price_change_percentage_24h',0)):+.1f}%" for c in losers)
+            lines.append(f"Top losers:  {l_str}")
+
+        market_ctx = "\n".join(lines)
+    except Exception:
+        market_ctx = ""
+
+    # ── System prompt ───────────────────────────────────────────
+    system_prompt = (
+        "You are CryptoNeko AI Copilot, an expert crypto market assistant embedded in a "
+        "premium analytics terminal. You have deep knowledge of DeFi, on-chain metrics, "
+        "technical analysis, tokenomics, and macro crypto trends.\n\n"
+        "Rules:\n"
+        "- Be concise but insightful. 2-4 sentences max unless asked to elaborate.\n"
+        "- Always cite the live data when relevant.\n"
+        "- Never give explicit financial advice or tell users to buy/sell.\n"
+        "- Use emoji sparingly for readability.\n"
+        "- If asked about prices, always reference the live snapshot below.\n"
+        "- Answer in the same language the user writes in (Turkish or English).\n"
+    )
+    if market_ctx:
+        system_prompt += f"\n{market_ctx}\n"
+
+    # ── Mesaj geçmişi ────────────────────────────────────────────
+    # Son 8 mesajı al (context window tasarrufu)
+    recent_history = history[-8:] if len(history) > 8 else history
+    messages_for_api = (
+        [{"role": "system", "content": system_prompt}]
+        + recent_history
+        + [{"role": "user", "content": message}]
+    )
+
+    def try_groq():
+        resp = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": messages_for_api,
+                "max_tokens": 512,
+                "temperature": 0.6,
+            },
+            timeout=20.0,
+        )
+        resp.raise_for_status()
+        return resp.json()["choices"][0]["message"]["content"].strip()
+
+    def try_gemini():
+        from google import genai
+
+        full_ctx = system_prompt + "\n\nUser: " + message
+        client = genai.Client(api_key=GEMINI_KEY)
+        resp = client.models.generate_content(model="gemini-2.0-flash", contents=full_ctx)
+        return resp.text.strip()
+
+    reply = None
+    if GROQ_KEY:
+        try:
+            reply = try_groq()
+        except Exception:
+            pass
+
+    if reply is None and GEMINI_KEY:
+        try:
+            reply = try_gemini()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"AI error: {str(e)}")
+
+    if reply is None:
+        raise HTTPException(status_code=500, detail="All AI models failed")
+
+    return {"reply": reply}
+
+
 @app.get("/market/volume-spikes")
 def volume_spikes(limit: int = 10):
     from backend.services.volume_anomaly import get_recent_spikes

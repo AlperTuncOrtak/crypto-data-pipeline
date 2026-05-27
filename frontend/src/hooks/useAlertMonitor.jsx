@@ -215,11 +215,12 @@ export function useAlertMonitor(marketData, isPro = false) {
     if (!isPro) return; // Volume spikes — Pro plan only
     const settings = { ...DEFAULT_SETTINGS, ...getNotificationSettings() };
     if (!settings.volume_spikes) return;
+    
     try {
-      const resp = await fetch(
-        "http://localhost:8000/market/volume-spikes?limit=5",
-      );
-      const spikes = await resp.json();
+      // DÜZELTME: Doğrudan axios instance'ı (apiClient) kullanıldı, lokalhost URL'i kaldırıldı.
+      const resp = await apiClient.get("/market/volume-spikes?limit=5");
+      const spikes = resp.data;
+      
       const lastCheck = Number(localStorage.getItem("last_spike_check") || 0);
       const now = Date.now();
       localStorage.setItem("last_spike_check", now);
@@ -244,10 +245,7 @@ export function useAlertMonitor(marketData, isPro = false) {
           icon: emoji,
           duration: 8000,
         });
-        sendBrowserNotification(
-          `${emoji} ${spike.symbol} Volume Spike Detected`,
-          `${spike.multiplier}x above normal — unusual activity detected`,
-        );
+        
         if (settings.sound) playAlertSound("neutral");
         if (settings.browser_notif)
           sendBrowserNotification(
@@ -258,7 +256,7 @@ export function useAlertMonitor(marketData, isPro = false) {
     } catch (e) {
       /* backend erişilemiyorsa sessiz geç */
     }
-  }, [addToast]);
+  }, [addToast, isPro]);
 
   const checkAlerts = useCallback(async () => {
     const settings = { ...DEFAULT_SETTINGS, ...getNotificationSettings() };

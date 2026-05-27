@@ -12,7 +12,7 @@ import CoinListCard from "../components/market/CoinListCard";
 import MarketOracle from "../components/market/MarketOracle";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
-import { TrendingUp, Activity, DollarSign, Flame, Clock } from "lucide-react";
+import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 function formatLargeNumber(n) {
   const num = Number(n);
@@ -36,69 +36,126 @@ function formatPrice(n) {
   return `<$0.000001`;
 }
 
-function StatCard({ icon: Icon, label, value, sub, accent = false }) {
-  const [hovered, setHovered] = useState(false);
+// ─── BENTO CARD BASE ────────────────────────────────────────────
+const bentoBase = {
+  backgroundColor: "var(--bg-surface)",
+  border: "1px solid rgba(255,255,255,0.07)",
+  borderRadius: 20,
+  overflow: "hidden",
+  position: "relative",
+  boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
+  transition: "border-color 0.25s ease, box-shadow 0.25s ease",
+};
+
+function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouseLeave }) {
+  const [hov, setHov] = useState(false);
   return (
     <div
-      className="rounded-xl flex items-center gap-4"
+      className={className}
       style={{
-        backgroundColor: "var(--bg-surface)",
-        border: hovered
-          ? "1px solid rgba(245,166,35,0.5)"
-          : "1px solid rgba(255,255,255,0.08)",
-        padding: "20px",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hovered ? "0 8px 32px rgba(245,166,35,0.2), inset 0 0 16px rgba(245,166,35,0.05)" : "0 8px 24px rgba(0,0,0,0.3)",
-        backgroundImage: "radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)",
-        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        cursor: "default",
+        ...bentoBase,
+        borderColor: hov ? "rgba(245,166,35,0.25)" : "rgba(255,255,255,0.07)",
+        boxShadow: hov
+          ? "0 8px 40px rgba(245,166,35,0.12), 0 4px 24px rgba(0,0,0,0.4)"
+          : "0 4px 24px rgba(0,0,0,0.35)",
+        ...style,
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={(e) => { setHov(true); if(onMouseEnter) onMouseEnter(e); }}
+      onMouseLeave={(e) => { setHov(false); if(onMouseLeave) onMouseLeave(e); }}
     >
+      {/* Subtle top glow line */}
       <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
         style={{
-          background:
-            accent || hovered
-              ? "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))"
-              : "var(--bg-elevated)",
-          color: accent || hovered ? "var(--accent)" : "var(--text-muted)",
-          border:
-            accent || hovered
-              ? "1px solid rgba(245,166,35,0.2)"
-              : "1px solid var(--border)",
-          transition: "all 0.2s ease",
+          position: "absolute",
+          top: 0,
+          left: "10%",
+          right: "10%",
+          height: 1,
+          background: hov
+            ? "linear-gradient(90deg, transparent, rgba(245,166,35,0.5), transparent)"
+            : "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)",
+          transition: "background 0.3s ease",
         }}
-      >
-        <Icon size={18} />
-      </div>
-      <div className="min-w-0">
-        <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {label}
-        </div>
-        <div
-          className="text-base font-bold font-mono leading-tight mt-0.5"
-          style={{
-            color: hovered ? "var(--accent)" : "var(--text-primary)",
-            transition: "color 0.2s ease",
-          }}
-        >
-          {value}
-        </div>
-        {sub && (
-          <div
-            className="text-xs mt-0.5"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {sub}
-          </div>
-        )}
-      </div>
+      />
+      {children}
     </div>
   );
 }
 
+// ─── STAT CARD ───────────────────────────────────────────────────
+function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <BentoCard style={{ padding: "22px 24px" }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: 12, cursor: "default" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: accent
+                ? "linear-gradient(135deg, rgba(245,166,35,0.25), rgba(245,166,35,0.08))"
+                : "rgba(255,255,255,0.05)",
+              border: accent ? "1px solid rgba(245,166,35,0.25)" : "1px solid rgba(255,255,255,0.08)",
+              color: accent ? "var(--accent)" : "var(--text-muted)",
+              flexShrink: 0,
+              transition: "all 0.2s ease",
+            }}
+          >
+            <Icon size={16} />
+          </div>
+          {trend !== undefined && (
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: trend >= 0 ? "var(--positive)" : "var(--negative)",
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              {trend >= 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+              {Math.abs(trend).toFixed(1)}%
+            </span>
+          )}
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            {label}
+          </div>
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 800,
+              fontFamily: "monospace",
+              color: accent ? "var(--accent)" : "var(--text-primary)",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.1,
+            }}
+          >
+            {value}
+          </div>
+          {sub && (
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
+              {sub}
+            </div>
+          )}
+        </div>
+      </div>
+    </BentoCard>
+  );
+}
+
+// ─── LAST UPDATED ────────────────────────────────────────────────
 function LastUpdated({ marketData }) {
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
@@ -115,12 +172,23 @@ function LastUpdated({ marketData }) {
       className="flex items-center gap-1.5"
       style={{ color: "var(--text-muted)", fontSize: 12 }}
     >
+      <div
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: "50%",
+          backgroundColor: "var(--accent)",
+          boxShadow: "0 0 6px var(--accent)",
+          animation: "pulse 2s infinite",
+        }}
+      />
       <Clock size={11} />
       <span>Updated {label}</span>
     </div>
   );
 }
 
+// ─── FEAR & GREED ────────────────────────────────────────────────
 function FearGreedGauge({ coins }) {
   const [score, setScore] = useState(50);
   const [text, setText] = useState("Neutral");
@@ -136,18 +204,11 @@ function FearGreedGauge({ coins }) {
         if (json && json.data && json.data.length > 0) {
           const val = parseInt(json.data[0].value, 10);
           setScore(val);
-          
-          if (val <= 20) {
-            setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)");
-          } else if (val <= 40) {
-            setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)");
-          } else if (val <= 60) {
-            setText("Neutral"); setColor("#f5a623"); setBg("rgba(245,166,35,0.1)");
-          } else if (val <= 80) {
-            setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)");
-          } else {
-            setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)");
-          }
+          if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
+          else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
+          else if (val <= 60) { setText("Neutral"); setColor("#f5a623"); setBg("rgba(245,166,35,0.1)"); }
+          else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
+          else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
         }
       } catch (err) {
         console.error("Failed to fetch Fear and Greed index", err);
@@ -160,106 +221,140 @@ function FearGreedGauge({ coins }) {
 
   const up = coins?.filter((c) => Number(c.price_change_percentage_24h) > 0).length || 0;
   const down = coins?.filter((c) => Number(c.price_change_percentage_24h) < 0).length || 0;
+  const total = up + down || 1;
 
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        padding: "20px",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-        backgroundImage: "radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)",
-      }}
-    >
-      <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
-        <h3
-          className="text-xs font-semibold uppercase tracking-wider"
-          style={{ color: "var(--text-muted)", letterSpacing: "0.08em" }}
-        >
+    <BentoCard style={{ padding: "22px 24px" }}>
+      {/* Radial glow behind number */}
+      <div
+        style={{
+          position: "absolute",
+          top: -20,
+          right: -20,
+          width: 120,
+          height: 120,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${color}22, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           Fear & Greed
-        </h3>
+        </span>
         {!isLoading && (
           <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: bg, color }}
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: 20,
+              backgroundColor: bg,
+              color,
+              border: `1px solid ${color}44`,
+            }}
           >
             {text}
           </span>
         )}
       </div>
-      <div className="flex items-end gap-3" style={{ marginBottom: 16 }}>
-        <div
-          className="text-5xl font-bold font-mono leading-none"
-          style={{ color: isLoading ? "var(--text-muted)" : color }}
-        >
+
+      {/* Big Score */}
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 6, marginBottom: 16 }}>
+        <div style={{ fontSize: 52, fontWeight: 900, fontFamily: "monospace", color: isLoading ? "var(--text-muted)" : color, lineHeight: 1, letterSpacing: "-0.04em" }}>
           {isLoading ? "--" : score}
         </div>
-        <div
-          className="flex flex-col pb-1"
-          style={{ color: "var(--text-muted)", fontSize: 11 }}
-        >
-          <span>/ 100</span>
-          <span style={{ marginTop: 2 }}>index</span>
-        </div>
+        <div style={{ fontSize: 13, color: "var(--text-muted)", paddingBottom: 8 }}>/100</div>
       </div>
-      <div
-        className="relative rounded-full overflow-hidden"
-        style={{
-          height: 6,
-          backgroundColor: "var(--bg-elevated)",
-          marginBottom: 8,
-        }}
-      >
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: "linear-gradient(90deg, #e74c3c 0%, #e67e22 25%, #f5a623 50%, #2ecc71 75%, #27ae60 100%)",
-            opacity: 0.3,
-          }}
-        />
+
+      {/* Progress bar */}
+      <div style={{ position: "relative", height: 6, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.06)", marginBottom: 6, overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #e74c3c 0%, #e67e22 25%, #f5a623 50%, #2ecc71 75%, #27ae60 100%)", opacity: 0.2 }} />
         {!isLoading && (
           <>
-            <div
-              className="absolute top-0 left-0 h-full rounded-full"
-              style={{
-                width: `${score}%`,
-                background: `linear-gradient(90deg, #e74c3c, ${color})`,
-                transition: "width 1s cubic-bezier(0.4,0,0.2,1)",
-              }}
-            />
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full shadow-lg"
-              style={{
-                left: `calc(${score}% - 6px)`,
-                backgroundColor: color,
-                border: "2px solid var(--bg-surface)",
-                transition: "left 1s cubic-bezier(0.4,0,0.2,1)",
-              }}
-            />
+            <div style={{ position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 10, width: `${score}%`, background: `linear-gradient(90deg, #e74c3c, ${color})`, transition: "width 1.2s cubic-bezier(0.4,0,0.2,1)" }} />
+            <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${score}% - 5px)`, width: 10, height: 10, borderRadius: "50%", backgroundColor: color, border: "2px solid var(--bg-surface)", boxShadow: `0 0 8px ${color}`, transition: "left 1.2s cubic-bezier(0.4,0,0.2,1)" }} />
           </>
         )}
       </div>
-      <div className="flex justify-between" style={{ marginBottom: 16 }}>
-        <span style={{ fontSize: 10, color: "#e74c3c" }}>Extreme Fear</span>
-        <span style={{ fontSize: 10, color: "#27ae60" }}>Extreme Greed</span>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
+        <span style={{ fontSize: 9, color: "#e74c3c", fontWeight: 600 }}>EXTREME FEAR</span>
+        <span style={{ fontSize: 9, color: "#27ae60", fontWeight: 600 }}>EXTREME GREED</span>
+      </div>
+
+      {/* Up/Down bar */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ flex: 1, backgroundColor: "rgba(46,204,113,0.08)", border: "1px solid rgba(46,204,113,0.15)", borderRadius: 10, padding: "8px 10px", textAlign: "center" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "monospace", color: "var(--positive)" }}>↑ {up}</div>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>gaining</div>
+        </div>
+        <div style={{ flex: 1, backgroundColor: "rgba(231,76,60,0.08)", border: "1px solid rgba(231,76,60,0.15)", borderRadius: 10, padding: "8px 10px", textAlign: "center" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "monospace", color: "var(--negative)" }}>↓ {down}</div>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>losing</div>
+        </div>
+      </div>
+    </BentoCard>
+  );
+}
+
+// ─── TRENDING MINI CARD ──────────────────────────────────────────
+function TrendingCoinCard({ coin, navigate }) {
+  const change = Number(coin.price_change_percentage_24h);
+  const isPos = change >= 0;
+  return (
+    <div
+      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "10px 12px",
+        borderRadius: 12,
+        cursor: "pointer",
+        backgroundColor: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = "rgba(245,166,35,0.06)";
+        e.currentTarget.style.borderColor = "rgba(245,166,35,0.25)";
+        e.currentTarget.style.transform = "translateY(-1px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+    >
+      {coin.image_url ? (
+        <img src={coin.image_url} alt={coin.symbol} style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0 }} />
+      ) : (
+        <div style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-elevated)", color: "var(--accent)", fontSize: 12, fontWeight: 700 }}>
+          {coin.symbol?.slice(0, 1)}
+        </div>
+      )}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{coin.symbol?.toUpperCase()}</div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{formatPrice(coin.current_price)}</div>
       </div>
       <div
-        className="flex items-center justify-between rounded-lg"
-        style={{ backgroundColor: "var(--bg-elevated)", padding: "8px 12px" }}
+        style={{
+          fontSize: 12,
+          fontWeight: 700,
+          fontFamily: "monospace",
+          color: isPos ? "var(--positive)" : "var(--negative)",
+          padding: "2px 7px",
+          borderRadius: 6,
+          backgroundColor: isPos ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
+        }}
       >
-        <span className="text-xs font-mono" style={{ color: "var(--positive)" }}>
-          ↑ {up} up
-        </span>
-        <div style={{ width: 1, height: 12, backgroundColor: "var(--border)" }} />
-        <span className="text-xs font-mono" style={{ color: "var(--negative)" }}>
-          ↓ {down} down
-        </span>
+        {isPos ? "+" : ""}{change.toFixed(2)}%
       </div>
     </div>
   );
 }
 
+// ─── MAIN DASHBOARD ──────────────────────────────────────────────
 export default function Dashboard() {
   const market = useMarket(500);
   const gainers = useGainers(5);
@@ -270,21 +365,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const coins = market.data || [];
-  const totalVolume =
-    coins.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0;
-
-  const allMarketCap =
-    market.data?.reduce((s, c) => s + (Number(c.market_cap) || 0), 0) || 0;
+  const totalVolume = coins.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0;
+  const allMarketCap = market.data?.reduce((s, c) => s + (Number(c.market_cap) || 0), 0) || 0;
   const btcData = market.data?.find((c) => c.symbol === "BTC");
   const ethData = market.data?.find((c) => c.symbol === "ETH");
-  const btcDom =
-    allMarketCap && btcData
-      ? ((Number(btcData.market_cap) / allMarketCap) * 100).toFixed(1)
-      : "—";
-  const ethDom =
-    allMarketCap && ethData
-      ? ((Number(ethData.market_cap) / allMarketCap) * 100).toFixed(1)
-      : "—";
+  const btcDom = allMarketCap && btcData ? ((Number(btcData.market_cap) / allMarketCap) * 100).toFixed(1) : "—";
+  const ethDom = allMarketCap && ethData ? ((Number(ethData.market_cap) / allMarketCap) * 100).toFixed(1) : "—";
 
   const top10 = market.data
     ? [...market.data]
@@ -295,216 +381,153 @@ export default function Dashboard() {
 
   return (
     <div style={{ color: "var(--text-primary)" }}>
-      {/* HEADER */}
-      <div
-        className="flex items-end justify-between"
-        style={{ marginBottom: 24 }}
-      >
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+      `}</style>
+
+      {/* ── HEADER ── */}
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
-          <h1
-            className="text-3xl font-bold tracking-tight"
-            style={{ color: "var(--text-primary)" }}
-          >
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary)", lineHeight: 1.1 }}>
             Dashboard
           </h1>
-          <p className="mt-1 text-sm flex items-center gap-1.5 flex-wrap" style={{ color: "var(--text-muted)" }}>
-            <span>Live market data ·</span>
-            <a href="https://www.gate.io/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors decoration-white/20 hover:decoration-[#f5a623]/50 underline underline-offset-4">Gate.io</a>
-            <span>·</span>
-            <a href="https://www.bybit.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors decoration-white/20 hover:decoration-[#f5a623]/50 underline underline-offset-4">Bybit</a>
-            <span>·</span>
-            <a href="https://www.okx.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors decoration-white/20 hover:decoration-[#f5a623]/50 underline underline-offset-4">OKX</a>
+          <p style={{ marginTop: 6, fontSize: 13, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <span>Live data from</span>
+            {[{ label: "Gate.io", href: "https://www.gate.io/" }, { label: "Bybit", href: "https://www.bybit.com/" }, { label: "OKX", href: "https://www.okx.com/" }].map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                style={{ color: "rgba(245,166,35,0.7)", textDecoration: "none", fontWeight: 600, transition: "color 0.15s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(245,166,35,0.7)")}
+              >
+                {s.label}
+              </a>
+            ))}
           </p>
         </div>
         <LastUpdated marketData={market.data} />
       </div>
 
-      {/* GLOBAL STATS */}
-      <div
-        className="grid grid-cols-2 md:grid-cols-4 gap-3"
-        style={{ marginBottom: 24 }}
-      >
-        <StatCard
-          icon={DollarSign}
-          label="Total 24h Volume"
-          value={formatLargeNumber(totalVolume)}
-          accent={true}
-        />
-        <StatCard
-          icon={Activity}
-          label="BTC Dominance"
-          value={`${btcDom}%`}
-          sub="by market cap"
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="ETH Dominance"
-          value={`${ethDom}%`}
-          sub="by market cap"
-        />
-        <StatCard
-          icon={Flame}
-          label="Coins Tracked"
-          value={`${stats.data?.coin_count || market.data?.length || 0}+`}
-          sub="live data"
-        />
-      </div>
+      {/* ── BENTO GRID ── */}
+      <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4">
+        {/* ── ROW 1: 4 Stat cards ── */}
+        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+          <StatCard
+            icon={DollarSign}
+            label="Total 24h Volume"
+            value={formatLargeNumber(totalVolume)}
+            accent={true}
+          />
+        </div>
+        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+          <StatCard
+            icon={Activity}
+            label="BTC Dominance"
+            value={`${btcDom}%`}
+            sub="by market cap"
+          />
+        </div>
+        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+          <StatCard
+            icon={TrendingUp}
+            label="ETH Dominance"
+            value={`${ethDom}%`}
+            sub="by market cap"
+          />
+        </div>
+        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+          <StatCard
+            icon={Flame}
+            label="Coins Tracked"
+            value={`${stats.data?.coin_count || market.data?.length || 0}+`}
+            sub="live data"
+          />
+        </div>
 
-      {/* İKİ KOLON LAYOUT */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* SOL KOLON (2/3) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* TRENDING */}
-          {trending.data && trending.data.length > 0 && (
-            <div
-              className="rounded-xl"
-              style={{
-                backgroundColor: "var(--bg-surface)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                padding: "20px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-                backgroundImage: "radial-gradient(circle at top left, rgba(255,255,255,0.03), transparent)",
-              }}
-            >
-              <div
-                className="flex items-center gap-2"
-                style={{ marginBottom: 16 }}
-              >
-                <Flame size={14} style={{ color: "var(--accent)" }} />
-                <h2
-                  className="text-xs font-semibold uppercase tracking-wider"
-                  style={{
-                    color: "var(--text-muted)",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  Trending
-                </h2>
+        {/* ── ROW 2: Trending (8) + Fear&Greed (4) — always full 12 cols ── */}
+        <div className="col-span-1 md:col-span-6 lg:col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Trending */}
+          <BentoCard className="lg:col-span-2" style={{ padding: "22px 24px", minHeight: 160 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))", border: "1px solid rgba(245,166,35,0.2)" }}>
+                <Flame size={13} style={{ color: "var(--accent)" }} />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {trending.data.map((coin) => {
-                  const change = Number(coin.price_change_percentage_24h);
-                  return (
-                    <div
-                      key={coin.symbol}
-                      onClick={() =>
-                        coin.slug && navigate(`/coin/${coin.slug}`)
-                      }
-                      className="flex items-center gap-3 rounded-xl cursor-pointer transition-all"
-                      style={{
-                        backgroundColor: "var(--bg-elevated)",
-                        border: "1px solid var(--border-soft)",
-                        padding: "12px",
-                        transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
-                        e.currentTarget.style.boxShadow = "inset 0 0 16px rgba(245,166,35,0.08)";
-                        e.currentTarget.style.transform = "scale(1.02)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "var(--border-soft)";
-                        e.currentTarget.style.boxShadow = "none";
-                        e.currentTarget.style.transform = "scale(1)";
-                      }}
-                    >
-                      {coin.image_url ? (
-                        <img
-                          src={coin.image_url}
-                          alt={coin.symbol}
-                          className="w-8 h-8 rounded-full shrink-0"
-                        />
-                      ) : (
-                        <div
-                          className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold"
-                          style={{
-                            backgroundColor: "var(--bg-surface)",
-                            color: "var(--accent)",
-                          }}
-                        >
-                          {coin.symbol?.slice(0, 1)}
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div
-                          className="text-sm font-bold"
-                          style={{ color: "var(--accent)" }}
-                        >
-                          {coin.symbol?.toUpperCase()}
-                        </div>
-                        <div
-                          className="text-xs truncate"
-                          style={{ color: "var(--text-muted)" }}
-                        >
-                          {coin.name}
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <div
-                          className="text-xs font-mono"
-                          style={{ color: "var(--text-primary)" }}
-                        >
-                          {formatPrice(coin.current_price)}
-                        </div>
-                        <div
-                          className="text-xs font-mono font-semibold"
-                          style={{
-                            color:
-                              change >= 0
-                                ? "var(--positive)"
-                                : "var(--negative)",
-                          }}
-                        >
-                          {change >= 0 ? "+" : ""}
-                          {change.toFixed(2)}%
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                Trending Now
+              </span>
             </div>
-          )}
+            {trending.isLoading || !trending.data || trending.data.length === 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} style={{ height: 52, borderRadius: 12, background: "rgba(255,255,255,0.04)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                {trending.data.map((coin) => (
+                  <TrendingCoinCard key={coin.symbol} coin={coin} navigate={navigate} />
+                ))}
+              </div>
+            )}
+          </BentoCard>
 
-          {/* TOP 10 TABLE */}
-          <div
-            className="rounded-xl"
-            style={{
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              padding: "20px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-              backgroundImage: "radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)",
-            }}
-          >
-            <h2
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{
-                color: "var(--text-muted)",
-                letterSpacing: "0.08em",
-                marginBottom: 16,
-              }}
-            >
-              Top 10 by Market Cap
-            </h2>
-            {market.isLoading && (
+          {/* Fear & Greed */}
+          {coins.length > 0 ? (
+            <div className="lg:col-span-1">
+              <FearGreedGauge coins={coins} />
+            </div>
+          ) : (
+            <BentoCard className="lg:col-span-1" style={{ padding: "22px 24px", minHeight: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Loading…</div>
+            </BentoCard>
+          )}
+        </div>
+
+        {/* ── ROW 3: Top 10 Table (8) + Gainers/Losers stacked (4) ── */}
+        <div className="col-span-1 md:col-span-6 lg:col-span-8">
+          <BentoCard style={{ padding: "22px 24px", overflowX: "auto" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <Activity size={13} style={{ color: "var(--text-muted)" }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  Top 10 by Market Cap
+                </span>
+              </div>
+              <span
+                onClick={() => navigate("/market")}
+                style={{ fontSize: 11, color: "var(--accent)", cursor: "pointer", fontWeight: 600, opacity: 0.7, transition: "opacity 0.15s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.7)}
+              >
+                View all →
+              </span>
+            </div>
+
+            {(market.isLoading || (!market.isLoading && top10.length === 0)) && (
               <table className="w-full">
-                <tbody>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <TableRowSkeleton key={i} cols={4} />
-                  ))}
-                </tbody>
+                <tbody>{Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={5} />)}</tbody>
               </table>
             )}
             {top10.length > 0 && (
-              <table className="w-full">
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                    {["Symbol", "Price", "24h", "Market Cap"].map((h, i) => (
+                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    {["#", "Asset", "Price", "24h", "Market Cap"].map((h, i) => (
                       <th
                         key={h}
-                        className={`pb-3 text-xs font-semibold uppercase tracking-wider ${i === 0 ? "text-left" : "text-right"}`}
-                        style={{ color: "var(--text-muted)" }}
+                        style={{
+                          paddingBottom: 10,
+                          fontSize: 10,
+                          fontWeight: 700,
+                          color: "var(--text-muted)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          textAlign: i <= 1 ? "left" : "right",
+                        }}
                       >
                         {h}
                       </th>
@@ -512,90 +535,62 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {top10.map((coin) => {
+                  {top10.map((coin, idx) => {
                     const change = Number(coin.price_change_percentage_24h);
-                    const changeColor =
-                      change >= 0 ? "var(--positive)" : "var(--negative)";
+                    const isPos = change >= 0;
                     return (
                       <tr
                         key={coin.symbol}
-                        onClick={() =>
-                          coin.slug && navigate(`/coin/${coin.slug}`)
-                        }
-                        className="transition-colors cursor-pointer"
-                        style={{ borderTop: "1px solid var(--border-soft)", transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                        onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                        style={{ cursor: "pointer", transition: "all 0.18s ease", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = "rgba(245,166,35,0.04)";
-                          e.currentTarget.style.transform = "scale(1.005)";
-                          e.currentTarget.style.boxShadow = "inset 0 0 24px rgba(245,166,35,0.08)";
+                          e.currentTarget.style.boxShadow = "inset 0 0 24px rgba(245,166,35,0.05)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.transform = "scale(1)";
                           e.currentTarget.style.boxShadow = "none";
                         }}
                       >
-                        <td style={{ padding: "10px 12px 10px 0" }}>
-                          <div className="flex items-center gap-2">
+                        <td style={{ padding: "11px 12px 11px 0", width: 28 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.2)", fontFamily: "monospace" }}>
+                            {idx + 1}
+                          </span>
+                        </td>
+                        <td style={{ padding: "11px 0" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                             {coin.image_url ? (
-                              <img
-                                src={coin.image_url}
-                                alt={coin.symbol}
-                                className="w-6 h-6 rounded-full shrink-0"
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
-                              />
+                              <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0 }} onError={(e) => { e.target.style.display = "none"; }} />
                             ) : (
-                              <div
-                                className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px]"
-                                style={{
-                                  backgroundColor: "var(--bg-elevated)",
-                                  color: "var(--accent)",
-                                }}
-                              >
+                              <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-elevated)", color: "var(--accent)", fontSize: 10, fontWeight: 700 }}>
                                 {coin.symbol?.slice(0, 1)}
                               </div>
                             )}
                             <div>
-                              <div
-                                className="text-sm font-bold font-mono"
-                                style={{ color: "var(--accent)" }}
-                              >
-                                {coin.symbol?.toUpperCase()}
-                              </div>
-                              <div
-                                className="text-xs"
-                                style={{ color: "var(--text-muted)" }}
-                              >
-                                {coin.name}
-                              </div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{coin.symbol?.toUpperCase()}</div>
+                              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{coin.name}</div>
                             </div>
                           </div>
                         </td>
-                        <td
-                          className="text-right font-mono text-sm"
-                          style={{
-                            color: "var(--text-primary)",
-                            padding: "10px 0",
-                          }}
-                        >
+                        <td style={{ padding: "11px 0", textAlign: "right", fontFamily: "monospace", fontSize: 13, color: "var(--text-primary)", fontWeight: 600 }}>
                           {formatPrice(coin.current_price)}
                         </td>
-                        <td
-                          className="text-right font-mono text-sm font-semibold"
-                          style={{ color: changeColor, padding: "10px 0" }}
-                        >
-                          {change >= 0 ? "+" : ""}
-                          {change.toFixed(2)}%
+                        <td style={{ padding: "11px 0", textAlign: "right" }}>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              fontFamily: "monospace",
+                              color: isPos ? "var(--positive)" : "var(--negative)",
+                              backgroundColor: isPos ? "rgba(46,204,113,0.08)" : "rgba(231,76,60,0.08)",
+                              padding: "2px 7px",
+                              borderRadius: 6,
+                            }}
+                          >
+                            {isPos ? "+" : ""}{change.toFixed(2)}%
+                          </span>
                         </td>
-                        <td
-                          className="text-right font-mono text-sm"
-                          style={{
-                            color: "var(--text-muted)",
-                            padding: "10px 0 10px 12px",
-                          }}
-                        >
+                        <td style={{ padding: "11px 0 11px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: "var(--text-muted)" }}>
                           {formatLargeNumber(coin.market_cap)}
                         </td>
                       </tr>
@@ -604,14 +599,11 @@ export default function Dashboard() {
                 </tbody>
               </table>
             )}
-          </div>
+          </BentoCard>
         </div>
 
-        {/* SAĞ KOLON (1/3) */}
-        <div className="flex flex-col gap-4">
-          {coins.length > 0 && <FearGreedGauge coins={coins} />}
-          <VolumeSpikeRadar />
-          <MarketOracle />
+        {/* Gainers + Losers stacked in right col */}
+        <div className="col-span-1 md:col-span-6 lg:col-span-4" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <CoinListCard
             title="Top Gainers (24h)"
             accent="orange"
@@ -620,11 +612,7 @@ export default function Dashboard() {
             isError={gainers.isError}
             renderValue={(coin) => {
               const pct = Number(coin.price_change_percentage_24h);
-              return (
-                <span style={{ color: "var(--positive)" }}>
-                  +{pct.toFixed(2)}%
-                </span>
-              );
+              return <span style={{ color: "var(--positive)" }}>+{pct.toFixed(2)}%</span>;
             }}
           />
           <CoinListCard
@@ -635,13 +623,19 @@ export default function Dashboard() {
             isError={losers.isError}
             renderValue={(coin) => {
               const pct = Number(coin.price_change_percentage_24h);
-              return (
-                <span style={{ color: "var(--negative)" }}>
-                  {pct.toFixed(2)}%
-                </span>
-              );
+              return <span style={{ color: "var(--negative)" }}>{pct.toFixed(2)}%</span>;
             }}
           />
+        </div>
+
+        {/* ── ROW 4: Volume Spike (4) + Market Oracle (4) + Highest Vol (4) ── */}
+        <div className="col-span-1 md:col-span-6 lg:col-span-4">
+          <VolumeSpikeRadar />
+        </div>
+        <div className="col-span-1 md:col-span-6 lg:col-span-4">
+          <MarketOracle />
+        </div>
+        <div className="col-span-1 md:col-span-6 lg:col-span-4">
           <CoinListCard
             title="Highest Volume (24h)"
             accent="blue"
@@ -649,9 +643,7 @@ export default function Dashboard() {
             isLoading={volume.isLoading}
             isError={volume.isError}
             renderValue={(coin) => (
-              <span style={{ color: "var(--text-secondary)" }}>
-                {formatLargeNumber(coin.total_volume)}
-              </span>
+              <span style={{ color: "var(--text-secondary)" }}>{formatLargeNumber(coin.total_volume)}</span>
             )}
           />
         </div>
