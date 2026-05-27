@@ -369,16 +369,8 @@ export default function Dashboard() {
   const allMarketCap = market.data?.reduce((s, c) => s + (Number(c.market_cap) || 0), 0) || 0;
   const btcData = market.data?.find((c) => c.symbol === "BTC");
   const ethData = market.data?.find((c) => c.symbol === "ETH");
-
-  const btcDom = allMarketCap > 0 && btcData 
-    ? ((Number(btcData.market_cap) / allMarketCap) * 100).toFixed(1) 
-    : (totalVolume > 0 && btcData ? ((Number(btcData.total_volume) / totalVolume) * 100).toFixed(1) : "—");
-    
-  const ethDom = allMarketCap > 0 && ethData 
-    ? ((Number(ethData.market_cap) / allMarketCap) * 100).toFixed(1) 
-    : (totalVolume > 0 && ethData ? ((Number(ethData.total_volume) / totalVolume) * 100).toFixed(1) : "—");
-
-  const domSubtext = allMarketCap > 0 ? "by market cap" : "by 24h volume";
+  const btcDom = allMarketCap && btcData ? ((Number(btcData.market_cap) / allMarketCap) * 100).toFixed(1) : "—";
+  const ethDom = allMarketCap && ethData ? ((Number(ethData.market_cap) / allMarketCap) * 100).toFixed(1) : "—";
 
   const top10 = market.data
     ? [...market.data]
@@ -434,7 +426,7 @@ export default function Dashboard() {
             icon={Activity}
             label="BTC Dominance"
             value={`${btcDom}%`}
-            sub={domSubtext}
+            sub="by market cap"
           />
         </div>
         <div className="col-span-1 md:col-span-3 lg:col-span-3">
@@ -442,7 +434,7 @@ export default function Dashboard() {
             icon={TrendingUp}
             label="ETH Dominance"
             value={`${ethDom}%`}
-            sub={domSubtext}
+            sub="by market cap"
           />
         </div>
         <div className="col-span-1 md:col-span-3 lg:col-span-3">
