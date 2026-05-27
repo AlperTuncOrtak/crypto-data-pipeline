@@ -2,14 +2,14 @@
 
 :root {
   /* Zeminler */
-  --bg-base:     #141414;
-  --bg-surface:  #1c1c1c;
-  --bg-elevated: #242424;
-  --bg-card:     #1e1e1e;
+  --bg-base:     #07070f;
+  --bg-surface:  #0c0c16;
+  --bg-elevated: #151522;
+  --bg-card:     #0e0e18;
 
   /* Kenarlar */
-  --border:      #2a2a2a;
-  --border-soft: #222222;
+  --border:      rgba(255,255,255,0.08);
+  --border-soft: rgba(255,255,255,0.04);
 
   /* Yazı */
   --text-primary:   #f0f0f0;

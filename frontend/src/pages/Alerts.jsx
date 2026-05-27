@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAlerts } from '../hooks/useAlerts'
 import { useMarket } from '../hooks/useMarket'
 import { useNavigate } from 'react-router-dom'
@@ -44,6 +44,31 @@ export default function Alerts() {
   const navigate = useNavigate()
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('severity')
+  const [prevCount, setPrevCount] = useState(0)
+
+  // Custom Synth Audio Ping for new alerts
+  useEffect(() => {
+    if (data && data.length > prevCount && prevCount !== 0) {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.6);
+        }
+      } catch(e) {}
+    }
+    if (data) setPrevCount(data.length);
+  }, [data, prevCount]);
 
   const coinMap = useMemo(() => {
     if (!marketData) return {}
@@ -117,7 +142,7 @@ export default function Alerts() {
         <div className="flex flex-col gap-4">
 
           {/* SUMMARY */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px' }}>
+          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               Summary
             </div>
@@ -141,7 +166,7 @@ export default function Alerts() {
           </div>
 
           {/* FILTER */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px' }}>
+          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               Filter
             </div>
@@ -177,7 +202,7 @@ export default function Alerts() {
           </div>
 
           {/* SORT */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px' }}>
+          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               Sort By
             </div>
@@ -232,7 +257,7 @@ export default function Alerts() {
           )}
 
           {filtered.length > 0 && (
-            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 12px 48px rgba(0,0,0,0.5)' }}>
 
               {/* HEADER */}
               <div
@@ -281,10 +306,22 @@ export default function Alerts() {
                       borderTop: idx === 0 ? 'none' : '1px solid var(--border-soft)',
                       borderLeft: `3px solid ${config.border}`,
                       cursor: coin.slug ? 'pointer' : 'default',
-                      transition: 'background-color 0.15s',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                      backgroundColor: 'transparent'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
+                      e.currentTarget.style.boxShadow = `inset 0 0 32px ${config.color}15`;
+                      e.currentTarget.style.transform = 'scale(1.005)';
+                      e.currentTarget.style.zIndex = '10';
+                      e.currentTarget.style.position = 'relative';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.zIndex = '1';
+                    }}
                   >
                     {/* LOGO */}
                     <div>

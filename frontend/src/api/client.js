@@ -4,6 +4,8 @@
 import axios from "axios";
 import { supabase } from "../lib/supabase";
 
+// Docker / Production ortamı için VITE_API_URL değeri .env dosyasından okunur.
+// Yoksa (lokalde geliştirme yapılıyorsa) 8000 portuna düşer.
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export const apiClient = axios.create({

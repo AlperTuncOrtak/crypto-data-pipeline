@@ -448,8 +448,10 @@ export default function Navbar({
       {/* ── STATS BAR ───────────────────────────────────────── */}
       <div
         style={{
-          backgroundColor: "#0a0a0a",
-          borderBottom: "1px solid rgba(255,255,255,0.04)",
+          backgroundColor: "rgba(12, 12, 22, 0.65)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
         <div
@@ -590,13 +592,13 @@ export default function Navbar({
           zIndex: 100,
           padding: "10px 20px",
           transition: "all 0.3s ease",
-          background: scrolled ? "rgba(8,8,10,0.92)" : "rgba(8,8,10,0.75)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          background: scrolled ? "rgba(12, 12, 22, 0.85)" : "rgba(12, 12, 22, 0.65)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
           borderBottom: scrolled
-            ? "1px solid rgba(255,255,255,0.07)"
-            : "1px solid rgba(255,255,255,0.04)",
-          boxShadow: scrolled ? "0 8px 32px rgba(0,0,0,0.5)" : "none",
+            ? "1px solid rgba(245,166,35,0.15)"
+            : "1px solid rgba(255,255,255,0.06)",
+          boxShadow: scrolled ? "0 12px 48px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(245,166,35,0.05)" : "none",
         }}
       >
         <div
@@ -750,10 +752,11 @@ export default function Navbar({
                   gap: 8,
                   padding: "6px 12px",
                   borderRadius: 10,
-                  background: "rgba(255,255,255,0.04)",
-                  border: `1px solid ${searchOpen ? "rgba(245,166,35,0.35)" : "rgba(255,255,255,0.07)"}`,
+                  background: searchOpen ? "rgba(245,166,35,0.05)" : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${searchOpen ? "rgba(245,166,35,0.4)" : "rgba(255,255,255,0.08)"}`,
+                  boxShadow: searchOpen ? "0 0 16px rgba(245,166,35,0.1)" : "none",
                   width: searchOpen ? 220 : 110,
-                  transition: "width 0.25s ease, border-color 0.2s ease",
+                  transition: "all 0.25s ease",
                 }}
               >
                 <Search
