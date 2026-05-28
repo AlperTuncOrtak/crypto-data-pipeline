@@ -464,7 +464,8 @@ export default function Landing({ onAuthOpen }) {
                 color:      coin.change >= 0 ? "#2ecc71" : "#e74c3c",
                 fontFamily: "monospace",
               }}>
-                {coin.change >= 0 ? "+" : ""}{coin.change}%
+                {coin.change >= 0 ? "▲" : "▼"}
+                {Math.abs(coin.change)}%
               </span>
             </div>
           </div>
