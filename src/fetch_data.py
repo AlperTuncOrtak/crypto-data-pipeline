@@ -20,34 +20,41 @@ def fetch_crypto_data():
             "sparkline": "false"
         }
         
-        try:
-            response = requests.get(url, params=params, timeout=10)
-            if response.status_code == 429:
-                logger.warning(f"Rate limited by CoinGecko on page {page}. Stopping pagination.")
+        retries = 3
+        while retries > 0:
+            try:
+                response = requests.get(url, params=params, timeout=10)
+                if response.status_code == 429:
+                    logger.warning(f"Rate limited on page {page}. Waiting 15 seconds to retry...")
+                    time.sleep(15)
+                    retries -= 1
+                    continue
+                response.raise_for_status()
+                data = response.json()
+                break # Basarili
+            except Exception as e:
+                logger.error(f"Error fetching page {page}: {e}")
+                data = None
                 break
-            response.raise_for_status()
-            data = response.json()
-            
-            if not data:
-                break
-                
-            for coin in data:
-                rows.append({
-                    "symbol": coin.get("symbol", "").upper(),
-                    "name": coin.get("name", ""),
-                    "slug": coin.get("id", ""),
-                    "image_url": coin.get("image", ""),
-                    "current_price": coin.get("current_price"),
-                    "market_cap": coin.get("market_cap"),
-                    "total_volume": coin.get("total_volume"),
-                    "price_change_24h": coin.get("price_change_24h"),
-                    "price_change_percentage_24h": coin.get("price_change_percentage_24h")
-                })
-                
-            time.sleep(1.5) # API limitine takilmamak icin 1.5 sn bekle
-        except Exception as e:
-            logger.error(f"Error fetching page {page}: {e}")
+        
+        if not data:
+            logger.warning(f"No data for page {page}, stopping pagination.")
             break
+            
+        for coin in data:
+            rows.append({
+                "symbol": coin.get("symbol", "").upper(),
+                "name": coin.get("name", ""),
+                "slug": coin.get("id", ""),
+                "image_url": coin.get("image", ""),
+                "current_price": coin.get("current_price"),
+                "market_cap": coin.get("market_cap"),
+                "total_volume": coin.get("total_volume"),
+                "price_change_24h": coin.get("price_change_24h"),
+                "price_change_percentage_24h": coin.get("price_change_percentage_24h")
+            })
+            
+        time.sleep(3.5) # API limitine takilmamak icin 3.5 sn bekle
 
     df = pd.DataFrame(rows)
 
