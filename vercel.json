@@ -10,10 +10,6 @@
   ],
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "http://167.233.18.232/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/frontend/dist/index.html"
     }
