@@ -6,16 +6,12 @@
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-      "src": "backend/main.py",
-      "use": "@vercel/python"
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/backend/main.py"
+      "destination": "http://167.233.18.232/$1"
     },
     {
       "source": "/(.*)",
