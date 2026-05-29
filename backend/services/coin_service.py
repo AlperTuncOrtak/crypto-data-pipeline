@@ -26,7 +26,7 @@ def get_coin_by_slug(slug):
                        c.ath, c.ath_date,
                        c.atl, c.atl_date,
                        c.circulating_supply, c.total_supply, c.max_supply,
-                       lp.market_cap
+                       COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) AS market_cap
                 FROM coins c
                 LEFT JOIN latest_prices lp ON lp.coin_id = c.id
                 WHERE c.slug = %s

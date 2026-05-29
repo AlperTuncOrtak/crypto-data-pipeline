@@ -60,8 +60,8 @@ def _get_metadata():
         cursor = conn.cursor(DictCursor)
         try:
             cursor.execute("""
-                SELECT c.symbol, c.name, c.slug, c.image_url,
-                       lp.data_source, lp.last_updated, lp.market_cap
+                SELECT c.symbol, c.name, c.slug, c.image_url, c.circulating_supply,
+                       lp.data_source, lp.last_updated, lp.market_cap, lp.current_price
                 FROM coins c
                 LEFT JOIN latest_prices lp ON lp.coin_id = c.id
             """)
@@ -80,7 +80,11 @@ def _get_metadata():
             "last_updated": (
                 row["last_updated"].isoformat() if row["last_updated"] else None
             ),
-            "market_cap": float(row["market_cap"] or 0),
+            "market_cap": float(
+                row.get("market_cap") or 
+                (row.get("current_price") * row.get("circulating_supply") 
+                 if row.get("current_price") and row.get("circulating_supply") else 0)
+            ),
         }
         for row in rows
     }
@@ -115,13 +119,15 @@ def get_latest_market(limit=100):
             cursor.execute(
                 """
                 SELECT c.symbol, c.name, c.slug, c.image_url,
-                       lp.current_price, lp.market_cap, lp.total_volume,
+                       lp.current_price, 
+                       COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) AS market_cap, 
+                       lp.total_volume,
                        lp.price_change_percentage_24h, lp.updated_at,
                        lp.data_source, lp.last_updated
                 FROM latest_prices lp
                 JOIN coins c ON lp.coin_id = c.id
                 WHERE lp.current_price > 0
-                ORDER BY lp.market_cap DESC
+                ORDER BY COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) DESC
                 LIMIT %s
             """,
                 (limit,),
@@ -232,13 +238,15 @@ def _fallback_market(limit):
             cursor.execute(
                 f"""
                 SELECT c.symbol, c.name, c.slug, c.image_url,
-                       lp.current_price, lp.market_cap, lp.total_volume,
+                       lp.current_price, 
+                       COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) AS market_cap, 
+                       lp.total_volume,
                        lp.price_change_percentage_24h, lp.updated_at,
                        lp.data_source, lp.last_updated
                 FROM latest_prices lp
                 JOIN coins c ON lp.coin_id = c.id
-                WHERE {_DERIVATIVE_SQL}
-                ORDER BY lp.market_cap DESC
+                WHERE { _DERIVATIVE_SQL }
+                ORDER BY COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) DESC
                 LIMIT %s
             """,
                 (limit,),
