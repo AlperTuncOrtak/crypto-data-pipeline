@@ -7,9 +7,11 @@
 # Calistirma: python src/catalog_sync.py
 # ============================================================
 
+import time
 import requests
 import logging
 from datetime import datetime
+import os
 from db import get_connection
 
 logging.basicConfig(
@@ -171,5 +173,19 @@ def sync():
         conn.close()
 
 
+def daemon_mode():
+    interval = int(os.environ.get("CATALOG_SYNC_INTERVAL", 21600)) # Default 6 hours
+    logger.info(f"Starting catalog_sync daemon mode (interval: {interval}s)")
+    while True:
+        try:
+            sync()
+        except Exception as e:
+            logger.error(f"Daemon sync error: {e}")
+        logger.info(f"Sleeping for {interval} seconds...")
+        time.sleep(interval)
+
 if __name__ == "__main__":
-    sync()
+    if os.environ.get("DAEMON_MODE") == "1":
+        daemon_mode()
+    else:
+        sync()
