@@ -234,9 +234,10 @@ def _calculate_all(df: pd.DataFrame) -> dict:
     except Exception as e:
         log.warning(f"EMA calculation failed: {e}")
 
-    # ── Destek / Direnç (7 günlük high/low) ──────────────────
+    # ── Destek / Direnç ──────────────────────────────────────
     try:
-        recent = close.tail(int(len(close) * 7 / 30))  # son 7 günün verisi
+        n = max(3, int(len(close) * 0.25))
+        recent = close.tail(n)
         result["support_level"]    = round(float(recent.min()), 2)
         result["resistance_level"] = round(float(recent.max()), 2)
     except Exception as e:
