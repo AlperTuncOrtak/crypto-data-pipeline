@@ -6,8 +6,8 @@ services:
     container_name: crypto_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "12345678"
-      MYSQL_DATABASE: "crypto_analysis"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-12345678}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-crypto_analysis}"
     ports:
       - "3306:3306"
     volumes:
@@ -22,6 +22,36 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+  api:
+    build: .
+    container_name: crypto_api
+    restart: always
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+    env_file:
+      - ./backend/.env
+    environment:
+      - MYSQL_HOST=mysql
+      - REDIS_HOST=redis
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+      - redis
+
+  ws_worker:
+    build: .
+    container_name: crypto_ws_worker
+    restart: always
+    command: python src/multi_exchange_ws.py
+    env_file:
+      - ./backend/.env
+    environment:
+      - MYSQL_HOST=mysql
+      - REDIS_HOST=redis
+    depends_on:
+      - mysql
+      - redis
 
 volumes:
   mysql_data:
