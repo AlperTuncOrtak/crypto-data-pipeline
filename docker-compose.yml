@@ -8,8 +8,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-12345678}"
       MYSQL_DATABASE: "${MYSQL_DATABASE:-crypto_analysis}"
-    ports:
-      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -18,8 +16,6 @@ services:
     image: redis:7-alpine
     container_name: crypto_redis
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
 
