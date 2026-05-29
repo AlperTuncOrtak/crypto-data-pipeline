@@ -100,67 +100,33 @@ def sync():
             if not symbol:
                 continue
 
-            cursor.execute("SELECT id FROM coins WHERE symbol = %s", (symbol,))
-            result = cursor.fetchone()
-
-            if result:
-                cursor.execute(
-                    """
-                    UPDATE coins SET
-                        name               = %s,
-                        slug               = COALESCE(NULLIF(%s,''), slug),
-                        image_url          = COALESCE(NULLIF(%s,''), image_url),
-                        market_cap_rank    = COALESCE(%s, market_cap_rank),
-                        ath                = COALESCE(%s, ath),
-                        ath_date           = COALESCE(%s, ath_date),
-                        atl                = COALESCE(%s, atl),
-                        atl_date           = COALESCE(%s, atl_date),
-                        circulating_supply = COALESCE(%s, circulating_supply),
-                        total_supply       = COALESCE(%s, total_supply),
-                        max_supply         = COALESCE(%s, max_supply)
-                    WHERE symbol = %s
+            cursor.execute(
+                """
+                INSERT INTO coins
+                    (symbol, name, slug, image_url, market_cap_rank,
+                     ath, ath_date, atl, atl_date,
+                     circulating_supply, total_supply, max_supply)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON DUPLICATE KEY UPDATE
+                    name               = VALUES(name),
+                    slug               = COALESCE(NULLIF(VALUES(slug),''), slug),
+                    image_url          = COALESCE(NULLIF(VALUES(image_url),''), image_url),
+                    market_cap_rank    = COALESCE(VALUES(market_cap_rank), market_cap_rank),
+                    ath                = COALESCE(VALUES(ath), ath),
+                    ath_date           = COALESCE(VALUES(ath_date), ath_date),
+                    atl                = COALESCE(VALUES(atl), atl),
+                    atl_date           = COALESCE(VALUES(atl_date), atl_date),
+                    circulating_supply = COALESCE(VALUES(circulating_supply), circulating_supply),
+                    total_supply       = COALESCE(VALUES(total_supply), total_supply),
+                    max_supply         = COALESCE(VALUES(max_supply), max_supply)
                 """,
-                    (
-                        name,
-                        slug,
-                        image_url,
-                        rank,
-                        ath,
-                        ath_date,
-                        atl,
-                        atl_date,
-                        circ,
-                        total,
-                        max_s,
-                        symbol,
-                    ),
+                (
+                    symbol, name, slug, image_url, rank,
+                    ath, ath_date, atl, atl_date,
+                    circ, total, max_s
                 )
-                updated += 1
-            else:
-                cursor.execute(
-                    """
-                    INSERT INTO coins
-                        (symbol, name, slug, image_url, market_cap_rank,
-                         ath, ath_date, atl, atl_date,
-                         circulating_supply, total_supply, max_supply)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                """,
-                    (
-                        symbol,
-                        name,
-                        slug,
-                        image_url,
-                        rank,
-                        ath,
-                        ath_date,
-                        atl,
-                        atl_date,
-                        circ,
-                        total,
-                        max_s,
-                    ),
-                )
-                inserted += 1
+            )
+            inserted += 1
 
         conn.commit()
         logger.info(f"Sync complete: {updated} updated, {inserted} inserted.")
