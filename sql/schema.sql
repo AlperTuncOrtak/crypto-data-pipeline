@@ -28,6 +28,14 @@ CREATE TABLE IF NOT EXISTS coins (
     name VARCHAR(150) NOT NULL,
     slug VARCHAR(100) DEFAULT NULL,
     image_url VARCHAR(1024) DEFAULT NULL,
+    market_cap_rank INT DEFAULT NULL,
+    ath DECIMAL(18,8) DEFAULT NULL,
+    ath_date DATE DEFAULT NULL,
+    atl DECIMAL(18,8) DEFAULT NULL,
+    atl_date DATE DEFAULT NULL,
+    circulating_supply BIGINT DEFAULT NULL,
+    total_supply BIGINT DEFAULT NULL,
+    max_supply BIGINT DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uq_symbol (symbol)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

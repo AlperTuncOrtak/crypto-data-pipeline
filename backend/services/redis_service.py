@@ -26,14 +26,19 @@ MIN_CHANGE_PCT = 0.5
 
 
 def get_all_tickers(limit=500):
-    symbols = r.smembers("tickers")
+    symbols = list(r.smembers("tickers"))
     if not symbols:
         return []
 
+    keys = [f"ticker:{symbol}USDT" for symbol in symbols]
+    raw_values = r.mget(keys)
+
     results = []
-    for symbol in symbols:
-        # Yeni format: JSON string
-        raw = r.get(f"ticker:{symbol}USDT")
+    # Eksik olanlar için pipeline (fallback)
+    pipe = r.pipeline()
+    missing_symbols = []
+
+    for symbol, raw in zip(symbols, raw_values):
         if raw:
             try:
                 data = json.loads(raw)
@@ -49,28 +54,32 @@ def get_all_tickers(limit=500):
                         "updated_at": str(data.get("ts", "")),
                     }
                 )
-                continue
             except Exception:
                 pass
+        else:
+            # Hgetall için fallback
+            pipe.hgetall(f"ticker:{symbol}USDT")
+            missing_symbols.append(symbol)
 
-        # Eski format: hash (fallback)
-        try:
-            data = r.hgetall(f"ticker:{symbol}USDT")
+    if missing_symbols:
+        fallback_results = pipe.execute()
+        for symbol, data in zip(missing_symbols, fallback_results):
             if data:
-                results.append(
-                    {
-                        "symbol": symbol,
-                        "current_price": float(data.get("price", 0)),
-                        "price_change_percentage_24h": float(data.get("change_pct", 0)),
-                        "total_volume": float(data.get("volume", 0)),
-                        "high_24h": float(data.get("high_24h", 0)),
-                        "low_24h": float(data.get("low_24h", 0)),
-                        "data_source": "binance",
-                        "updated_at": data.get("updated_at", ""),
-                    }
-                )
-        except Exception:
-            pass
+                try:
+                    results.append(
+                        {
+                            "symbol": symbol,
+                            "current_price": float(data.get("price", 0)),
+                            "price_change_percentage_24h": float(data.get("change_pct", 0)),
+                            "total_volume": float(data.get("volume", 0)),
+                            "high_24h": float(data.get("high_24h", 0)),
+                            "low_24h": float(data.get("low_24h", 0)),
+                            "data_source": "binance",
+                            "updated_at": data.get("updated_at", ""),
+                        }
+                    )
+                except Exception:
+                    pass
 
     results.sort(key=lambda x: x["total_volume"], reverse=True)
     return results[:limit]
