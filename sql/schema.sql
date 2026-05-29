@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS coins (
     symbol VARCHAR(20) NOT NULL,
     name VARCHAR(150) NOT NULL,
     slug VARCHAR(100) DEFAULT NULL,
-    image_url VARCHAR(255) DEFAULT NULL,
+    image_url VARCHAR(1024) DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uq_symbol (symbol)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
