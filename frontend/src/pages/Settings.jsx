@@ -267,7 +267,7 @@ export default function Settings() {
   }
 
   async function handleCancelSubscription() {
-    if (!window.confirm("Are you sure you want to cancel your subscription? You will lose access to Pro features immediately.")) return;
+    if (!window.confirm("Are you sure you want to cancel your subscription? You will retain access to Pro features until the end of your current billing period.")) return;
     setCancelLoading(true);
     setCancelMsg({ text: "", type: "" });
     try {
@@ -283,8 +283,8 @@ export default function Settings() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
       
-      setCancelMsg({ text: "Subscription cancelled successfully. You are now on the Free plan.", type: "success" });
-      setTimeout(() => window.location.reload(), 2000);
+      setCancelMsg({ text: "Subscription will be cancelled at the end of your billing cycle. You can continue using Pro features until then.", type: "success" });
+      setTimeout(() => window.location.reload(), 3000);
     } catch (e) {
       setCancelMsg({ text: e.message || "An error occurred", type: "error" });
     } finally {

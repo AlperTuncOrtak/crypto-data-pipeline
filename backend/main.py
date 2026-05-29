@@ -683,11 +683,15 @@ def cancel_subscription(user: dict = Depends(verify_token)):
         raise HTTPException(status_code=400, detail="No active Stripe subscription found.")
 
     try:
-        stripe.Subscription.delete(sub_id)
-        # We can directly update the plan to free here, 
-        # or wait for the webhook. Doing it here is faster for UI.
-        sb.table("user_plans").update({"plan": "free", "stripe_sub_id": None}).eq("user_id", user["id"]).execute()
-        return {"ok": True}
+        sub = stripe.Subscription.modify(sub_id, cancel_at_period_end=True)
+        # We DO NOT downgrade the user to 'free' here.
+        # They keep their plan until the billing period ends.
+        # When it ends, Stripe fires 'customer.subscription.deleted' webhook
+        # and we downgrade them to 'free' there.
+        return {
+            "ok": True, 
+            "message": "Subscription will be canceled at the end of the current billing period."
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
