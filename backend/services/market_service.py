@@ -71,8 +71,18 @@ def _get_metadata():
     finally:
         conn.close()
 
-    _metadata_cache = {
-        row["symbol"].upper(): {
+    _metadata_cache = {}
+    for row in rows:
+        mcap = float(
+            row.get("market_cap") or 
+            (row.get("current_price") * row.get("circulating_supply") 
+             if row.get("current_price") and row.get("circulating_supply") else 0)
+        )
+        # Fiyat anomalisini (meme coin multiplier) onle:
+        if row["symbol"].upper() not in ("BTC", "ETH", "USDT") and mcap > 2000000000000:
+            mcap = 0
+        
+        _metadata_cache[row["symbol"].upper()] = {
             "name": row["name"],
             "slug": row["slug"],
             "image_url": row["image_url"],
@@ -80,14 +90,8 @@ def _get_metadata():
             "last_updated": (
                 row["last_updated"].isoformat() if row["last_updated"] else None
             ),
-            "market_cap": float(
-                row.get("market_cap") or 
-                (row.get("current_price") * row.get("circulating_supply") 
-                 if row.get("current_price") and row.get("circulating_supply") else 0)
-            ),
+            "market_cap": mcap,
         }
-        for row in rows
-    }
     _metadata_cache_time = now
     return _metadata_cache
 
@@ -120,14 +124,20 @@ def get_latest_market(limit=100):
                 """
                 SELECT c.symbol, c.name, c.slug, c.image_url,
                        lp.current_price, 
-                       COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) AS market_cap, 
+                       CASE 
+                         WHEN c.symbol NOT IN ('BTC', 'ETH', 'USDT') AND (lp.current_price * c.circulating_supply) > 2000000000000 THEN 0
+                         ELSE COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0)
+                       END AS market_cap, 
                        lp.total_volume,
                        lp.price_change_percentage_24h, lp.updated_at,
                        lp.data_source, lp.last_updated
                 FROM latest_prices lp
                 JOIN coins c ON lp.coin_id = c.id
                 WHERE lp.current_price > 0
-                ORDER BY COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) DESC
+                ORDER BY CASE 
+                           WHEN c.symbol NOT IN ('BTC', 'ETH', 'USDT') AND (lp.current_price * c.circulating_supply) > 2000000000000 THEN 0
+                           ELSE COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0)
+                         END DESC
                 LIMIT %s
             """,
                 (limit,),
@@ -239,14 +249,20 @@ def _fallback_market(limit):
                 f"""
                 SELECT c.symbol, c.name, c.slug, c.image_url,
                        lp.current_price, 
-                       COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) AS market_cap, 
+                       CASE 
+                         WHEN c.symbol NOT IN ('BTC', 'ETH', 'USDT') AND (lp.current_price * c.circulating_supply) > 2000000000000 THEN 0
+                         ELSE COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0)
+                       END AS market_cap, 
                        lp.total_volume,
                        lp.price_change_percentage_24h, lp.updated_at,
                        lp.data_source, lp.last_updated
                 FROM latest_prices lp
                 JOIN coins c ON lp.coin_id = c.id
                 WHERE { _DERIVATIVE_SQL }
-                ORDER BY COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0) DESC
+                ORDER BY CASE 
+                           WHEN c.symbol NOT IN ('BTC', 'ETH', 'USDT') AND (lp.current_price * c.circulating_supply) > 2000000000000 THEN 0
+                           ELSE COALESCE(NULLIF(lp.market_cap, 0), lp.current_price * c.circulating_supply, 0)
+                         END DESC
                 LIMIT %s
             """,
                 (limit,),

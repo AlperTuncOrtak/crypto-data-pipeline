@@ -63,11 +63,14 @@ def sync():
     logger.info("Catalog sync started.")
 
     coins = []
-    for page in range(1, 5):  # top 1000 coin (4 × 250)
+    for page in range(1, 21):  # top 5000 coin (20 × 250)
         try:
             data = fetch_coingecko(page=page)
+            if not data:
+                break
             coins.extend(data)
             logger.info(f"Page {page}: {len(data)} coins fetched.")
+            time.sleep(1.5)  # Respect CoinGecko API rate limits
         except Exception as e:
             logger.error(f"CoinGecko fetch error (page {page}): {e}")
             break
