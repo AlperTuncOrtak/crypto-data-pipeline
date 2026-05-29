@@ -120,6 +120,8 @@ async def snapshot_to_db(r: aioredis.Redis, pool: aiomysql.Pool) -> None:
         volume = d.get("volume", 0)
         change_24h = d.get("change_24h", 0)
         market_cap = d.get("market_cap", 0)
+        high_24h = d.get("high_24h", 0)
+        low_24h = d.get("low_24h", 0)
         source = d.get("source", "unknown")
 
         if coin_id is None or price is None:
@@ -294,6 +296,8 @@ class GateWS:
             price = float(result.get("last", 0) or 0)
             volume = float(result.get("quote_volume", 0) or 0)
             change_24 = float(result.get("change_percentage", 0) or 0)
+            high_24h = float(result.get("high_24h", 0) or 0)
+            low_24h = float(result.get("low_24h", 0) or 0)
         except (ValueError, TypeError):
             return
 
@@ -312,6 +316,8 @@ class GateWS:
                 "price": price,
                 "volume": volume,
                 "change_24h": change_24,
+                "high_24h": high_24h,
+                "low_24h": low_24h,
                 "market_cap": 0,
                 "source": self.SOURCE,
                 "ts": int(time.time() * 1000),
@@ -415,6 +421,8 @@ class BybitWS:
             price = float(data.get("lastPrice", 0) or 0)
             volume = float(data.get("turnover24h", 0) or 0)
             change_24 = float(data.get("price24hPcnt", 0) or 0) * 100
+            high_24h = float(data.get("highPrice24h", 0) or 0)
+            low_24h = float(data.get("lowPrice24h", 0) or 0)
         except (ValueError, TypeError):
             return
 
@@ -433,6 +441,8 @@ class BybitWS:
                 "price": price,
                 "volume": volume,
                 "change_24h": change_24,
+                "high_24h": high_24h,
+                "low_24h": low_24h,
                 "market_cap": 0,
                 "source": self.SOURCE,
                 "ts": int(time.time() * 1000),
@@ -532,6 +542,8 @@ class OkxWS:
             change_24 = (
                 ((price - open24h) / open24h * 100) if open24h and price else 0.0
             )
+            high_24h = float(d.get("high24h", 0) or 0)
+            low_24h = float(d.get("low24h", 0) or 0)
         except (ValueError, TypeError):
             return
 
@@ -550,6 +562,8 @@ class OkxWS:
                 "price": price,
                 "volume": volume,
                 "change_24h": change_24,
+                "high_24h": high_24h,
+                "low_24h": low_24h,
                 "market_cap": 0,
                 "source": self.SOURCE,
                 "ts": int(time.time() * 1000),
@@ -625,6 +639,8 @@ class CoinGeckoPoller:
                     volume = item.get("total_volume") or 0
                     ch24 = item.get("price_change_percentage_24h") or 0
                     mcap = item.get("market_cap") or 0
+                    high_24h = item.get("high_24h") or 0
+                    low_24h = item.get("low_24h") or 0
 
                     if not sym or price <= 0:
                         continue
@@ -641,6 +657,8 @@ class CoinGeckoPoller:
                             "price": price,
                             "volume": volume,
                             "change_24h": ch24,
+                            "high_24h": high_24h,
+                            "low_24h": low_24h,
                             "market_cap": mcap,
                             "source": self.SOURCE,
                             "ts": int(time.time() * 1000),
