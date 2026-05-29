@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS coins (
     id INT NOT NULL AUTO_INCREMENT,
     symbol VARCHAR(20) NOT NULL,
     name VARCHAR(150) NOT NULL,
+    slug VARCHAR(100) DEFAULT NULL,
+    image_url VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uq_symbol (symbol)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -45,6 +47,8 @@ CREATE TABLE IF NOT EXISTS latest_prices (
     total_volume BIGINT DEFAULT NULL,
     price_change_24h DECIMAL(18,8) DEFAULT NULL,
     price_change_percentage_24h DECIMAL(10,4) DEFAULT NULL,
+    data_source VARCHAR(50) DEFAULT 'binance',
+    last_updated TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (coin_id),
