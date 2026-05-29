@@ -28,6 +28,7 @@ import Landing from "./pages/Landing";
 import { useWatchlist } from "./hooks/useWatchlist";
 import { useMarket } from "./hooks/useMarket";
 import AIChatWidget from "./components/ai/AIChatWidget";
+import AuthModal from "./components/ui/AuthModal";
 
 function AppInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -241,6 +242,11 @@ function AppInner() {
         limit={limit}
       />
       <AIChatWidget />
+      <AuthModal
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onLogin={() => setAuthOpen(false)}
+      />
       </div>
     </div>
   );
