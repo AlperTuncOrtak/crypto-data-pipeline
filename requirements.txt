@@ -30,4 +30,4 @@ slowapi
 # Async & Realtime databases
 aiomysql
 redis
-websockets
+websocketsaiohttp
