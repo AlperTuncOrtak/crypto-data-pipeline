@@ -31,10 +31,11 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      - MYSQL_HOST=mysql
-      - REDIS_HOST=redis
-    ports:
-      - "8000:8000"
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=12345678
+      - DB_NAME=crypto_analysis
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - mysql
       - redis
@@ -47,8 +48,11 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      - MYSQL_HOST=mysql
-      - REDIS_HOST=redis
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=12345678
+      - DB_NAME=crypto_analysis
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - mysql
       - redis
