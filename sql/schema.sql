@@ -24,7 +24,7 @@
 -- ============================================================
 CREATE TABLE IF NOT EXISTS coins (
     id INT NOT NULL AUTO_INCREMENT,
-    symbol VARCHAR(20) NOT NULL,
+    symbol VARCHAR(100) NOT NULL,
     name VARCHAR(150) NOT NULL,
     slug VARCHAR(100) DEFAULT NULL,
     image_url VARCHAR(1024) DEFAULT NULL,
