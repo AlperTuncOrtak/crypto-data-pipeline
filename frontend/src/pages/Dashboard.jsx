@@ -626,16 +626,6 @@ export default function Dashboard() {
               return <span style={{ color: "var(--negative)" }}>{pct.toFixed(2)}%</span>;
             }}
           />
-        </div>
-
-        {/* ── ROW 4: Volume Spike (4) + Market Oracle (4) + Highest Vol (4) ── */}
-        <div className="col-span-1 md:col-span-6 lg:col-span-4">
-          <VolumeSpikeRadar />
-        </div>
-        <div className="col-span-1 md:col-span-6 lg:col-span-4">
-          <MarketOracle />
-        </div>
-        <div className="col-span-1 md:col-span-6 lg:col-span-4">
           <CoinListCard
             title="Highest Volume (24h)"
             accent="blue"
@@ -646,6 +636,14 @@ export default function Dashboard() {
               <span style={{ color: "var(--text-secondary)" }}>{formatLargeNumber(coin.total_volume)}</span>
             )}
           />
+        </div>
+
+        {/* ── ROW 4: Volume Spike (6) + Market Oracle (6) ── */}
+        <div className="col-span-1 md:col-span-6 lg:col-span-6">
+          <VolumeSpikeRadar />
+        </div>
+        <div className="col-span-1 md:col-span-6 lg:col-span-6">
+          <MarketOracle />
         </div>
       </div>
     </div>

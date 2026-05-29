@@ -186,15 +186,21 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
   if (!isOpen) return null;
   const isLocked = lockUntil && Date.now() < lockUntil;
 
-  async function handleGoogle() {
-    setLoading(true);
-    setError("");
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin },
-    });
-    if (error) setError(error.message);
-    setLoading(false);
+  async function handleGoogle(e) {
+    if (e) e.preventDefault();
+    try {
+      setLoading(true);
+      setError("");
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin },
+      });
+      if (error) setError(error.message);
+    } catch (err) {
+      setError(err.message || "Failed to initialize Google login");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleLogin(e) {
@@ -456,6 +462,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                 {(mode === "login" || mode === "signup") && (
                   <>
                     <button
+                      type="button"
                       onClick={handleGoogle}
                       disabled={loading || isLocked}
                       style={{
