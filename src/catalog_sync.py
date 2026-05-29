@@ -70,7 +70,7 @@ def sync():
                 break
             coins.extend(data)
             logger.info(f"Page {page}: {len(data)} coins fetched.")
-            time.sleep(1.5)  # Respect CoinGecko API rate limits
+            time.sleep(6.0)  # Respect CoinGecko API rate limits (avoid 429)
         except Exception as e:
             logger.error(f"CoinGecko fetch error (page {page}): {e}")
             break
