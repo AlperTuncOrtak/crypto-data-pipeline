@@ -263,7 +263,7 @@ function AppInner() {
         isAtLimit={isAtLimit}
         limit={limit}
       />
-      <AIChatWidget />
+      {isLoggedIn && <AIChatWidget />}
       <AuthModal
         isOpen={authOpen}
         onClose={() => setAuthOpen(false)}
