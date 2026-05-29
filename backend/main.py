@@ -658,6 +658,40 @@ def create_checkout_session(payload: dict, user: dict = Depends(verify_token)):
     return {"url": session.url}
 
 
+@app.post("/cancel-subscription")
+def cancel_subscription(user: dict = Depends(verify_token)):
+    """
+    Kullanicinin aktif aboneligini Stripe uzerinden iptal eder.
+    """
+    import os, stripe
+    from supabase import create_client
+
+    stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
+    if not stripe.api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+
+    supabase_url = os.getenv("VITE_SUPABASE_URL", "")
+    supabase_svc_key = os.getenv("SUPABASE_SERVICE_KEY", "")
+    sb = create_client(supabase_url, supabase_svc_key)
+
+    res = sb.table("user_plans").select("stripe_sub_id, plan").eq("user_id", user["id"]).execute()
+    if not res.data:
+        raise HTTPException(status_code=400, detail="No active plan found.")
+
+    sub_id = res.data[0].get("stripe_sub_id")
+    if not sub_id:
+        raise HTTPException(status_code=400, detail="No active Stripe subscription found.")
+
+    try:
+        stripe.Subscription.delete(sub_id)
+        # We can directly update the plan to free here, 
+        # or wait for the webhook. Doing it here is faster for UI.
+        sb.table("user_plans").update({"plan": "free", "stripe_sub_id": None}).eq("user_id", user["id"]).execute()
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.post("/webhook")
 async def stripe_webhook(request: Request):
     """

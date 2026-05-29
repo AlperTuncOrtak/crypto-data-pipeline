@@ -140,6 +140,10 @@ export default function Settings() {
   const [otpSent, setOtpSent]   = useState(false);
   const [otp, setOtp]           = useState("");
 
+  // Subscription state
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelMsg, setCancelMsg] = useState({ text: "", type: "" });
+
   // Notification state (localStorage based)
   const [notif, setNotif] = useState(() => {
     try { return JSON.parse(localStorage.getItem("notification_settings") || "{}"); }
@@ -262,6 +266,32 @@ export default function Settings() {
     }
   }
 
+  async function handleCancelSubscription() {
+    if (!window.confirm("Are you sure you want to cancel your subscription? You will lose access to Pro features immediately.")) return;
+    setCancelLoading(true);
+    setCancelMsg({ text: "", type: "" });
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const res = await fetch(`${BASE_URL}/cancel-subscription`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
+      
+      setCancelMsg({ text: "Subscription cancelled successfully. You are now on the Free plan.", type: "success" });
+      setTimeout(() => window.location.reload(), 2000);
+    } catch (e) {
+      setCancelMsg({ text: e.message || "An error occurred", type: "error" });
+    } finally {
+      setCancelLoading(false);
+    }
+  }
+
   function toggleNotif(key) {
     const updated = { ...notif, [key]: !notif[key] };
     setNotif(updated);
@@ -326,6 +356,36 @@ export default function Settings() {
 
         <SaveButton loading={profileLoading} onClick={handleProfileSave} />
       </Section>
+
+      {/* ── SUBSCRIPTION ── */}
+      {(isPro || isEnterprise) && (
+        <Section title="Subscription" icon={Crown}>
+          <Toast message={cancelMsg.text} type={cancelMsg.type} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderRadius: 10, background: "rgba(245,166,35,0.05)", border: "1px solid rgba(245,166,35,0.15)" }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}>
+                <Crown size={14} />
+                {isEnterprise ? "Enterprise Plan" : "Pro Plan"} Active
+              </div>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
+                You currently have access to all premium features.
+              </div>
+            </div>
+            <button
+              onClick={handleCancelSubscription}
+              disabled={cancelLoading}
+              style={{
+                padding: "8px 16px", borderRadius: 8, background: "rgba(231,76,60,0.1)", border: "1px solid rgba(231,76,60,0.25)",
+                color: "#e74c3c", fontSize: 12, fontWeight: 600, cursor: cancelLoading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
+                display: "flex", alignItems: "center", gap: 6
+              }}
+            >
+              {cancelLoading && <Loader size={12} style={{ animation: "spin 0.8s linear infinite" }} />}
+              Cancel Subscription
+            </button>
+          </div>
+        </Section>
+      )}
 
       {/* ── SECURITY ── */}
       <Section title="Security" icon={Lock}>
