@@ -126,8 +126,8 @@ function AuthInput({ icon: Icon, rightEl, ...props }) {
 const FAIL_LIMIT = 5;
 const LOCKOUT_SEC = 30;
 
-export default function AuthModal({ isOpen, onClose, onLogin }) {
-  const [mode, setMode] = useState("login");
+export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "login" }) {
+  const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -159,9 +159,14 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
     function onKey(e) {
       if (e.key === "Escape") onClose();
     }
-    if (isOpen) document.addEventListener("keydown", onKey);
+    if (isOpen) {
+      document.addEventListener("keydown", onKey);
+      setMode(initialMode);
+      setError("");
+      setSuccess("");
+    }
     return () => document.removeEventListener("keydown", onKey);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, initialMode]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";

@@ -34,6 +34,7 @@ function AppInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activePanel, setActivePanel] = useState("watchlist");
   const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(
     () => !!localStorage.getItem("cryptoneko_disclaimer_accepted_v1"),
   );
@@ -110,7 +111,10 @@ function AppInner() {
         <Navbar
           onWatchlistOpen={() => openPanel("watchlist")}
           watchlistCount={watchlist.length}
-          onAuthOpen={() => setAuthOpen(true)}
+          onAuthOpen={(mode = "login") => {
+            setAuthMode(mode);
+            setAuthOpen(true);
+          }}
           authOpen={authOpen}
           setAuthOpen={setAuthOpen}
         />
@@ -133,7 +137,10 @@ function AppInner() {
                   toggleWatchlist={toggleWatchlist}
                 />
               ) : (
-                <Landing onAuthOpen={() => setAuthOpen(true)} />
+                <Landing onAuthOpen={(mode = "login") => {
+                  setAuthMode(mode);
+                  setAuthOpen(true);
+                }} />
               )
             }
           />
@@ -166,7 +173,10 @@ function AppInner() {
             element={
               <ProtectedRoute
                 featureName="alerts"
-                onAuthOpen={() => setAuthOpen(true)}
+                onAuthOpen={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
               >
                 <Alerts />
               </ProtectedRoute>
@@ -180,7 +190,10 @@ function AppInner() {
               <ProtectedRoute
                 requirePro
                 featureName="Custom Alerts & Notifications"
-                onAuthOpen={() => setAuthOpen(true)}
+                onAuthOpen={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
               >
                 <CreateAlert />
               </ProtectedRoute>
@@ -194,7 +207,10 @@ function AppInner() {
               <ProtectedRoute
                 requirePro
                 featureName="AI Technical Analysis"
-                onAuthOpen={() => setAuthOpen(true)}
+                onAuthOpen={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
               >
                 <AIAnalysis />
               </ProtectedRoute>
@@ -206,7 +222,10 @@ function AppInner() {
               <ProtectedRoute
                 requirePro
                 featureName="Portfolio Tracker & Tax Reporting"
-                onAuthOpen={() => setAuthOpen(true)}
+                onAuthOpen={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
               >
                 <Portfolio />
               </ProtectedRoute>
@@ -217,7 +236,10 @@ function AppInner() {
             element={
               <ProtectedRoute
                 featureName="Settings"
-                onAuthOpen={() => setAuthOpen(true)}
+                onAuthOpen={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
               >
                 <Settings />
               </ProtectedRoute>
@@ -246,6 +268,7 @@ function AppInner() {
         isOpen={authOpen}
         onClose={() => setAuthOpen(false)}
         onLogin={() => setAuthOpen(false)}
+        initialMode={authMode}
       />
       </div>
     </div>

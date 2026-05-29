@@ -272,7 +272,7 @@ export default function Landing({ onAuthOpen }) {
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button
-            onClick={() => onAuthOpen?.()}
+            onClick={() => onAuthOpen?.("login")}
             className="lp-ghost"
             style={{
               padding: "7px 18px",
@@ -289,7 +289,7 @@ export default function Landing({ onAuthOpen }) {
             Sign In
           </button>
           <button
-            onClick={() => onAuthOpen?.()}
+            onClick={() => onAuthOpen?.("signup")}
             className="lp-primary"
             style={{
               padding: "7px 20px",
@@ -585,7 +585,7 @@ export default function Landing({ onAuthOpen }) {
           }}
         >
           <button
-            onClick={() => onAuthOpen?.()}
+            onClick={() => onAuthOpen?.("signup")}
             className="lp-primary"
             style={{
               display: "flex",
@@ -1733,7 +1733,7 @@ export default function Landing({ onAuthOpen }) {
               ))}
             </div>
             <button
-              onClick={() => onAuthOpen?.()}
+              onClick={() => onAuthOpen?.("signup")}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -1982,7 +1982,7 @@ export default function Landing({ onAuthOpen }) {
             Free account. No credit card. Upgrade to Pro when you're ready.
           </p>
           <button
-            onClick={() => onAuthOpen?.()}
+            onClick={() => onAuthOpen?.("signup")}
             className="lp-primary"
             style={{
               display: "inline-flex",
