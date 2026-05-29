@@ -81,6 +81,7 @@ def sync():
 
     updated = 0
     inserted = 0
+    seen_symbols = set()
 
     try:
         for coin in coins:
@@ -99,6 +100,12 @@ def sync():
 
             if not symbol:
                 continue
+                
+            # CoinGecko's first appearance of a symbol is the highest market cap.
+            # Skip any subsequent coins with the same symbol in this run.
+            if symbol in seen_symbols:
+                continue
+            seen_symbols.add(symbol)
 
             cursor.execute(
                 """
