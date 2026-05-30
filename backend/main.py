@@ -29,6 +29,7 @@ from backend.services.alert_service import get_alerts
 from backend.services.analysis_service import (
     get_multi_coin_history,
     get_multi_coin_performance,
+    get_correlation_matrix,
 )
 from backend.services.coin_service import (
     get_coin_by_slug,
@@ -130,6 +131,12 @@ def analysis_history(symbols: list[str] = Query(...), hours: int = 24):
 def analysis_performance(symbols: list[str] = Query(...)):
     """Secili coinlerin toplam getirisi (karsilastirma tablosu icin)."""
     return get_multi_coin_performance(symbols)
+
+
+@app.get("/analysis/correlation")
+def analysis_correlation(symbols: list[str] = Query(...), hours: int = 24):
+    """Secili coinlerin korelasyon matrisi."""
+    return get_correlation_matrix(symbols, hours)
 
 
 @app.get("/coin/{slug}")
