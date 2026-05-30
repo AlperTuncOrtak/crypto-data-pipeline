@@ -1369,6 +1369,7 @@ export default function Portfolio() {
     }
   });
   const [walletHoldings, setWalletHoldings] = useState([]);
+  const [showBinanceModal, setShowBinanceModal] = useState(false);
   const [binanceKeys, setBinanceKeys] = useState(() => {
     try {
       const saved = localStorage.getItem("crypto_neko_binance_keys");
@@ -1664,78 +1665,151 @@ export default function Portfolio() {
          </button>
        </div>
 
-       {/* BINANCE SYNC INPUT */}
-       <div style={{ marginBottom: 24, display: "flex", gap: 10, flexWrap: "wrap" }}>
-         <input 
-           type="text" 
-           placeholder="Binance API Key (Read-Only)" 
-           value={binanceKeys.key}
-           onChange={e => setBinanceKeys(prev => ({...prev, key: e.target.value}))}
-           style={{
-             flex: 1,
-             minWidth: 200,
-             padding: "12px 16px",
-             borderRadius: 12,
-             background: "var(--bg-surface)",
-             border: "1px solid var(--border)",
-             color: "var(--text-primary)",
-             fontSize: 14,
-           }}
-         />
-         <input 
-           type="password" 
-           placeholder="Binance API Secret" 
-           value={binanceKeys.secret}
-           onChange={e => setBinanceKeys(prev => ({...prev, secret: e.target.value}))}
-           style={{
-             flex: 1,
-             minWidth: 200,
-             padding: "12px 16px",
-             borderRadius: 12,
-             background: "var(--bg-surface)",
-             border: "1px solid var(--border)",
-             color: "var(--text-primary)",
-             fontSize: 14,
-           }}
-         />
-         <button 
-           onClick={() => syncBinance(binanceKeys.key, binanceKeys.secret)}
-           disabled={!binanceKeys.key || !binanceKeys.secret || isSyncingBinance}
-           style={{
-             padding: "0 24px",
-             borderRadius: 12,
-             height: 44,
-             background: (binanceKeys.key && binanceKeys.secret) ? "#F3BA2F" : "var(--bg-surface)",
-             border: "none",
-             color: (binanceKeys.key && binanceKeys.secret) ? "#111" : "var(--text-muted)",
-             fontWeight: 700,
-             cursor: (binanceKeys.key && binanceKeys.secret && !isSyncingBinance) ? "pointer" : "not-allowed",
-           }}
-         >
-           {isSyncingBinance ? "Syncing..." : "Live Binance Sync"}
-         </button>
-         {(binanceHoldings.length > 0 || binanceKeys.key) && (
-            <button
-              onClick={() => {
-                setBinanceHoldings([]);
-                setBinanceKeys({ key: "", secret: "" });
-                localStorage.removeItem("crypto_neko_binance_keys");
-              }}
-              style={{
-                padding: "0 16px",
-                borderRadius: 12,
-                height: 44,
-                border: "1px solid rgba(231,76,60,0.3)",
-                background: "rgba(231,76,60,0.06)",
-                color: "#e74c3c",
-                fontSize: 13,
-                cursor: "pointer",
-              }}
-            >
-              Disconnect
-            </button>
-          )}
+       {/* BINANCE SYNC BUTTON */}
+       <div style={{ marginBottom: 24, display: "flex", gap: 10 }}>
+         {binanceKeys.key && binanceHoldings.length > 0 ? (
+           <div style={{ display: "flex", gap: 10 }}>
+             <div style={{ 
+               padding: "12px 24px", 
+               borderRadius: 12, 
+               background: "rgba(243,186,47,0.15)", 
+               border: "1px solid rgba(243,186,47,0.3)",
+               color: "#F3BA2F", 
+               fontWeight: 600,
+               display: "flex",
+               alignItems: "center",
+               gap: 8
+             }}>
+               <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#F3BA2F", boxShadow: "0 0 8px #F3BA2F" }}></span>
+               Binance Connected
+             </div>
+             <button
+                onClick={() => {
+                  setBinanceHoldings([]);
+                  setBinanceKeys({ key: "", secret: "" });
+                  localStorage.removeItem("crypto_neko_binance_keys");
+                }}
+                style={{
+                  padding: "0 16px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(231,76,60,0.3)",
+                  background: "rgba(231,76,60,0.06)",
+                  color: "#e74c3c",
+                  fontSize: 13,
+                  cursor: "pointer",
+                }}
+              >
+                Disconnect
+              </button>
+           </div>
+         ) : (
+           <button 
+             onClick={() => setShowBinanceModal(true)}
+             style={{
+               padding: "12px 24px",
+               borderRadius: 12,
+               background: "#F3BA2F",
+               border: "none",
+               color: "#111",
+               fontWeight: 700,
+               cursor: "pointer",
+               display: "flex",
+               alignItems: "center",
+               gap: 8,
+               transition: "transform 0.15s",
+             }}
+             onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+             onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+           >
+             Connect Binance
+           </button>
+         )}
        </div>
+
+       {/* BINANCE MODAL */}
+       {showBinanceModal && (
+         <div style={{
+           position: "fixed", top: 0, left: 0, width: "100%", height: "100%", 
+           background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)",
+           zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center"
+         }}>
+           <div style={{
+             background: "var(--bg-surface)",
+             border: "1px solid var(--border)",
+             borderRadius: 24,
+             padding: 32,
+             width: "100%",
+             maxWidth: 480,
+             boxShadow: "0 24px 48px rgba(0,0,0,0.5)"
+           }}>
+             <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "#F3BA2F" }}>
+               Connect to Binance
+             </h2>
+             <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24, lineHeight: 1.5 }}>
+               We use a secure, read-only connection. Your API Secret is never stored in our database. It stays in your browser and is only used to sync your live balances.
+             </p>
+             
+             <div style={{ marginBottom: 16 }}>
+               <label style={{ display: "block", fontSize: 12, color: "var(--text-muted)", marginBottom: 6, fontWeight: 600 }}>API KEY (READ-ONLY)</label>
+               <input 
+                 type="text" 
+                 placeholder="Paste your API Key here" 
+                 value={binanceKeys.key}
+                 onChange={e => setBinanceKeys(prev => ({...prev, key: e.target.value}))}
+                 style={{
+                   width: "100%", padding: "14px 16px", borderRadius: 12,
+                   background: "var(--bg-elevated)", border: "1px solid var(--border)",
+                   color: "var(--text-primary)", fontSize: 14, boxSizing: "border-box"
+                 }}
+               />
+             </div>
+             
+             <div style={{ marginBottom: 24 }}>
+               <label style={{ display: "block", fontSize: 12, color: "var(--text-muted)", marginBottom: 6, fontWeight: 600 }}>API SECRET</label>
+               <input 
+                 type="password" 
+                 placeholder="Paste your API Secret here" 
+                 value={binanceKeys.secret}
+                 onChange={e => setBinanceKeys(prev => ({...prev, secret: e.target.value}))}
+                 style={{
+                   width: "100%", padding: "14px 16px", borderRadius: 12,
+                   background: "var(--bg-elevated)", border: "1px solid var(--border)",
+                   color: "var(--text-primary)", fontSize: 14, boxSizing: "border-box"
+                 }}
+               />
+             </div>
+             
+             <div style={{ display: "flex", gap: 12 }}>
+               <button 
+                 onClick={() => {
+                   syncBinance(binanceKeys.key, binanceKeys.secret);
+                   setShowBinanceModal(false);
+                 }}
+                 disabled={!binanceKeys.key || !binanceKeys.secret || isSyncingBinance}
+                 style={{
+                   flex: 1, padding: "14px", borderRadius: 12, border: "none",
+                   background: (binanceKeys.key && binanceKeys.secret) ? "#F3BA2F" : "var(--bg-elevated)",
+                   color: (binanceKeys.key && binanceKeys.secret) ? "#111" : "var(--text-muted)",
+                   fontWeight: 700, fontSize: 15,
+                   cursor: (binanceKeys.key && binanceKeys.secret && !isSyncingBinance) ? "pointer" : "not-allowed",
+                 }}
+               >
+                 {isSyncingBinance ? "Syncing..." : "Connect & Sync"}
+               </button>
+               <button 
+                 onClick={() => setShowBinanceModal(false)}
+                 style={{
+                   padding: "14px 24px", borderRadius: 12, border: "1px solid var(--border)",
+                   background: "transparent", color: "var(--text-secondary)", fontWeight: 600,
+                   cursor: "pointer", fontSize: 15
+                 }}
+               >
+                 Cancel
+               </button>
+             </div>
+           </div>
+         </div>
+       )}
 
       {/* EXCHANGE GUIDES */}
       {showGuides && (
