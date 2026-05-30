@@ -26,6 +26,9 @@ import CreateAlert from "./pages/CreateAlert";
 import DisclaimerModal from "./components/DisclaimerModal";
 import Settings from "./pages/Settings";
 import Landing from "./pages/Landing";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Documentation from "./pages/Documentation";
 import { useWatchlist } from "./hooks/useWatchlist";
 import { useMarket } from "./hooks/useMarket";
 import AIChatWidget from "./components/ai/AIChatWidget";
@@ -164,6 +167,9 @@ function AppInner() {
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/correlation" element={<Correlation />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/docs" element={<Documentation />} />
           <Route
             path="/pricing"
             element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}

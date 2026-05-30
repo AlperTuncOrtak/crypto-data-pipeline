@@ -62,10 +62,10 @@ export default function Footer() {
 
         {/* Links */}
         <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-          <a href="#" className="hover:text-[#f5a623] transition-colors">Documentation</a>
-          <a href="#" className="hover:text-[#f5a623] transition-colors">API</a>
-          <a href="#" className="hover:text-[#f5a623] transition-colors">Terms of Service</a>
-          <a href="#" className="hover:text-[#f5a623] transition-colors">Privacy Policy</a>
+          <a href="/docs" className="hover:text-[#f5a623] transition-colors">Documentation</a>
+          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors">API</a>
+          <a href="/terms" className="hover:text-[#f5a623] transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-[#f5a623] transition-colors">Privacy Policy</a>
         </div>
 
         {/* Socials & Copyright */}
@@ -73,7 +73,7 @@ export default function Footer() {
           <div className="flex items-center gap-5" style={{ color: 'var(--text-muted)' }}>
             <a href="#" title="X (Twitter)" className="hover:text-[#f5a623] transition-colors"><IconX size={18} /></a>
             <a href="#" title="Discord" className="hover:text-[#f5a623] transition-colors"><IconDiscord size={18} /></a>
-            <a href="#" title="GitHub" className="hover:text-[#f5a623] transition-colors"><IconGithub size={18} /></a>
+            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-[#f5a623] transition-colors"><IconGithub size={18} /></a>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6 }}>
             © {new Date().getFullYear()} CryptoNeko. All rights reserved.
