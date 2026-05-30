@@ -37,10 +37,6 @@ def get_all_tickers(limit=500):
     raw_values = r.mget(keys)
 
     results = []
-    # Eksik olanlar için pipeline (fallback)
-    pipe = r.pipeline()
-    missing_symbols = []
-
     for symbol, raw in zip(symbols, raw_values):
         if raw:
             try:
@@ -59,30 +55,6 @@ def get_all_tickers(limit=500):
                 )
             except Exception:
                 pass
-        else:
-            # Hgetall için fallback
-            pipe.hgetall(f"ticker:{symbol}USDT")
-            missing_symbols.append(symbol)
-
-    if missing_symbols:
-        fallback_results = pipe.execute()
-        for symbol, data in zip(missing_symbols, fallback_results):
-            if data:
-                try:
-                    results.append(
-                        {
-                            "symbol": symbol,
-                            "current_price": float(data.get("price", 0)),
-                            "price_change_percentage_24h": float(data.get("change_pct", 0)),
-                            "total_volume": float(data.get("volume", 0)),
-                            "high_24h": float(data.get("high_24h", 0)),
-                            "low_24h": float(data.get("low_24h", 0)),
-                            "data_source": "binance",
-                            "updated_at": data.get("updated_at", ""),
-                        }
-                    )
-                except Exception:
-                    pass
 
     results.sort(key=lambda x: x["total_volume"], reverse=True)
     return results[:limit]
@@ -107,22 +79,6 @@ def get_ticker(symbol):
             }
         except Exception:
             pass
-
-    try:
-        data = r.hgetall(key)
-        if data:
-            return {
-                "symbol": symbol.upper(),
-                "current_price": float(data.get("price", 0)),
-                "price_change_percentage_24h": float(data.get("change_pct", 0)),
-                "total_volume": float(data.get("volume", 0)),
-                "high_24h": float(data.get("high_24h", 0)),
-                "low_24h": float(data.get("low_24h", 0)),
-                "data_source": "binance",
-                "updated_at": data.get("updated_at", ""),
-            }
-    except Exception:
-        pass
 
     return None
 
