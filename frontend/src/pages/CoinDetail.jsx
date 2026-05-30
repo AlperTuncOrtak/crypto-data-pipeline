@@ -14,11 +14,13 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
-  BarChart2,
   Coins,
   Award,
   AlertCircle,
+  LineChart,
+  CandlestickChart,
 } from "lucide-react";
+import AdvancedChart from "../components/market/AdvancedChart";
 
 const RANGES = [
   { label: "1H", value: "1h" },
@@ -361,6 +363,7 @@ export default function CoinDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [range, setRange] = useState("24h");
+  const [chartType, setChartType] = useState("simple");
 
   const {
     data: coin,
@@ -776,6 +779,53 @@ export default function CoinDetail() {
               </button>
             ))}
           </div>
+          <div
+            style={{
+              display: "flex",
+              gap: 4,
+              background: "var(--bg-elevated)",
+              borderRadius: 8,
+              padding: 4,
+              marginLeft: "auto"
+            }}
+          >
+            <button
+              onClick={() => setChartType("simple")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 12px",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                background: chartType === "simple" ? "var(--bg-surface)" : "transparent",
+                border: chartType === "simple" ? "1px solid var(--border)" : "1px solid transparent",
+                color: chartType === "simple" ? "var(--accent)" : "var(--text-muted)",
+                cursor: "pointer",
+              }}
+            >
+              <LineChart size={14} /> Simple
+            </button>
+            <button
+              onClick={() => setChartType("pro")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 12px",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                background: chartType === "pro" ? "rgba(46, 204, 113, 0.1)" : "transparent",
+                border: chartType === "pro" ? "1px solid rgba(46, 204, 113, 0.2)" : "1px solid transparent",
+                color: chartType === "pro" ? "#2ecc71" : "var(--text-muted)",
+                cursor: "pointer",
+              }}
+            >
+              <CandlestickChart size={14} /> Pro
+            </button>
+          </div>
         </div>
 
         {historyLoading && (
@@ -804,7 +854,12 @@ export default function CoinDetail() {
             No data for this time range.
           </div>
         )}
-        {!historyLoading && chartData.length > 0 && (
+        {!historyLoading && chartType === "pro" && (
+          <div style={{ width: "100%", height: 400 }}>
+            <AdvancedChart symbol={coin.symbol} interval={range} />
+          </div>
+        )}
+        {!historyLoading && chartType === "simple" && chartData.length > 0 && (
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={chartData}>
               <defs>

@@ -29,6 +29,7 @@ import {
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
 import AuthModal from "../ui/AuthModal";
+import WalletConnectButton from "../web3/WalletConnectButton";
 
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
@@ -896,6 +897,9 @@ export default function Navbar({
                 </div>
               )}
             </div>
+
+            {/* WALLET CONNECT */}
+            <WalletConnectButton />
 
             {/* DIVIDER */}
             <div
