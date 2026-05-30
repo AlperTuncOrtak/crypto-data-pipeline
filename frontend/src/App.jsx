@@ -33,6 +33,7 @@ import { useWatchlist } from "./hooks/useWatchlist";
 import { useMarket } from "./hooks/useMarket";
 import AIChatWidget from "./components/ai/AIChatWidget";
 import AuthModal from "./components/ui/AuthModal";
+import { ThemeProvider } from "./hooks/useTheme";
 
 function AppInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -125,10 +126,10 @@ function AppInner() {
         />
       ) : null}
       <main
-        style={
+        className={
           location.pathname === "/" && !isLoggedIn
-            ? {}
-            : { maxWidth: "1440px", margin: "0 auto", padding: "32px 24px" }
+            ? ""
+            : "main-content"
         }
       >
         <Routes>
@@ -288,9 +289,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ToastProvider>
-          <AppInner />
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <AppInner />
+          </ToastProvider>
+        </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   );

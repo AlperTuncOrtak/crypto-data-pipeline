@@ -24,12 +24,15 @@ import {
   Crown,
   User,
   ChevronRight,
-  Wallet,
+  Sun,
+  Moon,
+  Menu,
 } from "lucide-react";
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
 import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
+import { useTheme } from "../../hooks/useTheme";
 
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
@@ -366,7 +369,9 @@ export default function Navbar({
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const profileRef = useRef(null);
+  const { theme, toggleTheme } = useTheme();
   const {
     isLoggedIn,
     signOut,
@@ -665,6 +670,7 @@ export default function Navbar({
 
           {/* NAV LINKS */}
           <nav
+            className="desktop-nav-links"
             style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}
           >
             {NAV_ITEMS.map((item) => {
@@ -742,7 +748,7 @@ export default function Navbar({
             </button>
 
             {/* SEARCH */}
-            <div style={{ position: "relative" }}>
+            <div className="hide-mobile" style={{ position: "relative" }}>
               <div
                 style={{
                   display: "flex",
@@ -898,11 +904,67 @@ export default function Navbar({
               )}
             </div>
 
-            {/* WALLET CONNECT */}
-            <WalletConnectButton />
+            {/* WALLET CONNECT — hide on mobile */}
+            <div className="hide-mobile">
+              <WalletConnectButton />
+            </div>
 
-            {/* DIVIDER */}
+            {/* THEME TOGGLE */}
+            <button
+              onClick={toggleTheme}
+              title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(255,255,255,0.04)",
+                cursor: "pointer",
+                color: "rgba(255,255,255,0.5)",
+                transition: "all 0.2s ease",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(245,166,35,0.1)";
+                e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
+                e.currentTarget.style.color = "var(--accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+              }}
+            >
+              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
+
+            {/* HAMBURGER — mobile only */}
+            <button
+              onClick={() => setMobileOpen((o) => !o)}
+              style={{
+                display: "none",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(255,255,255,0.04)",
+                cursor: "pointer",
+                color: "rgba(255,255,255,0.6)",
+                flexShrink: 0,
+              }}
+              className="show-mobile-flex"
+            >
+              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+
+            {/* DIVIDER — hide on mobile */}
             <div
+              className="hide-mobile"
               style={{
                 width: 1,
                 height: 20,
@@ -912,7 +974,7 @@ export default function Navbar({
 
             {/* AUTH */}
             {isLoggedIn ? (
-              <div style={{ position: "relative" }} ref={profileRef}>
+              <div className="hide-mobile" style={{ position: "relative" }} ref={profileRef}>
                 <div
                   onClick={() => setProfileOpen((o) => !o)}
                   style={{
@@ -1381,6 +1443,7 @@ export default function Navbar({
               </div>
             ) : (
               <button
+                className="hide-mobile"
                 onClick={() => {
                   onAuthOpen?.();
                   setAuthOpen?.(true);
@@ -1417,6 +1480,159 @@ export default function Navbar({
           </div>
         </div>
       </div>
+
+      {/* ══ MOBILE DRAWER ════════════════════════════════════ */}
+      {mobileOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            top: 0,
+            zIndex: 999,
+            pointerEvents: "none",
+          }}
+        >
+          {/* Backdrop */}
+          <div
+            onClick={() => setMobileOpen(false)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(4px)",
+              pointerEvents: "auto",
+            }}
+          />
+          {/* Drawer panel */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "min(320px, 90vw)",
+              height: "100vh",
+              background: "var(--bg-elevated)",
+              borderLeft: "1px solid var(--border)",
+              boxShadow: "-20px 0 60px rgba(0,0,0,0.6)",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              pointerEvents: "auto",
+              animation: "slideInRight 0.25s cubic-bezier(0.25,1,0.5,1)",
+            }}
+          >
+            {/* Drawer header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 16, fontWeight: 800, color: "var(--accent)" }}>Crypto</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)" }}>Neko</span>
+              </div>
+              <button
+                onClick={() => setMobileOpen(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ height: 1, background: "var(--border)", margin: "0 20px" }} />
+
+            {/* Nav links */}
+            <nav style={{ padding: "12px 12px", flex: 1 }}>
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.Icon;
+                const isActive = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+                return (
+                  <div key={item.to}>
+                    <div
+                      onClick={() => { navigate(item.to); setMobileOpen(false); }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "12px 14px",
+                        borderRadius: 12,
+                        cursor: "pointer",
+                        background: isActive ? "var(--accent-soft)" : "transparent",
+                        color: isActive ? "var(--accent)" : "var(--text-secondary)",
+                        fontWeight: isActive ? 600 : 400,
+                        fontSize: 14,
+                        marginBottom: 2,
+                        transition: "all 0.15s",
+                      }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <Icon size={16} />
+                      {item.label}
+                    </div>
+                    {/* Sub-items */}
+                    {item.dropdown && (
+                      <div style={{ paddingLeft: 20, marginBottom: 4 }}>
+                        {item.dropdown.filter(d => !d.soon).map((sub) => (
+                          <div
+                            key={sub.to}
+                            onClick={() => { navigate(sub.to); setMobileOpen(false); }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 10,
+                              padding: "9px 14px",
+                              borderRadius: 8,
+                              cursor: "pointer",
+                              fontSize: 13,
+                              color: "var(--text-muted)",
+                              transition: "all 0.15s",
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; }}
+                          >
+                            <sub.Icon size={13} />
+                            {sub.label}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+
+            <div style={{ height: 1, background: "var(--border)", margin: "0 20px" }} />
+
+            {/* Bottom actions */}
+            <div style={{ padding: "16px 20px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
+              <WalletConnectButton />
+              <button
+                onClick={() => { toggleTheme(); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 14px", borderRadius: 10, width: "100%",
+                  background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)",
+                  color: "var(--text-secondary)", fontSize: 13, fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              </button>
+              {!isLoggedIn && (
+                <button
+                  onClick={() => { onAuthOpen("login"); setMobileOpen(false); }}
+                  style={{
+                    padding: "11px", borderRadius: 10, width: "100%",
+                    background: "linear-gradient(135deg, #f5a623, #e8941a)",
+                    border: "none", color: "#111", fontSize: 13, fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign In →
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </>
   );

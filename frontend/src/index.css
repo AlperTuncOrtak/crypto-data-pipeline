@@ -1,71 +1,177 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════
+   DARK THEME (default)
+═══════════════════════════════════════════════════════════ */
 :root {
-  /* Zeminler (Custom Navy) */
   --bg-base:     #07070f;
   --bg-surface:  #0c0c16;
   --bg-elevated: #151522;
   --bg-card:     #0e0e18;
 
-  /* Kenarlar (Subtle) */
   --border:      rgba(255,255,255,0.06);
   --border-soft: rgba(255,255,255,0.03);
 
-  /* Yazı */
   --text-primary:   #f0f0f0;
   --text-secondary: #a0a0a0;
-  --text-muted:     #555555;
+  --text-muted:     #555565;
 
-  /* Custom Gold Vurgu */
   --accent:         #f5a623;
   --accent-hover:   #f7b944;
   --accent-soft:    rgba(245,166,35,0.1);
   --accent-border:  rgba(245,166,35,0.25);
 
-  /* Finans renkleri */
   --positive:       #2ecc71;
   --positive-soft:  rgba(46,204,113,0.1);
   --negative:       #e74c3c;
   --negative-soft:  rgba(231,76,60,0.1);
+
+  /* Mobile nav */
+  --nav-overlay: rgba(7,7,15,0.92);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   LIGHT THEME
+═══════════════════════════════════════════════════════════ */
+html.light {
+  --bg-base:     #f0f2f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #e8ecf4;
+  --bg-card:     #f7f8fc;
+
+  --border:      rgba(0,0,0,0.08);
+  --border-soft: rgba(0,0,0,0.04);
+
+  --text-primary:   #0d0d1a;
+  --text-secondary: #4a4a6a;
+  --text-muted:     #8888aa;
+
+  --accent:         #d4820a;
+  --accent-hover:   #e09218;
+  --accent-soft:    rgba(212,130,10,0.1);
+  --accent-border:  rgba(212,130,10,0.25);
+
+  --positive:       #16a34a;
+  --positive-soft:  rgba(22,163,74,0.1);
+  --negative:       #dc2626;
+  --negative-soft:  rgba(220,38,38,0.1);
+
+  --nav-overlay: rgba(240,242,248,0.95);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════════════════ */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { overflow-x: hidden; }
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Altın scrollbar */
+/* ═══════════════════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* Tablo seçimi kaldır */
 ::selection {
   background: var(--accent-soft);
   color: var(--accent);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════ */
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-html {
-  overflow-x: hidden;
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-body {
-  overflow-x: hidden;
-  position: relative;
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE UTILITIES
+═══════════════════════════════════════════════════════════ */
+
+/* Main layout padding */
+.main-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Bento grid */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+/* Table wrapper for horizontal scroll on mobile */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Tablet (768–1024px) ─────────────────────────────────── */
+@media (max-width: 1024px) {
+  .main-content { padding: 24px 16px; }
+  .bento-grid { gap: 12px; }
+  .hide-tablet { display: none !important; }
+}
+
+/* ── Mobile (< 768px) ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .main-content { padding: 16px 12px; }
+  .bento-grid { grid-template-columns: 1fr !important; gap: 10px; }
+  .bento-grid > * { grid-column: 1 / -1 !important; }
+  .hide-mobile { display: none !important; }
+
+  /* Charts shrink on mobile */
+  .recharts-responsive-container { height: 220px !important; }
+
+  /* Stat grids go 2-col */
+  .stat-grid-4 { grid-template-columns: 1fr 1fr !important; }
+
+  /* Cards stay readable */
+  [style*="borderRadius: 24"] { border-radius: 16px !important; }
+  [style*="borderRadius: \"24px\""] { border-radius: 16px !important; }
+
+  /* Tables scroll horizontally */
+  table { min-width: 600px; }
+  .table-scroll { border-radius: 12px; }
+}
+
+/* ── Small mobile (< 480px) ──────────────────────────────── */
+@media (max-width: 480px) {
+  .main-content { padding: 12px 10px; }
+  h1 { font-size: 22px !important; }
+  .stat-grid-4 { grid-template-columns: 1fr !important; }
+}
+
+/* ── Mobile show/hide helpers ────────────────────────────── */
+.show-mobile-flex { display: none !important; }
+
+@media (max-width: 768px) {
+  .show-mobile-flex { display: flex !important; }
+  /* hide desktop nav links row on mobile — keep logo + right side */
+  .desktop-nav-links { display: none !important; }
 }
