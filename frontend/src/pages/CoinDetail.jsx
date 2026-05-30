@@ -96,7 +96,6 @@ function fmtChartTime(iso, range) {
 function AnimatedPrice({ current, prev, flash }) {
   const str = fmtPrice(current);
   const pstr = prev ? fmtPrice(prev) : str;
-  const color = flash === "up" ? "var(--positive)" : "var(--negative)";
   const digits = (s) => s.replace(/[^0-9]/g, "");
   const curD = digits(str),
     prvD = digits(pstr);
@@ -117,19 +116,43 @@ function AnimatedPrice({ current, prev, flash }) {
     if (isD) ri++;
     return { char, isD, di };
   });
+
+  const upColor   = "#2ecc71";
+  const downColor = "#e74c3c";
+  const flashColor = flash === "up" ? upColor : downColor;
+
   return (
     <span>
       {meta.map(({ char, di }, i) => (
         <span
           key={i}
           style={{
-            color: flash && di >= firstDiff ? color : "var(--text-primary)",
-            transition: "color 0.5s",
+            color:
+              flash && di >= firstDiff
+                ? flashColor
+                : "var(--text-primary)",
+            transition: "color 0.6s ease",
+            textShadow:
+              flash && di >= firstDiff
+                ? `0 0 16px ${flashColor}99, 0 0 32px ${flashColor}44`
+                : "none",
           }}
         >
           {char}
         </span>
       ))}
+      <style>{`
+        @keyframes pricePulse-up {
+          0%   { box-shadow: 0 0 0 0 rgba(46,204,113,0.55), inset 0 0 0 0 rgba(46,204,113,0.15); background: rgba(46,204,113,0.12); }
+          60%  { box-shadow: 0 0 24px 6px rgba(46,204,113,0.18), inset 0 0 20px 4px rgba(46,204,113,0.08); background: rgba(46,204,113,0.06); }
+          100% { box-shadow: none; background: transparent; }
+        }
+        @keyframes pricePulse-down {
+          0%   { box-shadow: 0 0 0 0 rgba(231,76,60,0.55), inset 0 0 0 0 rgba(231,76,60,0.15); background: rgba(231,76,60,0.12); }
+          60%  { box-shadow: 0 0 24px 6px rgba(231,76,60,0.18), inset 0 0 20px 4px rgba(231,76,60,0.08); background: rgba(231,76,60,0.06); }
+          100% { box-shadow: none; background: transparent; }
+        }
+      `}</style>
     </span>
   );
 }
@@ -549,15 +572,26 @@ export default function CoinDetail() {
         </div>
 
         <div style={{ textAlign: "right" }}>
-          <div
-            style={{ fontSize: 36, fontWeight: 700, fontFamily: "monospace" }}
-          >
-            <AnimatedPrice
-              current={coin.current_price}
-              prev={prevPrice}
-              flash={priceFlash}
-            />
-          </div>
+        <div
+          style={{
+            fontSize: 36,
+            fontWeight: 700,
+            fontFamily: "monospace",
+            padding: "8px 14px",
+            borderRadius: 12,
+            display: "inline-block",
+            transition: "all 0.3s ease",
+            animation: priceFlash
+              ? `pricePulse-${priceFlash} 0.85s cubic-bezier(0.25,1,0.5,1) forwards`
+              : "none",
+          }}
+        >
+          <AnimatedPrice
+            current={coin.current_price}
+            prev={prevPrice}
+            flash={priceFlash}
+          />
+        </div>
           <div
             style={{
               display: "flex",
