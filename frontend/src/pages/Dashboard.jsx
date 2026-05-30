@@ -67,62 +67,66 @@ function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouse
   );
 }
 
-// ─── STAT CARD ───────────────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
+// ─── STAT CARD (Zerion Style) ───────────────────────────────────
+function StatCard({ label, value, trend, sub, icon: Icon, accent }) {
   const [hovered, setHovered] = useState(false);
+  const isPos = trend >= 0;
   return (
-    <BentoCard style={{ padding: "22px 24px" }}>
+    <BentoCard style={{ padding: "20px 24px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 140 }}>
       <div
-        style={{ display: "flex", flexDirection: "column", gap: 12, cursor: "default" }}
+        style={{ cursor: "default", height: "100%", display: "flex", flexDirection: "column" }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
           <div
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
+              width: 40,
+              height: 40,
+              borderRadius: 12,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               background: accent
-                ? "linear-gradient(135deg, rgba(245,166,35,0.25), rgba(245,166,35,0.08))"
-                : "rgba(255,255,255,0.05)",
-              border: accent ? "1px solid rgba(245,166,35,0.25)" : "1px solid rgba(255,255,255,0.08)",
+                ? "rgba(245,166,35,0.12)"
+                : "rgba(255,255,255,0.04)",
+              border: accent ? "1px solid rgba(245,166,35,0.2)" : "1px solid rgba(255,255,255,0.06)",
               color: accent ? "var(--accent)" : "var(--text-muted)",
-              flexShrink: 0,
-              transition: "all 0.2s ease",
+              transition: "all 0.3s ease",
+              transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
           >
-            <Icon size={16} />
+            <Icon size={18} />
           </div>
           {trend !== undefined && (
-            <span
+            <div
               style={{
                 fontSize: 11,
-                fontWeight: 600,
-                color: trend >= 0 ? "var(--positive)" : "var(--negative)",
+                fontWeight: 700,
+                color: isPos ? "var(--positive)" : "var(--negative)",
+                backgroundColor: isPos ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
+                padding: "4px 10px",
+                borderRadius: 100,
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
+                gap: 4,
               }}
             >
-              {trend >= 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+              {isPos ? <ArrowUpRight size={12} strokeWidth={3} /> : <ArrowDownRight size={12} strokeWidth={3} />}
               {Math.abs(trend).toFixed(1)}%
-            </span>
+            </div>
           )}
         </div>
-        <div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+        <div style={{ marginTop: "auto" }}>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4, fontWeight: 600 }}>
             {label}
           </div>
           <div
             style={{
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: 800,
               fontFamily: "monospace",
-              color: accent ? "var(--accent)" : "var(--text-primary)",
+              color: accent ? "var(--text-primary)" : "var(--text-primary)",
               letterSpacing: "-0.02em",
               lineHeight: 1.1,
             }}
@@ -130,7 +134,7 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
             {value}
           </div>
           {sub && (
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6, fontWeight: 500 }}>
               {sub}
             </div>
           )}
