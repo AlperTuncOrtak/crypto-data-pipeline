@@ -265,13 +265,43 @@ function parseCSV(text) {
         };
       } else if (exchange === "binance_history") {
         const op = getCol(row, "operation", "remark", "type").toLowerCase();
-        if (!op.includes("buy") && !op.includes("sell")) continue;
-        const sym = getCol(row, "coin", "asset").toUpperCase().replace(/[^A-Z0-9]/g,"");
+        const sym = getCol(row, "coin", "asset").toUpperCase().replace(/[^A-Z0-9]/g, "");
         if (!sym) continue;
+
+        // Skip stablecoins, fees, and non-trade operations
+        const stablecoins = ["USDT","BUSD","USDC","FDUSD","DAI","TUSD","USD","EUR","TRY"];
+        const isStable = stablecoins.includes(sym);
+        
+        // Binance uses many operation names for trades:
+        // "Buy", "Sell", "Transaction Revenue" (received crypto in buy), 
+        // "Transaction Spend" (spent USDT in buy), "Large OTC trading buy/sell",
+        // "Small Assets Exchange BNB", "POS savings purchase"
+        const isTrade = op.includes("buy") || op.includes("sell") || 
+                        op.includes("transaction revenue") || op.includes("transaction spend") ||
+                        op.includes("otc") || op.includes("convert") ||
+                        op.includes("exchange") || op.includes("trade");
+        
+        const isSkip = op.includes("fee") || op.includes("deposit") || 
+                       op.includes("withdraw") || op.includes("interest") ||
+                       op.includes("reward") || op.includes("referral") ||
+                       op.includes("staking") || op.includes("cashback") ||
+                       op.includes("savings") || op.includes("distribution");
+
+        if (!isTrade || isSkip) continue;
+        
+        // Skip stablecoin rows (the USDT "spend" side) — we only care about crypto side
+        if (isStable) continue;
+
         const change = safeNum(getCol(row, "change", "amount"));
+        if (Math.abs(change) < 0.000001) continue;
+
+        // "Transaction Revenue" = received crypto = BUY
+        // "Transaction Spend" with crypto = SELL
+        const isBuy = op.includes("buy") || op.includes("revenue") || 
+                      op.includes("purchase") || change > 0;
         trade = {
           symbol: sym,
-          side: change >= 0 ? "buy" : "sell",
+          side: isBuy ? "buy" : "sell",
           quantity: Math.abs(change),
           price: 0,
           total: 0,
