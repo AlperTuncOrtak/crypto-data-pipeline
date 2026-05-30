@@ -27,6 +27,7 @@ import {
   Sun,
   Moon,
   Menu,
+  X,
 } from "lucide-react";
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";

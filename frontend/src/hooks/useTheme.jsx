@@ -4,7 +4,11 @@ const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("cryptoneko_theme") || "dark";
+    try {
+      return localStorage.getItem("cryptoneko_theme") || "dark";
+    } catch (e) {
+      return "dark";
+    }
   });
 
   useEffect(() => {
@@ -14,7 +18,9 @@ export function ThemeProvider({ children }) {
     } else {
       html.classList.remove("light");
     }
-    localStorage.setItem("cryptoneko_theme", theme);
+    try {
+      localStorage.setItem("cryptoneko_theme", theme);
+    } catch (e) {}
   }, [theme]);
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
