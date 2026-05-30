@@ -32,7 +32,7 @@ function buildChartData(historyRows, symbols) {
   for (const row of historyRows) {
     const sym = row.symbol
     if (!grouped[sym]) { grouped[sym] = []; firstPrices[sym] = Number(row.current_price) }
-    grouped[sym].push({ time: row.collected_at, price: Number(row.current_price) })
+    grouped[sym].push({ time: row.time, price: Number(row.current_price) })
   }
   for (const sym of Object.keys(grouped)) {
     const first = firstPrices[sym]
