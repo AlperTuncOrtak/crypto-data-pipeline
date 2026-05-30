@@ -47,10 +47,11 @@ function AppInner() {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    if (isLoggedIn && window.location.pathname === "/") {
+    // If logged in and on root without preview query, redirect to dashboard
+    if (isLoggedIn && window.location.pathname === "/" && !window.location.search.includes("preview=1")) {
       navigate("/dashboard");
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
 
   const {
     watchlist,

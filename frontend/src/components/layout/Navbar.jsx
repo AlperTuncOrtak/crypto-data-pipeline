@@ -1235,6 +1235,15 @@ export default function Navbar({
                     <div style={{ padding: "8px 8px" }}>
                       {[
                         {
+                          icon: LayoutGrid,
+                          label: "View Landing (Preview)",
+                          soon: false,
+                          action: () => {
+                            setProfileOpen(false);
+                            navigate("/?preview=1");
+                          },
+                        },
+                        {
                           icon: User,
                           label: "Profile",
                           soon: false,
