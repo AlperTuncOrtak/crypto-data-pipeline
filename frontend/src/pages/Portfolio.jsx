@@ -315,9 +315,17 @@ function calcHoldings(trades, marketData, walletHoldings = []) {
     const market = priceMap[sym] || {};
     const curPrice = market.price || 0;
     const value = qty * curPrice;
-    const costBasis = qty * avgCost;
-    const pnl = value - costBasis;
-    const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
+    
+    let costBasis = qty * avgCost;
+    let pnl = value - costBasis;
+    let pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
+    
+    // If there is no trade history, assume cost basis is current value to avoid 100% false PnL
+    if (totalBought === 0) {
+      costBasis = value;
+      pnl = 0;
+      pnlPct = 0;
+    }
 
     holdings.push({
       symbol: sym,
