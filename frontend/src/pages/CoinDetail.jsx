@@ -97,26 +97,11 @@ function fmtChartTime(iso, range) {
 function AnimatedPrice({ current, prev, flash }) {
   const str = fmtPrice(current);
   const pstr = prev ? fmtPrice(prev) : str;
-  const digits = (s) => s.replace(/[^0-9]/g, "");
-  const curD = digits(str),
-    prvD = digits(pstr);
-  const max = Math.max(curD.length, prvD.length);
-  const pc = curD.padStart(max, "0"),
-    pp = prvD.padStart(max, "0");
-  let firstDiff = max;
-  for (let i = 0; i < max; i++) {
-    if (pc[i] !== pp[i]) {
-      firstDiff = i;
-      break;
-    }
-  }
-  let ri = max - curD.length;
-  const meta = str.split("").map((char) => {
-    const isD = /[0-9]/.test(char);
-    const di = isD ? ri : ri - 1;
-    if (isD) ri++;
-    return { char, isD, di };
-  });
+
+  // Pad the shorter string with spaces on the left so they align perfectly
+  const maxLen = Math.max(str.length, pstr.length);
+  const curAligned = str.padStart(maxLen, " ");
+  const prvAligned = pstr.padStart(maxLen, " ");
 
   const upColor   = "#2ecc71";
   const downColor = "#e74c3c";
@@ -124,24 +109,21 @@ function AnimatedPrice({ current, prev, flash }) {
 
   return (
     <span>
-      {meta.map(({ char, di }, i) => (
-        <span
-          key={i}
-          style={{
-            color:
-              flash && di >= firstDiff
-                ? flashColor
-                : "var(--text-primary)",
-            transition: "color 0.6s ease",
-            textShadow:
-              flash && di >= firstDiff
-                ? `0 0 16px ${flashColor}99, 0 0 32px ${flashColor}44`
-                : "none",
-          }}
-        >
-          {char}
-        </span>
-      ))}
+      {curAligned.split("").map((char, i) => {
+        const changed = flash && char !== prvAligned[i] && char !== " " && char !== "." && char !== "$";
+        return (
+          <span
+            key={i}
+            style={{
+              color: changed ? flashColor : "var(--text-primary)",
+              transition: "color 0.6s ease",
+              textShadow: changed ? `0 0 16px ${flashColor}99, 0 0 32px ${flashColor}44` : "none",
+            }}
+          >
+            {char}
+          </span>
+        );
+      })}
       <style>{`
         @keyframes pricePulse-up {
           0%   { box-shadow: 0 0 0 0 rgba(46,204,113,0.55), inset 0 0 0 0 rgba(46,204,113,0.15); background: rgba(46,204,113,0.12); }
@@ -582,9 +564,6 @@ export default function CoinDetail() {
             borderRadius: 12,
             display: "inline-block",
             transition: "all 0.3s ease",
-            animation: priceFlash
-              ? `pricePulse-${priceFlash} 0.85s cubic-bezier(0.25,1,0.5,1) forwards`
-              : "none",
           }}
         >
           <AnimatedPrice
