@@ -3,6 +3,9 @@ import redis
 import json
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+if ("127.0.0.1" in REDIS_URL or "localhost" in REDIS_URL) and os.getenv("DB_PASSWORD") == "12345678":
+    REDIS_URL = "redis://redis:6379/0"
+
 r = redis.from_url(REDIS_URL, decode_responses=True)
 
 QUOTE_ASSET = "USDT"
