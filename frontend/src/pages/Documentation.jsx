@@ -139,10 +139,6 @@ export default function Documentation() {
                     description="Visualize how different assets move together using our Pearson correlation heatmaps to diversify risk." 
                   />
                 </div>
-
-                <Callout title="Pro Tip: Quick Search">
-                  Navigate the platform at lightning speed. Press <kbd className="bg-black/50 border border-white/20 rounded-md px-2 py-1 text-sm mx-1 text-gray-300 font-mono">Cmd</kbd> + <kbd className="bg-black/50 border border-white/20 rounded-md px-2 py-1 text-sm mx-1 text-gray-300 font-mono">K</kbd> (or Ctrl+K on Windows) to open the global search palette. From there, you can instantly jump to any coin's detail page or analysis module.
-                </Callout>
               </div>
             )}
 
@@ -186,7 +182,7 @@ export default function Documentation() {
                   </div>
                 </div>
 
-                <div className="mt-16">
+                <div className="pt-8">
                   <Callout title="Privacy First" icon={Shield}>
                     Your portfolio data is stored securely in your browser's local storage and synced to your encrypted account profile if you log in. We never share your holdings with third parties.
                   </Callout>
