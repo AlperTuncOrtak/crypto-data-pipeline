@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import Market from "./pages/Market";
 import Alerts from "./pages/Alerts";
 import Analysis from "./pages/Analysis";
+import Correlation from "./pages/Correlation";
 import CoinDetail from "./pages/CoinDetail";
 import Heatmap from "./pages/Heatmap";
 import AIAnalysis from "./pages/AIAnalysis";
@@ -162,6 +163,7 @@ function AppInner() {
           <Route path="/coin/:slug" element={<CoinDetail />} />
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analysis" element={<Analysis />} />
+          <Route path="/correlation" element={<Correlation />} />
           <Route
             path="/pricing"
             element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}

@@ -130,11 +130,11 @@ const NAV_ITEMS = [
         soon: false,
       },
       {
-        to: "#",
+        to: "/correlation",
         label: "Correlation Matrix",
         Icon: Network,
         desc: "Coin price correlations",
-        soon: true,
+        soon: false,
       },
     ],
   },
