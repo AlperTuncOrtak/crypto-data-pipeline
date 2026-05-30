@@ -158,115 +158,190 @@ const EXCHANGE_GUIDES = {
 };
 
 // ── CSV Parser ────────────────────────────────────────────────
+
+// Smart CSV line splitter — handles commas inside quotes
+function splitCSVLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; continue; }
+    if ((ch === "," || ch === "\t") && !inQuotes) {
+      result.push(current.trim());
+      current = "";
+    } else { current += ch; }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function normalizeHdr(h) {
+  return String(h).replace(/"/g, "").replace(/\(.*?\)/g, "").trim().toLowerCase();
+}
+
+function extractSymbol(pair) {
+  if (!pair) return null;
+  const clean = pair.toUpperCase()
+    .replace(/[-\/]?(USDT|BUSD|USD|BTC|ETH|BNB|TRY|EUR|USDC|DAI|TUSD|FDUSD)$/, "|")
+    .split("|")[0].replace(/[^A-Z0-9]/g, "");
+  return clean || null;
+}
+
 function detectExchange(headers) {
-  const h = headers.map((x) => x.toLowerCase());
-  if (h.includes("pair") && h.includes("executed")) return "binance";
-  if (h.includes("symbol") && h.includes("qty")) return "bybit";
-  if (h.includes("instrument")) return "okx";
-  if (h.includes("asset") && h.includes("quantity transacted"))
-    return "coinbase";
-  if (h.includes("txid") && h.includes("vol")) return "kraken";
-  return "generic";
+  const h = headers.map(normalizeHdr);
+  const has = (k) => h.some(x => x.includes(k));
+  if (has("pair") && has("executed")) return "binance_trade";
+  if (has("market") && has("type") && has("amount")) return "binance_trade";
+  if ((has("coin") || has("asset")) && has("change")) return "binance_history";
+  if (has("symbol") && has("qty")) return "bybit";
+  if (has("instrument")) return "okx";
+  if (has("asset") && has("quantity transacted")) return "coinbase";
+  if (has("txid") && has("vol")) return "kraken";
+  return "unknown";
+}
+
+function getCol(row, ...keys) {
+  for (const k of keys) {
+    for (const rk of Object.keys(row)) {
+      if (normalizeHdr(rk).includes(k.toLowerCase())) return row[rk] || "";
+    }
+  }
+  return "";
+}
+
+function safeDate(str) {
+  if (!str) return new Date().toISOString();
+  const d = new Date(String(str).replace(/\//g, "-").replace(" ", "T"));
+  return isNaN(d) ? new Date().toISOString() : d.toISOString();
+}
+
+function safeNum(str) {
+  return parseFloat(String(str || 0).replace(/[^0-9.-]/g, "")) || 0;
 }
 
 function parseCSV(text) {
-  const lines = text
-    .trim()
-    .split("\n")
-    .filter((l) => l.trim());
-  if (lines.length < 2) throw new Error("CSV too short");
+  // Detect separator
+  const firstLine = text.split("\n")[0];
+  const sep = firstLine.includes("\t") ? "\t" : ",";
 
-  const headers = lines[0].split(",").map((h) => h.replace(/"/g, "").trim());
-  const exchange = detectExchange(headers);
+  const lines = text.trim().split("\n").filter(l => l.trim() && !l.startsWith("//") && !l.startsWith("#"));
+  if (lines.length < 2) throw new Error("CSV dosyası çok kısa veya boş.");
+
+  const rawHeaders = splitCSVLine(lines[0]);
+  const exchange = detectExchange(rawHeaders);
+
+  if (exchange === "unknown") {
+    throw new Error(`Desteklenmeyen CSV formatı. Sütunlar: ${rawHeaders.slice(0,6).join(", ")}`);
+  }
+
   const trades = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(",").map((c) => c.replace(/"/g, "").trim());
+    const cols = splitCSVLine(lines[i]);
     const row = {};
-    headers.forEach((h, idx) => {
-      row[h] = cols[idx] || "";
-    });
+    rawHeaders.forEach((h, idx) => { row[h] = cols[idx] || ""; });
 
     try {
       let trade = null;
 
-      if (exchange === "binance") {
-        const [base] = (row["Pair"] || "").replace("USDT", "|").split("|");
-        if (!base) continue;
+      if (exchange === "binance_trade") {
+        const pairRaw = getCol(row, "pair", "market", "symbol");
+        const sym = extractSymbol(pairRaw);
+        if (!sym) continue;
+        const qty = safeNum(getCol(row, "executed", "filled", "qty").replace(/[A-Za-z]/g, ""));
+        const price = safeNum(getCol(row, "price", "avg price"));
+        const total = safeNum(getCol(row, "amount", "total", "value").replace(/[A-Za-z]/g, ""));
+        const side = getCol(row, "side", "type").toLowerCase().includes("buy") ? "buy" : "sell";
         trade = {
-          symbol: base.trim(),
-          side: (row["Side"] || "").toLowerCase() === "buy" ? "buy" : "sell",
-          quantity: parseFloat(row["Executed"] || 0),
-          price: parseFloat(row["Price"] || 0),
-          total: parseFloat(row["Amount"] || 0),
-          fee: parseFloat((row["Fee"] || "0").replace(/[^0-9.]/g, "")) || 0,
-          traded_at: new Date(row["Date"]).toISOString(),
+          symbol: sym,
+          side,
+          quantity: qty,
+          price: price || (qty > 0 && total > 0 ? total / qty : 0),
+          total,
+          fee: safeNum(getCol(row, "fee").replace(/[A-Za-z]/g, "")),
+          traded_at: safeDate(getCol(row, "date", "time", "createtime")),
+          exchange: "binance",
+        };
+      } else if (exchange === "binance_history") {
+        const op = getCol(row, "operation", "remark", "type").toLowerCase();
+        if (!op.includes("buy") && !op.includes("sell")) continue;
+        const sym = getCol(row, "coin", "asset").toUpperCase().replace(/[^A-Z0-9]/g,"");
+        if (!sym) continue;
+        const change = safeNum(getCol(row, "change", "amount"));
+        trade = {
+          symbol: sym,
+          side: change >= 0 ? "buy" : "sell",
+          quantity: Math.abs(change),
+          price: 0,
+          total: 0,
+          fee: 0,
+          traded_at: safeDate(getCol(row, "utc_time", "time", "date")),
           exchange: "binance",
         };
       } else if (exchange === "bybit") {
-        const sym = (row["Symbol"] || "").replace("USDT", "");
+        const sym = extractSymbol(getCol(row, "symbol", "pair"));
+        if (!sym) continue;
         trade = {
           symbol: sym,
-          side: (row["Side"] || "").toLowerCase(),
-          quantity: parseFloat(row["Qty"] || 0),
-          price: parseFloat(row["Price"] || 0),
-          total: parseFloat(row["Value"] || 0),
-          fee: parseFloat(row["Fee"] || 0),
-          traded_at: new Date(row["Time"]).toISOString(),
+          side: getCol(row, "side").toLowerCase().includes("buy") ? "buy" : "sell",
+          quantity: safeNum(getCol(row, "qty", "quantity", "filled qty")),
+          price: safeNum(getCol(row, "price", "avg price")),
+          total: safeNum(getCol(row, "value", "total")),
+          fee: safeNum(getCol(row, "fee", "trading fee")),
+          traded_at: safeDate(getCol(row, "time", "createtime", "date")),
           exchange: "bybit",
         };
       } else if (exchange === "okx") {
-        const inst = row["Instrument"] || "";
-        const sym = inst.split("-")[0];
+        const inst = getCol(row, "instrument", "instid") || "";
+        const sym = inst.split("-")[0] || extractSymbol(inst);
+        if (!sym) continue;
         trade = {
           symbol: sym,
-          side: (row["Trade Side"] || "").toLowerCase().includes("buy")
-            ? "buy"
-            : "sell",
-          quantity: parseFloat(row["Filled Amount"] || 0),
-          price: parseFloat(row["Filled Price"] || 0),
-          total: parseFloat(row["Total"] || 0),
-          fee: 0,
-          traded_at: new Date(row["Order Time"]).toISOString(),
+          side: getCol(row, "trade side", "side").toLowerCase().includes("buy") ? "buy" : "sell",
+          quantity: safeNum(getCol(row, "filled amount", "size", "qty")),
+          price: safeNum(getCol(row, "filled price", "avg px", "price")),
+          total: safeNum(getCol(row, "total", "notional usd")),
+          fee: safeNum(getCol(row, "fee", "trading fee")),
+          traded_at: safeDate(getCol(row, "order time", "createtime", "time")),
           exchange: "okx",
         };
       } else if (exchange === "coinbase") {
-        if (!["Buy", "Sell"].includes(row["Transaction Type"])) continue;
+        const txType = getCol(row, "transaction type").toLowerCase();
+        if (!txType.includes("buy") && !txType.includes("sell")) continue;
         trade = {
-          symbol: row["Asset"] || "",
-          side: row["Transaction Type"].toLowerCase(),
-          quantity: parseFloat(row["Quantity Transacted"] || 0),
-          price:
-            parseFloat((row["Spot Price"] || "").replace(/[^0-9.]/g, "")) || 0,
-          total: parseFloat((row["Total"] || "").replace(/[^0-9.]/g, "")) || 0,
+          symbol: getCol(row, "asset") || "",
+          side: txType.includes("buy") ? "buy" : "sell",
+          quantity: safeNum(getCol(row, "quantity transacted")),
+          price: safeNum(getCol(row, "spot price", "price at transaction")),
+          total: safeNum(getCol(row, "total", "subtotal")),
           fee: 0,
-          traded_at: new Date(row["Timestamp"]).toISOString(),
+          traded_at: safeDate(getCol(row, "timestamp", "date")),
           exchange: "coinbase",
         };
       } else if (exchange === "kraken") {
-        const pair = row["pair"] || "";
-        const sym = pair
-          .replace(/USD$|USDT$|EUR$/, "")
-          .replace(/^X/, "")
-          .replace(/^Z/, "");
+        const pair = getCol(row, "pair") || "";
+        const sym = pair.replace(/USD$|USDT$|EUR$/, "").replace(/^X/, "").replace(/^Z/, "");
         trade = {
           symbol: sym,
-          side: row["type"] === "buy" ? "buy" : "sell",
-          quantity: parseFloat(row["vol"] || 0),
-          price: parseFloat(row["price"] || 0),
-          total: parseFloat(row["cost"] || 0),
-          fee: parseFloat(row["fee"] || 0),
-          traded_at: new Date(row["time"]).toISOString(),
+          side: getCol(row, "type") === "buy" ? "buy" : "sell",
+          quantity: safeNum(getCol(row, "vol", "volume")),
+          price: safeNum(getCol(row, "price")),
+          total: safeNum(getCol(row, "cost")),
+          fee: safeNum(getCol(row, "fee")),
+          traded_at: safeDate(getCol(row, "time", "date")),
           exchange: "kraken",
         };
       }
 
-      if (trade && trade.quantity > 0 && trade.price > 0 && trade.symbol) {
+      if (trade && trade.quantity > 0 && trade.symbol && trade.symbol.length >= 2) {
         trades.push(trade);
       }
-    } catch (e) {
-      /* skip bad row */
-    }
+    } catch (e) { /* skip bad row */ }
+  }
+
+  if (trades.length === 0) {
+    throw new Error(`CSV okundu (${exchange}) ama geçerli işlem bulunamadı. Dosyada alım/satım verisi var mı?`);
   }
 
   return { trades, exchange, count: trades.length };
