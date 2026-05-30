@@ -61,3 +61,24 @@ export function useMultiCoinPerformance(symbols = []) {
     refetchInterval: 60 * 1000,
   })
 }
+
+
+// -----------------------
+// CORRELATION
+// -----------------------
+async function fetchCorrelation(symbols, hours = 24) {
+  const response = await apiClient.get('/analysis/correlation', {
+    params: { symbols, hours },
+    paramsSerializer: { indexes: null },
+  })
+  return response.data
+}
+
+export function useMultiCoinCorrelation(symbols = [], hours = 24) {
+  return useQuery({
+    queryKey: ['analysis-correlation', [...symbols].sort().join(','), hours],
+    queryFn: () => fetchCorrelation(symbols, hours),
+    enabled: symbols.length >= 2,
+    refetchInterval: 60 * 1000,
+  })
+}

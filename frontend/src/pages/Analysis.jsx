@@ -4,7 +4,7 @@ import {
   CartesianGrid, ResponsiveContainer, ReferenceLine,
 } from 'recharts'
 import { useMarket } from '../hooks/useMarket'
-import { useMultiCoinHistory, useMultiCoinPerformance } from '../hooks/useAnalysis'
+import { useMultiCoinHistory, useMultiCoinPerformance, useMultiCoinCorrelation } from '../hooks/useAnalysis'
 import { GitCompare, X, TrendingUp, TrendingDown, Search } from 'lucide-react'
 
 const CHART_COLORS = ['#2ecc71', '#3498db', '#f5a623', '#e91e8c', '#9b59b6']
@@ -150,6 +150,7 @@ export default function Analysis() {
 
   const history     = useMultiCoinHistory(selected, hours)
   const performance = useMultiCoinPerformance(selected, hours)
+  const correlation = useMultiCoinCorrelation(selected, hours)
 
   const chartData = useMemo(() => buildChartData(history.data, selected), [history.data, selected])
 
@@ -378,8 +379,85 @@ export default function Analysis() {
               </div>
             )}
           </div>
+
+          {/* CORRELATION MATRIX */}
+          {selected.length >= 2 && (
+            <div className="rounded-2xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '24px' }}>
+              <div className="mb-6">
+                <div className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>Correlation Matrix</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6, marginTop: 2 }}>Pearson correlation coefficient (-1.0 to 1.0)</div>
+              </div>
+
+              {correlation.isLoading ? (
+                <div className="flex items-center justify-center" style={{ height: 200 }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Calculating matrix...</div>
+                </div>
+              ) : correlation.data && correlation.data.length > 0 ? (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 4 }}>
+                    <thead>
+                      <tr>
+                        <th style={{ padding: 8 }}></th>
+                        {selected.map(sym => (
+                          <th key={sym} style={{ padding: '8px', textAlign: 'center', fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)' }}>{sym}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selected.map(rowSym => (
+                        <tr key={rowSym}>
+                          <th style={{ padding: '8px', textAlign: 'right', fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)', width: 60 }}>{rowSym}</th>
+                          {selected.map(colSym => {
+                            const match = correlation.data.find(d => d.symbol_a === rowSym && d.symbol_b === colSym)
+                            const val = match ? match.correlation : 0
+                            return (
+                              <td 
+                                key={colSym}
+                                title={`${rowSym} vs ${colSym}: ${val.toFixed(2)}`}
+                                style={{ 
+                                  backgroundColor: getCorrelationColor(val),
+                                  padding: '16px', 
+                                  textAlign: 'center',
+                                  borderRadius: 8,
+                                  fontSize: 13,
+                                  fontFamily: 'monospace',
+                                  fontWeight: 700,
+                                  color: rowSym === colSym ? 'rgba(255,255,255,0.3)' : '#fff',
+                                  cursor: 'help',
+                                  transition: 'transform 0.1s',
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                }}
+                                onMouseEnter={e => { if (rowSym !== colSym) e.currentTarget.style.transform = 'scale(1.05)' }}
+                                onMouseLeave={e => { if (rowSym !== colSym) e.currentTarget.style.transform = 'scale(1)' }}
+                              >
+                                {val.toFixed(2)}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center" style={{ height: 200 }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Not enough data for correlation</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
   )
+}
+
+function getCorrelationColor(corr) {
+  if (corr === 1) return 'rgba(255,255,255,0.05)';
+  if (corr > 0) {
+    return `rgba(46, 204, 113, ${Math.min(corr * 0.8 + 0.2, 1)})`;
+  } else if (corr < 0) {
+    return `rgba(231, 76, 60, ${Math.min(Math.abs(corr) * 0.8 + 0.2, 1)})`;
+  }
+  return 'rgba(255,255,255,0.02)';
 }
