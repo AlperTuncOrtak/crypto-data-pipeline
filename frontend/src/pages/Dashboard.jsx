@@ -67,18 +67,36 @@ function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouse
   );
 }
 
-// ─── STAT CARD (Zerion Style) ───────────────────────────────────
-function StatCard({ label, value, trend, sub, icon: Icon, accent }) {
+// ─── STAT CARD (Zerion Style) ──────────────────────────────────────
+function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
   const [hovered, setHovered] = useState(false);
-  const isPos = trend >= 0;
   return (
-    <BentoCard style={{ padding: "20px 24px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 140 }}>
+    <BentoCard style={{ padding: 0 }}>
+      {/* Zerion-style ambient glow in the corner */}
       <div
-        style={{ cursor: "default", height: "100%", display: "flex", flexDirection: "column" }}
+        style={{
+          position: "absolute",
+          top: -20,
+          right: -20,
+          width: 120,
+          height: 120,
+          background: accent 
+            ? "radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%)" 
+            : "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)",
+          filter: "blur(20px)",
+          transition: "all 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
+          transform: hovered ? "scale(1.5) translate(-10px, 10px)" : "scale(1)",
+          pointerEvents: "none",
+        }}
+      />
+      
+      <div
+        style={{ padding: "24px", display: "flex", flexDirection: "column", gap: 16, position: "relative", zIndex: 2, height: "100%" }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          {/* Polished Icon Container */}
           <div
             style={{
               width: 40,
@@ -88,53 +106,62 @@ function StatCard({ label, value, trend, sub, icon: Icon, accent }) {
               alignItems: "center",
               justifyContent: "center",
               background: accent
-                ? "rgba(245,166,35,0.12)"
-                : "rgba(255,255,255,0.04)",
-              border: accent ? "1px solid rgba(245,166,35,0.2)" : "1px solid rgba(255,255,255,0.06)",
-              color: accent ? "var(--accent)" : "var(--text-muted)",
-              transition: "all 0.3s ease",
+                ? "linear-gradient(135deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05))"
+                : "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01))",
+              border: accent 
+                ? "1px solid rgba(245,166,35,0.2)" 
+                : "1px solid rgba(255,255,255,0.05)",
+              color: accent ? "var(--accent)" : "var(--text-secondary)",
+              boxShadow: accent ? "0 4px 12px rgba(245,166,35,0.1)" : "0 4px 12px rgba(0,0,0,0.2)",
+              transition: "all 0.4s ease",
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
           >
-            <Icon size={18} />
+            <Icon size={20} style={{ opacity: 0.9 }} />
           </div>
+          
+          {/* Trend Pill */}
           {trend !== undefined && (
             <div
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: isPos ? "var(--positive)" : "var(--negative)",
-                backgroundColor: isPos ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
-                padding: "4px 10px",
+                color: trend >= 0 ? "var(--positive)" : "var(--negative)",
+                backgroundColor: trend >= 0 ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
+                padding: "4px 8px",
                 borderRadius: 100,
                 display: "flex",
                 alignItems: "center",
                 gap: 4,
+                border: trend >= 0 ? "1px solid rgba(46,204,113,0.15)" : "1px solid rgba(231,76,60,0.15)",
               }}
             >
-              {isPos ? <ArrowUpRight size={12} strokeWidth={3} /> : <ArrowDownRight size={12} strokeWidth={3} />}
+              {trend >= 0 ? <ArrowUpRight size={12} strokeWidth={2.5} /> : <ArrowDownRight size={12} strokeWidth={2.5} />}
               {Math.abs(trend).toFixed(1)}%
             </div>
           )}
         </div>
+        
+        {/* Text Content */}
         <div style={{ marginTop: "auto" }}>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4, fontWeight: 600 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.02em" }}>
             {label}
           </div>
           <div
             style={{
               fontSize: 26,
               fontWeight: 800,
-              fontFamily: "monospace",
+              fontFamily: "Inter, sans-serif",
               color: accent ? "var(--text-primary)" : "var(--text-primary)",
-              letterSpacing: "-0.02em",
-              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+              lineHeight: 1,
+              textShadow: accent ? "0 0 24px rgba(245,166,35,0.2)" : "none",
             }}
           >
             {value}
           </div>
           {sub && (
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6, fontWeight: 500 }}>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8, fontWeight: 500 }}>
               {sub}
             </div>
           )}
