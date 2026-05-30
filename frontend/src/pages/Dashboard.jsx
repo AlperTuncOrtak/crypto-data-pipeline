@@ -352,21 +352,36 @@ function TrendingCoinCard({ coin, navigate }) {
         padding: "10px 12px",
         borderRadius: 16,
         cursor: "pointer",
-        backgroundColor: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.04)",
+        backgroundColor: "rgba(255,255,255,0.015)",
+        border: "1px solid rgba(255,255,255,0.03)",
         transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
+        position: "relative",
+        overflow: "hidden",
+        transform: "translateZ(0)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.04)";
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
         e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-        e.currentTarget.style.transform = "scale(1.015)";
+        e.currentTarget.style.transform = "scale(1.01)";
+        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        if (glow) { glow.style.transform = "translateY(-50%) scale(1.5)"; glow.style.opacity = "1"; }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)";
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.015)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.03)";
         e.currentTarget.style.transform = "scale(1)";
+        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        if (glow) { glow.style.transform = "translateY(-50%) scale(1)"; glow.style.opacity = "0"; }
       }}
     >
+      <div className="feat-bg-glow" style={{
+        position: "absolute", top: "50%", right: -20, width: 80, height: 80,
+        borderRadius: "50%", background: `radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%)`,
+        filter: "blur(12px)", pointerEvents: "none", zIndex: 0,
+        transform: "translateY(-50%) scale(1)", opacity: 0,
+        transition: "all .4s cubic-bezier(0.25, 1, 0.5, 1)",
+      }} />
+      <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
       {coin.image_url ? (
         <img src={coin.image_url} alt={coin.symbol} style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0 }} />
       ) : (
@@ -390,6 +405,7 @@ function TrendingCoinCard({ coin, navigate }) {
         }}
       >
         {isPos ? "+" : ""}{change.toFixed(2)}%
+      </div>
       </div>
     </div>
   );

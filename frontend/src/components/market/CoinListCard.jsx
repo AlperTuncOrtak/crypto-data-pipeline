@@ -20,13 +20,40 @@ export default function CoinListCard({
 
   return (
     <div
+      className="group"
       style={{
-        backgroundColor: 'var(--bg-surface)',
-        border: '1px solid var(--border)',
-        borderRadius: '12px',
-        padding: '20px',
+        backgroundColor: 'rgba(255,255,255,0.02)',
+        border: '1px solid rgba(255,255,255,0.05)',
+        borderRadius: '24px',
+        padding: '24px',
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
+        transform: 'translateZ(0)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.01)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)";
+        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0"; }
       }}
     >
+      <div className="feat-bg-glow" style={{
+        position: "absolute", top: -20, right: -20, width: 140, height: 140,
+        borderRadius: "50%", background: `radial-gradient(circle, ${titleColor}15 0%, transparent 70%)`,
+        filter: "blur(20px)", pointerEvents: "none", zIndex: 0,
+        transform: "scale(1)", opacity: 0,
+        transition: "all .6s cubic-bezier(0.25, 1, 0.5, 1)",
+      }} />
+      <div style={{ position: "relative", zIndex: 1 }}>
       <h3
         className="text-xs font-semibold uppercase tracking-wider mb-4"
         style={{ color: titleColor, letterSpacing: '0.08em' }}
@@ -106,6 +133,7 @@ export default function CoinListCard({
           ))}
         </ul>
       )}
+      </div>
     </div>
   )
 }
