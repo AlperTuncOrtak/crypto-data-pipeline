@@ -252,17 +252,14 @@ export default function Landing({ onAuthOpen }) {
               width: 28,
               height: 28,
               borderRadius: 8,
-              background: "linear-gradient(135deg,#f5a623,#e8941a)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 13,
-              fontWeight: 900,
-              color: "#111",
-              boxShadow: "0 4px 12px rgba(245,166,35,.3)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+              overflow: "hidden"
             }}
           >
-            N
+            <img src="/logo.png" alt="CryptoNeko Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
           <span
             style={{ fontSize: 15, fontWeight: 800, letterSpacing: "-0.02em" }}
