@@ -1027,9 +1027,9 @@ function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
     return (
       <div
         style={{
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 16,
+          backgroundColor: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(255,255,255,0.05)",
+          borderRadius: 24,
           padding: "24px",
           textAlign: "center",
         }}
@@ -1056,7 +1056,7 @@ function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
           disabled={loading}
           style={{
             padding: "11px 28px",
-            borderRadius: 12,
+            borderRadius: 24,
             background: "linear-gradient(135deg, #f5a623, #e8941a)",
             color: "#111",
             fontWeight: 700,
@@ -1104,9 +1104,9 @@ function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
   return (
     <div
       style={{
-        background: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        borderRadius: 16,
+        backgroundColor: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.05)",
+        borderRadius: 24,
         padding: "24px",
       }}
     >
@@ -1183,7 +1183,7 @@ function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
               padding: "14px 10px",
               background: `${color}10`,
               border: `1px solid ${color}25`,
-              borderRadius: 12,
+              borderRadius: 24,
               textAlign: "center",
             }}
           >
@@ -1710,8 +1710,8 @@ export default function Portfolio() {
               gap: 6,
               padding: "8px 14px",
               borderRadius: 10,
-              border: "1px solid var(--border)",
-              background: "var(--bg-surface)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              backgroundColor: "rgba(255,255,255,0.02)",
               color: "var(--text-secondary)",
               fontSize: 13,
               cursor: "pointer",
@@ -1773,9 +1773,9 @@ export default function Portfolio() {
            style={{
              flex: 1,
              padding: "12px 16px",
-             borderRadius: 12,
-             background: "var(--bg-surface)",
-             border: "1px solid var(--border)",
+             borderRadius: 24,
+             backgroundColor: "rgba(255,255,255,0.02)",
+             border: "1px solid rgba(255,255,255,0.05)",
              color: "var(--text-primary)",
              fontSize: 14,
            }}
@@ -1790,7 +1790,7 @@ export default function Portfolio() {
            disabled={!walletInput.startsWith("0x")}
            style={{
              padding: "0 24px",
-             borderRadius: 12,
+             borderRadius: 24,
              background: walletInput.startsWith("0x") ? "var(--accent)" : "var(--bg-surface)",
              border: "none",
              color: walletInput.startsWith("0x") ? "#111" : "var(--text-muted)",
@@ -1808,7 +1808,7 @@ export default function Portfolio() {
            <div style={{ display: "flex", gap: 10 }}>
              <div style={{ 
                padding: "12px 24px", 
-               borderRadius: 12, 
+               borderRadius: 24, 
                background: "rgba(243,186,47,0.15)", 
                border: "1px solid rgba(243,186,47,0.3)",
                color: "#F3BA2F", 
@@ -1828,7 +1828,7 @@ export default function Portfolio() {
                 }}
                 style={{
                   padding: "0 16px",
-                  borderRadius: 12,
+                  borderRadius: 24,
                   border: "1px solid rgba(231,76,60,0.3)",
                   background: "rgba(231,76,60,0.06)",
                   color: "#e74c3c",
@@ -1844,7 +1844,7 @@ export default function Portfolio() {
              onClick={() => setShowBinanceModal(true)}
              style={{
                padding: "12px 24px",
-               borderRadius: 12,
+               borderRadius: 24,
                background: "#F3BA2F",
                border: "none",
                color: "#111",
@@ -1871,8 +1871,8 @@ export default function Portfolio() {
            zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center"
          }}>
            <div style={{
-             background: "var(--bg-surface)",
-             border: "1px solid var(--border)",
+             backgroundColor: "rgba(255,255,255,0.02)",
+             border: "1px solid rgba(255,255,255,0.05)",
              borderRadius: 24,
              padding: 32,
              width: "100%",
@@ -1894,8 +1894,8 @@ export default function Portfolio() {
                  value={binanceKeys.key}
                  onChange={e => setBinanceKeys(prev => ({...prev, key: e.target.value}))}
                  style={{
-                   width: "100%", padding: "14px 16px", borderRadius: 12,
-                   background: "var(--bg-elevated)", border: "1px solid var(--border)",
+                   width: "100%", padding: "14px 16px", borderRadius: 24,
+                   background: "var(--bg-elevated)", border: "1px solid rgba(255,255,255,0.05)",
                    color: "var(--text-primary)", fontSize: 14, boxSizing: "border-box"
                  }}
                />
@@ -1909,8 +1909,8 @@ export default function Portfolio() {
                  value={binanceKeys.secret}
                  onChange={e => setBinanceKeys(prev => ({...prev, secret: e.target.value}))}
                  style={{
-                   width: "100%", padding: "14px 16px", borderRadius: 12,
-                   background: "var(--bg-elevated)", border: "1px solid var(--border)",
+                   width: "100%", padding: "14px 16px", borderRadius: 24,
+                   background: "var(--bg-elevated)", border: "1px solid rgba(255,255,255,0.05)",
                    color: "var(--text-primary)", fontSize: 14, boxSizing: "border-box"
                  }}
                />
@@ -1924,7 +1924,7 @@ export default function Portfolio() {
                  }}
                  disabled={!binanceKeys.key || !binanceKeys.secret || isSyncingBinance}
                  style={{
-                   flex: 1, padding: "14px", borderRadius: 12, border: "none",
+                   flex: 1, padding: "14px", borderRadius: 24, border: "none",
                    background: (binanceKeys.key && binanceKeys.secret) ? "#F3BA2F" : "var(--bg-elevated)",
                    color: (binanceKeys.key && binanceKeys.secret) ? "#111" : "var(--text-muted)",
                    fontWeight: 700, fontSize: 15,
@@ -1936,7 +1936,7 @@ export default function Portfolio() {
                <button 
                  onClick={() => setShowBinanceModal(false)}
                  style={{
-                   padding: "14px 24px", borderRadius: 12, border: "1px solid var(--border)",
+                   padding: "14px 24px", borderRadius: 24, border: "1px solid rgba(255,255,255,0.05)",
                    background: "transparent", color: "var(--text-secondary)", fontWeight: 600,
                    cursor: "pointer", fontSize: 15
                  }}
@@ -1954,9 +1954,9 @@ export default function Portfolio() {
           style={{
             marginBottom: 24,
             padding: "20px",
-            background: "var(--bg-surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 16,
+            backgroundColor: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 24,
           }}
         >
           <div
@@ -2008,7 +2008,7 @@ export default function Portfolio() {
           onDragOver={(e) => e.preventDefault()}
           style={{
             border: "2px dashed var(--border)",
-            borderRadius: 16,
+            borderRadius: 24,
             padding: "48px 24px",
             textAlign: "center",
             marginBottom: 24,
@@ -2105,7 +2105,7 @@ export default function Portfolio() {
                 padding: "12px 16px",
                 background: "rgba(46,204,113,0.08)",
                 border: "1px solid rgba(46,204,113,0.25)",
-                borderRadius: 12,
+                borderRadius: 24,
                 marginBottom: 20,
               }}
             >
@@ -2181,9 +2181,9 @@ export default function Portfolio() {
                 key={s.label}
                 style={{
                   padding: "16px",
-                  background: "var(--bg-surface)",
-                  border: "1px solid var(--border)",
-                  borderRadius: 12,
+                  backgroundColor: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                  borderRadius: 24,
                 }}
               >
                 <div
@@ -2229,9 +2229,9 @@ export default function Portfolio() {
             <div
               style={{
                 padding: "20px",
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 16,
+                backgroundColor: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.05)",
+                borderRadius: 24,
               }}
             >
               <div
@@ -2330,9 +2330,9 @@ export default function Portfolio() {
               display: "flex",
               gap: 4,
               marginBottom: 16,
-              background: "var(--bg-surface)",
-              border: "1px solid var(--border)",
-              borderRadius: 12,
+              backgroundColor: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              borderRadius: 24,
               padding: 4,
               width: "fit-content",
             }}
@@ -2377,9 +2377,9 @@ export default function Portfolio() {
           {activeTab === "holdings" && (
             <div
               style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 16,
+                backgroundColor: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.05)",
+                borderRadius: 24,
                 overflow: "hidden",
               }}
             >
@@ -2417,17 +2417,18 @@ export default function Portfolio() {
                     <tr
                       key={h.symbol}
                       style={{
-                        borderBottom: "1px solid var(--border-soft)",
+                        borderBottom: "1px solid rgba(255,255,255,0.04)",
                         cursor: "pointer",
-                        transition: "background 0.15s",
+                        transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.background =
-                          "var(--bg-elevated)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.background = "transparent")
-                      }
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.025)";
+                        e.currentTarget.style.transform = "scale(1.006) translateX(2px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.transform = "scale(1) translateX(0)";
+                      }}
                     >
                       <td style={{ padding: "12px 16px" }}>
                         <div
@@ -2663,9 +2664,9 @@ export default function Portfolio() {
                     key={s.label}
                     style={{
                       padding: "14px",
-                      background: "var(--bg-surface)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 12,
+                      backgroundColor: "rgba(255,255,255,0.02)",
+                      border: "1px solid rgba(255,255,255,0.05)",
+                      borderRadius: 24,
                     }}
                   >
                     <div
@@ -2725,8 +2726,8 @@ export default function Portfolio() {
                           key={sym}
                           style={{
                             padding: "8px 14px",
-                            background: "var(--bg-surface)",
-                            border: "1px solid var(--border)",
+                            backgroundColor: "rgba(255,255,255,0.02)",
+                            border: "1px solid rgba(255,255,255,0.05)",
                             borderRadius: 10,
                             display: "flex",
                             gap: 10,
@@ -2842,9 +2843,9 @@ export default function Portfolio() {
                       </div>
                       <div
                         style={{
-                          background: "var(--bg-surface)",
-                          border: "1px solid var(--border)",
-                          borderRadius: 12,
+                          backgroundColor: "rgba(255,255,255,0.02)",
+                          border: "1px solid rgba(255,255,255,0.05)",
+                          borderRadius: 24,
                           overflow: "hidden",
                         }}
                       >
@@ -3023,9 +3024,9 @@ export default function Portfolio() {
           {activeTab === "trades" && (
             <div
               style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 16,
+                backgroundColor: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.05)",
+                borderRadius: 24,
                 overflow: "hidden",
               }}
             >
