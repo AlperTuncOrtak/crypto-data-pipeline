@@ -163,7 +163,7 @@ export default function Documentation() {
                     Keeping an accurate record of your trades allows CryptoNeko to calculate your total equity and historical performance.
                   </p>
                   
-                  <div className="bg-white/5 rounded-2xl p-8 border border-white/10 mt-8">
+                  <div className="bg-white/5 rounded-2xl p-8 border border-white/10 mt-8 mb-16">
                     <h4 className="text-white text-xl font-bold mb-6 flex items-center gap-4">
                       <div className="w-8 h-8 rounded-full bg-[#f5a623] text-black flex items-center justify-center text-base font-extrabold">1</div>
                       Adding a Transaction
@@ -186,9 +186,11 @@ export default function Documentation() {
                   </div>
                 </div>
 
-                <Callout title="Privacy First" icon={Shield}>
-                  Your portfolio data is stored securely in your browser's local storage and synced to your encrypted account profile if you log in. We never share your holdings with third parties.
-                </Callout>
+                <div className="mt-16">
+                  <Callout title="Privacy First" icon={Shield}>
+                    Your portfolio data is stored securely in your browser's local storage and synced to your encrypted account profile if you log in. We never share your holdings with third parties.
+                  </Callout>
+                </div>
               </div>
             )}
 
