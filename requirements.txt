@@ -8,6 +8,7 @@ pymysql
 # Auth & HTTP
 httpx
 supabase
+stripe
 
 # AI integrations
 google-genai
