@@ -22,6 +22,7 @@ import {
   CandlestickChart,
 } from "lucide-react";
 import AdvancedChart from "../components/market/AdvancedChart";
+import AIPulse from "../components/ai/AIPulse";
 
 const RANGES = [
   { label: "1H", value: "1h" },
@@ -633,6 +634,8 @@ export default function CoinDetail() {
           )}
         </div>
       </div>
+
+      <AIPulse slug={slug} />
 
       {/* PRICE RANGE BAR */}
       {coin.ath && coin.atl && (

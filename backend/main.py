@@ -600,6 +600,71 @@ def ai_chat(payload: dict):
 
     return {"reply": reply}
 
+_pulse_cache = {}
+
+@app.get("/ai/pulse/{slug}")
+def ai_pulse(slug: str):
+    import time, os, httpx
+    from backend.services.market_service import get_coin_by_slug
+    
+    now = time.time()
+    cached = _pulse_cache.get(slug)
+    if cached and now - cached[0] < 300:
+        return {"pulse": cached[1]}
+        
+    coin = get_coin_by_slug(slug)
+    if not coin:
+        raise HTTPException(status_code=404, detail="Coin not found")
+        
+    symbol = coin.get("symbol", "").upper()
+    name = coin.get("name", "")
+    price = float(coin.get("current_price", 0))
+    change = float(coin.get("price_change_percentage_24h", 0) or 0)
+    vol = float(coin.get("total_volume", 0) or 0)
+    
+    GROQ_KEY = os.getenv("GROQ_API_KEY", "")
+    GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
+    
+    if not GROQ_KEY and not GEMINI_KEY:
+        raise HTTPException(status_code=500, detail="No AI keys")
+        
+    prompt = f"Analyze why {name} ({symbol}) is moving right now. Current price: ${price}, 24h change: {change:+.2f}%, 24h volume: ${vol:,.0f}. Write strictly 1 or 2 short, punchy sentences explaining the probable cause or context of this movement (e.g., volume surge, market trend, anomaly). No generic filler."
+    
+    def try_groq():
+        resp = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [{"role": "system", "content": "You are a sharp crypto analyst."}, {"role": "user", "content": prompt}],
+                "max_tokens": 150,
+                "temperature": 0.5,
+            },
+            timeout=15.0,
+        )
+        resp.raise_for_status()
+        return resp.json()["choices"][0]["message"]["content"].strip()
+        
+    def try_gemini():
+        from google import genai
+        client = genai.Client(api_key=GEMINI_KEY)
+        resp = client.models.generate_content(model="gemini-2.0-flash", contents=f"You are a sharp crypto analyst.\n\n{prompt}")
+        return resp.text.strip()
+        
+    reply = None
+    if GROQ_KEY:
+        try: reply = try_groq()
+        except: pass
+    if not reply and GEMINI_KEY:
+        try: reply = try_gemini()
+        except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+        
+    if not reply:
+        raise HTTPException(status_code=500, detail="AI failed")
+        
+    _pulse_cache[slug] = (now, reply)
+    return {"pulse": reply}
+
 
 @app.get("/market/volume-spikes")
 def volume_spikes(limit: int = 10):
