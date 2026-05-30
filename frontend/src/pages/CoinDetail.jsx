@@ -729,138 +729,101 @@ export default function CoinDetail() {
       {/* CHART */}
       <div
         style={{
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 12,
+          backgroundColor: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(255,255,255,0.05)",
+          borderRadius: 24,
           padding: 24,
           marginTop: 24,
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 12,
-            marginBottom: 20,
-          }}
-        >
+        {/* ambient glow */}
+        <div style={{
+          position: "absolute", top: -40, right: -40, width: 220, height: 220,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${isPositive ? "rgba(46,204,113,0.07)" : "rgba(231,76,60,0.07)"} 0%, transparent 70%)`,
+          filter: "blur(20px)", pointerEvents: "none",
+        }} />
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+        {/* Header row */}
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
           <SectionTitle>Price Chart</SectionTitle>
-          <div
-            style={{
-              display: "flex",
-              gap: 4,
-              background: "var(--bg-elevated)",
-              borderRadius: 8,
-              padding: 4,
-            }}
-          >
+
+          {/* Time range pills */}
+          <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.05)", borderRadius: 10, padding: 3 }}>
             {RANGES.map((r) => (
               <button
                 key={r.value}
                 onClick={() => setRange(r.value)}
                 style={{
                   padding: "4px 12px",
-                  borderRadius: 6,
+                  borderRadius: 7,
                   fontSize: 12,
                   fontWeight: 600,
-                  background:
-                    range === r.value ? "var(--bg-surface)" : "transparent",
-                  border:
-                    range === r.value
-                      ? "1px solid var(--border)"
-                      : "1px solid transparent",
-                  color:
-                    range === r.value ? "var(--accent)" : "var(--text-muted)",
+                  background: range === r.value ? "rgba(245,166,35,0.15)" : "transparent",
+                  border: range === r.value ? "1px solid rgba(245,166,35,0.25)" : "1px solid transparent",
+                  color: range === r.value ? "var(--accent)" : "rgba(255,255,255,0.35)",
                   cursor: "pointer",
+                  transition: "all 0.15s",
                 }}
               >
                 {r.label}
               </button>
             ))}
           </div>
-          <div
-            style={{
-              display: "flex",
-              gap: 4,
-              background: "var(--bg-elevated)",
-              borderRadius: 8,
-              padding: 4,
-              marginLeft: "auto"
-            }}
-          >
+
+          {/* Chart type toggle — pushed right */}
+          <div style={{ marginLeft: "auto", display: "flex", gap: 4, background: "rgba(255,255,255,0.05)", borderRadius: 10, padding: 3 }}>
             <button
               onClick={() => setChartType("simple")}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "4px 12px",
-                borderRadius: 6,
-                fontSize: 12,
-                fontWeight: 600,
-                background: chartType === "simple" ? "var(--bg-surface)" : "transparent",
-                border: chartType === "simple" ? "1px solid var(--border)" : "1px solid transparent",
-                color: chartType === "simple" ? "var(--accent)" : "var(--text-muted)",
-                cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
+                background: chartType === "simple" ? "rgba(255,255,255,0.08)" : "transparent",
+                border: chartType === "simple" ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
+                color: chartType === "simple" ? "#fff" : "rgba(255,255,255,0.35)",
+                cursor: "pointer", transition: "all 0.15s",
               }}
             >
-              <LineChart size={14} /> Simple
+              <LineChart size={13} /> Simple
             </button>
             <button
               onClick={() => setChartType("pro")}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "4px 12px",
-                borderRadius: 6,
-                fontSize: 12,
-                fontWeight: 600,
-                background: chartType === "pro" ? "rgba(46, 204, 113, 0.1)" : "transparent",
-                border: chartType === "pro" ? "1px solid rgba(46, 204, 113, 0.2)" : "1px solid transparent",
-                color: chartType === "pro" ? "#2ecc71" : "var(--text-muted)",
-                cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
+                background: chartType === "pro" ? "rgba(46,204,113,0.12)" : "transparent",
+                border: chartType === "pro" ? "1px solid rgba(46,204,113,0.25)" : "1px solid transparent",
+                color: chartType === "pro" ? "#2ecc71" : "rgba(255,255,255,0.35)",
+                cursor: "pointer", transition: "all 0.15s",
               }}
             >
-              <CandlestickChart size={14} /> Pro
+              <CandlestickChart size={13} /> Pro 🕯️
             </button>
           </div>
         </div>
 
-        {historyLoading && (
-          <div
-            style={{
-              height: 300,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--text-muted)",
-            }}
-          >
-            Loading chart...
-          </div>
-        )}
-        {!historyLoading && chartData.length === 0 && (
-          <div
-            style={{
-              height: 300,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--text-muted)",
-            }}
-          >
-            No data for this time range.
-          </div>
-        )}
-        {!historyLoading && chartType === "pro" && (
-          <div style={{ width: "100%", height: 400 }}>
+        {/* Pro chart always rendered when selected so chart mounts */}
+        {chartType === "pro" && (
+          <div style={{ width: "100%", height: 420, borderRadius: 16, overflow: "hidden" }}>
             <AdvancedChart symbol={coin.symbol} interval={range} />
           </div>
         )}
-        {!historyLoading && chartType === "simple" && chartData.length > 0 && (
+
+        {/* Simple chart */}
+        {chartType === "simple" && historyLoading && (
+          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+            Loading chart...
+          </div>
+        )}
+        {chartType === "simple" && !historyLoading && chartData.length === 0 && (
+          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+            No data for this time range.
+          </div>
+        )}
+        {chartType === "simple" && !historyLoading && chartData.length > 0 && (
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={chartData}>
               <defs>
@@ -912,17 +875,11 @@ export default function CoinDetail() {
           </ResponsiveContainer>
         )}
         {stats && (
-          <div
-            style={{
-              textAlign: "right",
-              marginTop: 10,
-              fontSize: 11,
-              color: "var(--text-muted)",
-            }}
-          >
+          <div style={{ textAlign: "right", marginTop: 10, fontSize: 11, color: "var(--text-muted)" }}>
             {stats.data_points} data points in last 24h
           </div>
         )}
+        </div>{/* end position:relative inner */}
       </div>
     </div>
   );
