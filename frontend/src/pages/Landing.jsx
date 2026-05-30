@@ -217,13 +217,12 @@ export default function Landing({ onAuthOpen }) {
         @keyframes floatY { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-14px)} }
         @keyframes floatY2 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
         @keyframes floatY3 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-10px)} }
-        .lp-primary { transition:background 0.3s ease !important }
-        .lp-primary:hover { background: var(--accent-hover) !important; }
-        .lp-ghost:hover { border-color:rgba(255,255,255,.2) !important; color:rgba(255,255,255,1) !important; background:rgba(255,255,255,.08) !important }
-        .feat { transition: background 0.4s ease, border-color 0.4s ease !important; }
-        .feat:hover { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.1) !important; }
-        .fcoin { transition: filter .5s ease, transform .5s cubic-bezier(0.16,1,0.3,1), box-shadow .5s ease !important; }
-        .fcoin:hover { filter: blur(0px) !important; transform: scale(1.04) !important; box-shadow: 0 0 24px var(--fcoin-glow) !important; }
+        .lp-primary { transition:all .2s ease !important }
+        .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(245,166,35,.55) !important }
+        .lp-ghost:hover { border-color:rgba(245,166,35,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(245,166,35,.05) !important }
+        .feat:hover { transform:translateY(-5px) !important; }
+        .fcoin { transition: filter .35s ease, transform .35s ease, box-shadow .35s ease !important; }
+        .fcoin:hover { filter: blur(0px) !important; transform: scale(1.12) !important; box-shadow: 0 0 32px var(--fcoin-glow) !important; }
         .fcoin:hover .fcoin-label { opacity:1 !important; transform:translateX(0) !important; pointer-events:none; }
       `}</style>
 
@@ -1186,13 +1185,10 @@ export default function Landing({ onAuthOpen }) {
                 className="feat"
                 style={{
                   padding: "32px",
-                  borderRadius: 20,
-                  background: "rgba(255,255,255,.015)",
-                  backdropFilter: "blur(24px)",
-                  WebkitBackdropFilter: "blur(24px)",
-                  border: "1px solid rgba(255,255,255,.08)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-                  transition: "all .4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  borderRadius: 24,
+                  background: "rgba(255,255,255,.02)",
+                  border: "1px solid rgba(255,255,255,.05)",
+                  transition: "all .5s cubic-bezier(0.25, 1, 0.5, 1)",
                   position: "relative",
                   overflow: "hidden",
                   animation: `fadeUp .6s ease ${0.1 + i * 0.07}s both`,
@@ -1201,35 +1197,31 @@ export default function Landing({ onAuthOpen }) {
                   transform: "translateZ(0)"
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-6px) scale(1.015)";
-                  e.currentTarget.style.borderColor = `${f.color}50`;
-                  e.currentTarget.style.boxShadow = `0 20px 60px -15px ${f.color}30, inset 0 1px 0 ${f.color}20`;
+                  e.currentTarget.style.transform = "scale(1.01)";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,.08)";
+                  e.currentTarget.style.backgroundColor = "rgba(255,255,255,.03)";
                   const glow = e.currentTarget.querySelector('.feat-bg-glow');
-                  if (glow) { glow.style.transform = "translate(-50%, -50%) scale(1.5)"; glow.style.opacity = "1"; }
+                  if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
+                  const iconBox = e.currentTarget.querySelector('.feat-icon-box');
+                  if (iconBox) { iconBox.style.transform = "scale(1.05)"; }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0) scale(1)";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,.07)";
-                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,.05)";
+                  e.currentTarget.style.backgroundColor = "rgba(255,255,255,.02)";
                   const glow = e.currentTarget.querySelector('.feat-bg-glow');
-                  if (glow) { glow.style.transform = "translate(-50%, -50%) scale(0)"; glow.style.opacity = "0"; }
+                  if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0.7"; }
+                  const iconBox = e.currentTarget.querySelector('.feat-icon-box');
+                  if (iconBox) { iconBox.style.transform = "scale(1)"; }
                 }}
               >
-                {/* Inside-out radial glow */}
+                {/* Zerion style corner glow */}
                 <div className="feat-bg-glow" style={{
-                  position: "absolute", top: "50%", left: "50%",
-                  width: "130%", height: "130%",
-                  background: `radial-gradient(circle, ${f.color}18 0%, transparent 65%)`,
-                  transform: "translate(-50%, -50%) scale(0)", opacity: 0,
-                  transition: "transform .55s cubic-bezier(0.4, 0, 0.2, 1), opacity .4s ease",
-                  pointerEvents: "none", zIndex: 0,
-                }} />
-
-                {/* Top-right decorative blur blob */}
-                <div style={{
-                  position: "absolute", top: -50, right: -50, width: 160, height: 160,
-                  borderRadius: "50%", background: `${f.color}0d`,
-                  filter: "blur(40px)", pointerEvents: "none", zIndex: 0,
+                  position: "absolute", top: -20, right: -20, width: 140, height: 140,
+                  borderRadius: "50%", background: `radial-gradient(circle, ${f.color}15 0%, transparent 70%)`,
+                  filter: "blur(20px)", pointerEvents: "none", zIndex: 0,
+                  transform: "scale(1)", opacity: 0.7,
+                  transition: "all .6s cubic-bezier(0.25, 1, 0.5, 1)",
                 }} />
 
                 {/* Content */}
@@ -1238,24 +1230,26 @@ export default function Landing({ onAuthOpen }) {
                   {/* Top row: icon + badge */}
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
                     {/* Icon with gradient bg */}
-                    <div style={{
-                      width: 56, height: 56, borderRadius: 16,
-                      background: `linear-gradient(135deg, ${f.color}25, ${f.color}08)`,
-                      border: `1px solid ${f.color}30`,
+                    <div className="feat-icon-box" style={{
+                      width: 48, height: 48, borderRadius: 12,
+                      background: `linear-gradient(135deg, ${f.color}15, ${f.color}05)`,
+                      border: `1px solid ${f.color}25`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      boxShadow: `0 4px 20px ${f.color}15`,
+                      boxShadow: `0 4px 12px rgba(0,0,0,0.2)`,
+                      transition: "all 0.4s ease",
                     }}>
-                      <Icon size={24} style={{ color: f.color }} />
+                      <Icon size={22} style={{ color: f.color, opacity: 0.9 }} />
                     </div>
 
                     {/* Badge */}
                     <span style={{
-                      fontSize: 9, fontWeight: 900,
-                      padding: "4px 10px", borderRadius: 20,
+                      fontSize: 10, fontWeight: 800,
+                      padding: "4px 12px", borderRadius: 100,
                       background: `${f.color}12`,
                       color: f.color,
                       border: `1px solid ${f.color}28`,
-                      letterSpacing: ".14em",
+                      letterSpacing: ".1em",
+                      fontFamily: "Inter, sans-serif"
                     }}>
                       {f.badge}
                     </span>
