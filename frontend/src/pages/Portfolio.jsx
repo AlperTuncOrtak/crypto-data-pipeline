@@ -1865,7 +1865,7 @@ export default function Portfolio() {
       )}
 
       {/* IMPORT ZONE */}
-      {trades.length === 0 ? (
+      {trades.length === 0 && walletHoldings.length === 0 && binanceHoldings.length === 0 ? (
         <div
           onDrop={onDrop}
           onDragOver={(e) => e.preventDefault()}
