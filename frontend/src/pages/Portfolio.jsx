@@ -880,10 +880,11 @@ const SECTOR_COLORS = {
   Other: "#555",
 };
 
-function AIPortfolioCard({ holdings, totalValue, totalPnl }) {
+function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const didAutoAnalyze = useRef(false);
 
   async function analyze() {
     setLoading(true);
@@ -908,6 +909,14 @@ function AIPortfolioCard({ holdings, totalValue, totalPnl }) {
       setLoading(false);
     }
   }
+
+  // Auto-analyze when Binance is connected and holdings loaded
+  useEffect(() => {
+    if (autoAnalyze && holdings.length > 0 && !result && !loading && !didAutoAnalyze.current) {
+      didAutoAnalyze.current = true;
+      analyze();
+    }
+  }, [autoAnalyze, holdings.length]);
 
   if (!result)
     return (
@@ -1873,7 +1882,7 @@ export default function Portfolio() {
       )}
 
       {/* IMPORT ZONE */}
-      {trades.length === 0 && walletHoldings.length === 0 && binanceHoldings.length === 0 ? (
+      {trades.length === 0 && walletHoldings.length === 0 && binanceHoldings.length === 0 && !isSyncingBinance ? (
         <div
           onDrop={onDrop}
           onDragOver={(e) => e.preventDefault()}
@@ -1956,6 +1965,13 @@ export default function Portfolio() {
               {error}
             </div>
           )}
+        </div>
+      ) : isSyncingBinance ? (
+        <div style={{ textAlign: "center", padding: "60px 24px" }}>
+          <RefreshCw size={36} style={{ color: "var(--accent)", margin: "0 auto 16px", display: "block", animation: "spin 0.8s linear infinite" }} />
+          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Syncing Binance...</div>
+          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Fetching your live balances securely</div>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
       ) : (
         <>
@@ -2184,6 +2200,7 @@ export default function Portfolio() {
               holdings={holdings}
               totalValue={totalValue}
               totalPnl={totalPnl}
+              autoAnalyze={binanceHoldings.length > 0}
             />
           </div>
 
