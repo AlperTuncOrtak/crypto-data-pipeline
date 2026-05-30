@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
+  BarChart2,
   Coins,
   Award,
   AlertCircle,
