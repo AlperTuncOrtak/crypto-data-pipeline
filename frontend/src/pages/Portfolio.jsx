@@ -273,7 +273,7 @@ function parseCSV(text) {
 }
 
 // ── Holdings hesapla (FIFO) ───────────────────────────────────
-function calcHoldings(trades, marketData) {
+function calcHoldings(trades, marketData, walletHoldings = []) {
   const priceMap = {};
   (marketData || []).forEach((c) => {
     priceMap[c.symbol?.toUpperCase()] = {
@@ -287,16 +287,22 @@ function calcHoldings(trades, marketData) {
   const bySymbol = {};
   for (const t of trades) {
     const sym = t.symbol.toUpperCase();
-    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [] };
+    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0 };
     if (t.side === "buy") bySymbol[sym].buys.push(t);
     else bySymbol[sym].sells.push(t);
   }
+  
+  for (const wh of walletHoldings) {
+    const sym = wh.symbol.toUpperCase();
+    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0 };
+    bySymbol[sym].walletQty += wh.quantity;
+  }
 
   const holdings = [];
-  for (const [sym, { buys, sells }] of Object.entries(bySymbol)) {
+  for (const [sym, { buys, sells, walletQty }] of Object.entries(bySymbol)) {
     const totalBought = buys.reduce((s, t) => s + t.quantity, 0);
     const totalSold = sells.reduce((s, t) => s + t.quantity, 0);
-    const qty = totalBought - totalSold;
+    const qty = totalBought - totalSold + (walletQty || 0);
     if (qty <= 0.000001) continue;
 
     const totalCost = buys.reduce((s, t) => s + t.total, 0);
@@ -322,6 +328,7 @@ function calcHoldings(trades, marketData) {
       pnl_pct: pnlPct,
       change_24h: market.change24h || 0,
       trades_count: buys.length + sells.length,
+      has_wallet_balance: (walletQty || 0) > 0,
     });
   }
 
@@ -1346,6 +1353,50 @@ export default function Portfolio() {
 
   const [trades, setTrades] = useState([]);
   const [importing, setImporting] = useState(false);
+  const [walletInput, setWalletInput] = useState("");
+  const [isFetchingWallet, setIsFetchingWallet] = useState(false);
+  const [wallets, setWallets] = useState(() => {
+    try {
+      const saved = localStorage.getItem("crypto_neko_wallets");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [walletHoldings, setWalletHoldings] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem("crypto_neko_wallets", JSON.stringify(wallets));
+    const fetchWallets = async () => {
+      let allHoldings = [];
+      setIsFetchingWallet(true);
+      for (const w of wallets) {
+        try {
+          const res = await fetch(`https://api.ethplorer.io/getAddressInfo/${w}?apiKey=freekey`);
+          const data = await res.json();
+          if (data.ETH && data.ETH.balance > 0) {
+            allHoldings.push({ symbol: "ETH", quantity: data.ETH.balance });
+          }
+          if (data.tokens) {
+            for (const t of data.tokens) {
+               if (!t.tokenInfo || !t.tokenInfo.symbol) continue;
+               const decimals = parseInt(t.tokenInfo.decimals) || 18;
+               const bal = t.balance / Math.pow(10, decimals);
+               if (bal > 0) {
+                 allHoldings.push({ symbol: t.tokenInfo.symbol, quantity: bal });
+               }
+            }
+          }
+        } catch (e) {
+          console.error("Wallet fetch error", e);
+        }
+      }
+      setWalletHoldings(allHoldings);
+      setIsFetchingWallet(false);
+    };
+    if (wallets.length > 0) fetchWallets();
+    else setWalletHoldings([]);
+  }, [wallets]);
 
   // Supabase'den trades yukle
   useEffect(() => {
@@ -1366,8 +1417,8 @@ export default function Portfolio() {
   const [error, setError] = useState("");
 
   const holdings = useMemo(
-    () => calcHoldings(trades, marketData),
-    [trades, marketData],
+    () => calcHoldings(trades, marketData, walletHoldings),
+    [trades, marketData, walletHoldings],
   );
   const totalValue = useMemo(
     () => holdings.reduce((s, h) => s + h.value, 0),
@@ -1487,6 +1538,25 @@ export default function Portfolio() {
           >
             <BookOpen size={14} /> How to export
           </button>
+          {wallets.length > 0 && (
+            <button
+              onClick={() => setWallets([])}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 14px",
+                borderRadius: 10,
+                border: "1px solid rgba(245,166,35,0.3)",
+                background: "rgba(245,166,35,0.06)",
+                color: "#f5a623",
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              <X size={14} /> Clear Wallets
+            </button>
+          )}
           {trades.length > 0 && (
             <button
               onClick={() => setTrades([])}
@@ -1503,10 +1573,49 @@ export default function Portfolio() {
                 cursor: "pointer",
               }}
             >
-              <X size={14} /> Clear
+              <X size={14} /> Clear Trades
             </button>
           )}
         </div>
+      </div>
+
+      {/* WALLET TRACKER INPUT */}
+      <div style={{ marginBottom: 24, display: "flex", gap: 10 }}>
+         <input 
+           type="text" 
+           placeholder="Enter ETH Wallet Address (0x...)" 
+           value={walletInput}
+           onChange={e => setWalletInput(e.target.value)}
+           style={{
+             flex: 1,
+             padding: "12px 16px",
+             borderRadius: 12,
+             background: "var(--bg-surface)",
+             border: "1px solid var(--border)",
+             color: "var(--text-primary)",
+             fontSize: 14,
+           }}
+         />
+         <button 
+           onClick={() => {
+             if (walletInput && !wallets.includes(walletInput)) {
+               setWallets([...wallets, walletInput]);
+               setWalletInput("");
+             }
+           }}
+           disabled={!walletInput.startsWith("0x")}
+           style={{
+             padding: "0 24px",
+             borderRadius: 12,
+             background: walletInput.startsWith("0x") ? "var(--accent)" : "var(--bg-surface)",
+             border: "none",
+             color: walletInput.startsWith("0x") ? "#111" : "var(--text-muted)",
+             fontWeight: 700,
+             cursor: walletInput.startsWith("0x") ? "pointer" : "not-allowed",
+           }}
+         >
+           Track Wallet
+         </button>
       </div>
 
       {/* EXCHANGE GUIDES */}
@@ -2010,8 +2119,21 @@ export default function Portfolio() {
                             />
                           )}
                           <div>
-                            <div style={{ fontWeight: 600, fontSize: 14 }}>
+                            <div style={{ fontWeight: 600, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
                               {h.symbol}
+                              {h.has_wallet_balance && (
+                                <span style={{
+                                  fontSize: 9,
+                                  background: "rgba(245,166,35,0.15)",
+                                  color: "#f5a623",
+                                  padding: "2px 6px",
+                                  borderRadius: 4,
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.05em"
+                                }}>
+                                  Wallet
+                                </span>
+                              )}
                             </div>
                             <div
                               style={{
