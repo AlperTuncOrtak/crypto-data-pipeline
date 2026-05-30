@@ -627,18 +627,15 @@ export default function Navbar({
                 width: 34,
                 height: 34,
                 borderRadius: 10,
-                background: "linear-gradient(135deg, #f5a623, #e8941a)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 16,
-                fontWeight: 900,
-                color: "#111",
-                boxShadow: "0 4px 16px rgba(245,166,35,0.35)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
                 flexShrink: 0,
+                overflow: "hidden"
               }}
             >
-              N
+              <img src="/logo.png" alt="CryptoNeko Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div>
               <div
