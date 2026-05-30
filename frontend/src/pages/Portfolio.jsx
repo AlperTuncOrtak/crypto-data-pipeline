@@ -1478,7 +1478,12 @@ export default function Portfolio() {
   const { data: marketData } = useMarket(500);
   const fileRef = useRef(null);
 
-  const [trades, setTrades] = useState([]);
+  const [trades, setTrades] = useState(() => {
+    try {
+      const saved = localStorage.getItem("crypto_neko_trades");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [importing, setImporting] = useState(false);
   const [walletInput, setWalletInput] = useState("");
   const [isFetchingWallet, setIsFetchingWallet] = useState(false);
@@ -1579,6 +1584,13 @@ export default function Portfolio() {
         if (data && data.length > 0) setTrades(data);
       });
   }, [user]);
+
+  // localStorage'a kaydet — sayfa yenilenince veriler kaybolmaz
+  useEffect(() => {
+    try {
+      localStorage.setItem("crypto_neko_trades", JSON.stringify(trades));
+    } catch (e) { /* storage full */ }
+  }, [trades]);
   const [importResult, setImportResult] = useState(null);
   const [guide, setGuide] = useState(null);
   const [activeTab, setActiveTab] = useState("holdings"); // holdings | tax | trades
@@ -1728,7 +1740,10 @@ export default function Portfolio() {
           )}
           {trades.length > 0 && (
             <button
-              onClick={() => setTrades([])}
+              onClick={() => {
+                setTrades([]);
+                localStorage.removeItem("crypto_neko_trades");
+              }}
               style={{
                 display: "flex",
                 alignItems: "center",
