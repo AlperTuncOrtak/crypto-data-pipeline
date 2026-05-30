@@ -468,30 +468,47 @@ export default function Landing({ onAuthOpen }) {
           </div>
         ))}
 
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage:
-              "radial-gradient(rgba(255,255,255,.022) 1px,transparent 1px)",
-            backgroundSize: "36px 36px",
-            pointerEvents: "none",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: "5%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: 700,
-            height: 420,
-            background:
-              "radial-gradient(ellipse,rgba(245,166,35,.07) 0%,transparent 65%)",
-            pointerEvents: "none",
-            animation: "glow 5s ease infinite",
-          }}
-        />
+        {/* AMBIENT GLOW ORBS */}
+        <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+          {/* Grid Pattern */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            maskImage: "linear-gradient(to bottom, black 40%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 100%)"
+          }} />
+          
+          {/* Center Gold Glow */}
+          <div style={{
+            position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)",
+            width: 800, height: 500,
+            background: "radial-gradient(ellipse, rgba(245,166,35,.12) 0%, transparent 60%)",
+            animation: "glow 6s ease-in-out infinite alternate",
+            filter: "blur(60px)",
+            borderRadius: "50%"
+          }} />
+          
+          {/* Left Purple Glow */}
+          <div style={{
+            position: "absolute", top: "20%", left: "15%",
+            width: 400, height: 400,
+            background: "radial-gradient(circle, rgba(139,92,246,.15) 0%, transparent 70%)",
+            animation: "floatY 8s ease-in-out infinite",
+            filter: "blur(80px)",
+            borderRadius: "50%"
+          }} />
+          
+          {/* Right Blue Glow */}
+          <div style={{
+            position: "absolute", top: "30%", right: "15%",
+            width: 400, height: 400,
+            background: "radial-gradient(circle, rgba(56,189,248,.12) 0%, transparent 70%)",
+            animation: "floatY2 10s ease-in-out infinite reverse",
+            filter: "blur(80px)",
+            borderRadius: "50%"
+          }} />
+        </div>
 
         <div
           style={{
@@ -529,46 +546,51 @@ export default function Landing({ onAuthOpen }) {
 
         <h1
           style={{
-            fontSize: "clamp(42px,7vw,82px)",
+            fontSize: "clamp(48px, 7vw, 88px)",
             fontWeight: 900,
-            lineHeight: 1.0,
+            lineHeight: 1.05,
             letterSpacing: "-0.04em",
-            margin: "0 auto 20px",
-            maxWidth: 860,
-            animation: "fadeUp .55s ease .08s both",
+            margin: "0 auto 24px",
+            maxWidth: 900,
+            position: "relative",
+            zIndex: 10,
+            animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .1s both",
           }}
         >
-          <span style={{ color: "rgba(255,255,255,.96)" }}>
+          <span style={{ color: "rgba(255,255,255,.98)", textShadow: "0 4px 24px rgba(0,0,0,0.5)" }}>
             The smartest way
             <br />
             to analyze{" "}
           </span>
           <span
             style={{
-              background:
-                "linear-gradient(135deg,#f5a623 0%,#f7c948 40%,#e8941a 100%)",
+              background: "linear-gradient(135deg, #f5a623 0%, #ffc837 30%, #ff8b00 70%, #f5a623 100%)",
+              backgroundSize: "200% auto",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              backgroundSize: "200%",
-              animation: "gradShift 5s ease infinite",
+              display: "inline-block",
+              animation: "gradShift 6s linear infinite",
+              filter: "drop-shadow(0 4px 16px rgba(245,166,35,0.3))"
             }}
           >
-            crypto.
+            crypto markets.
           </span>
         </h1>
 
         <p
           style={{
-            fontSize: "clamp(15px,1.8vw,19px)",
-            color: "rgba(255,255,255,.36)",
-            maxWidth: 500,
-            margin: "0 auto 44px",
-            lineHeight: 1.65,
-            animation: "fadeUp .55s ease .16s both",
+            fontSize: "clamp(16px, 2vw, 19px)",
+            color: "rgba(255,255,255,.6)",
+            maxWidth: 580,
+            margin: "0 auto 40px",
+            lineHeight: 1.6,
+            position: "relative",
+            zIndex: 10,
+            animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .2s both",
           }}
         >
-          AI-powered signals, live market data, portfolio tracking and smart
-          alerts. Built for traders who want an edge — free to start.
+          Real-time data, AI-driven technical analysis, and portfolio tracking —
+          all in one blazing fast platform.
         </p>
 
         <div
@@ -576,9 +598,10 @@ export default function Landing({ onAuthOpen }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 12,
-            flexWrap: "wrap",
-            animation: "fadeUp .55s ease .24s both",
+            gap: 16,
+            position: "relative",
+            zIndex: 10,
+            animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .3s both",
           }}
         >
           <button
@@ -587,16 +610,17 @@ export default function Landing({ onAuthOpen }) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 9,
-              padding: "15px 32px",
-              borderRadius: 13,
-              background: "linear-gradient(135deg,#f5a623,#e8941a)",
+              gap: 8,
+              padding: "16px 32px",
+              borderRadius: 14,
+              background: "linear-gradient(135deg, #f5a623, #e8941a)",
               color: "#111",
-              fontSize: 15,
+              fontSize: 16,
               fontWeight: 800,
               border: "none",
               cursor: "pointer",
-              boxShadow: "0 8px 28px rgba(245,166,35,.38)",
+              boxShadow: "0 8px 32px rgba(245,166,35,.35)",
+              transition: "all .3s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >
             Start for Free <ArrowRight size={16} />
@@ -698,20 +722,24 @@ export default function Landing({ onAuthOpen }) {
           <div
             style={{
               position: "absolute",
-              inset: -24,
-              background:
-                "radial-gradient(ellipse at center,rgba(245,166,35,.07) 0%,transparent 65%)",
+              inset: -32,
+              background: "radial-gradient(ellipse at center, rgba(245,166,35,.15) 0%, rgba(139,92,246,.1) 30%, transparent 70%)",
               pointerEvents: "none",
-              filter: "blur(24px)",
+              filter: "blur(30px)",
+              animation: "glow 8s ease-in-out infinite alternate"
             }}
           />
           <div
             style={{
               position: "relative",
-              borderRadius: 18,
+              borderRadius: 20,
               overflow: "hidden",
-              border: "1px solid rgba(255,255,255,.08)",
-              boxShadow: "0 40px 100px rgba(0,0,0,.9)",
+              border: "1px solid rgba(255,255,255,.12)",
+              boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)",
+              background: "rgba(12,12,22,0.8)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              transform: "translateZ(0)"
             }}
           >
             <div
@@ -1180,14 +1208,18 @@ export default function Landing({ onAuthOpen }) {
                 style={{
                   padding: "32px",
                   borderRadius: 20,
-                  background: "rgba(255,255,255,.025)",
-                  border: "1px solid rgba(255,255,255,.07)",
+                  background: "rgba(255,255,255,.015)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  border: "1px solid rgba(255,255,255,.08)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
                   transition: "all .4s cubic-bezier(0.4, 0, 0.2, 1)",
                   position: "relative",
                   overflow: "hidden",
                   animation: `fadeUp .6s ease ${0.1 + i * 0.07}s both`,
                   display: "flex",
                   flexDirection: "column",
+                  transform: "translateZ(0)"
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-6px) scale(1.015)";
