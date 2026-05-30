@@ -217,12 +217,13 @@ export default function Landing({ onAuthOpen }) {
         @keyframes floatY { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-14px)} }
         @keyframes floatY2 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
         @keyframes floatY3 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-10px)} }
-        .lp-primary { transition:all .2s ease !important }
-        .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(245,166,35,.55) !important }
-        .lp-ghost:hover { border-color:rgba(245,166,35,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(245,166,35,.05) !important }
-        .feat:hover { transform:translateY(-5px) !important; }
-        .fcoin { transition: filter .35s ease, transform .35s ease, box-shadow .35s ease !important; }
-        .fcoin:hover { filter: blur(0px) !important; transform: scale(1.12) !important; box-shadow: 0 0 32px var(--fcoin-glow) !important; }
+        .lp-primary { transition:background 0.3s ease !important }
+        .lp-primary:hover { background: var(--accent-hover) !important; }
+        .lp-ghost:hover { border-color:rgba(255,255,255,.2) !important; color:rgba(255,255,255,1) !important; background:rgba(255,255,255,.08) !important }
+        .feat { transition: background 0.4s ease, border-color 0.4s ease !important; }
+        .feat:hover { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.1) !important; }
+        .fcoin { transition: filter .5s ease, transform .5s cubic-bezier(0.16,1,0.3,1), box-shadow .5s ease !important; }
+        .fcoin:hover { filter: blur(0px) !important; transform: scale(1.04) !important; box-shadow: 0 0 24px var(--fcoin-glow) !important; }
         .fcoin:hover .fcoin-label { opacity:1 !important; transform:translateX(0) !important; pointer-events:none; }
       `}</style>
 

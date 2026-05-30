@@ -54,9 +54,8 @@ function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouse
       className={className}
       style={{
         ...bentoBase,
-        borderColor: hov ? "rgba(245,166,35,0.2)" : "rgba(255,255,255,0.05)",
-        backgroundColor: hov ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.02)",
-        transform: hov ? "translateY(-2px)" : "translateY(0)",
+        borderColor: hov ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)",
+        backgroundColor: hov ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
         ...style,
       }}
       onMouseEnter={(e) => { setHov(true); if(onMouseEnter) onMouseEnter(e); }}
@@ -296,17 +295,17 @@ function TrendingCoinCard({ coin, navigate }) {
         padding: "10px 12px",
         borderRadius: 16,
         cursor: "pointer",
-        backgroundColor: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.04)",
-        transition: "all 0.2s ease",
+        backgroundColor: "transparent",
+        border: "1px solid transparent",
+        transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)";
+        e.currentTarget.style.backgroundColor = "transparent";
+        e.currentTarget.style.borderColor = "transparent";
       }}
     >
       {coin.image_url ? (
@@ -525,9 +524,9 @@ export default function Dashboard() {
                       <tr
                         key={coin.symbol}
                         onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                        style={{ cursor: "pointer", transition: "all 0.15s ease", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                        style={{ cursor: "pointer", transition: "background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+                          e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.025)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = "transparent";
