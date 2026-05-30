@@ -11,6 +11,11 @@
 # ============================================================
 from dotenv import load_dotenv
 from pathlib import Path
+import time
+import hmac
+import hashlib
+import httpx
+from pydantic import BaseModel
 
 load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
 from fastapi import FastAPI, Query, HTTPException, Depends, Request
@@ -754,3 +759,58 @@ async def stripe_webhook(request: Request):
             ).execute()
 
     return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# BINANCE API SYNC
+# ---------------------------------------------------------------------------
+class BinanceSyncRequest(BaseModel):
+    api_key: str
+    api_secret: str
+
+@app.post("/portfolio/binance-sync")
+async def binance_sync(req: BinanceSyncRequest):
+    """
+    Kullanicinin gonderdigi API Key ve Secret ile Binance Spot bakiyelerini okur.
+    CORS'u asmak ve secret'i guvenle kullanmak icin backend proxy gorevi gorur.
+    """
+    timestamp = int(time.time() * 1000)
+    query_string = f"timestamp={timestamp}"
+    
+    signature = hmac.new(
+        req.api_secret.encode("utf-8"),
+        query_string.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()
+    
+    url = f"https://api.binance.com/api/v3/account?{query_string}&signature={signature}"
+    headers = {
+        "X-MBX-APIKEY": req.api_key
+    }
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+            data = resp.json()
+            
+            balances = data.get("balances", [])
+            active_balances = []
+            for b in balances:
+                free = float(b.get("free", 0))
+                locked = float(b.get("locked", 0))
+                total = free + locked
+                if total > 0:
+                    active_balances.append({
+                        "symbol": b.get("asset"),
+                        "quantity": total
+                    })
+                    
+            return {"ok": True, "balances": active_balances}
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401:
+                raise HTTPException(status_code=401, detail="Invalid API Key or Secret, or IP restriction enabled.")
+            else:
+                raise HTTPException(status_code=400, detail=f"Binance API error: {e.response.text}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))

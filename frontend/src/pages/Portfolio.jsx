@@ -287,22 +287,26 @@ function calcHoldings(trades, marketData, walletHoldings = []) {
   const bySymbol = {};
   for (const t of trades) {
     const sym = t.symbol.toUpperCase();
-    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0 };
+    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0, binanceQty: 0 };
     if (t.side === "buy") bySymbol[sym].buys.push(t);
     else bySymbol[sym].sells.push(t);
   }
   
   for (const wh of walletHoldings) {
     const sym = wh.symbol.toUpperCase();
-    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0 };
-    bySymbol[sym].walletQty += wh.quantity;
+    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0, binanceQty: 0 };
+    if (wh.source === "binance") {
+      bySymbol[sym].binanceQty += wh.quantity;
+    } else {
+      bySymbol[sym].walletQty += wh.quantity;
+    }
   }
 
   const holdings = [];
-  for (const [sym, { buys, sells, walletQty }] of Object.entries(bySymbol)) {
+  for (const [sym, { buys, sells, walletQty, binanceQty }] of Object.entries(bySymbol)) {
     const totalBought = buys.reduce((s, t) => s + t.quantity, 0);
     const totalSold = sells.reduce((s, t) => s + t.quantity, 0);
-    const qty = totalBought - totalSold + (walletQty || 0);
+    const qty = totalBought - totalSold + (walletQty || 0) + (binanceQty || 0);
     if (qty <= 0.000001) continue;
 
     const totalCost = buys.reduce((s, t) => s + t.total, 0);
@@ -329,6 +333,7 @@ function calcHoldings(trades, marketData, walletHoldings = []) {
       change_24h: market.change24h || 0,
       trades_count: buys.length + sells.length,
       has_wallet_balance: (walletQty || 0) > 0,
+      has_binance_balance: (binanceQty || 0) > 0,
     });
   }
 
@@ -1364,6 +1369,47 @@ export default function Portfolio() {
     }
   });
   const [walletHoldings, setWalletHoldings] = useState([]);
+  const [binanceKeys, setBinanceKeys] = useState(() => {
+    try {
+      const saved = localStorage.getItem("crypto_neko_binance_keys");
+      return saved ? JSON.parse(saved) : { key: "", secret: "" };
+    } catch {
+      return { key: "", secret: "" };
+    }
+  });
+  const [isSyncingBinance, setIsSyncingBinance] = useState(false);
+  const [binanceHoldings, setBinanceHoldings] = useState([]);
+
+  const syncBinance = useCallback(async (key, secret) => {
+    if (!key || !secret) return;
+    setIsSyncingBinance(true);
+    try {
+      const resp = await apiClient.post("/portfolio/binance-sync", {
+        api_key: key,
+        api_secret: secret
+      });
+      if (resp.data.ok && resp.data.balances) {
+        setBinanceHoldings(resp.data.balances.map(b => ({
+          symbol: b.symbol,
+          quantity: b.quantity,
+          source: "binance"
+        })));
+        setBinanceKeys({ key, secret });
+        localStorage.setItem("crypto_neko_binance_keys", JSON.stringify({ key, secret }));
+      }
+    } catch (e) {
+      console.error("Binance sync failed:", e);
+      alert("Failed to sync Binance. Check your API Keys.");
+    } finally {
+      setIsSyncingBinance(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (binanceKeys.key && binanceKeys.secret) {
+      syncBinance(binanceKeys.key, binanceKeys.secret);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("crypto_neko_wallets", JSON.stringify(wallets));
@@ -1417,8 +1463,8 @@ export default function Portfolio() {
   const [error, setError] = useState("");
 
   const holdings = useMemo(
-    () => calcHoldings(trades, marketData, walletHoldings),
-    [trades, marketData, walletHoldings],
+    () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
+    [trades, marketData, walletHoldings, binanceHoldings],
   );
   const totalValue = useMemo(
     () => holdings.reduce((s, h) => s + h.value, 0),
@@ -1616,7 +1662,80 @@ export default function Portfolio() {
          >
            Track Wallet
          </button>
-      </div>
+       </div>
+
+       {/* BINANCE SYNC INPUT */}
+       <div style={{ marginBottom: 24, display: "flex", gap: 10, flexWrap: "wrap" }}>
+         <input 
+           type="text" 
+           placeholder="Binance API Key (Read-Only)" 
+           value={binanceKeys.key}
+           onChange={e => setBinanceKeys(prev => ({...prev, key: e.target.value}))}
+           style={{
+             flex: 1,
+             minWidth: 200,
+             padding: "12px 16px",
+             borderRadius: 12,
+             background: "var(--bg-surface)",
+             border: "1px solid var(--border)",
+             color: "var(--text-primary)",
+             fontSize: 14,
+           }}
+         />
+         <input 
+           type="password" 
+           placeholder="Binance API Secret" 
+           value={binanceKeys.secret}
+           onChange={e => setBinanceKeys(prev => ({...prev, secret: e.target.value}))}
+           style={{
+             flex: 1,
+             minWidth: 200,
+             padding: "12px 16px",
+             borderRadius: 12,
+             background: "var(--bg-surface)",
+             border: "1px solid var(--border)",
+             color: "var(--text-primary)",
+             fontSize: 14,
+           }}
+         />
+         <button 
+           onClick={() => syncBinance(binanceKeys.key, binanceKeys.secret)}
+           disabled={!binanceKeys.key || !binanceKeys.secret || isSyncingBinance}
+           style={{
+             padding: "0 24px",
+             borderRadius: 12,
+             height: 44,
+             background: (binanceKeys.key && binanceKeys.secret) ? "#F3BA2F" : "var(--bg-surface)",
+             border: "none",
+             color: (binanceKeys.key && binanceKeys.secret) ? "#111" : "var(--text-muted)",
+             fontWeight: 700,
+             cursor: (binanceKeys.key && binanceKeys.secret && !isSyncingBinance) ? "pointer" : "not-allowed",
+           }}
+         >
+           {isSyncingBinance ? "Syncing..." : "Live Binance Sync"}
+         </button>
+         {(binanceHoldings.length > 0 || binanceKeys.key) && (
+            <button
+              onClick={() => {
+                setBinanceHoldings([]);
+                setBinanceKeys({ key: "", secret: "" });
+                localStorage.removeItem("crypto_neko_binance_keys");
+              }}
+              style={{
+                padding: "0 16px",
+                borderRadius: 12,
+                height: 44,
+                border: "1px solid rgba(231,76,60,0.3)",
+                background: "rgba(231,76,60,0.06)",
+                color: "#e74c3c",
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              Disconnect
+            </button>
+          )}
+       </div>
 
       {/* EXCHANGE GUIDES */}
       {showGuides && (
@@ -2132,6 +2251,18 @@ export default function Portfolio() {
                                   letterSpacing: "0.05em"
                                 }}>
                                   Wallet
+                                </span>
+                              {h.has_binance_balance && (
+                                <span style={{
+                                  fontSize: 9,
+                                  background: "rgba(243,186,47,0.15)",
+                                  color: "#F3BA2F",
+                                  padding: "2px 6px",
+                                  borderRadius: 4,
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.05em"
+                                }}>
+                                  Binance
                                 </span>
                               )}
                             </div>
