@@ -9,8 +9,9 @@ import {
   useMarketStats,
 } from "../hooks/useMarket";
 import CoinListCard from "../components/market/CoinListCard";
-import MarketOracle from "../components/market/MarketOracle";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
+import MarketOracle from "../components/market/MarketOracle";
+import HeatmapWidget from "../components/market/HeatmapWidget";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
@@ -695,7 +696,12 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* ── ROW 4: Volume Spike (6) + Market Oracle (6) ── */}
+        {/* ── ROW 4: Heatmap (12 cols) ── */}
+        <div className="col-span-1 md:col-span-6 lg:col-span-12">
+          <HeatmapWidget limit={50} />
+        </div>
+
+        {/* ── ROW 5: Volume Spike (6) + Market Oracle (6) ── */}
         <div className="col-span-1 md:col-span-6 lg:col-span-6">
           <VolumeSpikeRadar />
         </div>
