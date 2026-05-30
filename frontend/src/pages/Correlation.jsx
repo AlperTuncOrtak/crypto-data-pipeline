@@ -213,42 +213,47 @@ export default function Correlation() {
                 <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Calculating matrix...</div>
               </div>
             ) : correlation.data && correlation.data.length > 0 ? (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 4 }}>
+              <div style={{ overflowX: 'auto', display: 'flex', paddingBottom: 16 }}>
+                <table style={{ borderCollapse: 'separate', borderSpacing: 6 }}>
                   <thead>
                     <tr>
-                      <th style={{ padding: 8 }}></th>
+                      <th style={{ padding: 8, width: 60 }}></th>
                       {selected.map(sym => (
-                        <th key={sym} style={{ padding: '8px', textAlign: 'center', fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)' }}>{sym}</th>
+                        <th key={sym} style={{ padding: '8px', textAlign: 'center', fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)', width: 100 }}>{sym}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {selected.map(rowSym => (
                       <tr key={rowSym}>
-                        <th style={{ padding: '8px', textAlign: 'right', fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)', width: 60 }}>{rowSym}</th>
+                        <th style={{ padding: '8px', textAlign: 'right', fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)', width: 60, paddingRight: 16 }}>{rowSym}</th>
                         {selected.map(colSym => {
                           const match = correlation.data.find(d => d.symbol_a === rowSym && d.symbol_b === colSym)
                           const val = match ? match.correlation : 0
+                          const isSelf = rowSym === colSym
                           return (
                             <td 
                               key={colSym}
                               title={`${rowSym} vs ${colSym}: ${val.toFixed(2)}`}
                               style={{ 
                                 backgroundColor: getCorrelationColor(val),
-                                padding: '16px', 
                                 textAlign: 'center',
-                                borderRadius: 8,
-                                fontSize: 13,
+                                verticalAlign: 'middle',
+                                borderRadius: 12,
+                                width: 100,
+                                height: 100,
+                                fontSize: 15,
                                 fontFamily: 'monospace',
                                 fontWeight: 700,
-                                color: rowSym === colSym ? 'rgba(255,255,255,0.3)' : '#fff',
+                                color: isSelf ? 'rgba(255,255,255,0.4)' : '#fff',
                                 cursor: 'help',
-                                transition: 'transform 0.1s',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                transition: 'transform 0.15s, box-shadow 0.15s',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                border: isSelf ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                                position: 'relative'
                               }}
-                              onMouseEnter={e => { if (rowSym !== colSym) e.currentTarget.style.transform = 'scale(1.05)' }}
-                              onMouseLeave={e => { if (rowSym !== colSym) e.currentTarget.style.transform = 'scale(1)' }}
+                              onMouseEnter={e => { if (!isSelf) { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.zIndex = 10; } }}
+                              onMouseLeave={e => { if (!isSelf) { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = 1; } }}
                             >
                               {val.toFixed(2)}
                             </td>
