@@ -2326,6 +2326,7 @@ export default function Portfolio() {
                                 }}>
                                   Wallet
                                 </span>
+                              )}
                               {h.has_binance_balance && (
                                 <span style={{
                                   fontSize: 9,
