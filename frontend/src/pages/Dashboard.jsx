@@ -208,74 +208,99 @@ function FearGreedGauge({ coins }) {
   const down = coins?.filter((c) => Number(c.price_change_percentage_24h) < 0).length || 0;
   const total = up + down || 1;
 
+  const radius = 80;
+  const circumference = Math.PI * radius;
+  const strokeDashoffset = isLoading ? circumference : circumference - (score / 100) * circumference;
+
   return (
-    <BentoCard style={{ padding: "22px 24px" }}>
-      {/* Radial glow behind number */}
+    <BentoCard style={{ padding: 0, background: "linear-gradient(180deg, rgba(12,12,22,1) 0%, var(--bg-surface) 100%)", overflow: "hidden" }}>
+      {/* Dynamic Background Glow */}
       <div
         style={{
           position: "absolute",
-          top: -20,
-          right: -20,
-          width: 120,
-          height: 120,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${color}22, transparent 70%)`,
+          top: "30%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 200,
+          height: 100,
+          background: `radial-gradient(ellipse, ${color}22, transparent 70%)`,
+          filter: "blur(40px)",
           pointerEvents: "none",
+          transition: "background 1s ease",
         }}
       />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-          Fear & Greed
-        </span>
-        {!isLoading && (
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 20,
-              backgroundColor: bg,
-              color,
-              border: `1px solid ${color}44`,
-            }}
-          >
-            {text}
+      
+      <div style={{ padding: "22px 24px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            Market Sentiment
           </span>
-        )}
-      </div>
-
-      {/* Big Score */}
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 6, marginBottom: 16 }}>
-        <div style={{ fontSize: 52, fontWeight: 900, fontFamily: "monospace", color: isLoading ? "var(--text-muted)" : color, lineHeight: 1, letterSpacing: "-0.04em" }}>
-          {isLoading ? "--" : score}
+          {!isLoading && (
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                padding: "4px 12px",
+                borderRadius: 100,
+                backgroundColor: bg,
+                color,
+                border: `1px solid ${color}44`,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                boxShadow: `0 0 12px ${color}22`,
+              }}
+            >
+              {text}
+            </span>
+          )}
         </div>
-        <div style={{ fontSize: 13, color: "var(--text-muted)", paddingBottom: 8 }}>/100</div>
-      </div>
 
-      {/* Progress bar */}
-      <div style={{ position: "relative", height: 6, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.06)", marginBottom: 6, overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #e74c3c 0%, #e67e22 25%, #f5a623 50%, #2ecc71 75%, #27ae60 100%)", opacity: 0.2 }} />
-        {!isLoading && (
-          <>
-            <div style={{ position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 10, width: `${score}%`, background: `linear-gradient(90deg, #e74c3c, ${color})`, transition: "width 1.2s cubic-bezier(0.4,0,0.2,1)" }} />
-            <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${score}% - 5px)`, width: 10, height: 10, borderRadius: "50%", backgroundColor: color, border: "2px solid var(--bg-surface)", boxShadow: `0 0 8px ${color}`, transition: "left 1.2s cubic-bezier(0.4,0,0.2,1)" }} />
-          </>
-        )}
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-        <span style={{ fontSize: 9, color: "#e74c3c", fontWeight: 600 }}>EXTREME FEAR</span>
-        <span style={{ fontSize: 9, color: "#27ae60", fontWeight: 600 }}>EXTREME GREED</span>
-      </div>
-
-      {/* Up/Down bar */}
-      <div style={{ display: "flex", gap: 8 }}>
-        <div style={{ flex: 1, backgroundColor: "rgba(46,204,113,0.08)", border: "1px solid rgba(46,204,113,0.15)", borderRadius: 10, padding: "8px 10px", textAlign: "center" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "monospace", color: "var(--positive)" }}>↑ {up}</div>
-          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>gaining</div>
+        {/* SVG Gauge */}
+        <div style={{ position: "relative", width: "100%", maxWidth: 220, margin: "0 auto 20px" }}>
+          <svg viewBox="0 0 200 115" style={{ width: "100%", overflow: "visible" }}>
+            {/* Background Arc */}
+            <path
+              d="M 20 100 A 80 80 0 0 1 180 100"
+              fill="none"
+              stroke="rgba(255,255,255,0.04)"
+              strokeWidth="14"
+              strokeLinecap="round"
+            />
+            {/* Colored Arc */}
+            <path
+              d="M 20 100 A 80 80 0 0 1 180 100"
+              fill="none"
+              stroke={isLoading ? "rgba(255,255,255,0.1)" : color}
+              strokeWidth="14"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              style={{
+                transition: "stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1), stroke 1s ease",
+                filter: `drop-shadow(0 0 8px ${color}66)`,
+              }}
+            />
+          </svg>
+          
+          {/* Score Text in Center */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
+            <div style={{ fontSize: 48, fontWeight: 900, fontFamily: "monospace", color: isLoading ? "var(--text-muted)" : color, lineHeight: 1, letterSpacing: "-0.04em", textShadow: `0 0 20px ${color}44` }}>
+              {isLoading ? "--" : score}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>/100</div>
+          </div>
         </div>
-        <div style={{ flex: 1, backgroundColor: "rgba(231,76,60,0.08)", border: "1px solid rgba(231,76,60,0.15)", borderRadius: 10, padding: "8px 10px", textAlign: "center" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "monospace", color: "var(--negative)" }}>↓ {down}</div>
-          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>losing</div>
+
+        {/* Up/Down stats */}
+        <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
+          <div style={{ flex: 1, backgroundColor: "rgba(46,204,113,0.06)", border: "1px solid rgba(46,204,113,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "monospace", color: "var(--positive)" }}>↑ {up}</div>
+            <div style={{ fontSize: 11, color: "rgba(46,204,113,0.6)", marginTop: 4, fontWeight: 600 }}>Gaining</div>
+          </div>
+          <div style={{ flex: 1, backgroundColor: "rgba(231,76,60,0.06)", border: "1px solid rgba(231,76,60,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "monospace", color: "var(--negative)" }}>↓ {down}</div>
+            <div style={{ fontSize: 11, color: "rgba(231,76,60,0.6)", marginTop: 4, fontWeight: 600 }}>Losing</div>
+          </div>
         </div>
       </div>
     </BentoCard>
