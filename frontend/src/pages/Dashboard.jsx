@@ -38,15 +38,12 @@ function formatPrice(n) {
 
 // ─── BENTO CARD BASE ────────────────────────────────────────────
 const bentoBase = {
-  backgroundColor: "rgba(12,12,22,0.65)",
-  backdropFilter: "blur(24px)",
-  WebkitBackdropFilter: "blur(24px)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  borderRadius: 20,
+  backgroundColor: "rgba(255,255,255,0.02)",
+  border: "1px solid rgba(255,255,255,0.05)",
+  borderRadius: 24,
   overflow: "hidden",
   position: "relative",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
-  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
   transform: "translateZ(0)",
 };
 
@@ -57,30 +54,14 @@ function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouse
       className={className}
       style={{
         ...bentoBase,
-        borderColor: hov ? "rgba(245,166,35,0.3)" : "rgba(255,255,255,0.08)",
-        boxShadow: hov
-          ? "0 12px 48px rgba(245,166,35,0.15), inset 0 1px 0 rgba(245,166,35,0.2)"
-          : "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
-        transform: hov ? "translateY(-6px) scale(1.01)" : "translateY(0) scale(1)",
+        borderColor: hov ? "rgba(245,166,35,0.2)" : "rgba(255,255,255,0.05)",
+        backgroundColor: hov ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.02)",
+        transform: hov ? "translateY(-2px)" : "translateY(0)",
         ...style,
       }}
       onMouseEnter={(e) => { setHov(true); if(onMouseEnter) onMouseEnter(e); }}
       onMouseLeave={(e) => { setHov(false); if(onMouseLeave) onMouseLeave(e); }}
     >
-      {/* Subtle top glow line */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "10%",
-          right: "10%",
-          height: 1,
-          background: hov
-            ? "linear-gradient(90deg, transparent, rgba(245,166,35,0.8), transparent)"
-            : "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
-          transition: "background 0.4s ease",
-        }}
-      />
       {children}
     </div>
   );
@@ -313,23 +294,19 @@ function TrendingCoinCard({ coin, navigate }) {
         alignItems: "center",
         gap: 10,
         padding: "10px 12px",
-        borderRadius: 12,
+        borderRadius: 16,
         cursor: "pointer",
         backgroundColor: "rgba(255,255,255,0.02)",
         border: "1px solid rgba(255,255,255,0.04)",
-        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        transition: "all 0.2s ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(245,166,35,0.08)";
-        e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
-        e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
-        e.currentTarget.style.boxShadow = "0 8px 24px rgba(245,166,35,0.15)";
+        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)";
         e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)";
-        e.currentTarget.style.transform = "translateY(0) scale(1)";
-        e.currentTarget.style.boxShadow = "none";
       }}
     >
       {coin.image_url ? (
@@ -548,16 +525,12 @@ export default function Dashboard() {
                       <tr
                         key={coin.symbol}
                         onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                        style={{ cursor: "pointer", transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                        style={{ cursor: "pointer", transition: "all 0.15s ease", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(245,166,35,0.08)";
-                          e.currentTarget.style.boxShadow = "inset 0 0 32px rgba(245,166,35,0.1)";
-                          e.currentTarget.style.transform = "scale(1.005) translateX(4px)";
+                          e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.boxShadow = "none";
-                          e.currentTarget.style.transform = "scale(1) translateX(0)";
                         }}
                       >
                         <td style={{ padding: "11px 12px 11px 0", width: 28 }}>

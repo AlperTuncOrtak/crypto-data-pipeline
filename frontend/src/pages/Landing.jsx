@@ -468,44 +468,23 @@ export default function Landing({ onAuthOpen }) {
           </div>
         ))}
 
-        {/* AMBIENT GLOW ORBS */}
+        {/* AMBIENT GLOW ORBS (Simplified for flat style) */}
         <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
           {/* Grid Pattern */}
           <div style={{
             position: "absolute", inset: 0,
-            backgroundImage: "radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(rgba(255,255,255,.02) 1px, transparent 1px)",
             backgroundSize: "40px 40px",
             maskImage: "linear-gradient(to bottom, black 40%, transparent 100%)",
             WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 100%)"
           }} />
           
-          {/* Center Gold Glow */}
+          {/* Subtle Center Glow */}
           <div style={{
             position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)",
             width: 800, height: 500,
-            background: "radial-gradient(ellipse, rgba(245,166,35,.12) 0%, transparent 60%)",
-            animation: "glow 6s ease-in-out infinite alternate",
+            background: "radial-gradient(ellipse, rgba(245,166,35,.06) 0%, transparent 60%)",
             filter: "blur(60px)",
-            borderRadius: "50%"
-          }} />
-          
-          {/* Left Purple Glow */}
-          <div style={{
-            position: "absolute", top: "20%", left: "15%",
-            width: 400, height: 400,
-            background: "radial-gradient(circle, rgba(139,92,246,.15) 0%, transparent 70%)",
-            animation: "floatY 8s ease-in-out infinite",
-            filter: "blur(80px)",
-            borderRadius: "50%"
-          }} />
-          
-          {/* Right Blue Glow */}
-          <div style={{
-            position: "absolute", top: "30%", right: "15%",
-            width: 400, height: 400,
-            background: "radial-gradient(circle, rgba(56,189,248,.12) 0%, transparent 70%)",
-            animation: "floatY2 10s ease-in-out infinite reverse",
-            filter: "blur(80px)",
             borderRadius: "50%"
           }} />
         </div>
@@ -611,16 +590,15 @@ export default function Landing({ onAuthOpen }) {
               display: "flex",
               alignItems: "center",
               gap: 8,
-              padding: "16px 32px",
-              borderRadius: 14,
-              background: "linear-gradient(135deg, #f5a623, #e8941a)",
+              padding: "16px 36px",
+              borderRadius: 100,
+              background: "var(--accent)",
               color: "#111",
               fontSize: 16,
-              fontWeight: 800,
+              fontWeight: 700,
               border: "none",
               cursor: "pointer",
-              boxShadow: "0 8px 32px rgba(245,166,35,.35)",
-              transition: "all .3s cubic-bezier(0.16, 1, 0.3, 1)",
+              transition: "all .2s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >
             Start for Free <ArrowRight size={16} />
@@ -632,13 +610,13 @@ export default function Landing({ onAuthOpen }) {
               display: "flex",
               alignItems: "center",
               gap: 8,
-              padding: "15px 28px",
-              borderRadius: 13,
+              padding: "15px 32px",
+              borderRadius: 100,
               background: "rgba(255,255,255,.04)",
-              color: "rgba(255,255,255,.5)",
+              color: "rgba(255,255,255,.8)",
               fontSize: 15,
               fontWeight: 600,
-              border: "1px solid rgba(255,255,255,.1)",
+              border: "1px solid rgba(255,255,255,.08)",
               cursor: "pointer",
               transition: "all .2s",
             }}
