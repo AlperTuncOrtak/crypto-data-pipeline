@@ -10,7 +10,7 @@ Bu proje, kripto para yatırımcıları için bir portföy yönetimi ve yapay ze
     *   *Tasarım Dili:* "Soft Web3" (Aave, Uniswap tarzı). Klasik sert kenarlı, katı kutular yerine yumuşak geçişler (transition-all), saydamlık (`bg-white/[0.02]`), blur efektleri (`backdrop-blur-xl`) ve renkli glow/gölge detayları kullanılır. Arayüzde `Portfolio.jsx` sayfasını inceleyerek temel "SoftCard" kullanımını görebilirsin.
     *   *Canlı Ortam:* Vercel üzerinde host ediliyor.
 *   **Backend (Sunucu):** Python (FastAPI).
-    *   *Önemli Not:* Backend şu anda **sadece lokalde** (`http://localhost:8000`) çalışıyor. Vercel üzerinde canlıya alınmış bir backend yok. AI Pulse uç noktaları buradan servis ediliyor.
+    *   *Önemli Not:* Backend geliştirme sırasında `http://localhost:8000` portunda çalıştırılabilir. Ancak canlı ortamda backend `VITE_API_URL` çevre değişkeni üzerinden Vercel'de veya kendi hostunuzda işaret edilir. AI Pulse ve diğer uç noktalar (endpoints) backend tarafından servis ediliyor.
 *   **Veritabanı ve Auth:** Supabase. Kullanıcı oturum açma işlemleri (Auth) ve portföy/trade geçmişi (PostgreSQL) burada tutuluyor.
 
 ---
@@ -25,7 +25,7 @@ crypto-data-pipeline/
 │   └── ...
 ├── frontend/                 # React (Vite) Uygulaması
 │   ├── src/
-│   │   ├── api/client.js     # Axios instance (Lokal 8000 portuna ayarlı)
+│   │   ├── api/client.js     # Axios instance (VITE_API_URL üzerinden backend'e bağlanır)
 │   │   ├── components/       # UI bileşenleri (Navbar vb.)
 │   │   ├── pages/            # Sayfalar (Portfolio.jsx çok kritik, baştan yazıldı)
 │   │   ├── hooks/            # useAuth, useMarket vb. custom hook'lar
@@ -62,7 +62,7 @@ API, `http://localhost:8000` portunda çalışacaktır.
 
 ## ⚠️ Dikkat Edilmesi Gereken Kritik Noktalar
 
-1.  **Backend Deployment Engeli (CORS/URL):** Frontend Vercel'de yayınlanıyor ancak backend hala sadece `localhost`'ta. Bu yüzden Vercel üzerindeki canlı (production) siteden AI Pulse gibi özellikler çağrıldığında backend'e ulaşılamaz. Kullanıcı (USER) backend'i uzak bir sunucuya (Render, Railway vb.) taşıyana kadar Vercel üzerindeki API yönlendirmelerine (`vite api url` vb.) **dokunmuyoruz**. "Dokunmadan geçelim" kararı alındı.
+1.  **API Bağlantısı ve URL Yapısı:** Frontend `api/client.js` içinde `VITE_API_URL` değişkenine bakar. Canlı sistemde `.env` değişkenlerine girilen URL üzerinden backend ile iletişim kurulur. Lokal geliştirmelerde ise fallback olarak `http://localhost:8000` kullanılır.
 2.  **Portfolio.jsx Tasarımı:** Portfolio sayfası önceden 3000 satırlık, inline CSS (`style={{...}}`) dolu, karmaşık bir yapıydı. Yakın zamanda bunu tamamen yıktık ve `SoftCard` yapısıyla 200 satırlık temiz Tailwind class'larına (`className="..."`) dönüştürdük. Buraya eklenecek yeni UI parçalarında kesinlikle eski inline-style yapısını kullanma.
 3.  **State ve Senkronizasyon:** Portföy CSV yüklemeleri ve borsa (Binance) key'leri anlık tepki verebilmesi için önce `localStorage`'da tutuluyor, arka planda ise Supabase ile eşitleniyor.
 4.  **Stripe/Pro Entegrasyonu (Work In Progress):** Başka bir takım arkadaşı (Alper) şu sıralar repo üzerinde Stripe entegrasyonu kodluyor. Senin yapacağın branch değişikliklerinde veya pull komutlarında olası `merge conflict`'lere dikkat etmelisin.
