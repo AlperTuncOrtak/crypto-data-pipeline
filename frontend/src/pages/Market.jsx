@@ -149,6 +149,8 @@ function DataFreshness({ lastUpdated, dataSource }) {
   );
 }
 
+import GasHeatmap from "../components/market/GasHeatmap";
+
 export default function Market({ isWatched, toggleWatchlist }) {
   const { data: marketData, isLoading, isError, error } = useMarket(3000);
   const [search, setSearch] = useState("");
@@ -261,12 +263,17 @@ export default function Market({ isWatched, toggleWatchlist }) {
   return (
     <div style={{ color: "var(--text-primary)" }}>
       {/* HEADER */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 className="text-3xl font-bold tracking-tight">Market Explorer</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-          {filteredAndSorted.length} coins — page {page}/{totalPages || 1}
-        </p>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Market Explorer</h1>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+            {filteredAndSorted.length} coins — page {page}/{totalPages || 1}
+          </p>
+        </div>
       </div>
+
+      {/* GAS HEATMAP */}
+      <GasHeatmap />
 
       {/* SEARCH + PAGINATION */}
       <div
