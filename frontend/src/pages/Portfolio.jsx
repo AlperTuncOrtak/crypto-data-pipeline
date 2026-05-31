@@ -1051,9 +1051,7 @@ export default function Portfolio() {
     finally { setImporting(false); }
   }, [user]);
 
-  const posGreen = { color: "var(--positive)", background: "rgba(46,204,113,0.08)", border: "1px solid rgba(46,204,113,0.2)" };
-  const negRed   = { color: "var(--negative)", background: "rgba(231,76,60,0.08)", border: "1px solid rgba(231,76,60,0.2)" };
-  const pnlStyle = isPos ? posGreen : negRed;
+
 
   return (
     <div className="max-w-[1600px] mx-auto pb-16">
@@ -1061,27 +1059,26 @@ export default function Portfolio() {
       {/* HERO */}
       <div className="relative flex flex-col items-center justify-center py-20 text-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[500px] h-[300px] rounded-full blur-[120px]" style={{ backgroundColor: "rgba(245,166,35,0.08)" }} />
+          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-amber-500/10" />
         </div>
-        <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5" style={{ color: "var(--text-muted)" }}>
+        <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           Total Portfolio Value
         </p>
-        <h1 className="relative z-10 text-7xl md:text-8xl font-black tracking-tighter mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="relative z-10 text-7xl md:text-8xl font-black tracking-tighter mb-6 text-white drop-shadow-sm">
           {fmtUSD(totalValue)}
         </h1>
-        <div className="relative z-10 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border text-base font-bold" style={pnlStyle}>
+        <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-red-500/5"}`}>
           {isPos ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
           <span>{isPos ? "+" : ""}{fmtUSD(totalPnl)}</span>
-          <span style={{ opacity: 0.7, fontSize: "0.875rem" }}>({fmtPct(pnlPct)})</span>
+          <span className="text-sm opacity-70">({fmtPct(pnlPct)})</span>
         </div>
       </div>
 
       {/* Import message */}
       {importMsg && (
-        <div className="flex items-center gap-3 mb-6 px-5 py-3 rounded-2xl border text-sm font-semibold"
-          style={importMsg.ok ? posGreen : negRed}>
+        <div className={`flex items-center gap-3 mb-6 px-5 py-3 rounded-2xl border text-sm font-semibold ${importMsg.ok ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" : "text-red-400 bg-red-500/10 border-red-500/20"}`}>
           {importMsg.text}
-          <button onClick={() => setImportMsg(null)} className="ml-auto opacity-60 hover:opacity-100">X</button>
+          <button onClick={() => setImportMsg(null)} className="ml-auto opacity-60 hover:opacity-100 transition-opacity">✕</button>
         </div>
       )}
 
@@ -1090,11 +1087,11 @@ export default function Portfolio() {
 
         {/* Donut */}
         <SoftCard noPadding className="lg:col-span-4 h-80 relative">
-          <div className="absolute top-5 left-6 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+          <div className="absolute top-5 left-6 text-xs font-bold uppercase tracking-widest text-gray-500">
             Asset Allocation
           </div>
           {holdings.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-sm font-medium" style={{ color: "var(--text-muted)" }}>No assets yet</div>
+            <div className="h-full flex items-center justify-center text-sm font-medium text-gray-500">No assets yet</div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -1103,8 +1100,8 @@ export default function Portfolio() {
                 </Pie>
                 <RechartTooltip
                   formatter={(v) => fmtUSD(v)}
-                  contentStyle={{ backgroundColor: "var(--bg-card)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "var(--text-primary)", fontSize: 13, fontWeight: 600 }}
-                  itemStyle={{ color: "var(--text-primary)" }}
+                  contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "#fff", fontSize: 13, fontWeight: 600 }}
+                  itemStyle={{ color: "#fff" }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -1112,8 +1109,8 @@ export default function Portfolio() {
           {pieData.length > 0 && (
             <div className="absolute bottom-4 left-0 right-0 flex flex-wrap justify-center gap-x-3 gap-y-1 px-4">
               {pieData.map((d) => (
-                <span key={d.name} className="flex items-center gap-1 text-xs font-bold" style={{ color: "var(--text-secondary)" }}>
-                  <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: d.color }} />
+                <span key={d.name} className="flex items-center gap-1 text-xs font-bold text-gray-400">
+                  <span className="w-2 h-2 rounded-full inline-block shadow-sm" style={{ backgroundColor: d.color }} />
                   {d.name}
                 </span>
               ))}
@@ -1123,74 +1120,86 @@ export default function Portfolio() {
 
         {/* Data Sources */}
         <SoftCard className="lg:col-span-8 flex flex-col gap-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Data Sources</h3>
-            <button onClick={() => setShowAddSource(v => !v)} className="text-xs font-bold px-4 py-2 rounded-xl transition-colors"
-              style={{ background: "rgba(245,166,35,0.08)", color: "var(--accent)", border: "1px solid rgba(245,166,35,0.2)" }}>
-              {showAddSource ? "Close" : "+ Add Source"}
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
+            <button
+              onClick={() => setShowAddSource(v => !v)}
+              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,166,35,0.05)] hover:shadow-[0_0_20px_rgba(245,166,35,0.15)]"
+            >
+              {showAddSource ? "✕ Close Options" : "+ Add Source"}
             </button>
           </div>
 
           {showAddSource && (
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-4 mb-2 rounded-2xl bg-white/[0.01] border border-white/[0.03]">
               {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
-                <button key={key} onClick={() => fileRef.current?.click()}
-                  className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all duration-300 ease-out group hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-1 hover:shadow-lg"
-                  style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
-                  <span className="text-2xl group-hover:scale-110 transition-transform duration-300">{ex.logo}</span>
-                  <span className="text-xs font-bold group-hover:text-white transition-colors" style={{ color: "var(--text-secondary)" }}>{ex.name}</span>
+                <button
+                  key={key}
+                  onClick={() => fileRef.current?.click()}
+                  className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-1 transition-all duration-300 group"
+                >
+                  <span className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">{ex.logo}</span>
+                  <span className="text-xs font-bold text-gray-400 group-hover:text-gray-200 transition-colors">{ex.name}</span>
                 </button>
               ))}
-              <input type="file" ref={fileRef} accept=".csv" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
+              <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
             </div>
           )}
 
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>ETH Wallet</p>
-            <div className="flex gap-2">
-              <input value={walletInput} onChange={e => setWalletInput(e.target.value)} placeholder="0x..."
-                className="flex-1 rounded-2xl px-4 py-3 text-sm focus:outline-none"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", color: "var(--text-primary)" }} />
-              <button onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
-                className="px-5 py-3 rounded-2xl text-sm font-bold whitespace-nowrap transition-colors"
-                style={{ background: "rgba(245,166,35,0.08)", color: "var(--accent)", border: "1px solid rgba(245,166,35,0.2)" }}>
-                {isFetchingWallet ? "..." : "Add"}
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">ETH Wallet</p>
+            <div className="flex gap-3">
+              <input 
+                value={walletInput} 
+                onChange={e => setWalletInput(e.target.value)} 
+                placeholder="0x..."
+                className="flex-1 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-5 py-3 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.04] transition-all duration-300" 
+              />
+              <button 
+                onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
+                className="px-6 py-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(245,166,35,0.05)] hover:shadow-[0_0_20px_rgba(245,166,35,0.15)]"
+              >
+                {isFetchingWallet ? "Fetching..." : "Add Wallet"}
               </button>
             </div>
             {wallets.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-4">
                 {wallets.map(w => (
-                  <span key={w} className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono"
-                    style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", color: "var(--text-muted)" }}>
+                  <span 
+                    key={w} 
+                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-gray-400 font-mono hover:bg-white/[0.05] transition-colors"
+                  >
                     {w.slice(0,6)}...{w.slice(-4)}
-                    <button onClick={() => setWallets(prev => prev.filter(x => x !== w))} style={{ color: "var(--text-muted)" }}>X</button>
+                    <button 
+                      onClick={() => setWallets(prev => prev.filter(x => x !== w))} 
+                      className="text-gray-500 hover:text-red-400 transition-colors"
+                    >
+                      ✕
+                    </button>
                   </span>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2 pt-1 border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.04]">
             {trades.length > 0 && (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
-                style={{ background: "rgba(52,152,219,0.08)", color: "#3498db", border: "1px solid rgba(52,152,219,0.2)" }}>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
                 <CheckCircle size={12} /> {trades.length} CSV Trades
               </span>
             )}
             {binanceKeys.key && (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
-                style={{ background: "rgba(243,186,47,0.08)", color: "#F3BA2F", border: "1px solid rgba(243,186,47,0.2)" }}>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
                 <CheckCircle size={12} /> Binance Synced
               </span>
             )}
             {wallets.length > 0 && (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
-                style={{ background: "rgba(155,89,182,0.08)", color: "#9b59b6", border: "1px solid rgba(155,89,182,0.2)" }}>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
                 <Wallet size={12} /> {wallets.length} Wallet{wallets.length > 1 ? "s" : ""}
               </span>
             )}
             {trades.length === 0 && !binanceKeys.key && wallets.length === 0 && (
-              <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>No data sources connected yet.</span>
+              <span className="text-xs font-medium text-gray-500">No data sources connected yet.</span>
             )}
           </div>
         </SoftCard>
@@ -1199,13 +1208,12 @@ export default function Portfolio() {
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 && (
         <SoftCard className="overflow-x-auto">
-          <h3 className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: "var(--text-muted)" }}>Your Holdings</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">Your Holdings</h3>
           <table className="w-full border-collapse min-w-[700px]">
             <thead>
-              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              <tr className="border-b border-white/[0.05]">
                 {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
-                  <th key={h} className={"pb-4 text-xs font-bold uppercase tracking-wider " + (i === 0 ? "text-left" : "text-right")}
-                    style={{ color: "var(--text-muted)" }}>
+                  <th key={h} className={`pb-4 text-xs font-bold uppercase tracking-wider text-gray-500 ${i === 0 ? "text-left" : "text-right"}`}>
                     {h}
                   </th>
                 ))}
@@ -1216,34 +1224,32 @@ export default function Portfolio() {
                 const p = h.pnl >= 0;
                 return (
                   <tr key={h.symbol} onClick={() => navigate("/coin/" + h.symbol.toLowerCase())}
-                    className="transition-colors cursor-pointer group"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.015)"}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>
+                    className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.015]"
+                  >
                     <td className="py-4">
                       <div className="flex items-center gap-3">
                         {h.image_url
                           ? <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full shrink-0 transition-transform group-hover:scale-105" />
-                          : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold"
-                              style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)" }}>{h.symbol[0]}</div>
+                          : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold bg-white/[0.05] text-gray-400">
+                              {h.symbol[0]}
+                            </div>
                         }
                         <div>
-                          <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>{h.symbol}</div>
-                          <div className="text-xs" style={{ color: "var(--text-muted)" }}>{h.name}</div>
+                          <div className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{h.symbol}</div>
+                          <div className="text-xs text-gray-500">{h.name}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 text-right font-mono text-sm font-semibold" style={{ color: "var(--text-secondary)" }}>{fmtUSD(h.current_price)}</td>
-                    <td className="py-4 text-right font-mono text-sm" style={{ color: "var(--text-muted)" }}>{fmtNum(h.quantity)}</td>
-                    <td className="py-4 text-right font-mono text-sm font-bold" style={{ color: "var(--text-primary)" }}>{fmtUSD(h.value)}</td>
-                    <td className="py-4 text-right font-mono text-sm" style={{ color: "var(--text-muted)" }}>{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
+                    <td className="py-4 text-right font-mono text-sm font-semibold text-gray-400">{fmtUSD(h.current_price)}</td>
+                    <td className="py-4 text-right font-mono text-sm text-gray-500">{fmtNum(h.quantity)}</td>
+                    <td className="py-4 text-right font-mono text-sm font-bold text-gray-200">{fmtUSD(h.value)}</td>
+                    <td className="py-4 text-right font-mono text-sm text-gray-500">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
                     <td className="py-4 text-right">
                       <div className="flex flex-col items-end gap-1">
-                        <span className="font-mono text-sm font-bold" style={{ color: p ? "var(--positive)" : "var(--negative)" }}>
+                        <span className={`font-mono text-sm font-bold ${p ? "text-emerald-400" : "text-red-400"}`}>
                           {p ? "+" : ""}{fmtUSD(h.pnl)}
                         </span>
-                        <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-lg"
-                          style={{ background: p ? "rgba(46,204,113,0.08)" : "rgba(231,76,60,0.08)", color: p ? "var(--positive)" : "var(--negative)" }}>
+                        <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg ${p ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
                           {p ? "+" : ""}{h.pnl_pct.toFixed(2)}%
                         </span>
                       </div>
@@ -1259,11 +1265,12 @@ export default function Portfolio() {
       {/* Empty state */}
       {holdings.length === 0 && trades.length === 0 && wallets.length === 0 && !binanceKeys.key && (
         <SoftCard className="text-center py-20">
-          <BarChart2 size={36} className="mx-auto mb-4" style={{ color: "var(--text-muted)" }} />
-          <p className="font-semibold text-base mb-2" style={{ color: "var(--text-secondary)" }}>Your portfolio is empty</p>
-          <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>Upload a CSV from your exchange to get started.</p>
-          <button onClick={() => setShowAddSource(true)} className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-colors"
-            style={{ background: "rgba(245,166,35,0.08)", color: "var(--accent)", border: "1px solid rgba(245,166,35,0.2)" }}>
+          <BarChart2 size={36} className="mx-auto mb-4 text-gray-600" />
+          <p className="font-semibold text-base mb-2 text-gray-400">Your portfolio is empty</p>
+          <p className="text-sm mb-6 text-gray-500">Upload a CSV from your exchange to get started.</p>
+          <button onClick={() => setShowAddSource(true)} 
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,166,35,0.05)] hover:shadow-[0_0_20px_rgba(245,166,35,0.15)]"
+          >
             + Add Data Source
           </button>
         </SoftCard>
