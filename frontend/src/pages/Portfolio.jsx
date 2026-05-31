@@ -1481,7 +1481,7 @@ function SoftCard({ children, className = "", noPadding = false }) {
         bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl 
         transition-all duration-300 ease-out hover:bg-white/[0.03] hover:border-white/[0.06] hover:-translate-y-1 hover:shadow-xl
         overflow-hidden relative
-        ${noPadding ? "" : "p-6"}
+        ${noPadding ? "" : "p-4 sm:p-6 lg:p-8"}
         ${className}
       `}
     >
@@ -1607,7 +1607,7 @@ export default function Portfolio() {
   }, [user]);
 
   return (
-    <div className="max-w-[1600px] mx-auto pb-12 text-gray-100">
+    <div className="max-w-[1600px] mx-auto pb-12 px-4 sm:px-6 lg:px-8 text-gray-100">
       
       {/* ── HERO: TOTAL BALANCE ── */}
       <div className="flex flex-col items-center justify-center py-16 relative">
@@ -1623,7 +1623,7 @@ export default function Portfolio() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mb-8">
         {/* ── LEFT COL: ASSET ALLOCATION (DONUT) ── */}
         <SoftCard className="lg:col-span-4 h-96 flex flex-col items-center justify-center relative">
           <h3 className="absolute top-6 left-6 text-xs font-bold text-gray-500 uppercase tracking-widest">Asset Allocation</h3>
@@ -1650,7 +1650,7 @@ export default function Portfolio() {
         </SoftCard>
 
         {/* ── RIGHT COL: IMPORT & SYNC ── */}
-        <SoftCard className="lg:col-span-8 flex flex-col justify-center gap-4">
+        <SoftCard className="lg:col-span-8 flex flex-col justify-center gap-6">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
             <button 
@@ -1662,7 +1662,7 @@ export default function Portfolio() {
           </div>
           
           {showImportOpts && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 animate-in fade-in slide-in-from-top-2">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-4 animate-in fade-in slide-in-from-top-2">
               {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
                 <button
                   key={key}
@@ -1677,7 +1677,7 @@ export default function Portfolio() {
             </div>
           )}
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
              <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-500/20">
                 <CheckCircle size={14} /> Wagmi Wallet Connected
              </div>
