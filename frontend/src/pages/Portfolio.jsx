@@ -1471,9 +1471,28 @@ function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
   );
 }
 
+
+
+// --- Reusable SoftCard ---
+function SoftCard({ children, className = "", noPadding = false }) {
+  return (
+    <div
+      className={`
+        bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl 
+        transition-all duration-300 ease-out hover:bg-white/[0.03] hover:border-white/[0.06] hover:-translate-y-1 hover:shadow-xl
+        overflow-hidden relative
+        ${noPadding ? "" : "p-6"}
+        ${className}
+      `}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ── Main Component ────────────────────────────────────────────
 export default function Portfolio() {
-  const { user, isLoggedIn, isPro, isEnterprise } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { data: marketData } = useMarket(500);
   const fileRef = useRef(null);
@@ -1484,27 +1503,23 @@ export default function Portfolio() {
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
+  
   const [importing, setImporting] = useState(false);
-  const [walletInput, setWalletInput] = useState("");
-  const [isFetchingWallet, setIsFetchingWallet] = useState(false);
   const [wallets, setWallets] = useState(() => {
     try {
       const saved = localStorage.getItem("crypto_neko_wallets");
       return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   });
+  
   const [walletHoldings, setWalletHoldings] = useState([]);
-  const [showBinanceModal, setShowBinanceModal] = useState(false);
   const [binanceKeys, setBinanceKeys] = useState(() => {
     try {
       const saved = localStorage.getItem("crypto_neko_binance_keys");
       return saved ? JSON.parse(saved) : { key: "", secret: "" };
-    } catch {
-      return { key: "", secret: "" };
-    }
+    } catch { return { key: "", secret: "" }; }
   });
+  
   const [isSyncingBinance, setIsSyncingBinance] = useState(false);
   const [binanceHoldings, setBinanceHoldings] = useState([]);
 
@@ -1512,1647 +1527,232 @@ export default function Portfolio() {
     if (!key || !secret) return;
     setIsSyncingBinance(true);
     try {
-      const resp = await apiClient.post("/portfolio/binance-sync", {
-        api_key: key,
-        api_secret: secret
-      });
+      const resp = await apiClient.post("/portfolio/binance-sync", { api_key: key, api_secret: secret });
       if (resp.data.ok && resp.data.balances) {
-        setBinanceHoldings(resp.data.balances.map(b => ({
-          symbol: b.symbol,
-          quantity: b.quantity,
-          source: "binance"
-        })));
+        setBinanceHoldings(resp.data.balances.map(b => ({ symbol: b.symbol, quantity: b.quantity, source: "binance" })));
         setBinanceKeys({ key, secret });
         localStorage.setItem("crypto_neko_binance_keys", JSON.stringify({ key, secret }));
       }
     } catch (e) {
       console.error("Binance sync failed:", e);
-      alert("Failed to sync Binance. Check your API Keys.");
     } finally {
       setIsSyncingBinance(false);
     }
   }, []);
 
   useEffect(() => {
-    if (binanceKeys.key && binanceKeys.secret) {
-      syncBinance(binanceKeys.key, binanceKeys.secret);
-    }
+    if (binanceKeys.key && binanceKeys.secret) syncBinance(binanceKeys.key, binanceKeys.secret);
   }, []);
 
   useEffect(() => {
     localStorage.setItem("crypto_neko_wallets", JSON.stringify(wallets));
     const fetchWallets = async () => {
       let allHoldings = [];
-      setIsFetchingWallet(true);
       for (const w of wallets) {
         try {
           const res = await fetch(`https://api.ethplorer.io/getAddressInfo/${w}?apiKey=freekey`);
           const data = await res.json();
-          if (data.ETH && data.ETH.balance > 0) {
-            allHoldings.push({ symbol: "ETH", quantity: data.ETH.balance });
-          }
+          if (data.ETH && data.ETH.balance > 0) allHoldings.push({ symbol: "ETH", quantity: data.ETH.balance });
           if (data.tokens) {
             for (const t of data.tokens) {
                if (!t.tokenInfo || !t.tokenInfo.symbol) continue;
                const decimals = parseInt(t.tokenInfo.decimals) || 18;
                const bal = t.balance / Math.pow(10, decimals);
-               if (bal > 0) {
-                 allHoldings.push({ symbol: t.tokenInfo.symbol, quantity: bal });
-               }
+               if (bal > 0) allHoldings.push({ symbol: t.tokenInfo.symbol, quantity: bal });
             }
           }
-        } catch (e) {
-          console.error("Wallet fetch error", e);
-        }
+        } catch (e) { console.error("Wallet fetch error", e); }
       }
       setWalletHoldings(allHoldings);
-      setIsFetchingWallet(false);
     };
     if (wallets.length > 0) fetchWallets();
     else setWalletHoldings([]);
   }, [wallets]);
 
-  // Supabase'den trades yukle
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("trades")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("traded_at", { ascending: true })
-      .then(({ data }) => {
-        if (data && data.length > 0) setTrades(data);
-      });
+    supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true })
+      .then(({ data }) => { if (data && data.length > 0) setTrades(data); });
   }, [user]);
 
-  // localStorage'a kaydet — sayfa yenilenince veriler kaybolmaz
   useEffect(() => {
-    try {
-      localStorage.setItem("crypto_neko_trades", JSON.stringify(trades));
-    } catch (e) { /* storage full */ }
+    try { localStorage.setItem("crypto_neko_trades", JSON.stringify(trades)); } catch (e) { }
   }, [trades]);
-  const [importResult, setImportResult] = useState(null);
-  const [guide, setGuide] = useState(null);
-  const [activeTab, setActiveTab] = useState("holdings"); // holdings | tax | trades
-  const [showGuides, setShowGuides] = useState(false);
-  const [error, setError] = useState("");
 
-  const holdings = useMemo(
-    () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
-    [trades, marketData, walletHoldings, binanceHoldings],
-  );
-  const totalValue = useMemo(
-    () => holdings.reduce((s, h) => s + h.value, 0),
-    [holdings],
-  );
-  const totalCost = useMemo(
-    () => holdings.reduce((s, h) => s + h.cost_basis, 0),
-    [holdings],
-  );
-  const totalPnl = useMemo(
-    () => totalValue - totalCost,
-    [totalValue, totalCost],
-  );
-  const taxData = useMemo(() => calcTax(trades), [trades]);
+  const [activeTab, setActiveTab] = useState("holdings"); 
+  const [showImportOpts, setShowImportOpts] = useState(false);
 
-  const pieData = useMemo(
-    () =>
-      holdings.slice(0, 8).map((h, i) => ({
-        name: h.symbol,
-        value: h.value,
-        color: CHART_COLORS[i % CHART_COLORS.length],
-      })),
-    [holdings],
-  );
+  const holdings = useMemo(() => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]), [trades, marketData, walletHoldings, binanceHoldings]);
+  const totalValue = useMemo(() => holdings.reduce((s, h) => s + h.value, 0), [holdings]);
+  const totalCost = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
+  const totalPnl = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
+  const pnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+  
+  const pieData = useMemo(() => holdings.slice(0, 8).map((h, i) => ({ name: h.symbol, value: h.value, color: CHART_COLORS[i % CHART_COLORS.length] })), [holdings]);
 
   const handleFile = useCallback(async (file) => {
     if (!file) return;
     setImporting(true);
-    setError("");
     try {
       const text = await file.text();
-      const { trades: parsed, exchange, count } = parseCSV(text);
-      if (count === 0)
-        throw new Error("No valid trades found. Check the file format.");
+      const { trades: parsed } = parseCSV(text);
       setTrades((prev) => [...prev, ...parsed]);
-      setImportResult({ exchange, count, filename: file.name });
-      // Supabase'e kaydet
       if (user) {
         const rows = parsed.map((t) => ({
-          user_id: user.id,
-          exchange: t.exchange || exchange,
-          symbol: t.symbol,
-          side: t.side,
-          quantity: t.quantity,
-          price: t.price,
-          fee: t.fee || 0,
-          traded_at: t.traded_at || new Date().toISOString(),
+          user_id: user.id, exchange: t.exchange, symbol: t.symbol, side: t.side, quantity: t.quantity, price: t.price, fee: t.fee || 0, traded_at: t.traded_at || new Date().toISOString()
         }));
-        supabase
-          .from("trades")
-          .insert(rows)
-          .then(({ error }) => {
-            if (error) console.error("Trade save error:", error);
-          });
+        await supabase.from("trades").insert(rows);
       }
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setImporting(false);
-    }
-  }, []);
-
-  const onDrop = useCallback(
-    (e) => {
-      e.preventDefault();
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
-    },
-    [handleFile],
-  );
+    } catch (e) { alert(e.message); } finally { setImporting(false); setShowImportOpts(false); }
+  }, [user]);
 
   return (
-    <div style={{ color: "var(--text-primary)", maxWidth: 1100 }}>
-      {/* HEADER */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 16,
-          marginBottom: 28,
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              fontSize: 28,
-              fontWeight: 700,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <Wallet size={24} style={{ color: "var(--accent)" }} /> Portfolio
-            Tracker
-          </h1>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
-            Import your trade history · AI analysis · Tax reporting
-          </p>
+    <div className="max-w-[1600px] mx-auto pb-12 text-gray-100">
+      
+      {/* ── HERO: TOTAL BALANCE ── */}
+      <div className="flex flex-col items-center justify-center py-16 relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 blur-[100px] pointer-events-none rounded-full" />
+        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Total Portfolio Value</h2>
+        <div className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-6">
+          {fmtUSD(totalValue)}
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => setShowGuides((s) => !s)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "8px 14px",
-              borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.05)",
-              backgroundColor: "rgba(255,255,255,0.02)",
-              color: "var(--text-secondary)",
-              fontSize: 13,
-              cursor: "pointer",
-            }}
-          >
-            <BookOpen size={14} /> How to export
-          </button>
-          {wallets.length > 0 && (
-            <button
-              onClick={() => setWallets([])}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "8px 14px",
-                borderRadius: 10,
-                border: "1px solid rgba(245,166,35,0.3)",
-                background: "rgba(245,166,35,0.06)",
-                color: "#f5a623",
-                fontSize: 13,
-                cursor: "pointer",
-              }}
-            >
-              <X size={14} /> Clear Wallets
-            </button>
-          )}
-          {trades.length > 0 && (
-            <button
-              onClick={() => {
-                setTrades([]);
-                localStorage.removeItem("crypto_neko_trades");
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "8px 14px",
-                borderRadius: 10,
-                border: "1px solid rgba(231,76,60,0.3)",
-                background: "rgba(231,76,60,0.06)",
-                color: "#e74c3c",
-                fontSize: 13,
-                cursor: "pointer",
-              }}
-            >
-              <X size={14} /> Clear Trades
-            </button>
-          )}
+        
+        <div className={`flex items-center gap-2 text-lg font-bold px-4 py-2 rounded-2xl border ${totalPnl >= 0 ? "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" : "text-red-400 bg-red-400/10 border-red-400/20"}`}>
+          {totalPnl >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+          {totalPnl >= 0 ? "+" : ""}{fmtUSD(totalPnl)} ({fmtPct(pnlPct)})
         </div>
       </div>
 
-      {/* WALLET TRACKER INPUT */}
-      <div style={{ marginBottom: 24, display: "flex", gap: 10 }}>
-         <input 
-           type="text" 
-           placeholder="Enter ETH Wallet Address (0x...)" 
-           value={walletInput}
-           onChange={e => setWalletInput(e.target.value)}
-           style={{
-             flex: 1,
-             padding: "12px 16px",
-             borderRadius: 24,
-             backgroundColor: "rgba(255,255,255,0.02)",
-             border: "1px solid rgba(255,255,255,0.05)",
-             color: "var(--text-primary)",
-             fontSize: 14,
-           }}
-         />
-         <button 
-           onClick={() => {
-             if (walletInput && !wallets.includes(walletInput)) {
-               setWallets([...wallets, walletInput]);
-               setWalletInput("");
-             }
-           }}
-           disabled={!walletInput.startsWith("0x")}
-           style={{
-             padding: "0 24px",
-             borderRadius: 24,
-             background: walletInput.startsWith("0x") ? "var(--accent)" : "var(--bg-surface)",
-             border: "none",
-             color: walletInput.startsWith("0x") ? "#111" : "var(--text-muted)",
-             fontWeight: 700,
-             cursor: walletInput.startsWith("0x") ? "pointer" : "not-allowed",
-           }}
-         >
-           Track Wallet
-         </button>
-       </div>
-
-       {/* BINANCE SYNC BUTTON */}
-       <div style={{ marginBottom: 24, display: "flex", gap: 10 }}>
-         {binanceKeys.key && binanceHoldings.length > 0 ? (
-           <div style={{ display: "flex", gap: 10 }}>
-             <div style={{ 
-               padding: "12px 24px", 
-               borderRadius: 24, 
-               background: "rgba(243,186,47,0.15)", 
-               border: "1px solid rgba(243,186,47,0.3)",
-               color: "#F3BA2F", 
-               fontWeight: 600,
-               display: "flex",
-               alignItems: "center",
-               gap: 8
-             }}>
-               <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#F3BA2F", boxShadow: "0 0 8px #F3BA2F" }}></span>
-               Binance Connected
-             </div>
-             <button
-                onClick={() => {
-                  setBinanceHoldings([]);
-                  setBinanceKeys({ key: "", secret: "" });
-                  localStorage.removeItem("crypto_neko_binance_keys");
-                }}
-                style={{
-                  padding: "0 16px",
-                  borderRadius: 24,
-                  border: "1px solid rgba(231,76,60,0.3)",
-                  background: "rgba(231,76,60,0.06)",
-                  color: "#e74c3c",
-                  fontSize: 13,
-                  cursor: "pointer",
-                }}
-              >
-                Disconnect
-              </button>
-           </div>
-         ) : (
-           <button 
-             onClick={() => setShowBinanceModal(true)}
-             style={{
-               padding: "12px 24px",
-               borderRadius: 24,
-               background: "#F3BA2F",
-               border: "none",
-               color: "#111",
-               fontWeight: 700,
-               cursor: "pointer",
-               display: "flex",
-               alignItems: "center",
-               gap: 8,
-               transition: "transform 0.15s",
-             }}
-             onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
-             onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
-           >
-             Connect Binance
-           </button>
-         )}
-       </div>
-
-       {/* BINANCE MODAL */}
-       {showBinanceModal && (
-         <div style={{
-           position: "fixed", top: 0, left: 0, width: "100%", height: "100%", 
-           background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)",
-           zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center"
-         }}>
-           <div style={{
-             backgroundColor: "rgba(255,255,255,0.02)",
-             border: "1px solid rgba(255,255,255,0.05)",
-             borderRadius: 24,
-             padding: 32,
-             width: "100%",
-             maxWidth: 480,
-             boxShadow: "0 24px 48px rgba(0,0,0,0.5)"
-           }}>
-             <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "#F3BA2F" }}>
-               Connect to Binance
-             </h2>
-             <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24, lineHeight: 1.5 }}>
-               We use a secure, read-only connection. Your API Secret is never stored in our database. It stays in your browser and is only used to sync your live balances.
-             </p>
-             
-             <div style={{ marginBottom: 16 }}>
-               <label style={{ display: "block", fontSize: 12, color: "var(--text-muted)", marginBottom: 6, fontWeight: 600 }}>API KEY (READ-ONLY)</label>
-               <input 
-                 type="text" 
-                 placeholder="Paste your API Key here" 
-                 value={binanceKeys.key}
-                 onChange={e => setBinanceKeys(prev => ({...prev, key: e.target.value}))}
-                 style={{
-                   width: "100%", padding: "14px 16px", borderRadius: 24,
-                   background: "var(--bg-elevated)", border: "1px solid rgba(255,255,255,0.05)",
-                   color: "var(--text-primary)", fontSize: 14, boxSizing: "border-box"
-                 }}
-               />
-             </div>
-             
-             <div style={{ marginBottom: 24 }}>
-               <label style={{ display: "block", fontSize: 12, color: "var(--text-muted)", marginBottom: 6, fontWeight: 600 }}>API SECRET</label>
-               <input 
-                 type="password" 
-                 placeholder="Paste your API Secret here" 
-                 value={binanceKeys.secret}
-                 onChange={e => setBinanceKeys(prev => ({...prev, secret: e.target.value}))}
-                 style={{
-                   width: "100%", padding: "14px 16px", borderRadius: 24,
-                   background: "var(--bg-elevated)", border: "1px solid rgba(255,255,255,0.05)",
-                   color: "var(--text-primary)", fontSize: 14, boxSizing: "border-box"
-                 }}
-               />
-             </div>
-             
-             <div style={{ display: "flex", gap: 12 }}>
-               <button 
-                 onClick={() => {
-                   syncBinance(binanceKeys.key, binanceKeys.secret);
-                   setShowBinanceModal(false);
-                 }}
-                 disabled={!binanceKeys.key || !binanceKeys.secret || isSyncingBinance}
-                 style={{
-                   flex: 1, padding: "14px", borderRadius: 24, border: "none",
-                   background: (binanceKeys.key && binanceKeys.secret) ? "#F3BA2F" : "var(--bg-elevated)",
-                   color: (binanceKeys.key && binanceKeys.secret) ? "#111" : "var(--text-muted)",
-                   fontWeight: 700, fontSize: 15,
-                   cursor: (binanceKeys.key && binanceKeys.secret && !isSyncingBinance) ? "pointer" : "not-allowed",
-                 }}
-               >
-                 {isSyncingBinance ? "Syncing..." : "Connect & Sync"}
-               </button>
-               <button 
-                 onClick={() => setShowBinanceModal(false)}
-                 style={{
-                   padding: "14px 24px", borderRadius: 24, border: "1px solid rgba(255,255,255,0.05)",
-                   background: "transparent", color: "var(--text-secondary)", fontWeight: 600,
-                   cursor: "pointer", fontSize: 15
-                 }}
-               >
-                 Cancel
-               </button>
-             </div>
-           </div>
-         </div>
-       )}
-
-      {/* EXCHANGE GUIDES */}
-      {showGuides && (
-        <div
-          style={{
-            marginBottom: 24,
-            padding: "20px",
-            backgroundColor: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.05)",
-            borderRadius: 24,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 600,
-              marginBottom: 14,
-              color: "var(--text-secondary)",
-            }}
-          >
-            Select your exchange to see export instructions:
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {Object.entries(EXCHANGE_GUIDES).map(([key, g]) => (
-              <button
-                key={key}
-                onClick={() => setGuide(key)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "8px 16px",
-                  borderRadius: 10,
-                  border: `1px solid ${g.color}30`,
-                  background: `${g.color}08`,
-                  cursor: "pointer",
-                  fontSize: 13,
-                  color: "var(--text-secondary)",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = g.color)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor = `${g.color}30`)
-                }
-              >
-                <span>{g.logo}</span> {g.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* IMPORT ZONE */}
-      {trades.length === 0 && walletHoldings.length === 0 && binanceHoldings.length === 0 && !isSyncingBinance ? (
-        <div
-          onDrop={onDrop}
-          onDragOver={(e) => e.preventDefault()}
-          style={{
-            border: "2px dashed var(--border)",
-            borderRadius: 24,
-            padding: "48px 24px",
-            textAlign: "center",
-            marginBottom: 24,
-            cursor: "pointer",
-            transition: "border-color 0.2s",
-          }}
-          onClick={() => fileRef.current?.click()}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.borderColor = "var(--accent)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.borderColor = "var(--border)")
-          }
-        >
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".csv"
-            style={{ display: "none" }}
-            onChange={(e) => handleFile(e.target.files[0])}
-          />
-          <Upload
-            size={36}
-            style={{
-              color: "var(--text-muted)",
-              margin: "0 auto 16px",
-              display: "block",
-            }}
-          />
-          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>
-            Drop your CSV file here
-          </div>
-          <div
-            style={{
-              fontSize: 13,
-              color: "var(--text-muted)",
-              marginBottom: 20,
-            }}
-          >
-            Supports Binance, Bybit, OKX, Coinbase, Kraken
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 8,
-              flexWrap: "wrap",
-            }}
-          >
-            {Object.values(EXCHANGE_GUIDES).map((g) => (
-              <span
-                key={g.name}
-                style={{
-                  fontSize: 12,
-                  padding: "4px 10px",
-                  borderRadius: 6,
-                  background: "var(--bg-elevated)",
-                  color: "var(--text-muted)",
-                }}
-              >
-                {g.logo} {g.name}
-              </span>
-            ))}
-          </div>
-          {importing && (
-            <div
-              style={{ marginTop: 16, color: "var(--accent)", fontSize: 13 }}
-            >
-              Parsing CSV...
-            </div>
-          )}
-          {error && (
-            <div style={{ marginTop: 16, color: "#e74c3c", fontSize: 13 }}>
-              {error}
-            </div>
-          )}
-        </div>
-      ) : isSyncingBinance ? (
-        <div style={{ textAlign: "center", padding: "60px 24px" }}>
-          <RefreshCw size={36} style={{ color: "var(--accent)", margin: "0 auto 16px", display: "block", animation: "spin 0.8s linear infinite" }} />
-          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Syncing Binance...</div>
-          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Fetching your live balances securely</div>
-          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-        </div>
-      ) : (
-        <>
-          {/* Import success banner */}
-          {importResult && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "12px 16px",
-                background: "rgba(46,204,113,0.08)",
-                border: "1px solid rgba(46,204,113,0.25)",
-                borderRadius: 24,
-                marginBottom: 20,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <CheckCircle size={16} style={{ color: "#2ecc71" }} />
-                <span
-                  style={{ fontSize: 13, color: "#2ecc71", fontWeight: 600 }}
-                >
-                  {importResult.count} trades imported from{" "}
-                  {importResult.filename} ({importResult.exchange})
-                </span>
-              </div>
-              <button
-                onClick={() => fileRef.current?.click()}
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-muted)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                + Add more
-              </button>
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".csv"
-                style={{ display: "none" }}
-                onChange={(e) => handleFile(e.target.files[0])}
-              />
-            </div>
-          )}
-
-          {/* STATS */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: 12,
-              marginBottom: 24,
-            }}
-          >
-            {[
-              {
-                label: "Total Value",
-                value: fmtUSD(totalValue),
-                color: "var(--text-primary)",
-              },
-              {
-                label: "Total Cost",
-                value: fmtUSD(totalCost),
-                color: "var(--text-muted)",
-              },
-              {
-                label: "Total P&L",
-                value: fmtUSD(totalPnl),
-                color: totalPnl >= 0 ? "#2ecc71" : "#e74c3c",
-                sub: fmtPct(totalCost > 0 ? (totalPnl / totalCost) * 100 : 0),
-              },
-              {
-                label: "Holdings",
-                value: holdings.length + " coins",
-                color: "var(--accent)",
-              },
-              {
-                label: "Total Trades",
-                value: trades.length,
-                color: "var(--text-secondary)",
-              },
-            ].map((s) => (
-              <div
-                key={s.label}
-                style={{
-                  padding: "16px",
-                  backgroundColor: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.05)",
-                  borderRadius: 24,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "var(--text-muted)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    marginBottom: 6,
-                  }}
-                >
-                  {s.label}
-                </div>
-                <div
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: s.color,
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {s.value}
-                </div>
-                {s.sub && (
-                  <div style={{ fontSize: 12, color: s.color, opacity: 0.8 }}>
-                    {s.sub}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* PIE + AI */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "340px 1fr",
-              gap: 16,
-              marginBottom: 24,
-            }}
-          >
-            {/* Pie chart */}
-            <div
-              style={{
-                padding: "20px",
-                backgroundColor: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.05)",
-                borderRadius: 24,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "var(--text-muted)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  marginBottom: 16,
-                }}
-              >
-                Allocation
-              </div>
-              <ResponsiveContainer width="100%" height={200}>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        {/* ── LEFT COL: ASSET ALLOCATION (DONUT) ── */}
+        <SoftCard className="lg:col-span-4 h-96 flex flex-col items-center justify-center relative">
+          <h3 className="absolute top-6 left-6 text-xs font-bold text-gray-500 uppercase tracking-widest">Asset Allocation</h3>
+          {holdings.length > 0 ? (
+             <div className="w-full h-full pt-8">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={55}
-                    outerRadius={90}
-                    dataKey="value"
-                    paddingAngle={2}
-                  >
-                    {pieData.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={70} outerRadius={90} paddingAngle={5} dataKey="value" stroke="none">
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <RechartTooltip formatter={(v) => [fmtUSD(v), ""]} />
+                  <RechartTooltip 
+                    formatter={(value) => fmtUSD(value)} 
+                    contentStyle={{ backgroundColor: "#0D111C", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", color: "#fff" }} 
+                    itemStyle={{ color: "#fff" }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                  marginTop: 12,
-                }}
-              >
-                {pieData.map((d, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 6 }}
-                    >
-                      <div
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: 2,
-                          background: d.color,
-                        }}
-                      />
-                      <span
-                        style={{ fontSize: 12, color: "var(--text-secondary)" }}
-                      >
-                        {d.name}
-                      </span>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: "var(--text-muted)",
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {totalValue > 0
-                        ? ((d.value / totalValue) * 100).toFixed(1)
-                        : 0}
-                      %
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
+          ) : (
+            <div className="text-gray-500 text-sm font-medium">No assets to display</div>
+          )}
+        </SoftCard>
 
-            {/* AI Analysis */}
-            <AIPortfolioCard
-              holdings={holdings}
-              totalValue={totalValue}
-              totalPnl={totalPnl}
-              autoAnalyze={binanceHoldings.length > 0}
-            />
-          </div>
-
-          {/* TABS */}
-          <div
-            style={{
-              display: "flex",
-              gap: 4,
-              marginBottom: 16,
-              backgroundColor: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(255,255,255,0.05)",
-              borderRadius: 24,
-              padding: 4,
-              width: "fit-content",
-            }}
-          >
-            {[
-              { id: "holdings", label: "Holdings", icon: BarChart2 },
-              { id: "tax", label: "Tax Report", icon: FileDown },
-              {
-                id: "trades",
-                label: `All Trades (${trades.length})`,
-                icon: TrendingUp,
-              },
-            ].map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "8px 16px",
-                  borderRadius: 9,
-                  fontSize: 13,
-                  fontWeight: activeTab === id ? 600 : 400,
-                  cursor: "pointer",
-                  border: "none",
-                  background:
-                    activeTab === id ? "var(--bg-elevated)" : "transparent",
-                  color:
-                    activeTab === id
-                      ? "var(--text-primary)"
-                      : "var(--text-muted)",
-                  transition: "all 0.15s",
-                }}
-              >
-                <Icon size={13} /> {label}
-              </button>
-            ))}
-          </div>
-
-          {/* HOLDINGS TAB */}
-          {activeTab === "holdings" && (
-            <div
-              style={{
-                backgroundColor: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.05)",
-                borderRadius: 24,
-                overflow: "hidden",
-              }}
+        {/* ── RIGHT COL: IMPORT & SYNC ── */}
+        <SoftCard className="lg:col-span-8 flex flex-col justify-center gap-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
+            <button 
+              onClick={() => setShowImportOpts(!showImportOpts)}
+              className="text-xs font-bold bg-amber-500/10 text-amber-400 px-4 py-2 rounded-xl hover:bg-amber-500/20 transition-colors"
             >
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                    {[
-                      "Asset",
-                      "Quantity",
-                      "Avg Cost",
-                      "Current Price",
-                      "Value",
-                      "P&L",
-                      "24h",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        style={{
-                          padding: "12px 16px",
-                          textAlign: h === "Asset" ? "left" : "right",
-                          fontSize: 11,
-                          fontWeight: 600,
-                          color: "var(--text-muted)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                        }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {holdings.map((h, i) => (
-                    <tr
-                      key={h.symbol}
-                      style={{
-                        borderBottom: "1px solid rgba(255,255,255,0.04)",
-                        cursor: "pointer",
-                        transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.025)";
-                        e.currentTarget.style.transform = "scale(1.006) translateX(2px)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.transform = "scale(1) translateX(0)";
-                      }}
-                    >
-                      <td style={{ padding: "12px 16px" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: 2,
-                              background: CHART_COLORS[i % CHART_COLORS.length],
-                            }}
-                          />
-                          {h.image_url && (
-                            <img
-                              src={h.image_url}
-                              style={{
-                                width: 24,
-                                height: 24,
-                                borderRadius: "50%",
-                              }}
-                              alt={h.symbol}
-                            />
+              + Add Source
+            </button>
+          </div>
+          
+          {showImportOpts && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 animate-in fade-in slide-in-from-top-2">
+              {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
+                <button
+                  key={key}
+                  onClick={() => fileRef.current?.click()}
+                  className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.06] hover:border-white/10 transition-all flex flex-col items-center gap-2 text-sm font-bold group"
+                >
+                  <span className="text-2xl group-hover:scale-110 transition-transform">{ex.logo}</span>
+                  <span className="text-gray-300">{ex.name} CSV</span>
+                </button>
+              ))}
+              <input type="file" ref={fileRef} accept=".csv" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-3">
+             <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-500/20">
+                <CheckCircle size={14} /> Wagmi Wallet Connected
+             </div>
+             {binanceKeys.key && (
+               <div className="flex items-center gap-2 bg-[#F3BA2F]/10 text-[#F3BA2F] px-4 py-2 rounded-xl text-xs font-bold border border-[#F3BA2F]/20">
+                  <CheckCircle size={14} /> Binance Synced
+               </div>
+             )}
+             {trades.length > 0 && (
+               <div className="flex items-center gap-2 bg-blue-500/10 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold border border-blue-500/20">
+                  <CheckCircle size={14} /> {trades.length} CSV Trades
+               </div>
+             )}
+          </div>
+        </SoftCard>
+      </div>
+
+      {/* ── HOLDINGS TABLE ── */}
+      <SoftCard className="overflow-x-auto">
+         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Your Holdings</h3>
+         
+         {holdings.length === 0 ? (
+            <div className="text-center py-12 text-gray-500 font-medium text-sm">
+              Your portfolio is empty. Add a wallet or upload a CSV to get started.
+            </div>
+         ) : (
+            <table className="w-full border-collapse min-w-[800px]">
+              <thead>
+                <tr className="border-b border-white/5">
+                  {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
+                    <th key={h} className={`pb-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider ${i === 0 ? "text-left pl-2" : "text-right pr-2"}`}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {holdings.map((h, idx) => {
+                  const isPos = h.pnl >= 0;
+                  return (
+                    <tr key={h.symbol} className="border-b border-white/[0.02] last:border-0 hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={() => navigate(`/coin/${h.symbol.toLowerCase()}`)}>
+                      <td className="py-4 pl-2">
+                        <div className="flex items-center gap-3">
+                          {h.image_url ? (
+                            <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full group-hover:scale-110 transition-transform" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-400">{h.symbol.slice(0,1)}</div>
                           )}
                           <div>
-                            <div style={{ fontWeight: 600, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
-                              {h.symbol}
-                              {h.has_wallet_balance && (
-                                <span style={{
-                                  fontSize: 9,
-                                  background: "rgba(245,166,35,0.15)",
-                                  color: "#f5a623",
-                                  padding: "2px 6px",
-                                  borderRadius: 4,
-                                  textTransform: "uppercase",
-                                  letterSpacing: "0.05em"
-                                }}>
-                                  Wallet
-                                </span>
-                              )}
-                              {h.has_binance_balance && (
-                                <span style={{
-                                  fontSize: 9,
-                                  background: "rgba(243,186,47,0.15)",
-                                  color: "#F3BA2F",
-                                  padding: "2px 6px",
-                                  borderRadius: 4,
-                                  textTransform: "uppercase",
-                                  letterSpacing: "0.05em"
-                                }}>
-                                  Binance
-                                </span>
-                              )}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: 11,
-                                color: "var(--text-muted)",
-                              }}
-                            >
-                              {h.name}
-                            </div>
+                            <div className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{h.symbol}</div>
+                            <div className="text-xs text-gray-500">{h.name}</div>
                           </div>
                         </div>
                       </td>
-                      <td
-                        style={{
-                          padding: "12px 16px",
-                          textAlign: "right",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                        }}
-                      >
-                        {fmtNum(h.quantity)}
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 16px",
-                          textAlign: "right",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                        }}
-                      >
-                        {fmtUSD(h.avg_cost)}
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 16px",
-                          textAlign: "right",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                        }}
-                      >
-                        {fmtUSD(h.current_price)}
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 16px",
-                          textAlign: "right",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          fontWeight: 600,
-                        }}
-                      >
-                        {fmtUSD(h.value)}
-                      </td>
-                      <td style={{ padding: "12px 16px", textAlign: "right" }}>
-                        <div
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: h.pnl >= 0 ? "#2ecc71" : "#e74c3c",
-                            fontFamily: "monospace",
-                          }}
-                        >
-                          {fmtUSD(h.pnl)}
+                      <td className="py-4 pr-2 text-right text-sm font-mono font-bold text-gray-200">{fmtUSD(h.current_price)}</td>
+                      <td className="py-4 pr-2 text-right text-sm font-mono font-medium text-gray-400">{fmtNum(h.quantity)}</td>
+                      <td className="py-4 pr-2 text-right text-sm font-mono font-bold text-white">{fmtUSD(h.value)}</td>
+                      <td className="py-4 pr-2 text-right text-sm font-mono font-medium text-gray-400">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
+                      <td className="py-4 pr-2 text-right">
+                        <div className="flex flex-col items-end">
+                           <span className={`text-sm font-bold font-mono ${isPos ? "text-emerald-400" : "text-red-400"}`}>
+                             {isPos ? "+" : ""}{fmtUSD(h.pnl)}
+                           </span>
+                           <span className={`text-[10px] font-bold font-mono px-1.5 py-0.5 rounded-md mt-1 ${isPos ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
+                             {isPos ? "+" : ""}{h.pnl_pct.toFixed(2)}%
+                           </span>
                         </div>
-                        <div
-                          style={{
-                            fontSize: 11,
-                            color: h.pnl >= 0 ? "#2ecc71" : "#e74c3c",
-                          }}
-                        >
-                          {fmtPct(h.pnl_pct)}
-                        </div>
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 16px",
-                          textAlign: "right",
-                          fontSize: 13,
-                          color: h.change_24h >= 0 ? "#2ecc71" : "#e74c3c",
-                          fontFamily: "monospace",
-                        }}
-                      >
-                        {fmtPct(h.change_24h)}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* TAX TAB */}
-          {activeTab === "tax" && (
-            <div>
-              {/* Disclaimer */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  padding: "10px 14px",
-                  background: "rgba(245,166,35,0.06)",
-                  border: "1px solid rgba(245,166,35,0.2)",
-                  borderRadius: 10,
-                  marginBottom: 20,
-                }}
-              >
-                <Info
-                  size={14}
-                  style={{
-                    color: "var(--accent)",
-                    flexShrink: 0,
-                    marginTop: 1,
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "var(--text-muted)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  Tax estimates use 30% short-term and 15% long-term rates for
-                  illustration only. Consult a tax professional for your
-                  jurisdiction. FIFO method applied.
-                </span>
-              </div>
-
-              {/* Ana metrikler */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                  gap: 12,
-                  marginBottom: 20,
-                }}
-              >
-                {[
-                  {
-                    label: "Short-Term Gains",
-                    value: fmtUSD(taxData.shortGain),
-                    color: taxData.shortGain >= 0 ? "#2ecc71" : "#e74c3c",
-                    sub: `${taxData.shortTerm.length} transactions`,
-                  },
-                  {
-                    label: "Long-Term Gains",
-                    value: fmtUSD(taxData.longGain),
-                    color: taxData.longGain >= 0 ? "#2ecc71" : "#e74c3c",
-                    sub: `${taxData.longTerm.length} transactions`,
-                  },
-                  {
-                    label: "Net Realized P&L",
-                    value: fmtUSD(taxData.net),
-                    color: taxData.net >= 0 ? "#2ecc71" : "#e74c3c",
-                    sub: "All trades",
-                  },
-                  {
-                    label: "Est. Short-Term Tax",
-                    value: fmtUSD(taxData.estShortTax),
-                    color: "#e74c3c",
-                    sub: "30% rate",
-                  },
-                  {
-                    label: "Est. Long-Term Tax",
-                    value: fmtUSD(taxData.estLongTax),
-                    color: "#f5a623",
-                    sub: "15% rate",
-                  },
-                  {
-                    label: "Est. Total Tax",
-                    value: fmtUSD(taxData.estTotalTax),
-                    color: "#e74c3c",
-                    sub: "Estimate only",
-                  },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    style={{
-                      padding: "14px",
-                      backgroundColor: "rgba(255,255,255,0.02)",
-                      border: "1px solid rgba(255,255,255,0.05)",
-                      borderRadius: 24,
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 10,
-                        color: "var(--text-muted)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.08em",
-                        marginBottom: 6,
-                      }}
-                    >
-                      {s.label}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 700,
-                        color: s.color,
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {s.value}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: "var(--text-muted)",
-                        marginTop: 2,
-                      }}
-                    >
-                      {s.sub}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Coin bazında özet */}
-              {Object.keys(taxData.byCoin).length > 0 && (
-                <div style={{ marginBottom: 20 }}>
-                  <div
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: "var(--text-muted)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      marginBottom: 10,
-                    }}
-                  >
-                    By Asset
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {Object.entries(taxData.byCoin)
-                      .sort((a, b) => Math.abs(b[1].gain) - Math.abs(a[1].gain))
-                      .map(([sym, data]) => (
-                        <div
-                          key={sym}
-                          style={{
-                            padding: "8px 14px",
-                            backgroundColor: "rgba(255,255,255,0.02)",
-                            border: "1px solid rgba(255,255,255,0.05)",
-                            borderRadius: 10,
-                            display: "flex",
-                            gap: 10,
-                            alignItems: "center",
-                          }}
-                        >
-                          <span style={{ fontWeight: 700, fontSize: 13 }}>
-                            {sym}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: 13,
-                              fontFamily: "monospace",
-                              color: data.gain >= 0 ? "#2ecc71" : "#e74c3c",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {fmtUSD(data.gain)}
-                          </span>
-                          <span
-                            style={{ fontSize: 11, color: "var(--text-muted)" }}
-                          >
-                            {data.count} trades
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Export butonları */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  justifyContent: "flex-end",
-                  marginBottom: 12,
-                }}
-              >
-                <button
-                  onClick={() => exportTaxCSV(taxData)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "9px 18px",
-                    borderRadius: 10,
-                    background: "linear-gradient(135deg, #f5a623, #e8941a)",
-                    color: "#111",
-                    fontWeight: 700,
-                    fontSize: 13,
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  <FileDown size={14} /> Export CSV
-                </button>
-              </div>
-
-              {/* Yıl bazında işlem tabloları */}
-              {Object.entries(taxData.byYear)
-                .sort((a, b) => b[0] - a[0])
-                .map(([year, yearTrades]) => {
-                  const yearGain = yearTrades.reduce((s, r) => s + r.gain, 0);
-                  const yearShort = yearTrades
-                    .filter((r) => !r.isLongTerm)
-                    .reduce((s, r) => s + r.gain, 0);
-                  const yearLong = yearTrades
-                    .filter((r) => r.isLongTerm)
-                    .reduce((s, r) => s + r.gain, 0);
-                  return (
-                    <div key={year} style={{ marginBottom: 20 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          marginBottom: 10,
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 12,
-                          }}
-                        >
-                          <span style={{ fontSize: 15, fontWeight: 700 }}>
-                            {year}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: 12,
-                              color: yearGain >= 0 ? "#2ecc71" : "#e74c3c",
-                              fontFamily: "monospace",
-                              fontWeight: 600,
-                            }}
-                          >
-                            Net: {fmtUSD(yearGain)}
-                          </span>
-                          <span
-                            style={{ fontSize: 11, color: "var(--text-muted)" }}
-                          >
-                            Short: {fmtUSD(yearShort)} · Long:{" "}
-                            {fmtUSD(yearLong)}
-                          </span>
-                        </div>
-                        <span
-                          style={{ fontSize: 11, color: "var(--text-muted)" }}
-                        >
-                          {yearTrades.length} transactions
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          backgroundColor: "rgba(255,255,255,0.02)",
-                          border: "1px solid rgba(255,255,255,0.05)",
-                          borderRadius: 24,
-                          overflow: "hidden",
-                        }}
-                      >
-                        <table
-                          style={{ width: "100%", borderCollapse: "collapse" }}
-                        >
-                          <thead>
-                            <tr
-                              style={{
-                                borderBottom: "1px solid var(--border)",
-                              }}
-                            >
-                              {[
-                                "Symbol",
-                                "Type",
-                                "Buy Date",
-                                "Sell Date",
-                                "Hold",
-                                "Qty",
-                                "Buy Price",
-                                "Sell Price",
-                                "Gain/Loss",
-                              ].map((h) => (
-                                <th
-                                  key={h}
-                                  style={{
-                                    padding: "10px 14px",
-                                    textAlign:
-                                      h === "Symbol" || h === "Type"
-                                        ? "left"
-                                        : "right",
-                                    fontSize: 10,
-                                    fontWeight: 600,
-                                    color: "var(--text-muted)",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.08em",
-                                    whiteSpace: "nowrap",
-                                  }}
-                                >
-                                  {h}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {yearTrades.map((r, i) => (
-                              <tr
-                                key={i}
-                                style={{
-                                  borderBottom: "1px solid var(--border-soft)",
-                                }}
-                              >
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    fontWeight: 600,
-                                    fontSize: 13,
-                                  }}
-                                >
-                                  {r.symbol}
-                                </td>
-                                <td style={{ padding: "9px 14px" }}>
-                                  <span
-                                    style={{
-                                      fontSize: 10,
-                                      fontWeight: 700,
-                                      padding: "2px 6px",
-                                      borderRadius: 4,
-                                      background: r.isLongTerm
-                                        ? "rgba(46,204,113,0.1)"
-                                        : "rgba(245,166,35,0.1)",
-                                      color: r.isLongTerm
-                                        ? "#2ecc71"
-                                        : "#f5a623",
-                                    }}
-                                  >
-                                    {r.isLongTerm ? "LONG" : "SHORT"}
-                                  </span>
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontSize: 11,
-                                    color: "var(--text-muted)",
-                                  }}
-                                >
-                                  {new Date(r.buy_date).toLocaleDateString()}
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontSize: 11,
-                                    color: "var(--text-muted)",
-                                  }}
-                                >
-                                  {new Date(r.sell_date).toLocaleDateString()}
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontSize: 11,
-                                    color: "var(--text-muted)",
-                                  }}
-                                >
-                                  {r.holdDays}d
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontFamily: "monospace",
-                                    fontSize: 11,
-                                  }}
-                                >
-                                  {r.qty.toFixed(4)}
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontFamily: "monospace",
-                                    fontSize: 11,
-                                  }}
-                                >
-                                  {fmtUSD(r.buy_price)}
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontFamily: "monospace",
-                                    fontSize: 11,
-                                  }}
-                                >
-                                  {fmtUSD(r.sell_price)}
-                                </td>
-                                <td
-                                  style={{
-                                    padding: "9px 14px",
-                                    textAlign: "right",
-                                    fontFamily: "monospace",
-                                    fontSize: 13,
-                                    fontWeight: 700,
-                                    color: r.gain >= 0 ? "#2ecc71" : "#e74c3c",
-                                  }}
-                                >
-                                  {fmtUSD(r.gain)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  );
+                  )
                 })}
-              {taxData.allRealized.length === 0 && (
-                <div
-                  style={{
-                    padding: "32px",
-                    textAlign: "center",
-                    color: "var(--text-muted)",
-                    fontSize: 13,
-                  }}
-                >
-                  No realized trades found. Sell some coins to see tax data.
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TRADES TAB */}
-          {activeTab === "trades" && (
-            <div
-              style={{
-                backgroundColor: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.05)",
-                borderRadius: 24,
-                overflow: "hidden",
-              }}
-            >
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                    {[
-                      "Date",
-                      "Symbol",
-                      "Side",
-                      "Qty",
-                      "Price",
-                      "Total",
-                      "Exchange",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        style={{
-                          padding: "12px 16px",
-                          textAlign:
-                            h === "Symbol" || h === "Date" ? "left" : "right",
-                          fontSize: 11,
-                          fontWeight: 600,
-                          color: "var(--text-muted)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                        }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...trades]
-                    .sort(
-                      (a, b) => new Date(b.traded_at) - new Date(a.traded_at),
-                    )
-                    .slice(0, 100)
-                    .map((t, i) => (
-                      <tr
-                        key={i}
-                        style={{ borderBottom: "1px solid var(--border-soft)" }}
-                      >
-                        <td
-                          style={{
-                            padding: "10px 16px",
-                            fontSize: 12,
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          {new Date(t.traded_at).toLocaleDateString()}
-                        </td>
-                        <td style={{ padding: "10px 16px", fontWeight: 600 }}>
-                          {t.symbol}
-                        </td>
-                        <td
-                          style={{ padding: "10px 16px", textAlign: "right" }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 11,
-                              fontWeight: 700,
-                              padding: "2px 8px",
-                              borderRadius: 5,
-                              background:
-                                t.side === "buy"
-                                  ? "rgba(46,204,113,0.12)"
-                                  : "rgba(231,76,60,0.12)",
-                              color: t.side === "buy" ? "#2ecc71" : "#e74c3c",
-                            }}
-                          >
-                            {t.side.toUpperCase()}
-                          </span>
-                        </td>
-                        <td
-                          style={{
-                            padding: "10px 16px",
-                            textAlign: "right",
-                            fontFamily: "monospace",
-                            fontSize: 12,
-                          }}
-                        >
-                          {fmtNum(t.quantity)}
-                        </td>
-                        <td
-                          style={{
-                            padding: "10px 16px",
-                            textAlign: "right",
-                            fontFamily: "monospace",
-                            fontSize: 12,
-                          }}
-                        >
-                          {fmtUSD(t.price)}
-                        </td>
-                        <td
-                          style={{
-                            padding: "10px 16px",
-                            textAlign: "right",
-                            fontFamily: "monospace",
-                            fontSize: 12,
-                            fontWeight: 600,
-                          }}
-                        >
-                          {fmtUSD(t.total)}
-                        </td>
-                        <td
-                          style={{
-                            padding: "10px 16px",
-                            textAlign: "right",
-                            fontSize: 12,
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          {t.exchange || "—"}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
-
-      {guide && <GuideModal exchange={guide} onClose={() => setGuide(null)} />}
+              </tbody>
+            </table>
+         )}
+      </SoftCard>
     </div>
   );
 }
