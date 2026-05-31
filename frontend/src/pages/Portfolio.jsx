@@ -1135,10 +1135,10 @@ export default function Portfolio() {
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
               {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
                 <button key={key} onClick={() => fileRef.current?.click()}
-                  className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all"
+                  className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all duration-300 ease-out group hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-1 hover:shadow-lg"
                   style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
-                  <span className="text-2xl">{ex.logo}</span>
-                  <span className="text-xs font-bold" style={{ color: "var(--text-secondary)" }}>{ex.name}</span>
+                  <span className="text-2xl group-hover:scale-110 transition-transform duration-300">{ex.logo}</span>
+                  <span className="text-xs font-bold group-hover:text-white transition-colors" style={{ color: "var(--text-secondary)" }}>{ex.name}</span>
                 </button>
               ))}
               <input type="file" ref={fileRef} accept=".csv" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
