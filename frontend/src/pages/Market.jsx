@@ -281,11 +281,15 @@ export default function Market({ isWatched, toggleWatchlist }) {
         style={{ marginBottom: 16 }}
       >
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded-lg"
-          style={{
-            backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
-            width: 280,
+          className="flex items-center gap-2 px-3 py-2 rounded-xl glass-panel"
+          style={{ width: 300, transition: "var(--transition-smooth)" }}
+          onFocusCapture={(e) => {
+            e.currentTarget.style.boxShadow = "0 0 0 2px var(--accent-soft)";
+            e.currentTarget.style.borderColor = "var(--accent-border)";
+          }}
+          onBlurCapture={(e) => {
+            e.currentTarget.style.boxShadow = "none";
+            e.currentTarget.style.borderColor = "var(--border)";
           }}
         >
           <Search size={14} style={{ color: "var(--text-muted)" }} />
@@ -307,11 +311,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
       {/* LOADING */}
       {isLoading && (
         <div
-          className="overflow-x-auto rounded-xl"
-          style={{
-            backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
-          }}
+          className="overflow-x-auto rounded-2xl glass-panel"
         >
           <table className="w-full">
             <tbody>
@@ -328,8 +328,8 @@ export default function Market({ isWatched, toggleWatchlist }) {
         <div
           className="p-4 rounded-xl text-sm"
           style={{
-            backgroundColor: "rgba(231,76,60,0.1)",
-            border: "1px solid rgba(231,76,60,0.3)",
+            backgroundColor: "rgba(239,68,68,0.1)",
+            border: "1px solid rgba(239,68,68,0.2)",
             color: "var(--negative)",
           }}
         >
@@ -340,25 +340,22 @@ export default function Market({ isWatched, toggleWatchlist }) {
       {/* TABLE */}
       {paginated.length > 0 && (
         <div
-          className="overflow-x-auto rounded-xl"
-          style={{
-            backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
-          }}
+          className="overflow-x-auto rounded-2xl glass-panel shadow-2xl"
+          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}
         >
           <table className="w-full">
             <thead>
               <tr
                 style={{
                   borderBottom: "1px solid var(--border)",
-                  backgroundColor: "var(--bg-elevated)",
+                  backgroundColor: "rgba(0,0,0,0.2)",
                 }}
               >
-                <th style={{ padding: "12px 4px 12px 16px", width: 36 }}></th>
+                <th style={{ padding: "16px 4px 16px 20px", width: 40 }}></th>
                 <th
                   className="text-xs font-semibold uppercase tracking-wider text-left"
                   style={{
-                    padding: "12px 16px",
+                    padding: "16px",
                     color: "var(--text-muted)",
                     width: 48,
                   }}
@@ -367,7 +364,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                 </th>
                 <th
                   className="text-xs font-semibold uppercase tracking-wider text-left"
-                  style={{ padding: "12px 16px", color: "var(--text-muted)" }}
+                  style={{ padding: "16px", color: "var(--text-muted)" }}
                 >
                   Name
                 </th>
@@ -397,13 +394,13 @@ export default function Market({ isWatched, toggleWatchlist }) {
                 />
                 <th
                   className="text-xs font-semibold uppercase tracking-wider text-right"
-                  style={{ padding: "12px 16px", color: "var(--text-muted)" }}
+                  style={{ padding: "16px", color: "var(--text-muted)" }}
                 >
                   Last 24h
                 </th>
                 <th
                   className="text-xs font-semibold uppercase tracking-wider text-right"
-                  style={{ padding: "12px 16px", color: "var(--text-muted)" }}
+                  style={{ padding: "16px 20px 16px 16px", color: "var(--text-muted)" }}
                 >
                   Updated
                 </th>
@@ -422,22 +419,28 @@ export default function Market({ isWatched, toggleWatchlist }) {
                   <tr
                     key={coin.symbol}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    className="transition-colors"
                     style={{
                       borderTop: "1px solid var(--border-soft)",
                       cursor: coin.slug ? "pointer" : "default",
+                      transition: "var(--transition-smooth)",
                     }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.backgroundColor =
-                        "rgba(245,166,35,0.04)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.backgroundColor = "transparent")
-                    }
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.03)";
+                      e.currentTarget.style.transform = "translateY(-1px) scale(1.002)";
+                      e.currentTarget.style.boxShadow = "0 10px 30px -10px rgba(0,0,0,0.3)";
+                      e.currentTarget.style.position = "relative";
+                      e.currentTarget.style.zIndex = "10";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.transform = "translateY(0) scale(1)";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.zIndex = "1";
+                    }}
                   >
                     {/* YILDIZ */}
                     <td
-                      style={{ padding: "14px 4px 14px 16px" }}
+                      style={{ padding: "16px 4px 16px 20px" }}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
@@ -475,7 +478,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     {/* RANK */}
                     <td
                       style={{
-                        padding: "14px 16px",
+                        padding: "16px",
                         color: "var(--text-muted)",
                         fontSize: 13,
                       }}
@@ -484,7 +487,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     </td>
 
                     {/* NAME */}
-                    <td style={{ padding: "14px 16px" }}>
+                    <td style={{ padding: "16px" }}>
                       <div className="flex items-center gap-3">
                         <CoinLogo
                           imageUrl={coin.image_url}
@@ -511,7 +514,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     <td
                       className="text-right font-mono text-sm"
                       style={{
-                        padding: "14px 16px",
+                        padding: "16px",
                         color: "var(--text-primary)",
                       }}
                     >
@@ -521,7 +524,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     {/* 24H % */}
                     <td
                       className="text-right font-mono text-sm font-semibold"
-                      style={{ padding: "14px 16px", color: changeColor }}
+                      style={{ padding: "16px", color: changeColor }}
                     >
                       {change >= 0 ? "+" : ""}
                       {change.toFixed(2)}%
@@ -531,7 +534,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     <td
                       className="text-right font-mono text-sm"
                       style={{
-                        padding: "14px 16px",
+                        padding: "16px",
                         color: "var(--text-muted)",
                       }}
                     >
@@ -542,7 +545,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     <td
                       className="text-right font-mono text-sm"
                       style={{
-                        padding: "14px 16px",
+                        padding: "16px",
                         color: "var(--text-muted)",
                       }}
                     >
@@ -550,7 +553,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     </td>
 
                     {/* SPARKLINE */}
-                    <td style={{ padding: "14px 16px" }}>
+                    <td style={{ padding: "16px" }}>
                       <div className="flex justify-end">
                         <Sparkline
                           prices={sparkPrices}
@@ -562,7 +565,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                     </td>
 
                     {/* UPDATED */}
-                    <td style={{ padding: "14px 16px" }}>
+                    <td style={{ padding: "16px 20px 16px 16px" }}>
                       <DataFreshness
                         lastUpdated={coin.last_updated}
                         dataSource={coin.data_source}

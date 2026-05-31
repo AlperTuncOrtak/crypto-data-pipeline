@@ -144,12 +144,15 @@ function AnimatedPrice({ current, prev, flash }) {
 function StatCard({ label, value, sub, highlight, icon: Icon }) {
   return (
     <div
+      className="glass-panel"
       style={{
-        backgroundColor: "var(--bg-surface)",
         border: `1px solid ${highlight ? "rgba(245,166,35,0.25)" : "var(--border)"}`,
-        borderRadius: 12,
+        borderRadius: 16,
         padding: "16px 18px",
+        transition: "var(--transition-smooth)",
       }}
+      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
       <div
         style={{

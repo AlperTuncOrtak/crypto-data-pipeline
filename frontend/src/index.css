@@ -4,30 +4,39 @@
    DARK THEME (default)
 ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg-base:     #07070f;
-  --bg-surface:  #0c0c16;
-  --bg-elevated: #151522;
-  --bg-card:     #0e0e18;
+  --bg-base:     #0A0D14;
+  --bg-surface:  #13161E;
+  --bg-elevated: #1C202B;
+  --bg-card:     #161922;
 
-  --border:      rgba(255,255,255,0.06);
-  --border-soft: rgba(255,255,255,0.03);
+  --border:      rgba(255,255,255,0.05);
+  --border-soft: rgba(255,255,255,0.02);
 
-  --text-primary:   #f0f0f0;
-  --text-secondary: #a0a0a0;
-  --text-muted:     #555565;
+  --text-primary:   #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted:     #6B7280;
 
   --accent:         #f5a623;
   --accent-hover:   #f7b944;
   --accent-soft:    rgba(245,166,35,0.1);
   --accent-border:  rgba(245,166,35,0.25);
 
-  --positive:       #2ecc71;
-  --positive-soft:  rgba(46,204,113,0.1);
-  --negative:       #e74c3c;
-  --negative-soft:  rgba(231,76,60,0.1);
+  --positive:       #10B981;
+  --positive-soft:  rgba(16,185,129,0.1);
+  --negative:       #EF4444;
+  --negative-soft:  rgba(239,68,68,0.1);
 
   /* Mobile nav */
-  --nav-overlay: rgba(7,7,15,0.92);
+  --nav-overlay: rgba(10,13,20,0.92);
+  
+  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel {
+  background: rgba(19, 22, 30, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
 }
 
 /* ═══════════════════════════════════════════════════════════

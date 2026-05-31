@@ -31,18 +31,17 @@ export default function AIPulse({ slug }) {
   if (!slug) return null;
 
   return (
-    <div style={{
-      background: 'var(--bg-elevated)',
+    <div className="glass-panel" style={{
       borderRadius: 16,
-      border: '1px solid var(--border)',
       padding: '16px 20px',
       marginBottom: 20,
       display: 'flex',
       gap: 16,
       alignItems: 'flex-start',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      transition: 'var(--transition-smooth)'
     }}>
       {/* Glow effect */}
       <div style={{

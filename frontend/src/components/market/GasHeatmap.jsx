@@ -103,9 +103,7 @@ export default function GasHeatmap() {
           const color = getStatusColor(net, gwei);
           
           return (
-            <div key={net.id} style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border)',
+            <div key={net.id} className="glass-panel" style={{
               borderRadius: 24,
               padding: '8px 16px',
               display: 'flex',
@@ -114,7 +112,7 @@ export default function GasHeatmap() {
               minWidth: 'fit-content',
               cursor: 'default',
               boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              transition: 'all 0.2s ease',
+              transition: 'var(--transition-smooth)',
             }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
