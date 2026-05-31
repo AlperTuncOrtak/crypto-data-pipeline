@@ -40,35 +40,6 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   LIGHT THEME
-═══════════════════════════════════════════════════════════ */
-html.light {
-  --bg-base:     #f0f2f8;
-  --bg-surface:  #ffffff;
-  --bg-elevated: #e8ecf4;
-  --bg-card:     #f7f8fc;
-
-  --border:      rgba(0,0,0,0.08);
-  --border-soft: rgba(0,0,0,0.04);
-
-  --text-primary:   #0d0d1a;
-  --text-secondary: #4a4a6a;
-  --text-muted:     #8888aa;
-
-  --accent:         #d4820a;
-  --accent-hover:   #e09218;
-  --accent-soft:    rgba(212,130,10,0.1);
-  --accent-border:  rgba(212,130,10,0.25);
-
-  --positive:       #16a34a;
-  --positive-soft:  rgba(22,163,74,0.1);
-  --negative:       #dc2626;
-  --negative-soft:  rgba(220,38,38,0.1);
-
-  --nav-overlay: rgba(240,242,248,0.95);
-}
-
-/* ═══════════════════════════════════════════════════════════
    RESET
 ═══════════════════════════════════════════════════════════ */
 * { box-sizing: border-box; margin: 0; padding: 0; }

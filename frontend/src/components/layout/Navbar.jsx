@@ -24,8 +24,6 @@ import {
   Crown,
   User,
   ChevronRight,
-  Sun,
-  Moon,
   Menu,
   Wallet,
 } from "lucide-react";
@@ -33,7 +31,6 @@ import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
 import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
-import { useTheme } from "../../hooks/useTheme";
 
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
@@ -372,7 +369,6 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const profileRef = useRef(null);
-  const { theme, toggleTheme } = useTheme();
   const {
     isLoggedIn,
     signOut,
@@ -909,38 +905,6 @@ export default function Navbar({
             <div className="hide-mobile">
               <WalletConnectButton />
             </div>
-
-            {/* THEME TOGGLE */}
-            <button
-              onClick={toggleTheme}
-              title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 34,
-                height: 34,
-                borderRadius: 10,
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "rgba(255,255,255,0.04)",
-                cursor: "pointer",
-                color: "rgba(255,255,255,0.5)",
-                transition: "all 0.2s ease",
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(245,166,35,0.1)";
-                e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
-                e.currentTarget.style.color = "var(--accent)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.5)";
-              }}
-            >
-              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-            </button>
 
             {/* HAMBURGER — mobile only */}
             <button
@@ -1604,19 +1568,6 @@ export default function Navbar({
             {/* Bottom actions */}
             <div style={{ padding: "16px 20px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
               <WalletConnectButton />
-              <button
-                onClick={() => { toggleTheme(); }}
-                style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "10px 14px", borderRadius: 10, width: "100%",
-                  background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)",
-                  color: "var(--text-secondary)", fontSize: 13, fontWeight: 500,
-                  cursor: "pointer",
-                }}
-              >
-                {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-                {theme === "dark" ? "Light Mode" : "Dark Mode"}
-              </button>
               {!isLoggedIn && (
                 <button
                   onClick={() => { onAuthOpen("login"); setMobileOpen(false); }}
