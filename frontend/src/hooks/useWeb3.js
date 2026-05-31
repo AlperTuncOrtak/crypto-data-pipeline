@@ -1,76 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
-import { ethers } from "ethers";
+import { useAccount, useBalance, useDisconnect } from 'wagmi';
 
 export function useWeb3() {
-  const [account, setAccount] = useState(null);
-  const [balance, setBalance] = useState(null);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchBalance = useCallback(async (address, provider) => {
-    try {
-      const bal = await provider.getBalance(address);
-      const ethBal = ethers.formatEther(bal);
-      setBalance(Number(ethBal).toFixed(4));
-    } catch (err) {
-      console.error("Failed to fetch balance", err);
-    }
-  }, []);
-
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      setError("Please install MetaMask or another Web3 wallet.");
-      return;
-    }
-    
-    setIsConnecting(true);
-    setError(null);
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await provider.send("eth_requestAccounts", []);
-      
-      if (accounts.length > 0) {
-        setAccount(accounts[0]);
-        await fetchBalance(accounts[0], provider);
-      }
-    } catch (err) {
-      setError(err.message || "Failed to connect wallet.");
-      console.error(err);
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const disconnectWallet = () => {
-    setAccount(null);
-    setBalance(null);
-  };
-
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          fetchBalance(accounts[0], provider);
-        } else {
-          setAccount(null);
-          setBalance(null);
-        }
-      });
-      
-      window.ethereum.on("chainChanged", () => {
-        window.location.reload();
-      });
-    }
-  }, [fetchBalance]);
+  const { address, isConnecting } = useAccount();
+  const { data: balanceData } = useBalance({
+    address,
+  });
+  const { disconnect } = useDisconnect();
 
   return {
-    account,
-    balance,
+    account: address,
+    balance: balanceData ? Number(balanceData.formatted).toFixed(4) : null,
     isConnecting,
-    error,
-    connectWallet,
-    disconnectWallet,
+    error: null, // Errors are generally handled by RainbowKit UI now
+    connectWallet: () => {
+      // With RainbowKit, the connect modal is triggered by their <ConnectButton />
+      // If we ever need to manually open it, we would use the useConnectModal hook from RainbowKit
+      console.warn("connectWallet() called directly. Use RainbowKit's ConnectButton instead.");
+    },
+    disconnectWallet: disconnect,
   };
 }
