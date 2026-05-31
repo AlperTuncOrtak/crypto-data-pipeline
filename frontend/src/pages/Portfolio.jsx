@@ -1054,7 +1054,7 @@ export default function Portfolio() {
 
 
   return (
-    <div className="max-w-[1600px] mx-auto pb-16">
+    <div className="max-w-[1600px] mx-auto pb-16 px-4 sm:px-6">
 
       {/* HERO */}
       <div className="relative flex flex-col items-center justify-center py-20 text-center overflow-hidden">
@@ -1064,7 +1064,7 @@ export default function Portfolio() {
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           Total Portfolio Value
         </p>
-        <h1 className="relative z-10 text-7xl md:text-8xl font-black tracking-tighter mb-6 text-white drop-shadow-sm">
+        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white drop-shadow-sm break-words max-w-full px-4">
           {fmtUSD(totalValue)}
         </h1>
         <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-red-500/5"}`}>
@@ -1136,10 +1136,10 @@ export default function Portfolio() {
                 <button
                   key={key}
                   onClick={() => fileRef.current?.click()}
-                  className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-1 transition-all duration-300 group"
+                  className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                 >
-                  <span className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">{ex.logo}</span>
-                  <span className="text-xs font-bold text-gray-400 group-hover:text-gray-200 transition-colors">{ex.name}</span>
+                  <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">{ex.logo}</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-gray-400 group-hover:text-gray-200 transition-colors text-center truncate w-full">{ex.name}</span>
                 </button>
               ))}
               <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
@@ -1153,7 +1153,7 @@ export default function Portfolio() {
                 value={walletInput} 
                 onChange={e => setWalletInput(e.target.value)} 
                 placeholder="0x..."
-                className="flex-1 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-5 py-3 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.04] transition-all duration-300" 
+                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.04] transition-all duration-300" 
               />
               <button 
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
