@@ -106,14 +106,14 @@ function AuthInput({ icon: Icon, rightEl, ...props }) {
           width: "100%",
           padding: rightEl ? "13px 44px 13px 40px" : "13px 15px 13px 40px",
           background: focused
-            ? "rgba(245,166,35,0.04)"
-            : "rgba(255,255,255,0.03)",
-          border: `1px solid ${focused ? "rgba(245,166,35,0.3)" : "rgba(255,255,255,0.08)"}`,
-          borderRadius: 12,
+            ? "rgba(245,166,35,0.08)"
+            : "rgba(255,255,255,0.04)",
+          border: `1px solid ${focused ? "rgba(245,166,35,0.4)" : "rgba(255,255,255,0.06)"}`,
+          borderRadius: 16,
           color: "#fff",
           fontSize: 13,
           outline: "none",
-          transition: "all 0.2s",
+          transition: "all 0.3s ease-out",
           boxSizing: "border-box",
           fontFamily: "Inter, sans-serif",
         }}
@@ -224,13 +224,23 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         options: { captchaToken },
       });
       if (error) {
+        if (error.message && error.message.toLowerCase().includes("email not confirmed")) {
+          setError("Please confirm your email address first. Check your inbox.");
+          captchaRef.current?.resetCaptcha();
+          setCaptchaToken(null);
+          return;
+        }
         const next = failCount + 1;
         setFailCount(next);
         if (next >= FAIL_LIMIT) {
           setLockUntil(Date.now() + LOCKOUT_SEC * 1000);
           setError(`Too many failed attempts. Try again in ${LOCKOUT_SEC}s.`);
         } else {
-          setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
+          if (error.message.toLowerCase().includes("invalid login credentials")) {
+            setError(`Invalid credentials. Don't have an account? Sign Up. (${FAIL_LIMIT - next} attempts left)`);
+          } else {
+            setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
+          }
         }
         captchaRef.current?.resetCaptcha();
         setCaptchaToken(null);
@@ -262,7 +272,11 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name }, captchaToken },
+        options: { 
+          data: { full_name: name }, 
+          captchaToken,
+          emailRedirectTo: "https://www.cryptoneko.online/" 
+        },
       });
       if (error) throw error;
       setSuccess("Account created! Check your email to verify.");
@@ -287,7 +301,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
     setError("");
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: "https://www.cryptoneko.online/reset-password",
       });
       if (error) throw error;
       switchMode("forgot_sent");
@@ -356,10 +370,10 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
       >
         <div
           style={{
-            background: "rgba(8,8,8,0.97)",
+            background: "rgba(10, 13, 20, 0.97)",
             backdropFilter: "blur(24px)",
-            borderRadius: 28,
-            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: 24,
+            border: "1px solid rgba(255,255,255,0.05)",
             boxShadow: "0 24px 80px rgba(0,0,0,0.8)",
             overflow: "hidden",
           }}
@@ -474,8 +488,8 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                         width: "100%",
                         padding: "13px 18px",
                         background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.09)",
-                        borderRadius: 14,
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        borderRadius: 16,
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
@@ -748,7 +762,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       width: "100%",
                       padding: "14px",
                       marginTop: 4,
-                      borderRadius: 14,
+                      borderRadius: 16,
                       border: "none",
                       background: submitDisabled
                         ? "rgba(245,166,35,0.25)"
@@ -768,9 +782,9 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                     }}
                     onMouseEnter={(e) => {
                       if (!submitDisabled) {
-                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.transform = "translateY(-2px)";
                         e.currentTarget.style.boxShadow =
-                          "0 6px 28px rgba(245,166,35,0.45)";
+                          "0 8px 24px rgba(245,166,35,0.45)";
                       }
                     }}
                     onMouseLeave={(e) => {
