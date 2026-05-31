@@ -913,584 +913,28 @@ function GuideModal({ exchange, onClose }) {
   );
 }
 
-// ── AI Analysis ───────────────────────────────────────────────
-function MiniGauge({ score, max = 10, color }) {
-  const pct = (score / max) * 100;
-  const radius = 36,
-    cx = 50,
-    cy = 46;
-  const startAngle = 180;
-  const endAngle = 180 + (pct / 100) * 180;
-  const toRad = (d) => (d * Math.PI) / 180;
-  const x1 = cx + radius * Math.cos(toRad(startAngle));
-  const y1 = cy + radius * Math.sin(toRad(startAngle));
-  const x2 = cx + radius * Math.cos(toRad(endAngle));
-  const y2 = cy + radius * Math.sin(toRad(endAngle));
-  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-  return (
-    <svg width="100" height="70" viewBox="0 0 100 70">
-      <path
-        d={`M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`}
-        fill="none"
-        stroke="var(--bg-elevated)"
-        strokeWidth="7"
-        strokeLinecap="round"
-      />
-      {score > 0 && (
-        <path
-          d={`M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`}
-          fill="none"
-          stroke={color}
-          strokeWidth="7"
-          strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 4px ${color}60)` }}
-        />
-      )}
-      <text
-        x={cx}
-        y={cy + 1}
-        textAnchor="middle"
-        fill={color}
-        style={{ fontSize: 20, fontWeight: 900, fontFamily: "monospace" }}
-      >
-        {score}
-      </text>
-      <text
-        x={cx}
-        y={cy + 16}
-        textAnchor="middle"
-        fill="rgba(255,255,255,0.35)"
-        style={{ fontSize: 9 }}
-      >
-        / {max}
-      </text>
-    </svg>
-  );
-}
 
-const CORR_COLOR = { low: "#2ecc71", medium: "#f5a623", high: "#e74c3c" };
-const SECTOR_COLORS = {
-  "Store of Value": "#f5a623",
-  "Layer 1": "#3498db",
-  "Layer 2": "#2ecc71",
-  DeFi: "#9b59b6",
-  Payments: "#1abc9c",
-  Meme: "#e74c3c",
-  "Exchange Token": "#e67e22",
-  Oracle: "#3498db",
-  "Layer 0": "#8e44ad",
-  Storage: "#27ae60",
-  Web3: "#2980b9",
-  Enterprise: "#7f8c8d",
-  Other: "#555",
-};
-
-function AIPortfolioCard({ holdings, totalValue, totalPnl, autoAnalyze }) {
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const didAutoAnalyze = useRef(false);
-
-  async function analyze() {
-    setLoading(true);
-    setError(null);
-    try {
-      const resp = await apiClient.post("/ai/portfolio", {
-        holdings: holdings.slice(0, 12).map((h) => ({
-          symbol: h.symbol,
-          value: h.value,
-          pnl_pct: h.pnl_pct,
-          quantity: h.quantity,
-          avg_cost: h.avg_cost,
-        })),
-        total_value: totalValue,
-        total_pnl: totalPnl,
-      });
-      setResult(resp.data);
-    } catch (e) {
-      setError(e.message);
-      console.error("Portfolio AI error:", e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Auto-analyze when Binance is connected and holdings loaded
-  useEffect(() => {
-    if (autoAnalyze && holdings.length > 0 && !result && !loading && !didAutoAnalyze.current) {
-      didAutoAnalyze.current = true;
-      analyze();
-    }
-  }, [autoAnalyze, holdings.length]);
-
-  if (!result)
-    return (
-      <div
-        style={{
-          backgroundColor: "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.05)",
-          borderRadius: 24,
-          padding: "24px",
-          textAlign: "center",
-        }}
-      >
-        <Brain
-          size={32}
-          style={{
-            color: "var(--accent)",
-            margin: "0 auto 12px",
-            display: "block",
-          }}
-        />
-        <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>
-          AI Portfolio Analysis
-        </div>
-        <div
-          style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}
-        >
-          Get personalized insights, risk assessment, and recommendations for
-          your portfolio.
-        </div>
-        <button
-          onClick={analyze}
-          disabled={loading}
-          style={{
-            padding: "11px 28px",
-            borderRadius: 24,
-            background: "linear-gradient(135deg, #f5a623, #e8941a)",
-            color: "#111",
-            fontWeight: 700,
-            fontSize: 14,
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            margin: "0 auto",
-          }}
-        >
-          {loading ? (
-            <>
-              <RefreshCw
-                size={14}
-                style={{ animation: "spin 0.8s linear infinite" }}
-              />{" "}
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <Brain size={14} /> Analyze Portfolio
-            </>
-          )}
-        </button>
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      </div>
-    );
-
-  const riskColor =
-    result.risk_score <= 3
-      ? "#2ecc71"
-      : result.risk_score <= 6
-        ? "#f5a623"
-        : "#e74c3c";
-  const divColor =
-    result.diversification_score >= 7
-      ? "#2ecc71"
-      : result.diversification_score >= 4
-        ? "#f5a623"
-        : "#e74c3c";
-  const corrColor = CORR_COLOR[result.correlation_risk] || "#f5a623";
-
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.05)",
-        borderRadius: 24,
-        padding: "24px",
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 20,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Brain size={16} style={{ color: "var(--accent)" }} />
-          <span
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-              color: "var(--text-muted)",
-            }}
-          >
-            AI Portfolio Analysis
-          </span>
-        </div>
-        <button
-          onClick={() => setResult(null)}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "var(--text-muted)",
-            fontSize: 12,
-          }}
-        >
-          Re-analyze
-        </button>
-      </div>
-
-      {/* Gauge row: Risk + Diversification + Correlation */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
-          gap: 10,
-          marginBottom: 20,
-        }}
-      >
-        {[
-          {
-            label: "RISK SCORE",
-            score: result.risk_score,
-            color: riskColor,
-            sub: result.risk_label,
-          },
-          {
-            label: "DIVERSIFICATION",
-            score: result.diversification_score,
-            color: divColor,
-            sub: result.dominant_sector,
-          },
-          {
-            label: "BTC CORRELATION",
-            score: null,
-            color: corrColor,
-            sub: (result.correlation_risk || "").toUpperCase(),
-            badge: true,
-          },
-        ].map(({ label, score, color, sub, badge }) => (
-          <div
-            key={label}
-            style={{
-              padding: "14px 10px",
-              background: `${color}10`,
-              border: `1px solid ${color}25`,
-              borderRadius: 24,
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 10,
-                color: "var(--text-muted)",
-                marginBottom: 4,
-                letterSpacing: "0.08em",
-              }}
-            >
-              {label}
-            </div>
-            {badge ? (
-              <div style={{ padding: "10px 0" }}>
-                <span
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 900,
-                    color,
-                    padding: "4px 12px",
-                    borderRadius: 20,
-                    background: `${color}15`,
-                    border: `1px solid ${color}30`,
-                  }}
-                >
-                  {sub}
-                </span>
-              </div>
-            ) : (
-              <MiniGauge score={score} color={color} />
-            )}
-            {!badge && (
-              <div
-                style={{ fontSize: 11, color, fontWeight: 700, marginTop: 2 }}
-              >
-                {sub}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Summary */}
-      <p
-        style={{
-          fontSize: 13,
-          color: "var(--text-secondary)",
-          lineHeight: 1.7,
-          marginBottom: 16,
-          padding: "12px 14px",
-          background: "var(--bg-elevated)",
-          borderRadius: 10,
-        }}
-      >
-        {result.summary}
-      </p>
-
-      {/* Best / Worst position */}
-      {(result.best_position || result.worst_position) && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 10,
-            marginBottom: 16,
-          }}
-        >
-          {result.best_position && (
-            <div
-              style={{
-                padding: "10px 14px",
-                background: "rgba(46,204,113,0.08)",
-                border: "1px solid rgba(46,204,113,0.2)",
-                borderRadius: 10,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 10,
-                  color: "#2ecc71",
-                  fontWeight: 700,
-                  marginBottom: 4,
-                }}
-              >
-                💰 BEST POSITION
-              </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-secondary)",
-                  lineHeight: 1.4,
-                }}
-              >
-                {result.best_position}
-              </div>
-            </div>
-          )}
-          {result.worst_position && (
-            <div
-              style={{
-                padding: "10px 14px",
-                background: "rgba(231,76,60,0.08)",
-                border: "1px solid rgba(231,76,60,0.2)",
-                borderRadius: 10,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 10,
-                  color: "#e74c3c",
-                  fontWeight: 700,
-                  marginBottom: 4,
-                }}
-              >
-                ⚠️ WORST POSITION
-              </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-secondary)",
-                  lineHeight: 1.4,
-                }}
-              >
-                {result.worst_position}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Sector breakdown */}
-      {result.sector_breakdown &&
-        Object.keys(result.sector_breakdown).length > 0 && (
-          <div style={{ marginBottom: 16 }}>
-            <div
-              style={{
-                fontSize: 10,
-                color: "var(--text-muted)",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                marginBottom: 8,
-              }}
-            >
-              Sector Breakdown
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              {Object.entries(result.sector_breakdown)
-                .sort((a, b) => b[1] - a[1])
-                .map(([sector, pct]) => {
-                  const color = SECTOR_COLORS[sector] || "#555";
-                  return (
-                    <div
-                      key={sector}
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
-                      <div
-                        style={{
-                          width: 70,
-                          fontSize: 10,
-                          color: "var(--text-muted)",
-                          flexShrink: 0,
-                          textAlign: "right",
-                        }}
-                      >
-                        {sector}
-                      </div>
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 6,
-                          background: "var(--bg-elevated)",
-                          borderRadius: 3,
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: `${Math.min(pct, 100)}%`,
-                            height: "100%",
-                            background: color,
-                            borderRadius: 3,
-                            transition: "width 0.8s ease",
-                          }}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          width: 32,
-                          fontSize: 10,
-                          color,
-                          fontWeight: 700,
-                          fontFamily: "monospace",
-                        }}
-                      >
-                        {pct}%
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        )}
-
-      {/* Strengths / Risks / Recommendations */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 10,
-        }}
-      >
-        {[
-          {
-            label: "Strengths",
-            items: result.strengths,
-            color: "#2ecc71",
-            icon: CheckCircle,
-          },
-          {
-            label: "Risks",
-            items: result.risks,
-            color: "#e74c3c",
-            icon: AlertTriangle,
-          },
-          {
-            label: "Recommendations",
-            items: result.recommendations,
-            color: "#f5a623",
-            icon: TrendingUp,
-          },
-        ].map(({ label, items, color, icon: Icon }) => (
-          <div
-            key={label}
-            style={{
-              padding: "12px",
-              background: `${color}08`,
-              border: `1px solid ${color}20`,
-              borderRadius: 10,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-                marginBottom: 8,
-              }}
-            >
-              <Icon size={12} style={{ color }} />
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                {label}
-              </span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {(items || []).map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    fontSize: 11,
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.4,
-                    display: "flex",
-                    gap: 5,
-                  }}
-                >
-                  <span style={{ color, flexShrink: 0 }}>→</span>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
-
-// --- Reusable SoftCard ---
+// ─────────────────────────────────────────────────────────────────
+// SOFT CARD
+// ─────────────────────────────────────────────────────────────────
 function SoftCard({ children, className = "", noPadding = false }) {
   return (
     <div
-      className={`
-        bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl 
-        transition-all duration-300 ease-out hover:bg-white/[0.03] hover:border-white/[0.06] hover:-translate-y-1 hover:shadow-xl
-        overflow-hidden relative
-        ${noPadding ? "" : "p-4 sm:p-6 lg:p-8"}
-        ${className}
-      `}
+      className={[
+        "bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl",
+        "transition-all duration-300 ease-out overflow-hidden relative",
+        noPadding ? "" : "p-6",
+        className,
+      ].filter(Boolean).join(" ")}
     >
       {children}
     </div>
   );
 }
 
-// ── Main Component ────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// MAIN PORTFOLIO PAGE
+// ─────────────────────────────────────────────────────────────────
 export default function Portfolio() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -1498,30 +942,26 @@ export default function Portfolio() {
   const fileRef = useRef(null);
 
   const [trades, setTrades] = useState(() => {
-    try {
-      const saved = localStorage.getItem("crypto_neko_trades");
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
+    try { return JSON.parse(localStorage.getItem("crypto_neko_trades") || "[]"); }
+    catch { return []; }
   });
-  
   const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState(null);
   const [wallets, setWallets] = useState(() => {
-    try {
-      const saved = localStorage.getItem("crypto_neko_wallets");
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
+    try { return JSON.parse(localStorage.getItem("crypto_neko_wallets") || "[]"); }
+    catch { return []; }
   });
-  
   const [walletHoldings, setWalletHoldings] = useState([]);
+  const [isFetchingWallet, setIsFetchingWallet] = useState(false);
+  const [walletInput, setWalletInput] = useState("");
   const [binanceKeys, setBinanceKeys] = useState(() => {
-    try {
-      const saved = localStorage.getItem("crypto_neko_binance_keys");
-      return saved ? JSON.parse(saved) : { key: "", secret: "" };
-    } catch { return { key: "", secret: "" }; }
+    try { return JSON.parse(localStorage.getItem("crypto_neko_binance_keys") || '{"key":"","secret":""}'); }
+    catch { return { key: "", secret: "" }; }
   });
-  
   const [isSyncingBinance, setIsSyncingBinance] = useState(false);
   const [binanceHoldings, setBinanceHoldings] = useState([]);
+  const [showAddSource, setShowAddSource] = useState(false);
+  const [guide, setGuide] = useState(null);
 
   const syncBinance = useCallback(async (key, secret) => {
     if (!key || !secret) return;
@@ -1533,11 +973,8 @@ export default function Portfolio() {
         setBinanceKeys({ key, secret });
         localStorage.setItem("crypto_neko_binance_keys", JSON.stringify({ key, secret }));
       }
-    } catch (e) {
-      console.error("Binance sync failed:", e);
-    } finally {
-      setIsSyncingBinance(false);
-    }
+    } catch (e) { console.error(e); }
+    finally { setIsSyncingBinance(false); }
   }, []);
 
   useEffect(() => {
@@ -1546,213 +983,293 @@ export default function Portfolio() {
 
   useEffect(() => {
     localStorage.setItem("crypto_neko_wallets", JSON.stringify(wallets));
-    const fetchWallets = async () => {
-      let allHoldings = [];
+    if (wallets.length === 0) { setWalletHoldings([]); return; }
+    const go = async () => {
+      setIsFetchingWallet(true);
+      let all = [];
       for (const w of wallets) {
         try {
-          const res = await fetch(`https://api.ethplorer.io/getAddressInfo/${w}?apiKey=freekey`);
+          const res = await fetch("https://api.ethplorer.io/getAddressInfo/" + w + "?apiKey=freekey");
           const data = await res.json();
-          if (data.ETH && data.ETH.balance > 0) allHoldings.push({ symbol: "ETH", quantity: data.ETH.balance });
-          if (data.tokens) {
-            for (const t of data.tokens) {
-               if (!t.tokenInfo || !t.tokenInfo.symbol) continue;
-               const decimals = parseInt(t.tokenInfo.decimals) || 18;
-               const bal = t.balance / Math.pow(10, decimals);
-               if (bal > 0) allHoldings.push({ symbol: t.tokenInfo.symbol, quantity: bal });
-            }
+          if (data.ETH?.balance > 0) all.push({ symbol: "ETH", quantity: data.ETH.balance });
+          for (const t of data.tokens || []) {
+            if (!t.tokenInfo?.symbol) continue;
+            const bal = t.balance / Math.pow(10, parseInt(t.tokenInfo.decimals) || 18);
+            if (bal > 0) all.push({ symbol: t.tokenInfo.symbol, quantity: bal });
           }
-        } catch (e) { console.error("Wallet fetch error", e); }
+        } catch {}
       }
-      setWalletHoldings(allHoldings);
+      setWalletHoldings(all);
+      setIsFetchingWallet(false);
     };
-    if (wallets.length > 0) fetchWallets();
-    else setWalletHoldings([]);
+    go();
   }, [wallets]);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true })
-      .then(({ data }) => { if (data && data.length > 0) setTrades(data); });
+    supabase.from("trades").select("*").eq("user_id", user.id)
+      .order("traded_at", { ascending: true })
+      .then(({ data }) => { if (data?.length > 0) setTrades(data); });
   }, [user]);
 
   useEffect(() => {
-    try { localStorage.setItem("crypto_neko_trades", JSON.stringify(trades)); } catch (e) { }
+    try { localStorage.setItem("crypto_neko_trades", JSON.stringify(trades)); } catch {}
   }, [trades]);
 
-  const [activeTab, setActiveTab] = useState("holdings"); 
-  const [showImportOpts, setShowImportOpts] = useState(false);
-
-  const holdings = useMemo(() => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]), [trades, marketData, walletHoldings, binanceHoldings]);
+  const holdings = useMemo(
+    () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
+    [trades, marketData, walletHoldings, binanceHoldings]
+  );
   const totalValue = useMemo(() => holdings.reduce((s, h) => s + h.value, 0), [holdings]);
-  const totalCost = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
-  const totalPnl = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
-  const pnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
-  
-  const pieData = useMemo(() => holdings.slice(0, 8).map((h, i) => ({ name: h.symbol, value: h.value, color: CHART_COLORS[i % CHART_COLORS.length] })), [holdings]);
+  const totalCost  = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
+  const totalPnl   = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
+  const pnlPct     = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+  const isPos      = totalPnl >= 0;
+
+  const pieData = useMemo(() =>
+    holdings.slice(0, 8).map((h, i) => ({ name: h.symbol, value: h.value, color: CHART_COLORS[i % CHART_COLORS.length] })),
+    [holdings]
+  );
 
   const handleFile = useCallback(async (file) => {
     if (!file) return;
-    setImporting(true);
+    setImporting(true); setImportMsg(null);
     try {
       const text = await file.text();
-      const { trades: parsed } = parseCSV(text);
-      setTrades((prev) => [...prev, ...parsed]);
+      const { trades: parsed, exchange, count } = parseCSV(text);
+      setTrades(prev => [...prev, ...parsed]);
+      setImportMsg({ ok: true, text: count + " trades imported from " + exchange });
+      setShowAddSource(false);
       if (user) {
-        const rows = parsed.map((t) => ({
-          user_id: user.id, exchange: t.exchange, symbol: t.symbol, side: t.side, quantity: t.quantity, price: t.price, fee: t.fee || 0, traded_at: t.traded_at || new Date().toISOString()
-        }));
-        await supabase.from("trades").insert(rows);
+        await supabase.from("trades").insert(parsed.map(t => ({
+          user_id: user.id, exchange: t.exchange, symbol: t.symbol, side: t.side,
+          quantity: t.quantity, price: t.price, fee: t.fee || 0,
+          traded_at: t.traded_at || new Date().toISOString(),
+        })));
       }
-    } catch (e) { alert(e.message); } finally { setImporting(false); setShowImportOpts(false); }
+    } catch (e) { setImportMsg({ ok: false, text: e.message }); }
+    finally { setImporting(false); }
   }, [user]);
 
+  const posGreen = { color: "var(--positive)", background: "rgba(46,204,113,0.08)", border: "1px solid rgba(46,204,113,0.2)" };
+  const negRed   = { color: "var(--negative)", background: "rgba(231,76,60,0.08)", border: "1px solid rgba(231,76,60,0.2)" };
+  const pnlStyle = isPos ? posGreen : negRed;
+
   return (
-    <div className="max-w-[1600px] mx-auto pb-12 px-4 sm:px-6 lg:px-8 text-gray-100">
-      
-      {/* ── HERO: TOTAL BALANCE ── */}
-      <div className="flex flex-col items-center justify-center py-16 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 blur-[100px] pointer-events-none rounded-full" />
-        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Total Portfolio Value</h2>
-        <div className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-6">
-          {fmtUSD(totalValue)}
+    <div className="max-w-[1600px] mx-auto pb-16">
+
+      {/* HERO */}
+      <div className="relative flex flex-col items-center justify-center py-20 text-center overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="w-[500px] h-[300px] rounded-full blur-[120px]" style={{ backgroundColor: "rgba(245,166,35,0.08)" }} />
         </div>
-        
-        <div className={`flex items-center gap-2 text-lg font-bold px-4 py-2 rounded-2xl border ${totalPnl >= 0 ? "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" : "text-red-400 bg-red-400/10 border-red-400/20"}`}>
-          {totalPnl >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
-          {totalPnl >= 0 ? "+" : ""}{fmtUSD(totalPnl)} ({fmtPct(pnlPct)})
+        <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5" style={{ color: "var(--text-muted)" }}>
+          Total Portfolio Value
+        </p>
+        <h1 className="relative z-10 text-7xl md:text-8xl font-black tracking-tighter mb-6" style={{ color: "var(--text-primary)" }}>
+          {fmtUSD(totalValue)}
+        </h1>
+        <div className="relative z-10 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border text-base font-bold" style={pnlStyle}>
+          {isPos ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+          <span>{isPos ? "+" : ""}{fmtUSD(totalPnl)}</span>
+          <span style={{ opacity: 0.7, fontSize: "0.875rem" }}>({fmtPct(pnlPct)})</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mb-8">
-        {/* ── LEFT COL: ASSET ALLOCATION (DONUT) ── */}
-        <SoftCard className="lg:col-span-4 h-96 flex flex-col items-center justify-center relative">
-          <h3 className="absolute top-6 left-6 text-xs font-bold text-gray-500 uppercase tracking-widest">Asset Allocation</h3>
-          {holdings.length > 0 ? (
-             <div className="w-full h-full pt-8">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={70} outerRadius={90} paddingAngle={5} dataKey="value" stroke="none">
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <RechartTooltip 
-                    formatter={(value) => fmtUSD(value)} 
-                    contentStyle={{ backgroundColor: "#0D111C", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", color: "#fff" }} 
-                    itemStyle={{ color: "#fff" }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+      {/* Import message */}
+      {importMsg && (
+        <div className="flex items-center gap-3 mb-6 px-5 py-3 rounded-2xl border text-sm font-semibold"
+          style={importMsg.ok ? posGreen : negRed}>
+          {importMsg.text}
+          <button onClick={() => setImportMsg(null)} className="ml-auto opacity-60 hover:opacity-100">X</button>
+        </div>
+      )}
+
+      {/* ROW 1: Donut + Data Sources */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+
+        {/* Donut */}
+        <SoftCard noPadding className="lg:col-span-4 h-80 relative">
+          <div className="absolute top-5 left-6 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+            Asset Allocation
+          </div>
+          {holdings.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-sm font-medium" style={{ color: "var(--text-muted)" }}>No assets yet</div>
           ) : (
-            <div className="text-gray-500 text-sm font-medium">No assets to display</div>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="55%" innerRadius="55%" outerRadius="72%" paddingAngle={4} dataKey="value" stroke="none">
+                  {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                </Pie>
+                <RechartTooltip
+                  formatter={(v) => fmtUSD(v)}
+                  contentStyle={{ backgroundColor: "var(--bg-card)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "var(--text-primary)", fontSize: 13, fontWeight: 600 }}
+                  itemStyle={{ color: "var(--text-primary)" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+          {pieData.length > 0 && (
+            <div className="absolute bottom-4 left-0 right-0 flex flex-wrap justify-center gap-x-3 gap-y-1 px-4">
+              {pieData.map((d) => (
+                <span key={d.name} className="flex items-center gap-1 text-xs font-bold" style={{ color: "var(--text-secondary)" }}>
+                  <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: d.color }} />
+                  {d.name}
+                </span>
+              ))}
+            </div>
           )}
         </SoftCard>
 
-        {/* ── RIGHT COL: IMPORT & SYNC ── */}
-        <SoftCard className="lg:col-span-8 flex flex-col justify-center gap-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
-            <button 
-              onClick={() => setShowImportOpts(!showImportOpts)}
-              className="text-xs font-bold bg-amber-500/10 text-amber-400 px-4 py-2 rounded-xl hover:bg-amber-500/20 transition-colors"
-            >
-              + Add Source
+        {/* Data Sources */}
+        <SoftCard className="lg:col-span-8 flex flex-col gap-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Data Sources</h3>
+            <button onClick={() => setShowAddSource(v => !v)} className="text-xs font-bold px-4 py-2 rounded-xl transition-colors"
+              style={{ background: "rgba(245,166,35,0.08)", color: "var(--accent)", border: "1px solid rgba(245,166,35,0.2)" }}>
+              {showAddSource ? "Close" : "+ Add Source"}
             </button>
           </div>
-          
-          {showImportOpts && (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-4 animate-in fade-in slide-in-from-top-2">
+
+          {showAddSource && (
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
               {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
-                <button
-                  key={key}
-                  onClick={() => fileRef.current?.click()}
-                  className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.06] hover:border-white/10 transition-all flex flex-col items-center gap-2 text-sm font-bold group"
-                >
-                  <span className="text-2xl group-hover:scale-110 transition-transform">{ex.logo}</span>
-                  <span className="text-gray-300">{ex.name} CSV</span>
+                <button key={key} onClick={() => fileRef.current?.click()}
+                  className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all"
+                  style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <span className="text-2xl">{ex.logo}</span>
+                  <span className="text-xs font-bold" style={{ color: "var(--text-secondary)" }}>{ex.name}</span>
                 </button>
               ))}
               <input type="file" ref={fileRef} accept=".csv" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2 sm:gap-3">
-             <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-500/20">
-                <CheckCircle size={14} /> Wagmi Wallet Connected
-             </div>
-             {binanceKeys.key && (
-               <div className="flex items-center gap-2 bg-[#F3BA2F]/10 text-[#F3BA2F] px-4 py-2 rounded-xl text-xs font-bold border border-[#F3BA2F]/20">
-                  <CheckCircle size={14} /> Binance Synced
-               </div>
-             )}
-             {trades.length > 0 && (
-               <div className="flex items-center gap-2 bg-blue-500/10 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold border border-blue-500/20">
-                  <CheckCircle size={14} /> {trades.length} CSV Trades
-               </div>
-             )}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>ETH Wallet</p>
+            <div className="flex gap-2">
+              <input value={walletInput} onChange={e => setWalletInput(e.target.value)} placeholder="0x..."
+                className="flex-1 rounded-2xl px-4 py-3 text-sm focus:outline-none"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", color: "var(--text-primary)" }} />
+              <button onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
+                className="px-5 py-3 rounded-2xl text-sm font-bold whitespace-nowrap transition-colors"
+                style={{ background: "rgba(245,166,35,0.08)", color: "var(--accent)", border: "1px solid rgba(245,166,35,0.2)" }}>
+                {isFetchingWallet ? "..." : "Add"}
+              </button>
+            </div>
+            {wallets.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {wallets.map(w => (
+                  <span key={w} className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono"
+                    style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", color: "var(--text-muted)" }}>
+                    {w.slice(0,6)}...{w.slice(-4)}
+                    <button onClick={() => setWallets(prev => prev.filter(x => x !== w))} style={{ color: "var(--text-muted)" }}>X</button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-1 border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+            {trades.length > 0 && (
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                style={{ background: "rgba(52,152,219,0.08)", color: "#3498db", border: "1px solid rgba(52,152,219,0.2)" }}>
+                <CheckCircle size={12} /> {trades.length} CSV Trades
+              </span>
+            )}
+            {binanceKeys.key && (
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                style={{ background: "rgba(243,186,47,0.08)", color: "#F3BA2F", border: "1px solid rgba(243,186,47,0.2)" }}>
+                <CheckCircle size={12} /> Binance Synced
+              </span>
+            )}
+            {wallets.length > 0 && (
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                style={{ background: "rgba(155,89,182,0.08)", color: "#9b59b6", border: "1px solid rgba(155,89,182,0.2)" }}>
+                <Wallet size={12} /> {wallets.length} Wallet{wallets.length > 1 ? "s" : ""}
+              </span>
+            )}
+            {trades.length === 0 && !binanceKeys.key && wallets.length === 0 && (
+              <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>No data sources connected yet.</span>
+            )}
           </div>
         </SoftCard>
       </div>
 
-      {/* ── HOLDINGS TABLE ── */}
-      <SoftCard className="overflow-x-auto">
-         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Your Holdings</h3>
-         
-         {holdings.length === 0 ? (
-            <div className="text-center py-12 text-gray-500 font-medium text-sm">
-              Your portfolio is empty. Add a wallet or upload a CSV to get started.
-            </div>
-         ) : (
-            <table className="w-full border-collapse min-w-[800px]">
-              <thead>
-                <tr className="border-b border-white/5">
-                  {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
-                    <th key={h} className={`pb-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider ${i === 0 ? "text-left pl-2" : "text-right pr-2"}`}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {holdings.map((h, idx) => {
-                  const isPos = h.pnl >= 0;
-                  return (
-                    <tr key={h.symbol} className="border-b border-white/[0.02] last:border-0 hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={() => navigate(`/coin/${h.symbol.toLowerCase()}`)}>
-                      <td className="py-4 pl-2">
-                        <div className="flex items-center gap-3">
-                          {h.image_url ? (
-                            <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full group-hover:scale-110 transition-transform" />
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-400">{h.symbol.slice(0,1)}</div>
-                          )}
-                          <div>
-                            <div className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{h.symbol}</div>
-                            <div className="text-xs text-gray-500">{h.name}</div>
-                          </div>
+      {/* HOLDINGS TABLE */}
+      {holdings.length > 0 && (
+        <SoftCard className="overflow-x-auto">
+          <h3 className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: "var(--text-muted)" }}>Your Holdings</h3>
+          <table className="w-full border-collapse min-w-[700px]">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
+                  <th key={h} className={"pb-4 text-xs font-bold uppercase tracking-wider " + (i === 0 ? "text-left" : "text-right")}
+                    style={{ color: "var(--text-muted)" }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {holdings.map((h) => {
+                const p = h.pnl >= 0;
+                return (
+                  <tr key={h.symbol} onClick={() => navigate("/coin/" + h.symbol.toLowerCase())}
+                    className="transition-colors cursor-pointer group"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.015)"}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>
+                    <td className="py-4">
+                      <div className="flex items-center gap-3">
+                        {h.image_url
+                          ? <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full shrink-0 transition-transform group-hover:scale-105" />
+                          : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold"
+                              style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)" }}>{h.symbol[0]}</div>
+                        }
+                        <div>
+                          <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>{h.symbol}</div>
+                          <div className="text-xs" style={{ color: "var(--text-muted)" }}>{h.name}</div>
                         </div>
-                      </td>
-                      <td className="py-4 pr-2 text-right text-sm font-mono font-bold text-gray-200">{fmtUSD(h.current_price)}</td>
-                      <td className="py-4 pr-2 text-right text-sm font-mono font-medium text-gray-400">{fmtNum(h.quantity)}</td>
-                      <td className="py-4 pr-2 text-right text-sm font-mono font-bold text-white">{fmtUSD(h.value)}</td>
-                      <td className="py-4 pr-2 text-right text-sm font-mono font-medium text-gray-400">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
-                      <td className="py-4 pr-2 text-right">
-                        <div className="flex flex-col items-end">
-                           <span className={`text-sm font-bold font-mono ${isPos ? "text-emerald-400" : "text-red-400"}`}>
-                             {isPos ? "+" : ""}{fmtUSD(h.pnl)}
-                           </span>
-                           <span className={`text-[10px] font-bold font-mono px-1.5 py-0.5 rounded-md mt-1 ${isPos ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
-                             {isPos ? "+" : ""}{h.pnl_pct.toFixed(2)}%
-                           </span>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-         )}
-      </SoftCard>
+                      </div>
+                    </td>
+                    <td className="py-4 text-right font-mono text-sm font-semibold" style={{ color: "var(--text-secondary)" }}>{fmtUSD(h.current_price)}</td>
+                    <td className="py-4 text-right font-mono text-sm" style={{ color: "var(--text-muted)" }}>{fmtNum(h.quantity)}</td>
+                    <td className="py-4 text-right font-mono text-sm font-bold" style={{ color: "var(--text-primary)" }}>{fmtUSD(h.value)}</td>
+                    <td className="py-4 text-right font-mono text-sm" style={{ color: "var(--text-muted)" }}>{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
+                    <td className="py-4 text-right">
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="font-mono text-sm font-bold" style={{ color: p ? "var(--positive)" : "var(--negative)" }}>
+                          {p ? "+" : ""}{fmtUSD(h.pnl)}
+                        </span>
+                        <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-lg"
+                          style={{ background: p ? "rgba(46,204,113,0.08)" : "rgba(231,76,60,0.08)", color: p ? "var(--positive)" : "var(--negative)" }}>
+                          {p ? "+" : ""}{h.pnl_pct.toFixed(2)}%
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </SoftCard>
+      )}
+
+      {/* Empty state */}
+      {holdings.length === 0 && trades.length === 0 && wallets.length === 0 && !binanceKeys.key && (
+        <SoftCard className="text-center py-20">
+          <BarChart2 size={36} className="mx-auto mb-4" style={{ color: "var(--text-muted)" }} />
+          <p className="font-semibold text-base mb-2" style={{ color: "var(--text-secondary)" }}>Your portfolio is empty</p>
+          <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>Upload a CSV from your exchange to get started.</p>
+          <button onClick={() => setShowAddSource(true)} className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-colors"
+            style={{ background: "rgba(245,166,35,0.08)", color: "var(--accent)", border: "1px solid rgba(245,166,35,0.2)" }}>
+            + Add Data Source
+          </button>
+        </SoftCard>
+      )}
+
+      {guide && <GuideModal exchange={guide} onClose={() => setGuide(null)} />}
     </div>
   );
 }
