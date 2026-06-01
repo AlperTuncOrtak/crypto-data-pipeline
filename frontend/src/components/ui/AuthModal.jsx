@@ -165,13 +165,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
     return () => document.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
 
-  useEffect(() => {
-    if (isOpen) {
-      setMode(initialMode);
-      setError("");
-      setSuccess("");
-    }
-  }, [isOpen]);
+
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
