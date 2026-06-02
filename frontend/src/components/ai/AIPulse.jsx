@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function AIPulse({ slug }) {
   const [pulse, setPulse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isPro, isEnterprise } = useAuth();
+  const navigate = useNavigate();
+  const hasAccess = isPro || isEnterprise;
 
   useEffect(() => {
     if (!slug) return;
+    if (!hasAccess) {
+      setLoading(false);
+      return;
+    }
     
     let isMounted = true;
     setLoading(true);
@@ -26,7 +35,7 @@ export default function AIPulse({ slug }) {
       });
 
     return () => { isMounted = false; };
-  }, [slug]);
+  }, [slug, hasAccess]);
 
   if (!slug) return null;
 
@@ -37,7 +46,7 @@ export default function AIPulse({ slug }) {
       marginBottom: 20,
       display: 'flex',
       gap: 16,
-      alignItems: 'flex-start',
+      alignItems: hasAccess ? 'flex-start' : 'center',
       boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
       position: 'relative',
       overflow: 'hidden',
@@ -54,22 +63,50 @@ export default function AIPulse({ slug }) {
         width: 32, height: 32, borderRadius: '50%',
         background: 'rgba(245,166,35,0.1)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexShrink: 0, marginTop: 2,
+        flexShrink: 0, marginTop: hasAccess ? 2 : 0,
       }}>
         <Sparkles size={16} color="var(--accent)" />
       </div>
 
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, position: 'relative' }}>
         <div style={{
           fontSize: 12, fontWeight: 700, color: 'var(--accent)',
           letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 4,
           display: 'flex', alignItems: 'center', gap: 6
         }}>
           AI Pulse
-          {loading && <Loader2 size={10} className="animate-spin" />}
+          {loading && hasAccess && <Loader2 size={10} className="animate-spin" />}
         </div>
         
-        {loading ? (
+        {!hasAccess ? (
+          <div style={{ position: 'relative' }}>
+             <div style={{
+                fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5,
+                fontWeight: 500, filter: 'blur(4px)', opacity: 0.5, userSelect: 'none'
+             }}>
+                Bitcoin's current movement is driven by strong institutional accumulation and positive macroeconomic data. Resistance lies at the 72K zone.
+             </div>
+             <div style={{
+                position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start'
+             }}>
+                <button
+                  onClick={() => navigate('/pricing')}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 14px', fontSize: 13, fontWeight: 600,
+                    background: 'rgba(245,166,35,0.15)', color: 'var(--accent)',
+                    border: '1px solid rgba(245,166,35,0.3)', borderRadius: 20,
+                    cursor: 'pointer', backdropFilter: 'blur(2px)', transition: '0.2s ease'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.background = 'rgba(245,166,35,0.25)'}
+                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(245,166,35,0.15)'}
+                >
+                  <Lock size={12} />
+                  Unlock AI Pulse
+                </button>
+             </div>
+          </div>
+        ) : loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
             <div style={{ height: 12, background: 'var(--border)', borderRadius: 4, width: '90%', animation: 'pulse 1.5s infinite' }} />
             <div style={{ height: 12, background: 'var(--border)', borderRadius: 4, width: '60%', animation: 'pulse 1.5s infinite' }} />
@@ -90,3 +127,4 @@ export default function AIPulse({ slug }) {
     </div>
   );
 }
+
