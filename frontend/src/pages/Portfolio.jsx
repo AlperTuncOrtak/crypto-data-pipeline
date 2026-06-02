@@ -1051,6 +1051,20 @@ export default function Portfolio() {
     finally { setImporting(false); }
   }, [user]);
 
+  const handleClearTrades = useCallback(async () => {
+    if (!window.confirm("Are you sure you want to clear all imported CSV trades?")) return;
+    setTrades([]);
+    try { localStorage.removeItem("crypto_neko_trades"); } catch {}
+    if (user) {
+      try {
+        await supabase.from("trades").delete().eq("user_id", user.id);
+        setImportMsg({ ok: true, text: "All imported trades have been cleared." });
+      } catch (e) {
+        setImportMsg({ ok: false, text: "Failed to clear trades from database." });
+      }
+    }
+  }, [user]);
+
 
 
   return (
@@ -1190,6 +1204,13 @@ export default function Portfolio() {
             {trades.length > 0 && (
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
                 <CheckCircle size={12} /> {trades.length} CSV Trades
+                <button 
+                  onClick={handleClearTrades} 
+                  className="ml-1 text-blue-400 hover:text-red-400 transition-colors"
+                  title="Clear CSV Trades"
+                >
+                  ✕
+                </button>
               </span>
             )}
             {binanceKeys.key && (
@@ -1211,58 +1232,60 @@ export default function Portfolio() {
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 && (
-        <SoftCard className="overflow-x-auto">
+        <SoftCard>
           <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">Your Holdings</h3>
-          <table className="w-full border-collapse min-w-[700px]">
-            <thead>
-              <tr className="border-b border-white/[0.05]">
-                {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
-                  <th key={h} className={`pb-4 text-xs font-bold uppercase tracking-wider text-gray-500 ${i === 0 ? "text-left" : "text-right"}`}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {holdings.map((h) => {
-                const p = h.pnl >= 0;
-                return (
-                  <tr key={h.symbol} onClick={() => navigate("/coin/" + h.symbol.toLowerCase())}
-                    className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.015]"
-                  >
-                    <td className="py-4">
-                      <div className="flex items-center gap-3">
-                        {h.image_url
-                          ? <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full shrink-0 transition-transform group-hover:scale-105" />
-                          : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold bg-white/[0.05] text-gray-400">
-                              {h.symbol[0]}
-                            </div>
-                        }
-                        <div>
-                          <div className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{h.symbol}</div>
-                          <div className="text-xs text-gray-500">{h.name}</div>
+          <div className="overflow-x-auto w-full pb-4">
+            <table className="w-full border-collapse min-w-[700px]">
+              <thead>
+                <tr className="border-b border-white/[0.05]">
+                  {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
+                    <th key={h} className={`pb-4 text-xs font-bold uppercase tracking-wider text-gray-500 ${i === 0 ? "text-left" : "text-right"}`}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {holdings.map((h) => {
+                  const p = h.pnl >= 0;
+                  return (
+                    <tr key={h.symbol} onClick={() => navigate("/coin/" + h.symbol.toLowerCase())}
+                      className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.015]"
+                    >
+                      <td className="py-4">
+                        <div className="flex items-center gap-3">
+                          {h.image_url
+                            ? <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full shrink-0 transition-transform group-hover:scale-105" />
+                            : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold bg-white/[0.05] text-gray-400">
+                                {h.symbol[0]}
+                              </div>
+                          }
+                          <div>
+                            <div className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{h.symbol}</div>
+                            <div className="text-xs text-gray-500">{h.name}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="py-4 text-right font-mono text-sm font-semibold text-gray-400">{fmtUSD(h.current_price)}</td>
-                    <td className="py-4 text-right font-mono text-sm text-gray-500">{fmtNum(h.quantity)}</td>
-                    <td className="py-4 text-right font-mono text-sm font-bold text-gray-200">{fmtUSD(h.value)}</td>
-                    <td className="py-4 text-right font-mono text-sm text-gray-500">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
-                    <td className="py-4 text-right">
-                      <div className="flex flex-col items-end gap-1">
-                        <span className={`font-mono text-sm font-bold ${p ? "text-emerald-400" : "text-red-400"}`}>
-                          {p ? "+" : ""}{fmtUSD(h.pnl)}
-                        </span>
-                        <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg ${p ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
-                          {p ? "+" : ""}{h.pnl_pct.toFixed(2)}%
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="py-4 text-right font-mono text-sm font-semibold text-gray-400">{fmtUSD(h.current_price)}</td>
+                      <td className="py-4 text-right font-mono text-sm text-gray-500">{fmtNum(h.quantity)}</td>
+                      <td className="py-4 text-right font-mono text-sm font-bold text-gray-200">{fmtUSD(h.value)}</td>
+                      <td className="py-4 text-right font-mono text-sm text-gray-500">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
+                      <td className="py-4 text-right">
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`font-mono text-sm font-bold ${p ? "text-emerald-400" : "text-red-400"}`}>
+                            {p ? "+" : ""}{fmtUSD(h.pnl)}
+                          </span>
+                          <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg ${p ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
+                            {p ? "+" : ""}{h.pnl_pct.toFixed(2)}%
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </SoftCard>
       )}
 
