@@ -605,7 +605,7 @@ _pulse_cache = {}
 @app.get("/ai/pulse/{slug}")
 def ai_pulse(slug: str):
     import time, os, httpx
-    from backend.services.market_service import get_coin_by_slug
+    from backend.services.coin_service import get_coin_by_slug
     
     now = time.time()
     cached = _pulse_cache.get(slug)
