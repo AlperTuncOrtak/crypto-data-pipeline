@@ -1200,31 +1200,36 @@ export default function Portfolio() {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.04]">
+          <div className="flex flex-wrap gap-2 pt-4 border-t border-white/[0.04] items-center justify-between">
+            <div className="flex flex-wrap gap-2">
+              {trades.length > 0 && (
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  <CheckCircle size={12} /> {trades.length} CSV Trades
+                </span>
+              )}
+              {binanceKeys.key && (
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                  <CheckCircle size={12} /> Binance Synced
+                </span>
+              )}
+              {wallets.length > 0 && (
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  <Wallet size={12} /> {wallets.length} Wallet{wallets.length > 1 ? "s" : ""}
+                </span>
+              )}
+              {trades.length === 0 && !binanceKeys.key && wallets.length === 0 && (
+                <span className="text-xs font-medium text-gray-500">No data sources connected yet.</span>
+              )}
+            </div>
+            
             {trades.length > 0 && (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                <CheckCircle size={12} /> {trades.length} CSV Trades
-                <button 
-                  onClick={handleClearTrades} 
-                  className="ml-1 text-blue-400 hover:text-red-400 transition-colors"
-                  title="Clear CSV Trades"
-                >
-                  ✕
-                </button>
-              </span>
-            )}
-            {binanceKeys.key && (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
-                <CheckCircle size={12} /> Binance Synced
-              </span>
-            )}
-            {wallets.length > 0 && (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                <Wallet size={12} /> {wallets.length} Wallet{wallets.length > 1 ? "s" : ""}
-              </span>
-            )}
-            {trades.length === 0 && !binanceKeys.key && wallets.length === 0 && (
-              <span className="text-xs font-medium text-gray-500">No data sources connected yet.</span>
+              <button 
+                onClick={handleClearTrades} 
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] ml-auto"
+                title="Clear all imported CSV data"
+              >
+                ✕ Clear CSV Data
+              </button>
             )}
           </div>
         </SoftCard>
@@ -1237,9 +1242,9 @@ export default function Portfolio() {
           <div className="overflow-x-auto w-full pb-4">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
-                <tr className="border-b border-white/[0.05]">
+                <tr className="border-b border-white/[0.05] bg-white/[0.02]">
                   {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
-                    <th key={h} className={`pb-4 text-xs font-bold uppercase tracking-wider text-gray-500 ${i === 0 ? "text-left" : "text-right"}`}>
+                    <th key={h} className={`px-5 py-4 text-xs font-bold uppercase tracking-wider text-gray-400 ${i === 0 ? "text-left rounded-tl-2xl" : "text-right"} ${i === 5 ? "rounded-tr-2xl" : ""}`}>
                       {h}
                     </th>
                   ))}
@@ -1250,9 +1255,9 @@ export default function Portfolio() {
                   const p = h.pnl >= 0;
                   return (
                     <tr key={h.symbol} onClick={() => navigate("/coin/" + h.symbol.toLowerCase())}
-                      className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.015]"
+                      className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.025]"
                     >
-                      <td className="py-4">
+                      <td className="px-5 py-5">
                         <div className="flex items-center gap-3">
                           {h.image_url
                             ? <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full shrink-0 transition-transform group-hover:scale-105" />
@@ -1266,11 +1271,11 @@ export default function Portfolio() {
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 text-right font-mono text-sm font-semibold text-gray-400">{fmtUSD(h.current_price)}</td>
-                      <td className="py-4 text-right font-mono text-sm text-gray-500">{fmtNum(h.quantity)}</td>
-                      <td className="py-4 text-right font-mono text-sm font-bold text-gray-200">{fmtUSD(h.value)}</td>
-                      <td className="py-4 text-right font-mono text-sm text-gray-500">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
-                      <td className="py-4 text-right">
+                      <td className="px-5 py-5 text-right font-mono text-sm font-semibold text-gray-400">{fmtUSD(h.current_price)}</td>
+                      <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">{fmtNum(h.quantity)}</td>
+                      <td className="px-5 py-5 text-right font-mono text-sm font-bold text-gray-200">{fmtUSD(h.value)}</td>
+                      <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
+                      <td className="px-5 py-5 text-right">
                         <div className="flex flex-col items-end gap-1">
                           <span className={`font-mono text-sm font-bold ${p ? "text-emerald-400" : "text-red-400"}`}>
                             {p ? "+" : ""}{fmtUSD(h.pnl)}
