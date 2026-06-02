@@ -50,11 +50,17 @@ def parse_date(date_str):
 
 
 def safe_int(val):
-    """Float supply degerlerini INT'e cevirir, None'u korur."""
+    """Float supply degerlerini INT'e cevirir, MySQL BIGINT sinirini asmasini engeller."""
     if val is None:
         return None
     try:
-        return int(float(val))
+        num = int(float(val))
+        # Cap at MySQL signed BIGINT max to prevent DataError (1264)
+        if num > 9223372036854775807:
+            return 9223372036854775807
+        elif num < -9223372036854775808:
+            return -9223372036854775808
+        return num
     except (ValueError, TypeError, OverflowError):
         return None
 
@@ -64,16 +70,27 @@ def sync():
 
     coins = []
     for page in range(1, 21):  # top 5000 coin (20 × 250)
-        try:
-            data = fetch_coingecko(page=page)
-            if not data:
+        retries = 3
+        while retries > 0:
+            try:
+                data = fetch_coingecko(page=page)
+                if not data:
+                    break
+                coins.extend(data)
+                logger.info(f"Page {page}: {len(data)} coins fetched.")
+                time.sleep(12.0)  # Safe delay to strictly respect free tier rate limit
+                break # Success, go to next page
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    logger.warning(f"Rate limited on page {page}. Waiting 60s to retry...")
+                    time.sleep(60.0)
+                    retries -= 1
+                else:
+                    logger.error(f"CoinGecko fetch error (page {page}): {e}")
+                    break
+            except Exception as e:
+                logger.error(f"CoinGecko fetch error (page {page}): {e}")
                 break
-            coins.extend(data)
-            logger.info(f"Page {page}: {len(data)} coins fetched.")
-            time.sleep(6.0)  # Respect CoinGecko API rate limits (avoid 429)
-        except Exception as e:
-            logger.error(f"CoinGecko fetch error (page {page}): {e}")
-            break
 
     if not coins:
         logger.error("No coins fetched, aborting.")
