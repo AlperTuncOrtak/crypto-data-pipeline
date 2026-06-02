@@ -1083,34 +1083,38 @@ export default function Portfolio() {
       )}
 
       {/* ROW 1: Donut + Data Sources */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10 mt-8">
 
         {/* Donut */}
-        <SoftCard noPadding className="lg:col-span-4 h-80 relative">
-          <div className="absolute top-5 left-6 text-xs font-bold uppercase tracking-widest text-gray-500">
+        <SoftCard className="lg:col-span-4 flex flex-col min-h-[380px]">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 shrink-0">
             Asset Allocation
+          </h3>
+          
+          <div className="flex-1 w-full relative min-h-[200px]">
+            {holdings.length === 0 ? (
+              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500">No assets yet</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius="60%" outerRadius="80%" paddingAngle={4} dataKey="value" stroke="none">
+                    {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                  <RechartTooltip
+                    formatter={(v) => fmtUSD(v)}
+                    contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "#fff", fontSize: 13, fontWeight: 600 }}
+                    itemStyle={{ color: "#fff" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
-          {holdings.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-sm font-medium text-gray-500">No assets yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="55%" innerRadius="55%" outerRadius="72%" paddingAngle={4} dataKey="value" stroke="none">
-                  {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                </Pie>
-                <RechartTooltip
-                  formatter={(v) => fmtUSD(v)}
-                  contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "#fff", fontSize: 13, fontWeight: 600 }}
-                  itemStyle={{ color: "#fff" }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
+
           {pieData.length > 0 && (
-            <div className="absolute bottom-4 left-0 right-0 flex flex-wrap justify-center gap-x-3 gap-y-1 px-4">
+            <div className="shrink-0 flex flex-wrap justify-center gap-x-4 gap-y-2 mt-6 pt-4 border-t border-white/[0.04]">
               {pieData.map((d) => (
-                <span key={d.name} className="flex items-center gap-1 text-xs font-bold text-gray-400">
-                  <span className="w-2 h-2 rounded-full inline-block shadow-sm" style={{ backgroundColor: d.color }} />
+                <span key={d.name} className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
+                  <span className="w-2.5 h-2.5 rounded-full inline-block shadow-sm" style={{ backgroundColor: d.color }} />
                   {d.name}
                 </span>
               ))}
