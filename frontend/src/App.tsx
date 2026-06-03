@@ -83,28 +83,14 @@ function AppInner() {
       }}
     >
       {/* Global Background Effects */}
+      <div className="liquid-bg" />
       <div
         style={{
           position: "fixed",
           inset: 0,
           backgroundImage:
-            "radial-gradient(rgba(255,255,255,.022) 1px,transparent 1px)",
-          backgroundSize: "36px 36px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          position: "fixed",
-          top: "-10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100%",
-          maxWidth: 1000,
-          height: 500,
-          background:
-            "radial-gradient(ellipse,rgba(245,166,35,.04) 0%,transparent 65%)",
+            "radial-gradient(rgba(255,255,255,.015) 1px,transparent 1px)",
+          backgroundSize: "48px 48px",
           pointerEvents: "none",
           zIndex: 0,
         }}

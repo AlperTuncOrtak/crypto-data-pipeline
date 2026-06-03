@@ -4,39 +4,41 @@
    DARK THEME (default)
 ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg-base:     #0A0D14;
-  --bg-surface:  #13161E;
-  --bg-elevated: #1C202B;
-  --bg-card:     #161922;
+  --bg-base:     #020204;
+  --bg-surface:  #08080C;
+  --bg-elevated: #0C0C12;
+  --bg-card:     #0A0A0F;
 
-  --border:      rgba(255,255,255,0.05);
+  --border:      rgba(255,255,255,0.04);
   --border-soft: rgba(255,255,255,0.02);
+  --border-glow: rgba(0, 240, 255, 0.15);
 
-  --text-primary:   #F3F4F6;
-  --text-secondary: #9CA3AF;
-  --text-muted:     #6B7280;
+  --text-primary:   #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted:     #71717A;
 
-  --accent:         #f5a623;
-  --accent-hover:   #f7b944;
-  --accent-soft:    rgba(245,166,35,0.1);
-  --accent-border:  rgba(245,166,35,0.25);
+  --accent:         #00F0FF;
+  --accent-hover:   #5EEAD4;
+  --accent-soft:    rgba(0, 240, 255, 0.12);
+  --accent-border:  rgba(0, 240, 255, 0.25);
 
-  --positive:       #10B981;
-  --positive-soft:  rgba(16,185,129,0.1);
-  --negative:       #EF4444;
-  --negative-soft:  rgba(239,68,68,0.1);
+  --positive:       #2DD4BF;
+  --positive-soft:  rgba(45, 212, 191, 0.12);
+  --negative:       #F43F5E;
+  --negative-soft:  rgba(244, 63, 94, 0.12);
 
   /* Mobile nav */
-  --nav-overlay: rgba(10,13,20,0.92);
+  --nav-overlay: rgba(2, 2, 4, 0.95);
   
   --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel {
-  background: rgba(19, 22, 30, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(10, 10, 15, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.01), 0 8px 32px rgba(0,0,0,0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -48,7 +50,7 @@ html { overflow-x: hidden; }
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -154,4 +156,27 @@ body {
   .show-mobile-flex { display: flex !important; }
   /* hide desktop nav links row on mobile — keep logo + right side */
   .desktop-nav-links { display: none !important; }
+}
+
+/* ── Typography Enhancements ────────────────────────────── */
+h1, h2, h3, h4, h5, h6, .display-font {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.glow-text {
+  text-shadow: 0 0 12px var(--accent-soft), 0 0 24px var(--accent-border);
+}
+
+.liquid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.08), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+  pointer-events: none;
 }
