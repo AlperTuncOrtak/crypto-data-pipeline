@@ -42,7 +42,7 @@ export default function Footer() {
               width: 24,
               height: 24,
               borderRadius: 6,
-              background: "linear-gradient(135deg,#f5a623,#e8941a)",
+              background: "linear-gradient(135deg,#00F0FF,#8B5CF6)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -56,24 +56,24 @@ export default function Footer() {
           <span
             style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--text-primary)" }}
           >
-            Crypto<span style={{ color: "#f5a623" }}>Neko</span>
+            Crypto<span style={{ color: "#00F0FF" }}>Neko</span>
           </span>
         </div>
 
         {/* Links */}
         <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-          <a href="/docs" className="hover:text-[#f5a623] transition-colors">Documentation</a>
-          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a623] transition-colors">API</a>
-          <a href="/terms" className="hover:text-[#f5a623] transition-colors">Terms of Service</a>
-          <a href="/privacy" className="hover:text-[#f5a623] transition-colors">Privacy Policy</a>
+          <a href="/docs" className="hover:text-[#00F0FF] transition-colors">Documentation</a>
+          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[#00F0FF] transition-colors">API</a>
+          <a href="/terms" className="hover:text-[#00F0FF] transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-[#00F0FF] transition-colors">Privacy Policy</a>
         </div>
 
         {/* Socials & Copyright */}
         <div className="flex flex-col items-center md:items-end gap-3">
           <div className="flex items-center gap-5" style={{ color: 'var(--text-muted)' }}>
-            <a href="#" title="X (Twitter)" className="hover:text-[#f5a623] transition-colors"><IconX size={18} /></a>
-            <a href="#" title="Discord" className="hover:text-[#f5a623] transition-colors"><IconDiscord size={18} /></a>
-            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-[#f5a623] transition-colors"><IconGithub size={18} /></a>
+            <a href="#" title="X (Twitter)" className="hover:text-[#00F0FF] transition-colors"><IconX size={18} /></a>
+            <a href="#" title="Discord" className="hover:text-[#00F0FF] transition-colors"><IconDiscord size={18} /></a>
+            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-[#00F0FF] transition-colors"><IconGithub size={18} /></a>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6 }}>
             © {new Date().getFullYear()} CryptoNeko. All rights reserved.

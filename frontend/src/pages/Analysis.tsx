@@ -7,7 +7,7 @@ import { useMarket } from '../hooks/useMarket'
 import { useMultiCoinHistory, useMultiCoinPerformance } from '../hooks/useAnalysis'
 import { GitCompare, X, TrendingUp, TrendingDown, Search } from 'lucide-react'
 
-const CHART_COLORS = ['#2ecc71', '#3498db', '#f5a623', '#e91e8c', '#9b59b6']
+const CHART_COLORS = ['#2ecc71', '#3498db', '#00F0FF', '#e91e8c', '#9b59b6']
 
 const TIME_RANGES = [
   { label: '1H',  hours: 1   },
@@ -173,7 +173,7 @@ export default function Analysis() {
         <div className="flex items-center gap-3 mb-2">
           <div style={{
             width: 48, height: 48, borderRadius: 16,
-            background: 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))',
+            background: 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(0,240,255,0.05))',
             border: '1px solid rgba(245,166,35,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>

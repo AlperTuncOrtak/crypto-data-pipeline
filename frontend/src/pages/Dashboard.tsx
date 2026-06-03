@@ -55,7 +55,7 @@ function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouse
       className={className}
       style={{
         ...bentoBase,
-        borderColor: hov ? "rgba(245,166,35,0.15)" : "rgba(255,255,255,0.05)",
+        borderColor: hov ? "rgba(0,240,255,0.15)" : "rgba(255,255,255,0.05)",
         backgroundColor: hov ? "rgba(255,255,255,0.025)" : "rgba(255,255,255,0.02)",
         transform: hov ? "scale(1.01)" : "scale(1)",
         ...style,
@@ -107,13 +107,13 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
               alignItems: "center",
               justifyContent: "center",
               background: accent
-                ? "linear-gradient(135deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05))"
+                ? "linear-gradient(135deg, rgba(0,240,255,0.15), rgba(0,240,255,0.05))"
                 : "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01))",
               border: accent 
                 ? "1px solid rgba(245,166,35,0.2)" 
                 : "1px solid rgba(255,255,255,0.05)",
               color: accent ? "var(--accent)" : "var(--text-secondary)",
-              boxShadow: accent ? "0 4px 12px rgba(245,166,35,0.1)" : "0 4px 12px rgba(0,0,0,0.2)",
+              boxShadow: accent ? "0 4px 12px rgba(0,240,255,0.1)" : "0 4px 12px rgba(0,0,0,0.2)",
               transition: "all 0.4s ease",
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
@@ -209,8 +209,8 @@ function LastUpdated({ marketData }) {
 function FearGreedGauge({ coins }) {
   const [score, setScore] = useState(50);
   const [text, setText] = useState("Neutral");
-  const [color, setColor] = useState("#f5a623");
-  const [bg, setBg] = useState("rgba(245,166,35,0.1)");
+  const [color, setColor] = useState("#00F0FF");
+  const [bg, setBg] = useState("rgba(0,240,255,0.1)");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -223,7 +223,7 @@ function FearGreedGauge({ coins }) {
           setScore(val);
           if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
           else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
-          else if (val <= 60) { setText("Neutral"); setColor("#f5a623"); setBg("rgba(245,166,35,0.1)"); }
+          else if (val <= 60) { setText("Neutral"); setColor("#00F0FF"); setBg("rgba(0,240,255,0.1)"); }
           else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
           else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
         }
@@ -377,7 +377,7 @@ function TrendingCoinCard({ coin, navigate }) {
     >
       <div className="feat-bg-glow" style={{
         position: "absolute", top: "50%", right: -20, width: 80, height: 80,
-        borderRadius: "50%", background: `radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%)`,
+        borderRadius: "50%", background: `radial-gradient(circle, rgba(0,240,255,0.15) 0%, transparent 70%)`,
         filter: "blur(12px)", pointerEvents: "none", zIndex: 0,
         transform: "translateY(-50%) scale(1)", opacity: 0,
         transition: "all .4s cubic-bezier(0.25, 1, 0.5, 1)",
@@ -509,7 +509,7 @@ export default function Dashboard() {
           {/* Trending */}
           <BentoCard className="lg:col-span-2" style={{ padding: "22px 24px", minHeight: 160 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))", border: "1px solid rgba(245,166,35,0.2)" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(0,240,255,0.05))", border: "1px solid rgba(245,166,35,0.2)" }}>
                 <Flame size={13} style={{ color: "var(--accent)" }} />
               </div>
               <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>

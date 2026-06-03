@@ -47,7 +47,7 @@ const SIGNAL_CONFIG = {
     label: "BEARISH",
   },
   neutral: {
-    color: "#f5a623",
+    color: "#00F0FF",
     bg: "rgba(245,166,35,0.08)",
     border: "rgba(245,166,35,0.25)",
     glow: "rgba(245,166,35,0.12)",
@@ -72,7 +72,7 @@ const SIGNAL_CONFIG = {
     label: "BEARISH",
   },
   hold: {
-    color: "#f5a623",
+    color: "#00F0FF",
     bg: "rgba(245,166,35,0.08)",
     border: "rgba(245,166,35,0.25)",
     glow: "rgba(245,166,35,0.12)",
@@ -90,14 +90,14 @@ const TIMEFRAME_LABELS = {
 const SENTIMENT_COLOR = {
   bullish: "#2ecc71",
   bearish: "#e74c3c",
-  neutral: "#f5a623",
+  neutral: "#00F0FF",
 };
-const RISK_COLOR = { low: "#2ecc71", medium: "#f5a623", high: "#e74c3c" };
+const RISK_COLOR = { low: "#2ecc71", medium: "#00F0FF", high: "#e74c3c" };
 
 const TREND_CONFIG = {
   strong_uptrend: { color: "#2ecc71", icon: "↑↑", label: "Strong Uptrend" },
   uptrend: { color: "#2ecc71", icon: "↑", label: "Uptrend" },
-  sideways: { color: "#f5a623", icon: "→", label: "Sideways" },
+  sideways: { color: "#00F0FF", icon: "→", label: "Sideways" },
   downtrend: { color: "#e74c3c", icon: "↓", label: "Downtrend" },
   strong_downtrend: { color: "#e74c3c", icon: "↓↓", label: "Strong Downtrend" },
   unknown: { color: "var(--text-muted)", icon: "?", label: "Unknown" },
@@ -107,8 +107,8 @@ const FG_CONFIG = (val) => {
   if (!val && val !== 0)
     return { color: "var(--text-muted)", label: "Unknown", bar: 0 };
   if (val < 25) return { color: "#e74c3c", label: "Extreme Fear", bar: val };
-  if (val < 45) return { color: "#e8941a", label: "Fear", bar: val };
-  if (val < 55) return { color: "#f5a623", label: "Neutral", bar: val };
+  if (val < 45) return { color: "#8B5CF6", label: "Fear", bar: val };
+  if (val < 55) return { color: "#00F0FF", label: "Neutral", bar: val };
   if (val < 75) return { color: "#a8d08d", label: "Greed", bar: val };
   return { color: "#2ecc71", label: "Extreme Greed", bar: val };
 };
@@ -118,13 +118,13 @@ function getSubColor(sub) {
   const s = String(sub).toLowerCase();
   if (["bullish", "oversold", "near_lower"].includes(s)) return "#2ecc71";
   if (["bearish", "overbought", "near_upper"].includes(s)) return "#e74c3c";
-  return "#f5a623";
+  return "#00F0FF";
 }
 
 function RSIGauge({ value }) {
   if (!value) return null;
   const pct = Math.min(Math.max(value, 0), 100);
-  const color = value > 70 ? "#e74c3c" : value < 30 ? "#2ecc71" : "#f5a623";
+  const color = value > 70 ? "#e74c3c" : value < 30 ? "#2ecc71" : "#00F0FF";
   return (
     <div style={{ marginTop: 4 }}>
       <div
@@ -192,7 +192,7 @@ function BBBar({ position }) {
   const clamped = Math.min(Math.max(raw, 0), 100); // bar pozisyonu için clamp
   const isAbove = raw > 100;
   const isBelow = raw < 0;
-  const color = raw > 80 ? "#e74c3c" : raw < 20 ? "#2ecc71" : "#f5a623";
+  const color = raw > 80 ? "#e74c3c" : raw < 20 ? "#2ecc71" : "#00F0FF";
   const label = isAbove
     ? `BB: ${raw.toFixed(0)}% ↑`
     : isBelow
@@ -398,7 +398,7 @@ function MarketContextCard({ marketContext }) {
                 height: 6,
                 borderRadius: 3,
                 background:
-                  "linear-gradient(to right, #e74c3c, #f5a623, #2ecc71)",
+                  "linear-gradient(to right, #e74c3c, #00F0FF, #2ecc71)",
                 overflow: "visible",
                 marginBottom: 4,
               }}
@@ -507,7 +507,7 @@ function MarketContextCard({ marketContext }) {
                 volume.level === "extreme" || volume.level === "low"
                   ? "#e74c3c"
                   : volume.level === "high"
-                    ? "#f5a623"
+                    ? "#00F0FF"
                     : "#2ecc71",
             }}
           >
@@ -560,7 +560,7 @@ function MarketContextCard({ marketContext }) {
                     ? "#2ecc71"
                     : news.sentiment?.sentiment === "negative"
                       ? "#e74c3c"
-                      : "#f5a623",
+                      : "#00F0FF",
               }}
             >
               {(news.sentiment?.sentiment || "neutral").toUpperCase()}
@@ -622,9 +622,9 @@ function BullishnessGauge({ score }) {
       : s >= 60
         ? "#a8d08d"
         : s >= 41
-          ? "#f5a623"
+          ? "#00F0FF"
           : s >= 21
-            ? "#e8941a"
+            ? "#8B5CF6"
             : "#e74c3c";
   const label =
     s >= 75
@@ -786,18 +786,18 @@ const ACTION_TAG_CONFIG = {
   STRONG_BUY: { color: "#2ecc71", bg: "rgba(46,204,113,0.12)", icon: "🚀" },
   BUY_THE_DIP: { color: "#2ecc71", bg: "rgba(46,204,113,0.10)", icon: "📉➕" },
   WAIT_FOR_BREAKOUT: {
-    color: "#f5a623",
+    color: "#00F0FF",
     bg: "rgba(245,166,35,0.10)",
     icon: "⏳",
   },
-  WAIT_FOR_DIP: { color: "#f5a623", bg: "rgba(245,166,35,0.10)", icon: "⏬" },
+  WAIT_FOR_DIP: { color: "#00F0FF", bg: "rgba(245,166,35,0.10)", icon: "⏬" },
   HOLD_AND_MONITOR: {
-    color: "#f5a623",
+    color: "#00F0FF",
     bg: "rgba(245,166,35,0.08)",
     icon: "👁️",
   },
   TIGHTEN_STOP_LOSS: {
-    color: "#e8941a",
+    color: "#8B5CF6",
     bg: "rgba(232,148,26,0.12)",
     icon: "🛡️",
   },
@@ -812,12 +812,12 @@ const ACTION_TAG_CONFIG = {
     icon: "✅",
   },
   REDUCE_POSITION: {
-    color: "#e8941a",
+    color: "#8B5CF6",
     bg: "rgba(232,148,26,0.12)",
     icon: "📊",
   },
   AVOID_ENTRY: { color: "#e74c3c", bg: "rgba(231,76,60,0.12)", icon: "🚫" },
-  WATCH_SUPPORT: { color: "#f5a623", bg: "rgba(245,166,35,0.08)", icon: "📍" },
+  WATCH_SUPPORT: { color: "#00F0FF", bg: "rgba(245,166,35,0.08)", icon: "📍" },
   WATCH_RESISTANCE: {
     color: "#e74c3c",
     bg: "rgba(231,76,60,0.08)",
@@ -853,7 +853,7 @@ function ActionTagsCard({ tags }) {
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => {
           const cfg = ACTION_TAG_CONFIG[tag] || {
-            color: "#f5a623",
+            color: "#00F0FF",
             bg: "rgba(245,166,35,0.08)",
             icon: "•",
           };
@@ -922,7 +922,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
       ? "#2ecc71"
       : conf.dominant === "bearish"
         ? "#e74c3c"
-        : "#f5a623";
+        : "#00F0FF";
 
   return (
     <div
@@ -959,7 +959,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
               {conf.bullish_indicators}B · {conf.bearish_indicators}S
             </span>
             {conf.conflicting && (
-              <AlertTriangle size={9} style={{ color: "#f5a623" }} />
+              <AlertTriangle size={9} style={{ color: "#00F0FF" }} />
             )}
           </div>
         )}
@@ -972,7 +972,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
           const isBull = /bullish|uptrend|oversold|above|rising/i.test(text);
           const isBear =
             /bearish|downtrend|overbought|below|falling|declining/i.test(text);
-          const dotColor = isBull ? "#2ecc71" : isBear ? "#e74c3c" : "#f5a623";
+          const dotColor = isBull ? "#2ecc71" : isBear ? "#e74c3c" : "#00F0FF";
           return (
             <div
               key={key}
@@ -1023,8 +1023,8 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
           }}
         >
           <div className="flex items-center gap-2">
-            <AlertTriangle size={11} style={{ color: "#f5a623" }} />
-            <span style={{ fontSize: 11, color: "#f5a623", fontWeight: 600 }}>
+            <AlertTriangle size={11} style={{ color: "#00F0FF" }} />
+            <span style={{ fontSize: 11, color: "#00F0FF", fontWeight: 600 }}>
               Mixed signals — indicators conflict. Exercise extra caution.
             </span>
           </div>
@@ -1303,7 +1303,7 @@ export default function AIAnalysis() {
                       {
                         key: "watching",
                         label: "Watching",
-                        color: "#f5a623",
+                        color: "#00F0FF",
                         icon: Minus,
                       },
                     ].map((opt) => {
@@ -1493,7 +1493,7 @@ export default function AIAnalysis() {
                     style={{
                       flex: 1,
                       padding: "11px",
-                      background: "linear-gradient(135deg, #f5a623, #e8941a)",
+                      background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
                       color: "#111",
                       border: "none",
                       borderRadius: 12,
@@ -1560,9 +1560,9 @@ export default function AIAnalysis() {
                 height: 48,
                 borderRadius: 16,
                 background:
-                  "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.05))",
+                  "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(0,240,255,0.05))",
                 border: "1px solid rgba(245,166,35,0.3)",
-                boxShadow: "0 0 24px rgba(245,166,35,0.1)",
+                boxShadow: "0 0 24px rgba(0,240,255,0.1)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1667,7 +1667,7 @@ export default function AIAnalysis() {
                     width: 32,
                     height: 32,
                     borderRadius: "50%",
-                    background: "rgba(245,166,35,0.15)",
+                    background: "rgba(0,240,255,0.15)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -1795,7 +1795,7 @@ export default function AIAnalysis() {
               flexShrink: 0,
               background:
                 selected && !loading
-                  ? "linear-gradient(135deg, #f5a623, #e8941a)"
+                  ? "linear-gradient(135deg, #00F0FF, #8B5CF6)"
                   : "rgba(255,255,255,0.04)",
               color: selected && !loading ? "#111" : "rgba(255,255,255,0.2)",
               border: "none",

@@ -45,7 +45,7 @@ const REGION_WARNINGS = {
     flag: "🇪🇺",
     title: "EU Users — Important Notice",
     text: "CryptoNeko is not licensed as a Crypto-Asset Service Provider (CASP) under MiCA (Markets in Crypto-Assets Regulation). This platform provides automated technical analysis only and does not constitute investment advice or portfolio management services. EU residents should be aware that crypto-asset investments carry significant risks and are subject to MiCA oversight.",
-    color: "#e8941a",
+    color: "#8B5CF6",
   },
 };
 
@@ -117,7 +117,7 @@ export default function DisclaimerModal({ onAccept }) {
           <div
             style={{
               height: 3,
-              background: "linear-gradient(90deg, #e74c3c, #f5a623, #e74c3c)",
+              background: "linear-gradient(90deg, #e74c3c, #00F0FF, #e74c3c)",
             }}
           />
 
@@ -212,10 +212,10 @@ export default function DisclaimerModal({ onAccept }) {
               <div className="flex items-start gap-2 mb-3">
                 <AlertTriangle
                   size={14}
-                  style={{ color: "#f5a623", flexShrink: 0, marginTop: 1 }}
+                  style={{ color: "#00F0FF", flexShrink: 0, marginTop: 1 }}
                 />
                 <span
-                  style={{ fontSize: 13, fontWeight: 700, color: "#f5a623" }}
+                  style={{ fontSize: 13, fontWeight: 700, color: "#00F0FF" }}
                 >
                   Not Financial Advice
                 </span>
@@ -406,7 +406,7 @@ export default function DisclaimerModal({ onAccept }) {
                 width: "100%",
                 padding: "14px",
                 background: checked
-                  ? "linear-gradient(135deg, #f5a623, #e8941a)"
+                  ? "linear-gradient(135deg, #00F0FF, #8B5CF6)"
                   : "var(--bg-elevated)",
                 color: checked ? "#111" : "var(--text-muted)",
                 border: "none",

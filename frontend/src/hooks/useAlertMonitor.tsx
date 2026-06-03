@@ -236,7 +236,7 @@ export function useAlertMonitor(marketData, isPro = false) {
         localStorage.setItem(spikeCooldownKey, "1");
 
         const emoji = spike.severity === "extreme" ? "🔥" : "⚡";
-        const color = "#f5a623";
+        const color = "#00F0FF";
         addToast({
           title: `${emoji} ${spike.symbol} Volume Spike!`,
           body: `${spike.multiplier}x above average volume`,

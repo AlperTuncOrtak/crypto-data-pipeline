@@ -296,7 +296,7 @@ function NavItem({ item, isActive }) {
                       justifyContent: "center",
                       background:
                         "linear-gradient(135deg, rgba(245,166,35,0.18), rgba(245,166,35,0.06))",
-                      border: "1px solid rgba(245,166,35,0.15)",
+                      border: "1px solid rgba(0,240,255,0.15)",
                       color: "var(--accent)",
                     }}
                   >
@@ -599,9 +599,9 @@ export default function Navbar({
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
           borderBottom: scrolled
-            ? "1px solid rgba(245,166,35,0.15)"
+            ? "1px solid rgba(0,240,255,0.15)"
             : "1px solid rgba(255,255,255,0.06)",
-          boxShadow: scrolled ? "0 12px 48px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(245,166,35,0.05)" : "none",
+          boxShadow: scrolled ? "0 12px 48px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(0,240,255,0.05)" : "none",
         }}
       >
         <div
@@ -695,7 +695,7 @@ export default function Navbar({
                 fontWeight: 500,
                 background:
                   watchlistCount > 0
-                    ? "rgba(245,166,35,0.1)"
+                    ? "rgba(0,240,255,0.1)"
                     : "rgba(255,255,255,0.04)",
                 border:
                   watchlistCount > 0
@@ -734,7 +734,7 @@ export default function Navbar({
                     fontFamily: "monospace",
                     fontWeight: 700,
                     color: "var(--accent)",
-                    background: "rgba(245,166,35,0.15)",
+                    background: "rgba(0,240,255,0.15)",
                     padding: "0 5px",
                     borderRadius: 5,
                   }}
@@ -753,9 +753,9 @@ export default function Navbar({
                   gap: 8,
                   padding: "6px 12px",
                   borderRadius: 10,
-                  background: searchOpen ? "rgba(245,166,35,0.05)" : "rgba(255,255,255,0.04)",
+                  background: searchOpen ? "rgba(0,240,255,0.05)" : "rgba(255,255,255,0.04)",
                   border: `1px solid ${searchOpen ? "rgba(245,166,35,0.4)" : "rgba(255,255,255,0.08)"}`,
-                  boxShadow: searchOpen ? "0 0 16px rgba(245,166,35,0.1)" : "none",
+                  boxShadow: searchOpen ? "0 0 16px rgba(0,240,255,0.1)" : "none",
                   width: searchOpen ? 220 : 110,
                   transition: "all 0.25s ease",
                 }}
@@ -852,7 +852,7 @@ export default function Navbar({
                             width: 26,
                             height: 26,
                             borderRadius: "50%",
-                            background: "rgba(245,166,35,0.15)",
+                            background: "rgba(0,240,255,0.15)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -956,7 +956,7 @@ export default function Navbar({
                     transition: "all 0.18s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(245,166,35,0.1)";
+                    e.currentTarget.style.background = "rgba(0,240,255,0.1)";
                     e.currentTarget.style.borderColor = "rgba(245,166,35,0.2)";
                   }}
                   onMouseLeave={(e) => {
@@ -985,7 +985,7 @@ export default function Navbar({
                         width: 22,
                         height: 22,
                         borderRadius: "50%",
-                        background: "linear-gradient(135deg, #f5a623, #e8941a)",
+                        background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1083,7 +1083,7 @@ export default function Navbar({
                               height: 38,
                               borderRadius: "50%",
                               background:
-                                "linear-gradient(135deg, #f5a623, #e8941a)",
+                                "linear-gradient(135deg, #00F0FF, #8B5CF6)",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -1131,7 +1131,7 @@ export default function Navbar({
                             : isPro
                               ? "rgba(245,166,35,0.08)"
                               : "rgba(255,255,255,0.03)",
-                          border: `1px solid ${isEnterprise ? "rgba(139,92,246,0.2)" : isPro ? "rgba(245,166,35,0.15)" : "rgba(255,255,255,0.06)"}`,
+                          border: `1px solid ${isEnterprise ? "rgba(139,92,246,0.2)" : isPro ? "rgba(0,240,255,0.15)" : "rgba(255,255,255,0.06)"}`,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
@@ -1357,7 +1357,7 @@ export default function Navbar({
                                 fontWeight: 700,
                                 padding: "1px 5px",
                                 borderRadius: 4,
-                                background: "rgba(245,166,35,0.1)",
+                                background: "rgba(0,240,255,0.1)",
                                 color: "var(--accent)",
                               }}
                             >
@@ -1420,7 +1420,7 @@ export default function Navbar({
                   padding: "7px 16px",
                   borderRadius: 10,
                   cursor: "pointer",
-                  background: "linear-gradient(135deg, #f5a623, #e8941a)",
+                  background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
                   color: "#111",
                   border: "none",
                   fontSize: 12,
@@ -1573,7 +1573,7 @@ export default function Navbar({
                   onClick={() => { onAuthOpen("login"); setMobileOpen(false); }}
                   style={{
                     padding: "11px", borderRadius: 10, width: "100%",
-                    background: "linear-gradient(135deg, #f5a623, #e8941a)",
+                    background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
                     border: "none", color: "#111", fontSize: 13, fontWeight: 700,
                     cursor: "pointer",
                   }}

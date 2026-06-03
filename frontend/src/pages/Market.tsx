@@ -119,7 +119,7 @@ function DataFreshness({ lastUpdated, dataSource }) {
     live = true;
   } else if (minutes < 10) {
     label = `${minutes}m ago`;
-    color = "#f5a623";
+    color = "#00F0FF";
   } else if (hours < 1) {
     label = `${minutes}m ago`;
     color = "#e67e22";

@@ -106,7 +106,7 @@ function SaveButton({ loading, onClick, label = "Save Changes" }) {
     <button onClick={onClick} disabled={loading} style={{
       display: "flex", alignItems: "center", gap: 6,
       padding: "9px 20px", borderRadius: 10, cursor: loading ? "not-allowed" : "pointer",
-      background: loading ? "var(--bg-elevated)" : "linear-gradient(135deg, #f5a623, #e8941a)",
+      background: loading ? "var(--bg-elevated)" : "linear-gradient(135deg, #00F0FF, #8B5CF6)",
       color: loading ? "var(--text-muted)" : "#111",
       fontWeight: 700, fontSize: 13, border: "none",
       boxShadow: loading ? "none" : "0 4px 16px rgba(245,166,35,0.3)",
@@ -322,7 +322,7 @@ export default function Settings() {
           <div style={{ position: "relative" }}>
             {avatar
               ? <img src={avatar} style={{ width: 64, height: 64, borderRadius: "50%", border: "2px solid rgba(245,166,35,0.3)" }} />
-              : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, #f5a623, #e8941a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 800, color: "#111" }}>
+              : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, #00F0FF, #8B5CF6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 800, color: "#111" }}>
                   {displayName?.slice(0,1).toUpperCase()}
                 </div>
             }
@@ -361,7 +361,7 @@ export default function Settings() {
       {(isPro || isEnterprise) && (
         <Section title="Subscription" icon={Crown}>
           <Toast message={cancelMsg.text} type={cancelMsg.type} />
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderRadius: 10, background: "rgba(245,166,35,0.05)", border: "1px solid rgba(245,166,35,0.15)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderRadius: 10, background: "rgba(0,240,255,0.05)", border: "1px solid rgba(0,240,255,0.15)" }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Crown size={14} />
@@ -421,7 +421,7 @@ export default function Settings() {
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Two-Factor Authentication</div>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>Add an extra layer of security to your account</div>
           </div>
-          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: "rgba(245,166,35,0.1)", color: "var(--accent)" }}>SOON</span>
+          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: "rgba(0,240,255,0.1)", color: "var(--accent)" }}>SOON</span>
         </div>
       </Section>
 
@@ -461,7 +461,7 @@ export default function Settings() {
               <button
                 onClick={handleOtpVerify}
                 disabled={phoneLoading || otp.length < 4}
-                style={{ padding: "10px 16px", borderRadius: 10, whiteSpace: "nowrap", background: "linear-gradient(135deg, #f5a623, #e8941a)", color: "#111", fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer", flexShrink: 0 }}
+                style={{ padding: "10px 16px", borderRadius: 10, whiteSpace: "nowrap", background: "linear-gradient(135deg, #00F0FF, #8B5CF6)", color: "#111", fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer", flexShrink: 0 }}
               >
                 Verify
               </button>

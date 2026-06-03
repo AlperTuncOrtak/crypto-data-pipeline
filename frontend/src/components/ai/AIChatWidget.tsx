@@ -184,7 +184,7 @@ export default function AIChatWidget() {
         style={{
           position: 'fixed', bottom: 24, right: 24,
           width: 56, height: 56, borderRadius: 28,
-          background: 'linear-gradient(135deg, var(--accent), #e8941a)',
+          background: 'linear-gradient(135deg, var(--accent), #8B5CF6)',
           border: 'none',
           display: isOpen ? 'none' : 'flex',
           alignItems: 'center', justifyContent: 'center',

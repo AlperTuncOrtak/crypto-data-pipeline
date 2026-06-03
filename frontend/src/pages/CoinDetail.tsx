@@ -336,7 +336,7 @@ function PriceRangeBar({ current, ath, atl }) {
             height: "100%",
             width: `${pct}%`,
             borderRadius: 3,
-            background: `linear-gradient(90deg, #e74c3c, #f5a623, #2ecc71)`,
+            background: `linear-gradient(90deg, #e74c3c, #00F0FF, #2ecc71)`,
           }}
         />
         <div
@@ -781,7 +781,7 @@ export default function CoinDetail() {
                   borderRadius: 7,
                   fontSize: 12,
                   fontWeight: 600,
-                  background: range === r.value ? "rgba(245,166,35,0.15)" : "transparent",
+                  background: range === r.value ? "rgba(0,240,255,0.15)" : "transparent",
                   border: range === r.value ? "1px solid rgba(245,166,35,0.25)" : "1px solid transparent",
                   color: range === r.value ? "var(--accent)" : "rgba(255,255,255,0.35)",
                   cursor: "pointer",
