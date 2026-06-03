@@ -1,6 +1,7 @@
 # CryptoNeko TODO List
 
 ## High Priority
+- [ ] **Fix all localhost references:** There are multiple places (such as the Supabase Email confirmation link, API endpoints, or hardcoded URLs) that still point to `localhost:3000` or `localhost:5173`. All of these must be found and replaced with the production URL (`https://www.cryptoneko.online/`) or environment variables. This includes updating the Supabase Dashboard under Authentication -> URL Configuration -> Site URL & Redirect URLs to `https://www.cryptoneko.online/`.
 - [ ] **Fix Light Theme:** The current light mode aesthetics are broken/poor compared to the deep dark mode. Need to overhaul the light color palette, adjust shadows (drop-shadows instead of glow), and fix contrast issues across all cards and navbar.
 
 ## Upcoming Ideas & Features
