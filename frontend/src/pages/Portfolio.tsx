@@ -881,7 +881,7 @@ function GuideModal({ exchange, onClose }) {
                 style={{
                   padding: "10px 14px",
                   background: "rgba(245,166,35,0.06)",
-                  border: "1px solid rgba(0,240,255,0.15)",
+                  border: "1px solid rgba(245,158,11,0.15)",
                   borderRadius: 10,
                   display: "flex",
                   gap: 8,
@@ -1073,7 +1073,7 @@ export default function Portfolio() {
       {/* HERO */}
       <div className="relative flex flex-col items-center justify-center py-20 text-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-cyan-500/10" />
+          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-amber-500/10" />
         </div>
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           Total Portfolio Value
@@ -1142,7 +1142,7 @@ export default function Portfolio() {
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
             <button
               onClick={() => setShowAddSource(v => !v)}
-              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.05)] hover:shadow-[0_0_20px_rgba(0,240,255,0.15)]"
+              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]"
             >
               {showAddSource ? "✕ Close Options" : "+ Add Source"}
             </button>
@@ -1171,11 +1171,11 @@ export default function Portfolio() {
                 value={walletInput} 
                 onChange={e => setWalletInput(e.target.value)} 
                 placeholder="0x..."
-                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-cyan-500/40 focus:bg-white/[0.04] transition-all duration-300" 
+                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.04] transition-all duration-300" 
               />
               <button 
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
-                className="px-6 py-3 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.05)] hover:shadow-[0_0_20px_rgba(0,240,255,0.15)]"
+                className="px-6 py-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]"
               >
                 {isFetchingWallet ? "Fetching..." : "Add Wallet"}
               </button>
@@ -1208,12 +1208,12 @@ export default function Portfolio() {
                 </span>
               )}
               {binanceKeys.key && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                   <CheckCircle size={12} /> Binance Synced
                 </span>
               )}
               {wallets.length > 0 && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-500/10 text-gray-400 border border-gray-500/20">
                   <Wallet size={12} /> {wallets.length} Wallet{wallets.length > 1 ? "s" : ""}
                 </span>
               )}
@@ -1301,7 +1301,7 @@ export default function Portfolio() {
           <p className="font-semibold text-base mb-2 text-gray-400">Your portfolio is empty</p>
           <p className="text-sm mb-6 text-gray-500">Upload a CSV from your exchange to get started.</p>
           <button onClick={() => setShowAddSource(true)} 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.05)] hover:shadow-[0_0_20px_rgba(0,240,255,0.15)]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]"
           >
             + Add Data Source
           </button>

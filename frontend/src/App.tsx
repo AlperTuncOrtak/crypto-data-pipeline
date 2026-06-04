@@ -83,7 +83,7 @@ function AppInner() {
       }}
     >
       {/* Global Background Effects */}
-      <div className="liquid-bg" />
+      <div className="amber-bg" />
       <div
         style={{
           position: "fixed",

@@ -142,7 +142,7 @@ function PlanCard({
   const price = billing === "yearly" ? plan.price.yearly : plan.price.monthly;
   const isCurrent = currentPlan === plan.id;
   const isPrimary = plan.ctaVariant === "primary";
-  const isPurple = plan.ctaVariant === "purple";
+  const isPurple = plan.ctaVariant === "gray";
 
   const btnStyle = isPrimary
     ? {
