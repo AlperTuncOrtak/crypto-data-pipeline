@@ -35,7 +35,7 @@ def calculate_indicators(slug: str, altfins_ta: dict = None) -> dict:
 
         # 30 günlük veri çek (MACD için min 26, güvenli olsun 30d)
         history = get_coin_history(slug, range_key="30d")
-        if not history or len(history) < 30:
+        if not history or len(history) < 15:
             log.warning(f"Not enough price history for {slug}: {len(history) if history else 0} points")
             return altfins_ta or {}
 
@@ -44,7 +44,7 @@ def calculate_indicators(slug: str, altfins_ta: dict = None) -> dict:
         df["close"] = pd.to_numeric(df["price"], errors="coerce")
         df = df.dropna(subset=["close"]).reset_index(drop=True)
 
-        if len(df) < 30:
+        if len(df) < 15:
             log.warning(f"Insufficient clean data for {slug}")
             return altfins_ta or {}
 
