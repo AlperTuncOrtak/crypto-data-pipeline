@@ -68,15 +68,23 @@ def _calculate_all(df: pd.DataFrame) -> dict:
     """
     Tüm indikatörleri hesapla, son değerleri döndür.
     """
-    import pandas_ta as ta
+    import ta
+    import math
 
     close = df["close"]
     result = {}
 
+    def safe_float(val):
+        try:
+            f = float(val)
+            return None if math.isnan(f) else f
+        except:
+            return None
+
     # ── RSI (14) ─────────────────────────────────────────────
     try:
-        rsi_series = ta.rsi(close, length=14)
-        rsi_val = float(rsi_series.iloc[-1]) if rsi_series is not None and not rsi_series.empty else None
+        rsi_indicator = ta.momentum.RSIIndicator(close=close, window=14)
+        rsi_val = safe_float(rsi_indicator.rsi().iloc[-1])
         if rsi_val is not None:
             result["rsi"] = round(rsi_val, 1)
             if rsi_val >= 70:
@@ -99,20 +107,14 @@ def _calculate_all(df: pd.DataFrame) -> dict:
 
     # ── MACD (12, 26, 9) ─────────────────────────────────────
     try:
-        macd_df = ta.macd(close, fast=12, slow=26, signal=9)
-        if macd_df is not None and not macd_df.empty:
-            # pandas-ta returns: MACD_12_26_9, MACDh_12_26_9, MACDs_12_26_9
-            macd_col = [c for c in macd_df.columns if c.startswith("MACD_")][0]
-            hist_col = [c for c in macd_df.columns if c.startswith("MACDh_")][0]
-            sig_col  = [c for c in macd_df.columns if c.startswith("MACDs_")][0]
+        macd_indicator = ta.trend.MACD(close=close, window_slow=26, window_fast=12, window_sign=9)
+        macd_val = safe_float(macd_indicator.macd().iloc[-1])
+        hist_val = safe_float(macd_indicator.macd_diff().iloc[-1])
+        sig_val  = safe_float(macd_indicator.macd_signal().iloc[-1])
 
-            macd_val = float(macd_df[macd_col].iloc[-1])
-            hist_val = float(macd_df[hist_col].iloc[-1])
-            sig_val  = float(macd_df[sig_col].iloc[-1])
-
-            # Trend: histogram yönü + crossover
-            prev_hist = float(macd_df[hist_col].iloc[-2]) if len(macd_df) > 1 else hist_val
-            hist_rising = hist_val > prev_hist
+        if macd_val is not None and hist_val is not None and sig_val is not None:
+            prev_hist = safe_float(macd_indicator.macd_diff().iloc[-2]) if len(close) > 1 else hist_val
+            hist_rising = hist_val > (prev_hist or hist_val)
 
             result["macd_value"]     = round(macd_val, 2)
             result["macd_histogram"] = round(hist_val, 2)
@@ -120,34 +122,28 @@ def _calculate_all(df: pd.DataFrame) -> dict:
             result["macd_trend"]     = "bullish" if hist_val > 0 else "bearish"
             result["macd_momentum"]  = "increasing" if hist_rising else "decreasing"
 
-            # Crossover tespiti (son 3 mum)
-            if len(macd_df) >= 3:
-                h_prev2 = float(macd_df[hist_col].iloc[-3])
-                if h_prev2 < 0 and hist_val > 0:
-                    result["macd_crossover"] = "bullish_crossover"
-                elif h_prev2 > 0 and hist_val < 0:
-                    result["macd_crossover"] = "bearish_crossover"
-                else:
-                    result["macd_crossover"] = None
+            if len(close) >= 3:
+                h_prev2 = safe_float(macd_indicator.macd_diff().iloc[-3])
+                if h_prev2 is not None:
+                    if h_prev2 < 0 and hist_val > 0:
+                        result["macd_crossover"] = "bullish_crossover"
+                    elif h_prev2 > 0 and hist_val < 0:
+                        result["macd_crossover"] = "bearish_crossover"
+                    else:
+                        result["macd_crossover"] = None
     except Exception as e:
         log.warning(f"MACD calculation failed: {e}")
 
     # ── Bollinger Bands (20, 2) ───────────────────────────────
     try:
-        bb_df = ta.bbands(close, length=20, std=2)
-        if bb_df is not None and not bb_df.empty:
-            upper_col = [c for c in bb_df.columns if "BBU" in c][0]
-            lower_col = [c for c in bb_df.columns if "BBL" in c][0]
-            mid_col   = [c for c in bb_df.columns if "BBM" in c][0]
-            bw_col    = [c for c in bb_df.columns if "BBB" in c][0]  # bandwidth
+        bb = ta.volatility.BollingerBands(close=close, window=20, window_dev=2)
+        upper = safe_float(bb.bollinger_hband().iloc[-1])
+        lower = safe_float(bb.bollinger_lband().iloc[-1])
+        mid   = safe_float(bb.bollinger_mavg().iloc[-1])
+        price = safe_float(close.iloc[-1])
 
-            upper = float(bb_df[upper_col].iloc[-1])
-            lower = float(bb_df[lower_col].iloc[-1])
-            mid   = float(bb_df[mid_col].iloc[-1])
-            bw    = float(bb_df[bw_col].iloc[-1]) if bw_col else None
-            price = float(close.iloc[-1])
-
-            # %B pozisyonu (0=lower band, 1=upper band)
+        if upper is not None and lower is not None and mid is not None and price is not None:
+            bw = (upper - lower) / mid if mid > 0 else None
             band_range = upper - lower
             if band_range > 0:
                 pct_b = (price - lower) / band_range
@@ -158,8 +154,8 @@ def _calculate_all(df: pd.DataFrame) -> dict:
             result["bb_lower"]    = round(lower, 2)
             result["bb_middle"]   = round(mid, 2)
             result["bb_pct_b"]    = round(pct_b, 3)
-            result["bb_position"] = round(pct_b, 3)  # frontend için
-            result["bb_width"]    = round(bw, 4) if bw else None
+            result["bb_position"] = round(pct_b, 3)
+            result["bb_width"]    = round(bw, 4) if bw is not None else None
 
             if pct_b >= 0.85:
                 result["bb_signal"] = "near_upper"
@@ -178,17 +174,13 @@ def _calculate_all(df: pd.DataFrame) -> dict:
 
     # ── Stochastic (14, 3) ────────────────────────────────────
     try:
-        # pandas-ta stoch needs high/low — approximate with close
-        # Use a rolling high/low window from close prices
-        high  = close.rolling(window=3).max()
-        low   = close.rolling(window=3).min()
-        stoch_df = ta.stoch(high=high, low=low, close=close, k=14, d=3)
-        if stoch_df is not None and not stoch_df.empty:
-            k_col = [c for c in stoch_df.columns if "STOCHk" in c][0]
-            d_col = [c for c in stoch_df.columns if "STOCHd" in c][0]
-            k_val = float(stoch_df[k_col].iloc[-1])
-            d_val = float(stoch_df[d_col].iloc[-1])
+        high  = close.rolling(window=3).max().fillna(close)
+        low   = close.rolling(window=3).min().fillna(close)
+        stoch = ta.momentum.StochasticOscillator(high=high, low=low, close=close, window=14, smooth_window=3)
+        k_val = safe_float(stoch.stoch().iloc[-1])
+        d_val = safe_float(stoch.stoch_signal().iloc[-1])
 
+        if k_val is not None and d_val is not None:
             result["stoch_k"] = round(k_val, 1)
             result["stoch_d"] = round(d_val, 1)
 
@@ -209,30 +201,28 @@ def _calculate_all(df: pd.DataFrame) -> dict:
 
     # ── EMA (20, 50) ──────────────────────────────────────────
     try:
-        ema20 = ta.ema(close, length=20)
-        ema50 = ta.ema(close, length=50)
+        ema20_indicator = ta.trend.EMAIndicator(close=close, window=20)
+        ema20_val = safe_float(ema20_indicator.ema_indicator().iloc[-1])
+        price_val = safe_float(close.iloc[-1])
 
-        if ema20 is not None and ema50 is not None:
-            ema20_val = float(ema20.iloc[-1])
-            ema50_val = float(ema50.iloc[-1])
-            price_val = float(close.iloc[-1])
-
+        if ema20_val is not None:
             result["ema20"] = round(ema20_val, 2)
-            result["ema50"] = round(ema50_val, 2)
+            if price_val is not None:
+                result["price_vs_ema20"] = "above" if price_val > ema20_val else "below"
 
-            # Crossover yönü
-            if ema20_val > ema50_val:
-                result["ema_trend"] = "bullish"
-                result["ema_detail"] = f"EMA20 ({ema20_val:,.0f}) > EMA50 ({ema50_val:,.0f}) — uptrend"
-            else:
-                result["ema_trend"] = "bearish"
-                result["ema_detail"] = f"EMA20 ({ema20_val:,.0f}) < EMA50 ({ema50_val:,.0f}) — downtrend"
-
-            # Fiyat vs EMA20
-            if price_val > ema20_val:
-                result["price_vs_ema20"] = "above"
-            else:
-                result["price_vs_ema20"] = "below"
+            # Yeterli veri varsa EMA50 de hesapla
+            if len(close) >= 50:
+                ema50_indicator = ta.trend.EMAIndicator(close=close, window=50)
+                ema50_val = safe_float(ema50_indicator.ema_indicator().iloc[-1])
+                
+                if ema50_val is not None:
+                    result["ema50"] = round(ema50_val, 2)
+                    if ema20_val > ema50_val:
+                        result["ema_trend"] = "bullish"
+                        result["ema_detail"] = f"EMA20 ({ema20_val:,.0f}) > EMA50 ({ema50_val:,.0f}) — uptrend"
+                    else:
+                        result["ema_trend"] = "bearish"
+                        result["ema_detail"] = f"EMA20 ({ema20_val:,.0f}) < EMA50 ({ema50_val:,.0f}) — downtrend"
     except Exception as e:
         log.warning(f"EMA calculation failed: {e}")
 

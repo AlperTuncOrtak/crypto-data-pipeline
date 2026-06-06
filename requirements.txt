@@ -18,7 +18,6 @@ groq
 requests
 pandas
 feedparser
-pandas-ta
 ta
 
 # Environment
