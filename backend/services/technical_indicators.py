@@ -35,6 +35,23 @@ def calculate_indicators(slug: str, altfins_ta: dict = None) -> dict:
 
         # 30 günlük veri çek (MACD için min 26, güvenli olsun 30d)
         history = get_coin_history(slug, range_key="30d")
+        
+        # Eger lokal DB'de veri yoksa (pipeline yeni kurulduysa),
+        # CoinGecko API uzerinden geriye donuk 30 gunluk veri cek (720 veri noktasi)
+        if not history or len(history) < 30:
+            log.warning(f"Not enough price history in DB for {slug} ({len(history) if history else 0} points). Fetching fallback from CoinGecko...")
+            try:
+                import requests
+                url = f"https://api.coingecko.com/api/v3/coins/{slug}/market_chart?vs_currency=usd&days=30"
+                resp = requests.get(url, timeout=10)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    prices = data.get("prices", [])
+                    history = [{"price": p[1]} for p in prices]
+                    log.info(f"Successfully fetched {len(history)} historical data points from CoinGecko for {slug}.")
+            except Exception as e:
+                log.error(f"CoinGecko fallback failed for {slug}: {e}")
+
         if not history or len(history) < 15:
             log.warning(f"Not enough price history for {slug}: {len(history) if history else 0} points")
             return altfins_ta or {}
