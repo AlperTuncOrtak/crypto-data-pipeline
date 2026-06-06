@@ -24,9 +24,7 @@ def get_connection():
     Cursor olustururken dictionary=True yerine DictCursor kullaniliyor
     ama backend service'lerinde calisan kod oldugu gibi calismaya devam eder.
     """
-    db_host = os.getenv("DB_HOST_OVERRIDE") or os.getenv("DB_HOST")
-    if db_host == "127.0.0.1" and os.getenv("DB_PASSWORD") == "12345678":
-        db_host = "mysql" # Fallback for docker environments just in case
+    db_host = os.getenv("DB_HOST_OVERRIDE") or os.getenv("DB_HOST", "127.0.0.1")
         
     return pymysql.connect(
         host=db_host,
