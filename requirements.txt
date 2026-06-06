@@ -18,6 +18,8 @@ groq
 requests
 pandas
 feedparser
+pandas-ta
+ta
 
 # Environment
 python-dotenv
