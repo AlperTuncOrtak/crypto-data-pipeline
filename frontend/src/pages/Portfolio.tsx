@@ -1203,7 +1203,7 @@ export default function Portfolio() {
           <div className="flex flex-wrap gap-2 pt-4 border-t border-white/[0.04] items-center justify-between">
             <div className="flex flex-wrap gap-2">
               {trades.length > 0 && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">
                   <CheckCircle size={12} /> {trades.length} CSV Trades
                 </span>
               )}

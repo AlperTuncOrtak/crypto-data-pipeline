@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 
 const ACCENT_COLORS = {
-  orange:  '#00F0FF',
-  red:     '#e74c3c',
-  blue:    '#3b82f6',
-  emerald: '#2ecc71',
+  orange:  'var(--accent)',
+  red:     'var(--negative)',
+  blue:    'var(--positive)',
+  emerald: 'var(--positive)',
 }
 
 export default function CoinListCard({

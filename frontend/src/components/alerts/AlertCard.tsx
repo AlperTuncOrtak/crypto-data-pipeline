@@ -25,9 +25,9 @@ const SEVERITY_STYLES = {
     icon: '🚀',
   },
   Low: {
-    border: 'border-blue-500/40',
-    bg: 'bg-blue-500/5',
-    badge: 'bg-blue-500/20 text-blue-400',
+    border: 'border-teal-500/40',
+    bg: 'bg-teal-500/5',
+    badge: 'bg-teal-500/20 text-teal-400',
     icon: '⚡',
   },
 }
