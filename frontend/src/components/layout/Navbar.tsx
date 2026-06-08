@@ -33,7 +33,7 @@ import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
+  { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
   { to: "/portfolio", label: "Portfolio", Icon: Wallet, dropdown: null },
   {
     to: "/market",
@@ -182,24 +182,25 @@ function NavItem({ item, isActive }) {
           cursor: "pointer",
           userSelect: "none",
           fontSize: 13,
-          fontWeight: isActive ? 600 : 400,
-          color: isActive ? "#fff" : "rgba(255,255,255,0.45)",
-          background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
+          fontWeight: isActive ? 600 : 500,
+          color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)",
+          background: isActive ? "rgba(245,158,11,0.08)" : "transparent",
           border: isActive
-            ? "1px solid rgba(255,255,255,0.12)"
+            ? "1px solid rgba(245,158,11,0.25)"
             : "1px solid transparent",
-          transition: "all 0.18s ease",
+          boxShadow: isActive ? "0 0 16px rgba(245,158,11,0.12)" : "none",
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           backdropFilter: isActive ? "blur(8px)" : "none",
         }}
         onMouseEnter={(e) => {
           if (!isActive) {
-            e.currentTarget.style.color = "rgba(255,255,255,0.85)";
-            e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+            e.currentTarget.style.color = "var(--accent)";
+            e.currentTarget.style.background = "rgba(245,158,11,0.04)";
           }
         }}
         onMouseLeave={(e) => {
           if (!isActive) {
-            e.currentTarget.style.color = "rgba(255,255,255,0.45)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
             e.currentTarget.style.background = "transparent";
           }
         }}
