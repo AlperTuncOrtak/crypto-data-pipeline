@@ -45,10 +45,10 @@ function getStrength(pw) {
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  if (score <= 1) return { score, label: "Weak", color: "#e74c3c" };
+  if (score <= 1) return { score, label: "Weak", color: "var(--negative)" };
   if (score <= 2) return { score, label: "Fair", color: "#f39c12" };
   if (score <= 3) return { score, label: "Good", color: "var(--accent)" };
-  if (score <= 4) return { score, label: "Strong", color: "#2ecc71" };
+  if (score <= 4) return { score, label: "Strong", color: "var(--positive)" };
   return { score, label: "Very Strong", color: "#00d084" };
 }
 
@@ -224,17 +224,21 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
           setCaptchaToken(null);
           return;
         }
+        
+        if (error.message.toLowerCase().includes("invalid login credentials")) {
+          // Redirect to signup instead of incrementing failure counters
+          switchMode("signup");
+          setError("Account not found or invalid password. Please sign up.");
+          return;
+        }
+
         const next = failCount + 1;
         setFailCount(next);
         if (next >= FAIL_LIMIT) {
           setLockUntil(Date.now() + LOCKOUT_SEC * 1000);
           setError(`Too many failed attempts. Try again in ${LOCKOUT_SEC}s.`);
         } else {
-          if (error.message.toLowerCase().includes("invalid login credentials")) {
-            setError(`Invalid credentials. Don't have an account? Sign Up. (${FAIL_LIMIT - next} attempts left)`);
-          } else {
-            setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
-          }
+          setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
         }
         captchaRef.current?.resetCaptcha();
         setCaptchaToken(null);
@@ -269,7 +273,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         options: { 
           data: { full_name: name }, 
           captchaToken,
-          emailRedirectTo: "https://www.cryptoneko.online/" 
+          emailRedirectTo: window.location.origin + "/?verified=true"
         },
       });
       if (error) throw error;
@@ -437,7 +441,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                 <CheckCircle
                   size={48}
                   style={{
-                    color: "#2ecc71",
+                    color: "var(--positive)",
                     margin: "0 auto 16px",
                     display: "block",
                   }}
@@ -703,9 +707,9 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                         gap: 8,
                         padding: "11px 14px",
                         borderRadius: 12,
-                        background: "rgba(231,76,60,0.08)",
-                        border: "1px solid rgba(231,76,60,0.2)",
-                        color: "#e74c3c",
+                        background: "rgba(176,38,255,0.08)",
+                        border: "1px solid rgba(176,38,255,0.2)",
+                        color: "var(--negative)",
                         fontSize: 12,
                       }}
                     >

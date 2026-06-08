@@ -111,7 +111,7 @@ function FeatureRow({ text, included }) {
       }}
     >
       {included ? (
-        <Check size={14} style={{ color: "#2ecc71", flexShrink: 0 }} />
+        <Check size={14} style={{ color: "var(--positive)", flexShrink: 0 }} />
       ) : (
         <X
           size={14}
@@ -268,7 +268,7 @@ function PlanCard({
           <div
             style={{
               fontSize: 11,
-              color: "#2ecc71",
+              color: "var(--positive)",
               fontWeight: 600,
               marginTop: 2,
             }}
@@ -463,7 +463,7 @@ export default function Pricing({ onAuthOpen }) {
                   style={{
                     marginLeft: 6,
                     fontSize: 10,
-                    color: "#2ecc71",
+                    color: "var(--positive)",
                     fontWeight: 700,
                   }}
                 >

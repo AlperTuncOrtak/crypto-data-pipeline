@@ -7,7 +7,7 @@ import { useMarket } from '../hooks/useMarket'
 import { useMultiCoinHistory, useMultiCoinPerformance } from '../hooks/useAnalysis'
 import { GitCompare, X, TrendingUp, TrendingDown, Search } from 'lucide-react'
 
-const CHART_COLORS = ['#2ecc71', '#3498db', 'var(--accent)', '#e91e8c', '#9b59b6']
+const CHART_COLORS = ['var(--positive)', '#3498db', 'var(--accent)', '#e91e8c', '#9b59b6']
 
 const TIME_RANGES = [
   { label: '1H',  hours: 1   },
@@ -70,7 +70,7 @@ function CustomTooltip({ active, payload, label }) {
             <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.stroke, display: 'inline-block' }} />
             <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{entry.dataKey}</span>
           </div>
-          <span style={{ fontSize: 12, fontFamily: 'monospace', color: Number(entry.value) >= 0 ? '#2ecc71' : '#e74c3c', fontWeight: 700 }}>
+          <span style={{ fontSize: 12, fontFamily: 'monospace', color: Number(entry.value) >= 0 ? 'var(--positive)' : 'var(--negative)', fontWeight: 700 }}>
             {Number(entry.value) >= 0 ? '+' : ''}{Number(entry.value).toFixed(2)}%
           </span>
         </div>
@@ -264,8 +264,8 @@ export default function Analysis() {
                       {TIME_RANGES[activeRange].label} Return
                     </div>
                     <div className="flex items-center gap-1.5">
-                      {isUp ? <TrendingUp size={16} style={{ color: '#2ecc71' }} /> : <TrendingDown size={16} style={{ color: '#e74c3c' }} />}
-                      <span style={{ fontSize: 24, fontWeight: 900, fontFamily: 'monospace', color: isUp ? '#2ecc71' : '#e74c3c' }}>
+                      {isUp ? <TrendingUp size={16} style={{ color: 'var(--positive)' }} /> : <TrendingDown size={16} style={{ color: 'var(--negative)' }} />}
+                      <span style={{ fontSize: 24, fontWeight: 900, fontFamily: 'monospace', color: isUp ? 'var(--positive)' : 'var(--negative)' }}>
                         {isUp ? '+' : ''}{ret.toFixed(2)}%
                       </span>
                     </div>

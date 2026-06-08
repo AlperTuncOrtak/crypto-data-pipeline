@@ -7,14 +7,14 @@ import { TrendingDown, TrendingUp, Zap, Bell, RefreshCw } from 'lucide-react'
 const TYPE_CONFIG = {
   'Sharp Drop': {
     color: 'var(--negative)',
-    border: '#e74c3c',
+    border: 'var(--negative)',
     icon: TrendingDown,
     filter: 'drop',
     label: 'DROP',
   },
   'Strong Increase': {
     color: 'var(--positive)',
-    border: '#2ecc71',
+    border: 'var(--positive)',
     icon: TrendingUp,
     filter: 'pump',
     label: 'PUMP',
@@ -244,7 +244,7 @@ export default function Alerts() {
           )}
 
           {isError && (
-            <div className="p-4 rounded-xl text-sm" style={{ backgroundColor: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.3)', color: 'var(--negative)' }}>
+            <div className="p-4 rounded-xl text-sm" style={{ backgroundColor: 'rgba(176,38,255,0.1)', border: '1px solid rgba(176,38,255,0.3)', color: 'var(--negative)' }}>
               Alerts yüklenemedi.
             </div>
           )}

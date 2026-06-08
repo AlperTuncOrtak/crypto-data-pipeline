@@ -21,7 +21,8 @@ import {
   LineChart,
   CandlestickChart,
 } from "lucide-react";
-import AdvancedChart from "../components/market/AdvancedChart";
+import TradingViewWidget from "../components/market/TradingViewWidget";
+import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 
 const RANGES = [
@@ -103,8 +104,8 @@ function AnimatedPrice({ current, prev, flash }) {
   const curAligned = str.padStart(maxLen, " ");
   const prvAligned = pstr.padStart(maxLen, " ");
 
-  const upColor   = "#2ecc71";
-  const downColor = "#e74c3c";
+  const upColor   = "var(--positive)";
+  const downColor = "var(--negative)";
   const flashColor = flash === "up" ? upColor : downColor;
 
   return (
@@ -126,13 +127,13 @@ function AnimatedPrice({ current, prev, flash }) {
       })}
       <style>{`
         @keyframes pricePulse-up {
-          0%   { box-shadow: 0 0 0 0 rgba(46,204,113,0.55), inset 0 0 0 0 rgba(46,204,113,0.15); background: rgba(46,204,113,0.12); }
-          60%  { box-shadow: 0 0 24px 6px rgba(46,204,113,0.18), inset 0 0 20px 4px rgba(46,204,113,0.08); background: rgba(46,204,113,0.06); }
+          0%   { box-shadow: 0 0 0 0 rgba(0,240,255,0.55), inset 0 0 0 0 rgba(0,240,255,0.15); background: rgba(0,240,255,0.12); }
+          60%  { box-shadow: 0 0 24px 6px rgba(0,240,255,0.18), inset 0 0 20px 4px rgba(0,240,255,0.08); background: rgba(0,240,255,0.06); }
           100% { box-shadow: none; background: transparent; }
         }
         @keyframes pricePulse-down {
-          0%   { box-shadow: 0 0 0 0 rgba(231,76,60,0.55), inset 0 0 0 0 rgba(231,76,60,0.15); background: rgba(231,76,60,0.12); }
-          60%  { box-shadow: 0 0 24px 6px rgba(231,76,60,0.18), inset 0 0 20px 4px rgba(231,76,60,0.08); background: rgba(231,76,60,0.06); }
+          0%   { box-shadow: 0 0 0 0 rgba(176,38,255,0.55), inset 0 0 0 0 rgba(176,38,255,0.15); background: rgba(176,38,255,0.12); }
+          60%  { box-shadow: 0 0 24px 6px rgba(176,38,255,0.18), inset 0 0 20px 4px rgba(176,38,255,0.08); background: rgba(176,38,255,0.06); }
           100% { box-shadow: none; background: transparent; }
         }
       `}</style>
@@ -336,7 +337,7 @@ function PriceRangeBar({ current, ath, atl }) {
             height: "100%",
             width: `${pct}%`,
             borderRadius: 3,
-            background: `linear-gradient(90deg, #e74c3c, var(--accent), #2ecc71)`,
+            background: `linear-gradient(90deg, var(--negative), var(--accent), var(--positive))`,
           }}
         />
         <div
@@ -608,9 +609,9 @@ export default function CoinDetail() {
               style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}
             >
               {Number(athPct) < 0 ? (
-                <span style={{ color: "#e74c3c" }}>{athPct}% from ATH</span>
+                <span style={{ color: "var(--negative)" }}>{athPct}% from ATH</span>
               ) : (
-                <span style={{ color: "#2ecc71" }}>+{athPct}% above ATH</span>
+                <span style={{ color: "var(--positive)" }}>+{athPct}% above ATH</span>
               )}
             </div>
           )}
@@ -761,7 +762,7 @@ export default function CoinDetail() {
         <div style={{
           position: "absolute", top: -40, right: -40, width: 220, height: 220,
           borderRadius: "50%",
-          background: `radial-gradient(circle, ${isPositive ? "rgba(46,204,113,0.07)" : "rgba(231,76,60,0.07)"} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${isPositive ? "rgba(0,240,255,0.07)" : "rgba(176,38,255,0.07)"} 0%, transparent 70%)`,
           filter: "blur(20px)", pointerEvents: "none",
         }} />
 
@@ -813,9 +814,9 @@ export default function CoinDetail() {
               style={{
                 display: "flex", alignItems: "center", gap: 5,
                 padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                background: chartType === "pro" ? "rgba(46,204,113,0.12)" : "transparent",
-                border: chartType === "pro" ? "1px solid rgba(46,204,113,0.25)" : "1px solid transparent",
-                color: chartType === "pro" ? "#2ecc71" : "rgba(255,255,255,0.35)",
+                background: chartType === "pro" ? "rgba(0,240,255,0.12)" : "transparent",
+                border: chartType === "pro" ? "1px solid rgba(0,240,255,0.25)" : "1px solid transparent",
+                color: chartType === "pro" ? "var(--positive)" : "rgba(255,255,255,0.35)",
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
@@ -826,8 +827,8 @@ export default function CoinDetail() {
 
         {/* Pro chart always rendered when selected so chart mounts */}
         {chartType === "pro" && (
-          <div style={{ width: "100%", height: 420, borderRadius: 16, overflow: "hidden" }}>
-            <AdvancedChart symbol={coin.symbol} interval={range} />
+          <div style={{ width: "100%", height: 600, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)", marginTop: 16 }}>
+            <TradingViewWidget symbol={coin.symbol} theme="dark" />
           </div>
         )}
 
@@ -899,6 +900,12 @@ export default function CoinDetail() {
           </div>
         )}
         </div>{/* end position:relative inner */}
+      </div>
+
+      {/* LATEST NEWS */}
+      <div style={{ marginTop: 32 }}>
+        <SectionTitle>Latest News</SectionTitle>
+        <CryptoNews symbol={coin.symbol} />
       </div>
     </div>
   );
