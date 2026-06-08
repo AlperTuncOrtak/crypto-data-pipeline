@@ -945,7 +945,7 @@ export default function Navbar({
 
             {/* AUTH */}
             {isLoggedIn ? (
-              <div className="hide-mobile" style={{ position: "relative" }} ref={profileRef}>
+              <div style={{ position: "relative" }} ref={profileRef}>
                 <div
                   onClick={() => setProfileOpen((o) => !o)}
                   style={{
@@ -1414,7 +1414,6 @@ export default function Navbar({
               </div>
             ) : (
               <button
-                className="hide-mobile"
                 onClick={() => {
                   onAuthOpen?.();
                   setAuthOpen?.(true);
