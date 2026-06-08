@@ -15,6 +15,15 @@ interface WhaleTrade {
 const MIN_WHALE_VALUE = 50000; // $50k threshold
 const MAX_TRADES = 1;
 
+const COIN_COLORS: Record<string, string> = {
+  BTC: "#F7931A",
+  ETH: "#627EEA",
+  SOL: "#14F195",
+  BNB: "#F3BA2F",
+  XRP: "#FFFFFF",
+  DOGE: "#C2A633",
+};
+
 export default function WhaleTracker() {
   const [trades, setTrades] = useState<WhaleTrade[]>([]);
   const [status, setStatus] = useState<"connecting" | "live" | "error">("connecting");
@@ -170,10 +179,10 @@ export default function WhaleTracker() {
         </div>
 
         {/* Status Indicator */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500, color: status === "live" ? "var(--positive)" : status === "connecting" ? "var(--accent)" : "var(--negative)" }}>
-          {status === "live" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--positive)", boxShadow: "0 0 8px var(--positive)", animation: "pulse 2s infinite" }} />}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500, color: status === "live" ? "#2ecc71" : status === "connecting" ? "var(--accent)" : "#e74c3c" }}>
+          {status === "live" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2ecc71", boxShadow: "0 0 8px #2ecc71", animation: "pulse 2s infinite" }} />}
           {status === "connecting" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", animation: "pulse 1s infinite" }} />}
-          {status === "error" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--negative)" }} />}
+          {status === "error" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e74c3c" }} />}
           {status.toUpperCase()}
         </div>
       </div>
@@ -195,8 +204,9 @@ export default function WhaleTracker() {
         ) : (
           trades.map((trade) => {
             const isBuy = !trade.isSell;
-            const color = isBuy ? "var(--positive)" : "var(--negative)";
-            const bg = isBuy ? "var(--positive-soft)" : "var(--negative-soft)";
+            const dirColor = isBuy ? "#2ecc71" : "#ff4560";
+            const coinColor = COIN_COLORS[trade.symbol] || "var(--accent)";
+            const bg = isBuy ? "rgba(46, 204, 113, 0.05)" : "rgba(255, 69, 96, 0.05)";
             const isMega = trade.value > 500000;
 
             return (
@@ -208,29 +218,29 @@ export default function WhaleTracker() {
                   flexDirection: "column",
                   gap: 16,
                   background: isMega ? "rgba(245, 166, 35, 0.1)" : bg,
-                  border: `1px solid ${isMega ? "rgba(245,166,35,0.4)" : "var(--border)"}`,
+                  border: `1px solid ${isMega ? "rgba(245,166,35,0.4)" : dirColor + "40"}`,
                   borderRadius: 24,
                   padding: "32px 20px",
                   textAlign: "center",
                   position: "relative",
                   overflow: "hidden",
-                  boxShadow: `0 8px 32px ${bg}`
+                  boxShadow: `0 8px 32px ${coinColor}15`
                 }}
               >
                 {isMega && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "var(--accent)", boxShadow: "0 0 16px var(--accent)" }} />}
                 
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: 2 }}>
-                    {isBuy ? <ArrowUpRight size={16} color={color} /> : <ArrowDownRight size={16} color={color} />}
-                    {isBuy ? "WHALE BUY DETECTED" : "WHALE SELL DETECTED"}
+                    {isBuy ? <ArrowUpRight size={16} color={dirColor} /> : <ArrowDownRight size={16} color={dirColor} />}
+                    {isBuy ? <span style={{ color: dirColor }}>WHALE BUY DETECTED</span> : <span style={{ color: dirColor }}>WHALE SELL DETECTED</span>}
                     {isMega && <AlertTriangle size={14} color="var(--accent)" />}
                 </div>
 
-                <div style={{ fontSize: 48, fontWeight: 800, color: color, textShadow: `0 0 32px ${bg}`, lineHeight: 1 }}>
+                <div style={{ fontSize: 48, fontWeight: 800, color: coinColor, textShadow: `0 0 32px ${coinColor}40`, lineHeight: 1 }}>
                     {formatValue(trade.value)}
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                    <span style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{trade.symbol}</span>
+                    <span style={{ fontSize: 24, fontWeight: 800, color: coinColor }}>{trade.symbol}</span>
                     <span style={{ fontSize: 16, color: "rgba(255,255,255,0.4)" }}>@</span>
                     <span style={{ fontSize: 20, fontFamily: "monospace", fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>
                       ${trade.price.toLocaleString(undefined, {maximumFractionDigits: trade.price < 1 ? 4 : 2})}
