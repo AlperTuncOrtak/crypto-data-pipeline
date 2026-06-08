@@ -178,3 +178,14 @@ h1, h2, h3, h4, h5, h6, .display-font {
     radial-gradient(circle at 85% 30%, rgba(156, 163, 175, 0.05), transparent 25%);
   pointer-events: none;
 }
+
+/* ── Mobile Bottom Nav ────────────────────────────── */
+.mobile-bottom-nav { display: none !important; }
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav { display: flex !important; }
+  /* hide hamburger toggle on mobile since we have bottom nav */
+  .show-mobile-flex { display: none !important; }
+  /* add padding to bottom of main content on mobile so bottom nav doesn't hide content */
+  .main-content { padding-bottom: 80px; }
+}

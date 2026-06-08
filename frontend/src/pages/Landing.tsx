@@ -228,6 +228,7 @@ export default function Landing({ onAuthOpen }) {
 
       {/* NAVBAR */}
       <nav
+        className="px-6 md:px-12"
         style={{
           position: "fixed",
           top: 0,
@@ -237,7 +238,6 @@ export default function Landing({ onAuthOpen }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 48px",
           height: 58,
           background: scrollY > 30 ? "rgba(7,7,15,.94)" : "transparent",
           backdropFilter: scrollY > 30 ? "blur(20px)" : "none",
@@ -376,9 +376,11 @@ export default function Landing({ onAuthOpen }) {
 
       {/* FLOATING COINS HERO LAYER */}
       <section
+        className="px-6 md:px-12"
         style={{
           position: "relative",
-          padding: "88px 48px 64px",
+          paddingTop: 88,
+          paddingBottom: 64,
           textAlign: "center",
           overflow: "hidden",
         }}

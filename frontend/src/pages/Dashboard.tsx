@@ -571,18 +571,19 @@ export default function Dashboard() {
               </span>
             </div>
 
-            {(market.isLoading || (!market.isLoading && top10.length === 0)) && (
-              <table className="w-full">
-                <tbody>{Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={5} />)}</tbody>
-              </table>
-            )}
-            {top10.length > 0 && (
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                    {["#", "Asset", "Price", "24h", "Market Cap"].map((h, i) => (
-                      <th
-                        key={h}
+            <div className="overflow-x-auto w-full">
+              {(market.isLoading || (!market.isLoading && top10.length === 0)) && (
+                <table className="w-full min-w-[600px]">
+                  <tbody>{Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={5} />)}</tbody>
+                </table>
+              )}
+              {top10.length > 0 && (
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      {["#", "Asset", "Price", "24h", "Market Cap"].map((h, i) => (
+                        <th
+                          key={h}
                         style={{
                           paddingBottom: 10,
                           fontSize: 10,
@@ -663,6 +664,7 @@ export default function Dashboard() {
                 </tbody>
               </table>
             )}
+            </div>
           </BentoCard>
         </div>
 

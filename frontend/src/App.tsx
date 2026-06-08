@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { ToastProvider, useAlertMonitor } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
+import BottomNav from "./components/layout/BottomNav";
 import RightSidebar from "./components/layout/WatchlistSidebar";
 import Footer from "./components/layout/Footer";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
@@ -268,6 +269,7 @@ function AppInner() {
           initialMode={authMode}
         />
       )}
+      {location.pathname !== "/" && <BottomNav />}
       </div>
     </div>
   );

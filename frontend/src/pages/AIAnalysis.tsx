@@ -1629,6 +1629,7 @@ export default function AIAnalysis() {
         <div
           style={{
             display: "flex",
+            flexWrap: "wrap",
             alignItems: "center",
             gap: 10,
             padding: "6px 6px 6px 16px",
@@ -1744,6 +1745,7 @@ export default function AIAnalysis() {
             onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
             style={{
               flex: 1,
+              minWidth: 140,
               background: "transparent",
               border: "none",
               outline: "none",

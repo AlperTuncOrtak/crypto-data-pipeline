@@ -459,6 +459,7 @@ export default function Navbar({
         }}
       >
         <div
+          className="hide-scrollbar"
           style={{
             display: "flex",
             alignItems: "center",
@@ -466,7 +467,7 @@ export default function Navbar({
             padding: "6px 28px",
             maxWidth: 1440,
             margin: "0 auto",
-            overflowX: "hidden",
+            overflowX: "auto",
           }}
         >
           {[
