@@ -9,7 +9,7 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
          border: '1px solid rgba(255,255,255,0.05)',
        }}>
     <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
-         style={{ backgroundColor: 'rgba(0,240,255,0.1)', color: '#00F0FF' }}>
+         style={{ backgroundColor: 'rgba(245,158,11,0.1)', color: 'var(--accent)' }}>
       <Icon size={24} />
     </div>
     <h3 className="text-lg font-bold text-white mb-3">{title}</h3>
@@ -25,12 +25,12 @@ const Callout = ({ title, children, icon: Icon = Zap }) => (
          border: '1px solid rgba(245,166,35,0.2)' 
        }}>
     {/* Subtle background glow */}
-    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00F0FF] opacity-5 blur-3xl rounded-full"></div>
+    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--accent)] opacity-5 blur-3xl rounded-full"></div>
     <div className="shrink-0 mt-1">
-      <Icon size={24} style={{ color: '#00F0FF' }} />
+      <Icon size={24} style={{ color: 'var(--accent)' }} />
     </div>
     <div>
-      <h4 className="text-base font-bold mb-2 tracking-wide" style={{ color: '#00F0FF' }}>{title}</h4>
+      <h4 className="text-base font-bold mb-2 tracking-wide" style={{ color: 'var(--accent)' }}>{title}</h4>
       <div className="text-base text-gray-300 leading-loose">
         {children}
       </div>
@@ -85,12 +85,12 @@ export default function Documentation() {
                   onClick={() => setActiveTab(tab.id)}
                   className="flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-left relative group mb-1"
                   style={{
-                    color: isActive ? '#00F0FF' : '#9ca3af',
-                    backgroundColor: isActive ? 'rgba(0,240,255,0.05)' : 'transparent',
+                    color: isActive ? 'var(--accent)' : '#9ca3af',
+                    backgroundColor: isActive ? 'rgba(245,158,11,0.05)' : 'transparent',
                   }}
                 >
                   {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#00F0FF] rounded-r-full shadow-[0_0_12px_#00F0FF]"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--accent)] rounded-r-full shadow-[0_0_12px_var(--accent)]"></div>
                   )}
                   <Icon size={20} className={isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100 transition-opacity'} />
                   <span className={`text-base ${isActive ? 'font-semibold' : 'font-medium group-hover:text-gray-200 transition-colors'}`}>
@@ -107,7 +107,7 @@ export default function Documentation() {
           <div className="max-w-4xl">
             {activeTab === 'getting-started' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-3 text-[#00F0FF] mb-6">
+                <div className="flex items-center gap-3 text-[var(--accent)] mb-6">
                   <Compass size={28} />
                   <span className="text-sm font-bold uppercase tracking-widest">Introduction</span>
                 </div>
@@ -144,7 +144,7 @@ export default function Documentation() {
 
             {activeTab === 'dashboard' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-3 text-[#00F0FF] mb-6">
+                <div className="flex items-center gap-3 text-[var(--accent)] mb-6">
                   <LayoutDashboard size={28} />
                   <span className="text-sm font-bold uppercase tracking-widest">Core Features</span>
                 </div>
@@ -161,21 +161,21 @@ export default function Documentation() {
                   
                   <div className="bg-white/5 rounded-2xl p-8 border border-white/10 mt-8 mb-16">
                     <h4 className="text-white text-xl font-bold mb-6 flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-full bg-[#00F0FF] text-black flex items-center justify-center text-base font-extrabold">1</div>
+                      <div className="w-8 h-8 rounded-full bg-[var(--accent)] text-black flex items-center justify-center text-base font-extrabold">1</div>
                       Adding a Transaction
                     </h4>
                     <p className="text-base leading-relaxed mb-6 text-gray-400">Navigate to the <strong className="text-white font-semibold">Portfolio</strong> tab and click the "Add Transaction" button. You will need to provide:</p>
                     <ul className="space-y-5 text-base text-gray-300">
                       <li className="flex items-start gap-4">
-                        <ArrowRight size={20} className="text-[#00F0FF] shrink-0 mt-1" />
+                        <ArrowRight size={20} className="text-[var(--accent)] shrink-0 mt-1" />
                         <span className="leading-relaxed"><strong className="text-white font-semibold">Asset:</strong> Search for the coin (e.g., BTC, ETH, SOL).</span>
                       </li>
                       <li className="flex items-start gap-4">
-                        <ArrowRight size={20} className="text-[#00F0FF] shrink-0 mt-1" />
+                        <ArrowRight size={20} className="text-[var(--accent)] shrink-0 mt-1" />
                         <span className="leading-relaxed"><strong className="text-white font-semibold">Quantity:</strong> The amount of the coin you purchased.</span>
                       </li>
                       <li className="flex items-start gap-4">
-                        <ArrowRight size={20} className="text-[#00F0FF] shrink-0 mt-1" />
+                        <ArrowRight size={20} className="text-[var(--accent)] shrink-0 mt-1" />
                         <span className="leading-relaxed"><strong className="text-white font-semibold">Buy Price:</strong> The price per coin at the time of purchase.</span>
                       </li>
                     </ul>
@@ -192,7 +192,7 @@ export default function Documentation() {
 
             {activeTab === 'ai-analysis' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-3 text-[#00F0FF] mb-6">
+                <div className="flex items-center gap-3 text-[var(--accent)] mb-6">
                   <Brain size={28} />
                   <span className="text-sm font-bold uppercase tracking-widest">Intelligence</span>
                 </div>
@@ -206,15 +206,15 @@ export default function Documentation() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
                   <div className="bg-black/40 p-8 rounded-2xl border border-white/5">
-                    <div className="text-[#00F0FF] font-mono text-base font-bold mb-4">01. Data Ingestion</div>
+                    <div className="text-[var(--accent)] font-mono text-base font-bold mb-4">01. Data Ingestion</div>
                     <p className="text-base text-gray-400 leading-relaxed">Fetches the last 100 periods of OHLCV (Open, High, Low, Close, Volume) data from the exchange.</p>
                   </div>
                   <div className="bg-black/40 p-8 rounded-2xl border border-white/5">
-                    <div className="text-[#00F0FF] font-mono text-base font-bold mb-4">02. Indicator Math</div>
+                    <div className="text-[var(--accent)] font-mono text-base font-bold mb-4">02. Indicator Math</div>
                     <p className="text-base text-gray-400 leading-relaxed">Calculates RSI, MACD, Bollinger Bands, and Moving Averages using pandas-ta.</p>
                   </div>
                   <div className="bg-black/40 p-8 rounded-2xl border border-white/5">
-                    <div className="text-[#00F0FF] font-mono text-base font-bold mb-4">03. AI Synthesis</div>
+                    <div className="text-[var(--accent)] font-mono text-base font-bold mb-4">03. AI Synthesis</div>
                     <p className="text-base text-gray-400 leading-relaxed">Passes the calculated matrix to the AI model with a strict system prompt to generate the report.</p>
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export default function Documentation() {
 
             {activeTab === 'compare' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                 <div className="flex items-center gap-3 text-[#00F0FF] mb-6">
+                 <div className="flex items-center gap-3 text-[var(--accent)] mb-6">
                   <GitCompare size={28} />
                   <span className="text-sm font-bold uppercase tracking-widest">Analytics</span>
                 </div>
@@ -239,7 +239,7 @@ export default function Documentation() {
                 <div className="space-y-16">
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                      <TrendingUp className="text-[#00F0FF]" size={28} /> Normalized Comparison
+                      <TrendingUp className="text-[var(--accent)]" size={28} /> Normalized Comparison
                     </h3>
                     <p className="text-gray-300 text-lg leading-loose mb-6">
                       When comparing coins with vastly different prices (e.g., BTC at $60,000 vs XRP at $0.50), standard charts are useless. Our Compare tool <strong className="text-white">normalizes</strong> all selected assets to start at 0% for the selected timeframe.
@@ -251,7 +251,7 @@ export default function Documentation() {
 
                   <div className="pt-8 border-t border-white/5">
                     <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                      <Network className="text-[#00F0FF]" size={28} /> Correlation Matrix (Heatmap)
+                      <Network className="text-[var(--accent)]" size={28} /> Correlation Matrix (Heatmap)
                     </h3>
                     <p className="text-gray-300 text-lg leading-loose mb-8">
                       The heatmap displays the Pearson correlation coefficient between selected assets, ranging from -1.0 to +1.0.

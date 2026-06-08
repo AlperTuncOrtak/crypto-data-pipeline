@@ -117,7 +117,7 @@ export default function DisclaimerModal({ onAccept }) {
           <div
             style={{
               height: 3,
-              background: "linear-gradient(90deg, #e74c3c, #00F0FF, #e74c3c)",
+              background: "linear-gradient(90deg, #e74c3c, var(--accent), #e74c3c)",
             }}
           />
 
@@ -212,10 +212,10 @@ export default function DisclaimerModal({ onAccept }) {
               <div className="flex items-start gap-2 mb-3">
                 <AlertTriangle
                   size={14}
-                  style={{ color: "#00F0FF", flexShrink: 0, marginTop: 1 }}
+                  style={{ color: "var(--accent)", flexShrink: 0, marginTop: 1 }}
                 />
                 <span
-                  style={{ fontSize: 13, fontWeight: 700, color: "#00F0FF" }}
+                  style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}
                 >
                   Not Financial Advice
                 </span>
@@ -406,7 +406,7 @@ export default function DisclaimerModal({ onAccept }) {
                 width: "100%",
                 padding: "14px",
                 background: checked
-                  ? "linear-gradient(135deg, #00F0FF, #8B5CF6)"
+                  ? "linear-gradient(135deg, var(--accent), #8B5CF6)"
                   : "var(--bg-elevated)",
                 color: checked ? "#111" : "var(--text-muted)",
                 border: "none",

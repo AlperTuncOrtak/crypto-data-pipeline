@@ -166,7 +166,7 @@ function WatchlistPanel({
                   fontSize: 11,
                   padding: "1px 6px",
                   borderRadius: 999,
-                  background: "rgba(0,240,255,0.15)",
+                  background: "rgba(245,158,11,0.15)",
                   color: "var(--accent)",
                   fontFamily: "monospace",
                 }}
@@ -264,7 +264,7 @@ function WatchlistPanel({
                 background: isAtLimit
                   ? "rgba(231,76,60,0.06)"
                   : showAdd
-                    ? "rgba(0,240,255,0.1)"
+                    ? "rgba(245,158,11,0.1)"
                     : "transparent",
                 color: isAtLimit
                   ? "#e74c3c"
@@ -668,7 +668,7 @@ function WatchlistPanel({
               width: "100%",
               padding: "7px",
               borderRadius: 8,
-              background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+              background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
               color: "#111",
               fontWeight: 700,
               fontSize: 11,
@@ -812,7 +812,7 @@ function AlertsPanel({ marketData, onClose }) {
     price_below: "#e74c3c",
     change_up: "#2ecc71",
     change_down: "#e74c3c",
-    volume_spike: "#00F0FF",
+    volume_spike: "var(--accent)",
   };
 
   return (
@@ -844,7 +844,7 @@ function AlertsPanel({ marketData, onClose }) {
                 fontSize: 11,
                 padding: "1px 6px",
                 borderRadius: 999,
-                background: "rgba(0,240,255,0.15)",
+                background: "rgba(245,158,11,0.15)",
                 color: "var(--accent)",
                 fontFamily: "monospace",
               }}
@@ -1068,7 +1068,7 @@ function AlertsPanel({ marketData, onClose }) {
               style={{
                 padding: "8px 18px",
                 borderRadius: 9,
-                background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+                background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
                 color: "#111",
                 fontWeight: 700,
                 fontSize: 12,
@@ -1104,7 +1104,7 @@ function AlertsPanel({ marketData, onClose }) {
               </div>
             )}
             {[...triggered, ...pending].map((alert) => {
-              const color = TYPE_COLORS[alert.type] || "#00F0FF";
+              const color = TYPE_COLORS[alert.type] || "var(--accent)";
               const isTriggered = alert.status === "triggered";
               return (
                 <div
@@ -1361,7 +1361,7 @@ export default function RightSidebar({
                   border: "none",
                   cursor: "pointer",
                   backgroundColor: isActive
-                    ? "rgba(0,240,255,0.15)"
+                    ? "rgba(245,158,11,0.15)"
                     : "transparent",
                   color: isActive ? "var(--accent)" : "var(--text-muted)",
                   transition: "all 0.15s",

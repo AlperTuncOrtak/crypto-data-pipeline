@@ -52,7 +52,7 @@ const fmtNum = (n) =>
 
 // ── Colors ───────────────────────────────────────────────────
 const CHART_COLORS = [
-  "#00F0FF",
+  "var(--accent)",
   "#2ecc71",
   "#3498db",
   "#9b59b6",

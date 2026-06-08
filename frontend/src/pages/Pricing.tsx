@@ -54,7 +54,7 @@ const PLANS = [
     icon: Crown,
     price: { monthly: 10, yearly: 7 },
     color: "rgba(245,166,35,0.12)",
-    accent: "#00F0FF",
+    accent: "var(--accent)",
     badge: "Most Popular",
     desc: "For serious traders who want an edge.",
     features: [
@@ -146,7 +146,7 @@ function PlanCard({
 
   const btnStyle = isPrimary
     ? {
-        background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+        background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
         color: "#111",
         border: "none",
         boxShadow: "0 4px 20px rgba(245,166,35,0.4)",
@@ -191,7 +191,7 @@ function PlanCard({
             left: "50%",
             transform: "translateX(-50%)",
             background: isPrimary
-              ? "linear-gradient(135deg, #00F0FF, #8B5CF6)"
+              ? "linear-gradient(135deg, var(--accent), #8B5CF6)"
               : "linear-gradient(135deg, #8b5cf6, #7c3aed)",
             color: "#fff",
             fontSize: 11,
@@ -408,7 +408,7 @@ export default function Pricing({ onAuthOpen }) {
           <br />
           <span
             style={{
-              background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+              background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -626,7 +626,7 @@ export default function Pricing({ onAuthOpen }) {
           style={{
             padding: "12px 28px",
             borderRadius: 12,
-            background: "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+            background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
             color: "#111",
             fontWeight: 700,
             fontSize: 14,

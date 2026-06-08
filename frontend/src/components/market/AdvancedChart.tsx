@@ -37,13 +37,13 @@ export default function AdvancedChart({ symbol, interval = "24h" }) {
           color: "rgba(245,166,35,0.4)",
           width: 1,
           style: 1,
-          labelBackgroundColor: "#00F0FF",
+          labelBackgroundColor: "var(--accent)",
         },
         horzLine: {
           color: "rgba(245,166,35,0.4)",
           width: 1,
           style: 1,
-          labelBackgroundColor: "#00F0FF",
+          labelBackgroundColor: "var(--accent)",
         },
       },
       rightPriceScale: {

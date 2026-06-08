@@ -104,7 +104,7 @@ function FaqList() {
             borderRadius: 14,
             border: `1px solid ${open === i ? "rgba(245,166,35,.25)" : "rgba(255,255,255,.07)"}`,
             background:
-              open === i ? "rgba(0,240,255,0.04)" : "rgba(255,255,255,.02)",
+              open === i ? "rgba(245,158,11,0.04)" : "rgba(255,255,255,.02)",
             overflow: "hidden",
             transition: "all .2s",
           }}
@@ -153,7 +153,7 @@ function FaqList() {
               <span
                 style={{
                   fontSize: 14,
-                  color: open === i ? "#00F0FF" : "rgba(255,255,255,.4)",
+                  color: open === i ? "var(--accent)" : "rgba(255,255,255,.4)",
                   lineHeight: 1,
                   transform: open === i ? "rotate(45deg)" : "rotate(0)",
                   display: "block",
@@ -264,7 +264,7 @@ export default function Landing({ onAuthOpen }) {
           <span
             style={{ fontSize: 15, fontWeight: 800, letterSpacing: "-0.02em" }}
           >
-            <span style={{ color: "#00F0FF" }}>Crypto</span>Neko
+            <span style={{ color: "var(--accent)" }}>Crypto</span>Neko
           </span>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -291,7 +291,7 @@ export default function Landing({ onAuthOpen }) {
             style={{
               padding: "7px 20px",
               borderRadius: 9,
-              background: "linear-gradient(135deg,#00F0FF,#8B5CF6)",
+              background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
               color: "#111",
               fontSize: 13,
               fontWeight: 700,
@@ -543,7 +543,7 @@ export default function Landing({ onAuthOpen }) {
           </span>
           <span
             style={{
-              background: "linear-gradient(135deg, #00F0FF 0%, #5EEAD4 30%, #00C3FF 70%, #00F0FF 100%)",
+              background: "linear-gradient(135deg, var(--accent) 0%, #5EEAD4 30%, #00C3FF 70%, var(--accent) 100%)",
               backgroundSize: "200% auto",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -663,7 +663,7 @@ export default function Landing({ onAuthOpen }) {
                 style={{
                   fontSize: "clamp(26px,3vw,38px)",
                   fontWeight: 900,
-                  color: "#00F0FF",
+                  color: "var(--accent)",
                   fontFamily: "monospace",
                   letterSpacing: "-0.02em",
                   lineHeight: 1,
@@ -896,7 +896,7 @@ export default function Landing({ onAuthOpen }) {
                       style={{
                         fontSize: 16,
                         fontWeight: 900,
-                        color: "#00F0FF",
+                        color: "var(--accent)",
                       }}
                     >
                       MEDIUM
@@ -916,7 +916,7 @@ export default function Landing({ onAuthOpen }) {
                   {
                     label: "RSI",
                     val: 67,
-                    color: "#00F0FF",
+                    color: "var(--accent)",
                     status: "Neutral",
                   },
                   {
@@ -929,7 +929,7 @@ export default function Landing({ onAuthOpen }) {
                   {
                     label: "Stoch",
                     val: 72,
-                    color: "#00F0FF",
+                    color: "var(--accent)",
                     status: "Neutral",
                   },
                   {
@@ -1012,7 +1012,7 @@ export default function Landing({ onAuthOpen }) {
                     label: "Fear & Greed",
                     value: "48",
                     sub: "Neutral",
-                    color: "#00F0FF",
+                    color: "var(--accent)",
                   },
                   {
                     label: "7-Day Trend",
@@ -1084,7 +1084,7 @@ export default function Landing({ onAuthOpen }) {
               marginBottom: 20,
             }}
           >
-            <span style={{ fontSize: 10, fontWeight: 800, color: "#00F0FF", letterSpacing: ".22em", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: "var(--accent)", letterSpacing: ".22em", textTransform: "uppercase" }}>
               Everything you need
             </span>
           </div>
@@ -1149,8 +1149,8 @@ export default function Landing({ onAuthOpen }) {
             },
             {
               icon: Bell,
-              color: "#00F0FF",
-              gradFrom: "#00F0FF",
+              color: "var(--accent)",
+              gradFrom: "var(--accent)",
               gradTo: "#b7770d",
               badge: "INSTANT",
               title: "Smart Price Alerts",
@@ -1312,7 +1312,7 @@ export default function Landing({ onAuthOpen }) {
           style={{
             fontSize: 10,
             fontWeight: 800,
-            color: "#00F0FF",
+            color: "var(--accent)",
             letterSpacing: ".22em",
             textTransform: "uppercase",
             marginBottom: 12,
@@ -1370,7 +1370,7 @@ export default function Landing({ onAuthOpen }) {
             {
               step: "03",
               Icon: Zap,
-              color: "#00F0FF",
+              color: "var(--accent)",
               title: "Act with confidence",
               desc: "Clear signal, stop-loss level and personalized advice for your position.",
             },
@@ -1437,7 +1437,7 @@ export default function Landing({ onAuthOpen }) {
             style={{
               fontSize: 10,
               fontWeight: 800,
-              color: "#00F0FF",
+              color: "var(--accent)",
               letterSpacing: ".22em",
               textTransform: "uppercase",
               marginBottom: 12,
@@ -1469,7 +1469,7 @@ export default function Landing({ onAuthOpen }) {
               prefix: "",
               label: "Coins Tracked",
               desc: "Real-time prices, 24h changes, volume & market cap",
-              color: "#00F0FF",
+              color: "var(--accent)",
               Icon: BarChart2,
             },
             {
@@ -1620,7 +1620,7 @@ export default function Landing({ onAuthOpen }) {
             style={{
               fontSize: 10,
               fontWeight: 800,
-              color: "#00F0FF",
+              color: "var(--accent)",
               letterSpacing: ".22em",
               textTransform: "uppercase",
               marginBottom: 12,
@@ -1765,7 +1765,7 @@ export default function Landing({ onAuthOpen }) {
               padding: "30px",
               borderRadius: 20,
               background:
-                "linear-gradient(135deg,rgba(245,166,35,.1),rgba(0,240,255,0.04))",
+                "linear-gradient(135deg,rgba(245,166,35,.1),rgba(245,158,11,0.04))",
               border: "1px solid rgba(245,166,35,.28)",
               position: "relative",
               boxShadow: "0 0 60px rgba(245,166,35,.07)",
@@ -1780,7 +1780,7 @@ export default function Landing({ onAuthOpen }) {
                 fontWeight: 900,
                 padding: "3px 10px",
                 borderRadius: 20,
-                background: "#00F0FF",
+                background: "var(--accent)",
                 color: "#111",
                 letterSpacing: ".1em",
               }}
@@ -1791,7 +1791,7 @@ export default function Landing({ onAuthOpen }) {
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: "#00F0FF",
+                color: "var(--accent)",
                 textTransform: "uppercase",
                 letterSpacing: ".12em",
                 marginBottom: 14,
@@ -1862,7 +1862,7 @@ export default function Landing({ onAuthOpen }) {
                       flexShrink: 0,
                     }}
                   >
-                    <Check size={9} style={{ color: "#00F0FF" }} />
+                    <Check size={9} style={{ color: "var(--accent)" }} />
                   </div>
                   <span
                     style={{ fontSize: 13, color: "rgba(255,255,255,.62)" }}
@@ -1879,7 +1879,7 @@ export default function Landing({ onAuthOpen }) {
                 width: "100%",
                 padding: "13px",
                 borderRadius: 11,
-                background: "linear-gradient(135deg,#00F0FF,#8B5CF6)",
+                background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
                 color: "#111",
                 fontWeight: 800,
                 fontSize: 14,
@@ -1903,7 +1903,7 @@ export default function Landing({ onAuthOpen }) {
             style={{
               fontSize: 10,
               fontWeight: 800,
-              color: "#00F0FF",
+              color: "var(--accent)",
               letterSpacing: ".22em",
               textTransform: "uppercase",
               marginBottom: 12,
@@ -1951,7 +1951,7 @@ export default function Landing({ onAuthOpen }) {
             style={{
               fontSize: 10,
               fontWeight: 800,
-              color: "#00F0FF",
+              color: "var(--accent)",
               letterSpacing: ".22em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -1992,7 +1992,7 @@ export default function Landing({ onAuthOpen }) {
               gap: 9,
               padding: "16px 38px",
               borderRadius: 14,
-              background: "linear-gradient(135deg,#00F0FF,#8B5CF6)",
+              background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
               color: "#111",
               fontSize: 16,
               fontWeight: 800,
@@ -2039,7 +2039,7 @@ export default function Landing({ onAuthOpen }) {
                 width: 22,
                 height: 22,
                 borderRadius: 6,
-                background: "linear-gradient(135deg,#00F0FF,#8B5CF6)",
+                background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -2051,7 +2051,7 @@ export default function Landing({ onAuthOpen }) {
               N
             </div>
             <span style={{ fontSize: 13, fontWeight: 700 }}>
-              <span style={{ color: "#00F0FF" }}>Crypto</span>Neko
+              <span style={{ color: "var(--accent)" }}>Crypto</span>Neko
             </span>
             <span
               style={{

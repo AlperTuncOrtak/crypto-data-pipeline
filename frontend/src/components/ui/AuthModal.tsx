@@ -47,7 +47,7 @@ function getStrength(pw) {
   if (/[^A-Za-z0-9]/.test(pw)) score++;
   if (score <= 1) return { score, label: "Weak", color: "#e74c3c" };
   if (score <= 2) return { score, label: "Fair", color: "#f39c12" };
-  if (score <= 3) return { score, label: "Good", color: "#00F0FF" };
+  if (score <= 3) return { score, label: "Good", color: "var(--accent)" };
   if (score <= 4) return { score, label: "Strong", color: "#2ecc71" };
   return { score, label: "Very Strong", color: "#00d084" };
 }
@@ -639,7 +639,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                           checked={remember}
                           onChange={(e) => setRemember(e.target.checked)}
                           style={{
-                            accentColor: "#00F0FF",
+                            accentColor: "var(--accent)",
                             width: 13,
                             height: 13,
                           }}
@@ -666,7 +666,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                           transition: "color 0.15s",
                         }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.color = "#00F0FF")
+                          (e.currentTarget.style.color = "var(--accent)")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.color = "rgba(245,166,35,0.6)")
@@ -760,7 +760,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       border: "none",
                       background: submitDisabled
                         ? "rgba(245,166,35,0.25)"
-                        : "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+                        : "linear-gradient(135deg, var(--accent), #8B5CF6)",
                       color: "#111",
                       fontSize: 14,
                       fontWeight: 700,
@@ -835,7 +835,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                           background: "none",
                           border: "none",
                           cursor: "pointer",
-                          color: "#00F0FF",
+                          color: "var(--accent)",
                           fontSize: 13,
                           fontWeight: 600,
                           padding: 0,
@@ -845,7 +845,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                           (e.currentTarget.style.color = "#ffb94a")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.color = "#00F0FF")
+                          (e.currentTarget.style.color = "var(--accent)")
                         }
                       >
                         {mode === "login" ? "Sign Up" : "Sign In"}

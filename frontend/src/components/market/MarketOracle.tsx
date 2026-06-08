@@ -28,7 +28,7 @@ import { useOracle } from "../../hooks/useOracle";
 function getSentimentStyle(score) {
   if (score <= 20) return { color: "#e74c3c", bg: "rgba(231,76,60,0.1)",  label: "Extreme Fear" };
   if (score <= 40) return { color: "#e67e22", bg: "rgba(230,126,34,0.1)", label: "Fear" };
-  if (score <= 60) return { color: "#00F0FF", bg: "rgba(0,240,255,0.1)", label: "Neutral" };
+  if (score <= 60) return { color: "var(--accent)", bg: "rgba(245,158,11,0.1)", label: "Neutral" };
   if (score <= 80) return { color: "#2ecc71", bg: "rgba(46,204,113,0.1)", label: "Greed" };
   return            { color: "#27ae60", bg: "rgba(39,174,96,0.1)",         label: "Extreme Greed" };
 }

@@ -49,7 +49,7 @@ const ALERT_TYPES = [
     id: "volume_spike",
     label: "Volume Spike",
     icon: Activity,
-    color: "#00F0FF",
+    color: "var(--accent)",
     desc: "Alert when volume increases significantly",
   },
 ];
@@ -574,7 +574,7 @@ export default function CreateAlert() {
                 ? "rgba(245,166,35,0.2)"
                 : saved
                   ? "rgba(46,204,113,0.8)"
-                  : "linear-gradient(135deg, #00F0FF, #8B5CF6)",
+                  : "linear-gradient(135deg, var(--accent), #8B5CF6)",
             color: "#111",
             fontSize: 14,
             fontWeight: 700,

@@ -21,7 +21,7 @@ const TYPE_CONFIG = {
   },
   'Rapid Movement': {
     color: 'var(--accent)',
-    border: '#00F0FF',
+    border: 'var(--accent)',
     icon: Zap,
     filter: 'rapid',
     label: 'RAPID',
@@ -177,7 +177,7 @@ export default function Alerts() {
                   onClick={() => setFilter(f.key)}
                   className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all text-left w-full"
                   style={{
-                    backgroundColor: filter === f.key ? 'rgba(0,240,255,0.1)' : 'transparent',
+                    backgroundColor: filter === f.key ? 'rgba(245,158,11,0.1)' : 'transparent',
                     border: filter === f.key ? '1px solid rgba(245,166,35,0.25)' : '1px solid transparent',
                     color: filter === f.key ? 'var(--accent)' : 'var(--text-muted)',
                     cursor: 'pointer',
@@ -190,7 +190,7 @@ export default function Alerts() {
                   <span
                     className="text-xs font-mono px-2 py-0.5 rounded-full"
                     style={{
-                      backgroundColor: filter === f.key ? 'rgba(0,240,255,0.15)' : 'var(--bg-elevated)',
+                      backgroundColor: filter === f.key ? 'rgba(245,158,11,0.15)' : 'var(--bg-elevated)',
                       color: filter === f.key ? 'var(--accent)' : 'var(--text-muted)',
                     }}
                   >
@@ -216,7 +216,7 @@ export default function Alerts() {
                   onClick={() => setSortBy(s.key)}
                   className="px-3 py-2.5 rounded-lg text-sm text-left w-full transition-all"
                   style={{
-                    backgroundColor: sortBy === s.key ? 'rgba(0,240,255,0.1)' : 'transparent',
+                    backgroundColor: sortBy === s.key ? 'rgba(245,158,11,0.1)' : 'transparent',
                     border: sortBy === s.key ? '1px solid rgba(245,166,35,0.25)' : '1px solid transparent',
                     color: sortBy === s.key ? 'var(--accent)' : 'var(--text-muted)',
                     cursor: 'pointer',
