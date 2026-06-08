@@ -12,7 +12,6 @@ import CoinListCard from "../components/market/CoinListCard";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
 import HeatmapWidget from "../components/market/HeatmapWidget";
-import WhaleTracker from "../components/market/WhaleTracker";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
@@ -709,15 +708,12 @@ export default function Dashboard() {
           <HeatmapWidget limit={50} />
         </Reveal>
 
-        {/* ── ROW 5: Volume Spike (4) + Market Oracle (4) + Whale Tracker (4) ── */}
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-4" delay={0.2}>
+        {/* ── ROW 5: Volume Spike (6) + Market Oracle (6) ── */}
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-6" delay={0.2}>
           <VolumeSpikeRadar />
         </Reveal>
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-4" delay={0.3}>
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-6" delay={0.4}>
           <MarketOracle />
-        </Reveal>
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-4" delay={0.4}>
-          <WhaleTracker />
         </Reveal>
       </div>
     </div>
