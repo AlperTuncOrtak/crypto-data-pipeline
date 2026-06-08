@@ -639,11 +639,13 @@ export default function Landing({ onAuthOpen }) {
         </div>
 
         <div
+          className="flex-wrap"
           style={{
             marginTop: 56,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            gap: 24,
             animation: "fadeUp .55s ease .4s both",
           }}
         >
@@ -657,7 +659,7 @@ export default function Landing({ onAuthOpen }) {
               key={i}
               style={{
                 padding: "0 36px",
-                borderRight: i < 3 ? "1px solid rgba(255,255,255,.07)" : "none",
+                /* border removed for wrap support */
                 textAlign: "center",
               }}
             >
@@ -1335,14 +1337,14 @@ export default function Landing({ onAuthOpen }) {
           <span style={{ color: "rgba(255,255,255,.22)" }}>in seconds.</span>
         </h2>
         <div
+          className="grid grid-cols-1 md:grid-cols-3"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
             gap: 24,
             position: "relative",
           }}
         >
           <div
+            className="hidden md:block"
             style={{
               position: "absolute",
               top: 30,
@@ -1458,9 +1460,8 @@ export default function Landing({ onAuthOpen }) {
           </h2>
         </div>
         <div
+          className="grid grid-cols-1 md:grid-cols-3"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
             gap: 14,
           }}
         >
@@ -1650,7 +1651,8 @@ export default function Landing({ onAuthOpen }) {
           </p>
         </div>
         <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
+          className="grid grid-cols-1 md:grid-cols-2"
+          style={{ gap: 14 }}
         >
           <div
             style={{
