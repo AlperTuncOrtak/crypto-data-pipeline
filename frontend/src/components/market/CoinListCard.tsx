@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { getCoinColor } from '../../utils/colors'
 
 const ACCENT_COLORS = {
   orange:  'var(--accent)',
@@ -107,7 +106,7 @@ export default function CoinListCard({
                 ) : (
                   <div
                     className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-mono"
-                    style={{ backgroundColor: 'var(--bg-elevated)', color: getCoinColor(coin.symbol) }}
+                    style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }}
                   >
                     {coin.symbol?.slice(0, 1)}
                   </div>
@@ -115,7 +114,7 @@ export default function CoinListCard({
 
                 <span
                   className="font-mono font-bold transition-colors"
-                  style={{ color: getCoinColor(coin.symbol), textShadow: `0 0 12px ${getCoinColor(coin.symbol)}40` }}
+                  style={{ color: 'var(--accent)' }}
                 >
                   {coin.symbol?.toUpperCase()}
                 </span>
