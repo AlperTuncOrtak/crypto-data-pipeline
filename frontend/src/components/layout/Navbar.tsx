@@ -499,6 +499,8 @@ export default function Navbar({
               style={{
                 display: "flex",
                 alignItems: "center",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
                 gap: 6,
                 padding: "0 16px",
                 borderRight: "1px solid rgba(255,255,255,0.05)",
@@ -530,6 +532,8 @@ export default function Navbar({
             style={{
               display: "flex",
               alignItems: "center",
+              flexShrink: 0,
+              whiteSpace: "nowrap",
               gap: 8,
               padding: "0 16px",
             }}

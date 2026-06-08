@@ -228,7 +228,7 @@ export default function Landing({ onAuthOpen }) {
 
       {/* NAVBAR */}
       <nav
-        className="px-6 md:px-12"
+        className="px-4 md:px-12"
         style={{
           position: "fixed",
           top: 0,
@@ -270,7 +270,7 @@ export default function Landing({ onAuthOpen }) {
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => onAuthOpen?.("login")}
-            className="lp-ghost"
+            className="lp-ghost hide-mobile"
             style={{
               padding: "7px 18px",
               borderRadius: 9,
@@ -300,7 +300,7 @@ export default function Landing({ onAuthOpen }) {
               boxShadow: "0 4px 14px rgba(245,166,35,.3)",
             }}
           >
-            Get Started Free
+            Get Started
           </button>
         </div>
       </nav>

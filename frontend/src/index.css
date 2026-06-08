@@ -189,3 +189,12 @@ h1, h2, h3, h4, h5, h6, .display-font {
   /* add padding to bottom of main content on mobile so bottom nav doesn't hide content */
   .main-content { padding-bottom: 80px; }
 }
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
