@@ -37,7 +37,7 @@ const NETWORKS = [
   {
     id: 'polygon',
     name: 'Polygon',
-    rpc: 'https://polygon-rpc.com',
+    rpc: 'https://polygon.llamarpc.com',
     icon: 'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
     highThreshold: 150,
     mediumThreshold: 50,
