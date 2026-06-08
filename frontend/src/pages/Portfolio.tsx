@@ -963,6 +963,10 @@ export default function Portfolio() {
   const [showAddSource, setShowAddSource] = useState(false);
   const [guide, setGuide] = useState(null);
 
+  const [aiInsights, setAiInsights] = useState(null);
+  const [isAnalyzingAI, setIsAnalyzingAI] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
   const syncBinance = useCallback(async (key, secret) => {
     if (!key || !secret) return;
     setIsSyncingBinance(true);
@@ -1025,6 +1029,32 @@ export default function Portfolio() {
   const totalValue = useMemo(() => holdings.reduce((s, h) => s + h.value, 0), [holdings]);
   const totalCost  = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
   const totalPnl   = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
+
+  const handleGetAIInsights = async () => {
+    if (holdings.length === 0) return;
+    setIsAnalyzingAI(true);
+    setAiError(null);
+    try {
+      const payload = {
+        holdings: holdings.map(h => ({
+          symbol: h.symbol,
+          value: h.value,
+          pnl_pct: h.cost_basis > 0 ? (h.pnl / h.cost_basis) * 100 : 0,
+          quantity: h.amount,
+          avg_cost: h.avg_buy_price
+        })),
+        total_value: totalValue,
+        total_pnl: totalPnl
+      };
+      const res = await apiClient.post("/ai/portfolio", payload);
+      setAiInsights(res.data);
+    } catch (err) {
+      console.error("AI Analysis error:", err);
+      setAiError(err.response?.data?.detail || "Failed to analyze portfolio. Please try again.");
+    } finally {
+      setIsAnalyzingAI(false);
+    }
+  };
   const pnlPct     = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
   const isPos      = totalPnl >= 0;
 
@@ -1270,6 +1300,115 @@ export default function Portfolio() {
               <div className="text-3xl font-black font-mono text-amber-400 relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
             </div>
           </div>
+        </SoftCard>
+      )}
+
+      {/* AI PORTFOLIO INSIGHTS */}
+      {holdings.length > 0 && (
+        <SoftCard className="mb-10 border-amber-500/20 relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-1 flex items-center gap-2">
+                <Brain size={14} /> AI Portfolio Analysis
+              </h3>
+              <p className="text-sm text-gray-400">Get deep insights and personalized recommendations powered by CryptoNeko AI.</p>
+            </div>
+            
+            <button 
+              onClick={handleGetAIInsights}
+              disabled={isAnalyzingAI}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {isAnalyzingAI ? (
+                <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> Analyzing...</>
+              ) : (
+                <><Brain size={16} /> Generate Insights</>
+              )}
+            </button>
+          </div>
+
+          {aiError && (
+            <div className="p-4 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {aiError}
+            </div>
+          )}
+
+          {aiInsights && (
+            <div className="space-y-6 relative z-10 animate-fadeInDown">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-3">Risk Assessment</div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl" style={{
+                      backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.1)' : 'rgba(45,212,191,0.1)',
+                      color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#F59E0B' : '#2DD4BF',
+                      border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.3)' : 'rgba(45,212,191,0.3)'}`
+                    }}>
+                      {aiInsights.risk_score}/10
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-gray-200">{aiInsights.risk_label} Risk</div>
+                      <div className="text-xs text-gray-500 mt-1">Correlation to BTC: <span className="text-gray-300 capitalize">{aiInsights.correlation_risk}</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-3">Diversification & Sector</div>
+                  <div className="flex items-center gap-4">
+                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30">
+                      {aiInsights.diversification_score}/10
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-gray-200">Dominant Sector</div>
+                      <div className="text-xs text-gray-500 mt-1"><span className="text-gray-300 font-medium">{aiInsights.dominant_sector}</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                <div className="text-xs font-bold text-gray-500 uppercase mb-3">Executive Summary</div>
+                <p className="text-sm text-gray-300 leading-relaxed">{aiInsights.summary}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-3">Strengths</div>
+                  <ul className="space-y-2">
+                    {aiInsights.strengths?.map((s, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-emerald-500 mt-0.5">•</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="p-5 rounded-2xl bg-red-500/5 border border-red-500/10">
+                  <div className="text-xs font-bold text-red-500/70 uppercase mb-3">Risks / Weaknesses</div>
+                   <ul className="space-y-2">
+                    {aiInsights.risks?.map((r, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-red-500 mt-0.5">•</span> {r}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20">
+                <div className="text-xs font-bold text-amber-500 uppercase mb-3">Actionable Recommendations</div>
+                <ul className="space-y-3">
+                  {aiInsights.recommendations?.map((r, i) => (
+                    <li key={i} className="text-sm text-amber-100 flex items-start gap-2">
+                      <span className="text-amber-500 mt-0.5">→</span> {r}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </SoftCard>
       )}
 
