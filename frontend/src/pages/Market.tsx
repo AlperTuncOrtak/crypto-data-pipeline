@@ -152,7 +152,7 @@ function DataFreshness({ lastUpdated, dataSource }) {
 import GasHeatmap from "../components/market/GasHeatmap";
 
 export default function Market({ isWatched, toggleWatchlist }) {
-  const { data: marketData, isLoading, isError, error } = useMarket(3000);
+  const { data: marketData, isLoading, isError, error } = useMarket(10000);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "total_volume", direction: "desc" });
   const [page, setPage] = useState(1);
@@ -208,8 +208,22 @@ export default function Market({ isWatched, toggleWatchlist }) {
     setPage(1);
   }
 
-  const PaginationButtons = () =>
-    totalPages > 1 ? (
+  const PaginationButtons = () => {
+    if (totalPages <= 1) return null;
+
+    const getVisiblePages = () => {
+      if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+      
+      if (page <= 4) {
+        return [1, 2, 3, 4, 5, '...', totalPages];
+      }
+      if (page >= totalPages - 3) {
+        return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      }
+      return [1, '...', page - 1, page, page + 1, '...', totalPages];
+    };
+
+    return (
       <div className="flex items-center gap-2">
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -225,22 +239,25 @@ export default function Market({ isWatched, toggleWatchlist }) {
         >
           <ChevronLeft size={14} /> Prev
         </button>
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-          <button
-            key={p}
-            onClick={() => setPage(p)}
-            className="w-8 h-8 rounded-lg text-sm font-mono transition-all"
-            style={{
-              backgroundColor:
-                p === page ? "var(--accent)" : "var(--bg-surface)",
-              border: "1px solid var(--border)",
-              color: p === page ? "#111" : "var(--text-muted)",
-              fontWeight: p === page ? 700 : 400,
-              cursor: "pointer",
-            }}
-          >
-            {p}
-          </button>
+        {getVisiblePages().map((p, idx) => (
+          p === '...' ? (
+             <span key={`ellipsis-${idx}`} className="w-8 text-center text-gray-500">...</span>
+          ) : (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              className="w-8 h-8 rounded-lg text-sm font-mono transition-all"
+              style={{
+                backgroundColor: p === page ? "var(--accent)" : "var(--bg-surface)",
+                border: "1px solid var(--border)",
+                color: p === page ? "#111" : "var(--text-muted)",
+                fontWeight: p === page ? 700 : 400,
+                cursor: "pointer",
+              }}
+            >
+              {p}
+            </button>
+          )
         ))}
         <button
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -258,7 +275,8 @@ export default function Market({ isWatched, toggleWatchlist }) {
           Next <ChevronRight size={14} />
         </button>
       </div>
-    ) : null;
+    );
+  };
 
   return (
     <div style={{ color: "var(--text-primary)" }}>
