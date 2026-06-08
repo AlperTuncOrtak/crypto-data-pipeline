@@ -923,9 +923,9 @@ function SoftCard({ children, className = "", noPadding = false }) {
       className={[
         "bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl",
         "transition-all duration-300 ease-out overflow-hidden relative",
-        noPadding ? "" : "p-6",
         className,
       ].filter(Boolean).join(" ")}
+      style={{ padding: noPadding ? 0 : '28px' }}
     >
       {children}
     </div>
