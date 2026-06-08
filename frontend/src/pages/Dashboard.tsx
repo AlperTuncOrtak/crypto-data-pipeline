@@ -214,27 +214,33 @@ function FearGreedGauge({ coins }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchFnG() {
-      try {
-        const res = await fetch("https://api.alternative.me/fng/?limit=1");
-        const json = await res.json();
-        if (json && json.data && json.data.length > 0) {
-          const val = parseInt(json.data[0].value, 10);
-          setScore(val);
-          if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
-          else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
-          else if (val <= 60) { setText("Neutral"); setColor("var(--accent)"); setBg("rgba(245,158,11,0.1)"); }
-          else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
-          else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
-        }
-      } catch (err) {
-        console.error("Failed to fetch Fear and Greed index", err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchFnG();
-  }, []);
+    if (!coins || coins.length === 0) return;
+
+    const upCount = coins.filter((c) => Number(c.price_change_percentage_24h) > 0).length;
+    const downCount = coins.filter((c) => Number(c.price_change_percentage_24h) < 0).length;
+    const totalCount = upCount + downCount || 1;
+
+    const btc = coins.find(c => c.symbol.toLowerCase() === 'btc');
+    const btcChange = btc ? Number(btc.price_change_percentage_24h) : 0;
+
+    // Base score from 0 to 100 based on the ratio of gaining coins
+    let calculatedScore = (upCount / totalCount) * 100;
+
+    // BTC is the market driver, adjust the score heavily based on its 24h performance
+    // e.g. +5% BTC change adds +20 points to the sentiment
+    calculatedScore += (btcChange * 4);
+
+    const val = Math.max(0, Math.min(100, Math.round(calculatedScore)));
+    setScore(val);
+
+    if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
+    else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
+    else if (val <= 60) { setText("Neutral"); setColor("var(--accent)"); setBg("rgba(245,158,11,0.1)"); }
+    else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
+    else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
+    
+    setIsLoading(false);
+  }, [coins]);
 
   const up = coins?.filter((c) => Number(c.price_change_percentage_24h) > 0).length || 0;
   const down = coins?.filter((c) => Number(c.price_change_percentage_24h) < 0).length || 0;
