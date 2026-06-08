@@ -21,7 +21,7 @@ import {
   LineChart,
   CandlestickChart,
 } from "lucide-react";
-import AdvancedChart from "../components/market/AdvancedChart";
+import TradingViewWidget from "../components/market/TradingViewWidget";
 import AIPulse from "../components/ai/AIPulse";
 
 const RANGES = [
@@ -826,8 +826,8 @@ export default function CoinDetail() {
 
         {/* Pro chart always rendered when selected so chart mounts */}
         {chartType === "pro" && (
-          <div style={{ width: "100%", height: 420, borderRadius: 16, overflow: "hidden" }}>
-            <AdvancedChart symbol={coin.symbol} interval={range} />
+          <div style={{ width: "100%", height: 600, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)", marginTop: 16 }}>
+            <TradingViewWidget symbol={coin.symbol} theme="dark" />
           </div>
         )}
 
