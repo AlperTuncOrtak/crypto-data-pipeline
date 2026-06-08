@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ToastProvider, useAlertMonitor } from "./hooks/useAlertMonitor.jsx";
+import { ToastProvider, useAlertMonitor, useToast } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
 import RightSidebar from "./components/layout/WatchlistSidebar";
@@ -53,6 +53,21 @@ function AppInner() {
       navigate("/dashboard");
     }
   }, [isLoggedIn, navigate]);
+
+  const { addToast } = useToast();
+  useEffect(() => {
+    if (window.location.search.includes("verified=true")) {
+      addToast({
+        title: "Email Verified! 🎉",
+        body: "Your email has been successfully verified. Welcome to CryptoNeko!",
+        icon: "✅",
+        color: "#2ecc71",
+        duration: 8000
+      });
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [addToast]);
 
   const {
     watchlist,

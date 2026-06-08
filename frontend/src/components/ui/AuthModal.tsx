@@ -224,17 +224,21 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
           setCaptchaToken(null);
           return;
         }
+        
+        if (error.message.toLowerCase().includes("invalid login credentials")) {
+          // Redirect to signup instead of incrementing failure counters
+          switchMode("signup");
+          setError("Account not found or invalid password. Please sign up.");
+          return;
+        }
+
         const next = failCount + 1;
         setFailCount(next);
         if (next >= FAIL_LIMIT) {
           setLockUntil(Date.now() + LOCKOUT_SEC * 1000);
           setError(`Too many failed attempts. Try again in ${LOCKOUT_SEC}s.`);
         } else {
-          if (error.message.toLowerCase().includes("invalid login credentials")) {
-            setError(`Invalid credentials. Don't have an account? Sign Up. (${FAIL_LIMIT - next} attempts left)`);
-          } else {
-            setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
-          }
+          setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
         }
         captchaRef.current?.resetCaptcha();
         setCaptchaToken(null);
@@ -269,7 +273,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         options: { 
           data: { full_name: name }, 
           captchaToken,
-          emailRedirectTo: "https://www.cryptoneko.online/" 
+          emailRedirectTo: window.location.origin + "/?verified=true"
         },
       });
       if (error) throw error;
