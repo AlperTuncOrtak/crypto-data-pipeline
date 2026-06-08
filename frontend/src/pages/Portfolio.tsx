@@ -1020,6 +1020,8 @@ export default function Portfolio() {
     () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
     [trades, marketData, walletHoldings, binanceHoldings]
   );
+  
+  const taxData = useMemo(() => calcTax(trades), [trades]);
   const totalValue = useMemo(() => holdings.reduce((s, h) => s + h.value, 0), [holdings]);
   const totalCost  = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
   const totalPnl   = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
@@ -1234,6 +1236,42 @@ export default function Portfolio() {
           </div>
         </SoftCard>
       </div>
+
+      {/* TAX SUMMARY */}
+      {trades.length > 0 && taxData && (
+        <SoftCard className="mb-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Tax Summary & Estimator</h3>
+              <p className="text-sm text-gray-400">Based on FIFO method. Estimated 30% short-term and 15% long-term tax rates.</p>
+            </div>
+            <button 
+              onClick={() => exportTaxCSV(taxData)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] whitespace-nowrap"
+            >
+              <FileDown size={16} /> Export Tax Report (CSV)
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Short-Term Tax</div>
+              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estShortTax)}</div>
+              <div className="text-xs text-gray-500 mt-1">Held &lt; 1 year</div>
+            </div>
+            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Long-Term Tax</div>
+              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estLongTax)}</div>
+              <div className="text-xs text-gray-500 mt-1">Held ≥ 1 year</div>
+            </div>
+            <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 relative overflow-hidden">
+              <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-amber-500/10 rounded-full blur-2xl"></div>
+              <div className="text-xs font-bold text-amber-500/70 uppercase mb-2 relative z-10">Total Estimated Tax</div>
+              <div className="text-3xl font-black font-mono text-amber-400 relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
+            </div>
+          </div>
+        </SoftCard>
+      )}
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 && (
