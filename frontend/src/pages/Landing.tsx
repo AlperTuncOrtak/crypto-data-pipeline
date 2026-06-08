@@ -218,12 +218,23 @@ export default function Landing({ onAuthOpen }) {
         @keyframes floatY2 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
         @keyframes floatY3 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-10px)} }
         .lp-primary { transition:all .2s ease !important }
-        .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(245,166,35,.55) !important }
-        .lp-ghost:hover { border-color:rgba(245,166,35,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(245,166,35,.05) !important }
+        .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(0,240,255,.35) !important }
+        .lp-ghost:hover { border-color:rgba(0,240,255,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(0,240,255,.05) !important }
         .feat:hover { transform:translateY(-5px) !important; }
         .fcoin { transition: filter .35s ease, transform .35s ease, box-shadow .35s ease !important; }
         .fcoin:hover { filter: blur(0px) !important; transform: scale(1.12) !important; box-shadow: 0 0 32px var(--fcoin-glow) !important; }
         .fcoin:hover .fcoin-label { opacity:1 !important; transform:translateX(0) !important; pointer-events:none; }
+        @media (max-width: 640px) {
+          .lp-fcoin { display: none !important; }
+          .lp-hero-ctas { flex-direction: column !important; align-items: stretch !important; }
+          .lp-hero-ctas button { width: 100% !important; justify-content: center !important; }
+          .lp-stats-row { flex-wrap: wrap !important; gap: 0 !important; }
+          .lp-stats-row > div { flex: 0 0 50% !important; padding: 12px 0 !important; border-right: none !important; border-bottom: 1px solid rgba(255,255,255,.07) !important; }
+          .lp-workflow-grid { grid-template-columns: 1fr !important; }
+          .lp-workflow-line { display: none !important; }
+          .lp-bignums-grid { grid-template-columns: 1fr 1fr !important; }
+          .lp-pricing-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
 
       {/* NAVBAR */}
@@ -237,7 +248,7 @@ export default function Landing({ onAuthOpen }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 48px",
+          padding: "0 clamp(16px, 4vw, 48px)",
           height: 58,
           background: scrollY > 30 ? "rgba(7,7,15,.94)" : "transparent",
           backdropFilter: scrollY > 30 ? "blur(20px)" : "none",
@@ -378,7 +389,7 @@ export default function Landing({ onAuthOpen }) {
       <section
         style={{
           position: "relative",
-          padding: "88px 48px 64px",
+          padding: "88px clamp(16px, 5vw, 48px) 64px",
           textAlign: "center",
           overflow: "hidden",
         }}
@@ -396,7 +407,7 @@ export default function Landing({ onAuthOpen }) {
         ].map((coin) => (
           <div
             key={coin.slug}
-            className="fcoin"
+            className="fcoin lp-fcoin"
             onClick={() => navigate(`/coin/${coin.slug}`)}
             style={{
               position:  "absolute",
@@ -573,6 +584,7 @@ export default function Landing({ onAuthOpen }) {
         </p>
 
         <div
+          className="lp-hero-ctas"
           style={{
             display: "flex",
             alignItems: "center",
@@ -581,6 +593,7 @@ export default function Landing({ onAuthOpen }) {
             position: "relative",
             zIndex: 10,
             animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .3s both",
+            padding: "0 16px",
           }}
         >
           <button
@@ -637,6 +650,7 @@ export default function Landing({ onAuthOpen }) {
         </div>
 
         <div
+          className="lp-stats-row"
           style={{
             marginTop: 56,
             display: "flex",
@@ -654,7 +668,7 @@ export default function Landing({ onAuthOpen }) {
             <div
               key={i}
               style={{
-                padding: "0 36px",
+                padding: "0 clamp(12px, 3vw, 36px)",
                 borderRight: i < 3 ? "1px solid rgba(255,255,255,.07)" : "none",
                 textAlign: "center",
               }}
@@ -689,7 +703,7 @@ export default function Landing({ onAuthOpen }) {
 
       {/* DASHBOARD PREVIEW */}
       <section
-        style={{ padding: "0 48px 80px", maxWidth: 1100, margin: "0 auto" }}
+        style={{ padding: `0 clamp(16px, 4vw, 48px) 80px`, maxWidth: 1100, margin: "0 auto" }}
       >
         <div
           style={{
@@ -907,7 +921,7 @@ export default function Landing({ onAuthOpen }) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(5,1fr)",
+                  gridTemplateColumns: "repeat(auto-fit,minmax(min(80px,100%),1fr))",
                   gap: 8,
                   marginBottom: 12,
                 }}
@@ -1003,7 +1017,7 @@ export default function Landing({ onAuthOpen }) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(3,1fr)",
+                  gridTemplateColumns: "repeat(auto-fit,minmax(min(100px,100%),1fr))",
                   gap: 8,
                 }}
               >
@@ -1069,7 +1083,7 @@ export default function Landing({ onAuthOpen }) {
       </section>
 
       <section
-        style={{ padding: "60px 48px", maxWidth: 1220, margin: "0 auto" }}
+        style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 1220, margin: "0 auto" }}
       >
         <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div
@@ -1112,7 +1126,7 @@ export default function Landing({ onAuthOpen }) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
+            gridTemplateColumns: "repeat(auto-fit,minmax(min(320px, 100%), 1fr))",
             gap: 18,
           }}
         >
@@ -1302,7 +1316,7 @@ export default function Landing({ onAuthOpen }) {
       {/* HOW IT WORKS */}
       <section
         style={{
-          padding: "60px 48px",
+          padding: `60px clamp(16px, 4vw, 48px)`,
           maxWidth: 860,
           margin: "0 auto",
           textAlign: "center",
@@ -1333,6 +1347,7 @@ export default function Landing({ onAuthOpen }) {
           <span style={{ color: "rgba(255,255,255,.22)" }}>in seconds.</span>
         </h2>
         <div
+          className="lp-workflow-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3,1fr)",
@@ -1341,6 +1356,7 @@ export default function Landing({ onAuthOpen }) {
           }}
         >
           <div
+            className="lp-workflow-line"
             style={{
               position: "absolute",
               top: 30,
@@ -1348,7 +1364,7 @@ export default function Landing({ onAuthOpen }) {
               right: "17%",
               height: 1,
               background:
-                "linear-gradient(to right,transparent,rgba(245,166,35,.2),transparent)",
+                "linear-gradient(to right,transparent,rgba(0,240,255,.2),transparent)",
               pointerEvents: "none",
             }}
           />
@@ -1430,7 +1446,7 @@ export default function Landing({ onAuthOpen }) {
 
       {/* STATS */}
       <section
-        style={{ padding: "60px 48px", maxWidth: 1060, margin: "0 auto" }}
+        style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 1060, margin: "0 auto" }}
       >
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div
@@ -1456,6 +1472,7 @@ export default function Landing({ onAuthOpen }) {
           </h2>
         </div>
         <div
+          className="lp-bignums-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3,1fr)",
@@ -1613,7 +1630,7 @@ export default function Landing({ onAuthOpen }) {
 
       {/* PRICING */}
       <section
-        style={{ padding: "60px 48px", maxWidth: 820, margin: "0 auto" }}
+        style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 820, margin: "0 auto" }}
       >
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div
@@ -1648,6 +1665,7 @@ export default function Landing({ onAuthOpen }) {
           </p>
         </div>
         <div
+          className="lp-pricing-grid"
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
         >
           <div

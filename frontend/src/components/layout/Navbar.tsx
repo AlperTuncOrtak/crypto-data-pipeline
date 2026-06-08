@@ -456,6 +456,9 @@ export default function Navbar({
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
+          overflowX: "auto",
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
         }}
       >
         <div
@@ -463,10 +466,10 @@ export default function Navbar({
             display: "flex",
             alignItems: "center",
             gap: 0,
-            padding: "6px 28px",
+            padding: "6px 16px",
             maxWidth: 1440,
             margin: "0 auto",
-            overflowX: "hidden",
+            minWidth: "max-content",
           }}
         >
           {[

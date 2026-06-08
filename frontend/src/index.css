@@ -178,3 +178,74 @@ h1, h2, h3, h4, h5, h6, .display-font {
     radial-gradient(circle at 85% 30%, rgba(156, 163, 175, 0.05), transparent 25%);
   pointer-events: none;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL MOBILE RESPONSIVE UTILITIES
+═══════════════════════════════════════════════════════════ */
+
+/* Prevent horizontal scroll on all containers */
+#root, .app-shell, main {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Responsive table wrapper */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Make images safe on mobile */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  /* Global container padding */
+  .page-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Card padding reduction on mobile */
+  .card, [class*="card"], [class*="Card"] {
+    padding: 16px !important;
+  }
+
+  /* Dashboard layout: force single column */
+  .dashboard-grid,
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stat items that often are too wide */
+  .stats-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .stats-row::-webkit-scrollbar { display: none; }
+
+  /* Prevent modals from exceeding viewport */
+  [role="dialog"], .modal {
+    max-height: 90dvh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Prevent button row overflow */
+  .btn-group {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  h1 { font-size: clamp(28px, 8vw, 48px) !important; }
+  h2 { font-size: clamp(22px, 6vw, 36px) !important; }
+
+  /* Force full width buttons */
+  .btn-full-mobile {
+    width: 100% !important;
+  }
+}
