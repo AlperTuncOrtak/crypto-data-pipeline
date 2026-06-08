@@ -7,8 +7,6 @@ export default function BottomNav() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  if (!isLoggedIn) return null;
-
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "Home" },
     { to: "/market", icon: BarChart2, label: "Market" },
