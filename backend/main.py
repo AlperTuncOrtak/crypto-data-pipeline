@@ -805,10 +805,16 @@ async def stripe_webhook(request: Request):
     sb = create_client(supabase_url, supabase_svc_key)
 
     if event["type"] == "checkout.session.completed":
-        meta = event["data"]["object"].get("metadata", {})
-        user_id = meta.get("user_id")
-        plan = meta.get("plan", "pro")
-        sub_id = event["data"]["object"].get("subscription")
+        obj = event["data"]["object"]
+        meta = getattr(obj, "metadata", {}) or {}
+        user_id = getattr(meta, "get", lambda x, y: None)("user_id", None) or getattr(meta, "user_id", None)
+        if not user_id and isinstance(meta, dict):
+            user_id = meta.get("user_id")
+        plan = getattr(meta, "get", lambda x, y: "pro")("plan", "pro") or getattr(meta, "plan", "pro")
+        if not plan and isinstance(meta, dict):
+            plan = meta.get("plan", "pro")
+        
+        sub_id = getattr(obj, "subscription", None)
 
         if user_id:
             sb.table("user_plans").upsert(
@@ -821,7 +827,7 @@ async def stripe_webhook(request: Request):
             ).execute()
 
     elif event["type"] == "customer.subscription.deleted":
-        sub_id = event["data"]["object"].get("id")
+        sub_id = getattr(event["data"]["object"], "id", None)
         if sub_id:
             # Abonelik iptal — free'ye duşur
             sb.table("user_plans").update({"plan": "free"}).eq(
