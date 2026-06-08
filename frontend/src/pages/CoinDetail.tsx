@@ -22,6 +22,7 @@ import {
   CandlestickChart,
 } from "lucide-react";
 import TradingViewWidget from "../components/market/TradingViewWidget";
+import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 
 const RANGES = [
@@ -899,6 +900,12 @@ export default function CoinDetail() {
           </div>
         )}
         </div>{/* end position:relative inner */}
+      </div>
+
+      {/* LATEST NEWS */}
+      <div style={{ marginTop: 32 }}>
+        <SectionTitle>Latest News</SectionTitle>
+        <CryptoNews symbol={coin.symbol} />
       </div>
     </div>
   );
