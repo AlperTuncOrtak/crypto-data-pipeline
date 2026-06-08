@@ -13,6 +13,7 @@ import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
 import HeatmapWidget from "../components/market/HeatmapWidget";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
+import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 function formatLargeNumber(n) {
@@ -477,41 +478,41 @@ export default function Dashboard() {
       {/* ── BENTO GRID ── */}
       <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4">
         {/* ── ROW 1: 4 Stat cards ── */}
-        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.1}>
           <StatCard
             icon={DollarSign}
             label="Total 24h Volume"
             value={formatLargeNumber(totalVolume)}
             accent={true}
           />
-        </div>
-        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+        </Reveal>
+        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.2}>
           <StatCard
             icon={Activity}
             label="BTC Dominance"
             value={`${btcDom}%`}
             sub="by market cap"
           />
-        </div>
-        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+        </Reveal>
+        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.3}>
           <StatCard
             icon={TrendingUp}
             label="ETH Dominance"
             value={`${ethDom}%`}
             sub="by market cap"
           />
-        </div>
-        <div className="col-span-1 md:col-span-3 lg:col-span-3">
+        </Reveal>
+        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.4}>
           <StatCard
             icon={Flame}
             label="Coins Tracked"
             value={`${stats.data?.coin_count || market.data?.length || 0}+`}
             sub="live data"
           />
-        </div>
+        </Reveal>
 
         {/* ── ROW 2: Trending (8) + Fear&Greed (4) — always full 12 cols ── */}
-        <div className="col-span-1 md:col-span-6 lg:col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-4" delay={0.2}>
           {/* Trending */}
           <BentoCard className="lg:col-span-2" style={{ padding: "22px 24px", minHeight: 160 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
@@ -547,10 +548,10 @@ export default function Dashboard() {
               <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Loading…</div>
             </BentoCard>
           )}
-        </div>
+        </Reveal>
 
         {/* ── ROW 3: Top 10 Table (8) + Gainers/Losers stacked (4) ── */}
-        <div className="col-span-1 md:col-span-6 lg:col-span-8">
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-8" delay={0.2}>
           <BentoCard style={{ padding: "22px 24px", overflowX: "auto" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -664,10 +665,10 @@ export default function Dashboard() {
               </table>
             )}
           </BentoCard>
-        </div>
+        </Reveal>
 
         {/* Gainers + Losers stacked in right col */}
-        <div className="col-span-1 md:col-span-6 lg:col-span-4" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-4" delay={0.4} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <CoinListCard
             title="Top Gainers (24h)"
             accent="orange"
@@ -700,20 +701,20 @@ export default function Dashboard() {
               <span style={{ color: "var(--text-secondary)" }}>{formatLargeNumber(coin.total_volume)}</span>
             )}
           />
-        </div>
+        </Reveal>
 
         {/* ── ROW 4: Heatmap (12 cols) ── */}
-        <div className="col-span-1 md:col-span-6 lg:col-span-12">
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-12" delay={0.2}>
           <HeatmapWidget limit={50} />
-        </div>
+        </Reveal>
 
         {/* ── ROW 5: Volume Spike (6) + Market Oracle (6) ── */}
-        <div className="col-span-1 md:col-span-6 lg:col-span-6">
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-6" delay={0.2}>
           <VolumeSpikeRadar />
-        </div>
-        <div className="col-span-1 md:col-span-6 lg:col-span-6">
+        </Reveal>
+        <Reveal className="col-span-1 md:col-span-6 lg:col-span-6" delay={0.4}>
           <MarketOracle />
-        </div>
+        </Reveal>
       </div>
     </div>
   );

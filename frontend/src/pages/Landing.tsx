@@ -18,6 +18,7 @@ import {
   Check,
   Star,
 } from "lucide-react";
+import Reveal from "../components/ui/Reveal";
 
 function Counter({ to, suffix = "", prefix = "", duration = 2000 }) {
   const [val, setVal] = useState(0);
@@ -705,12 +706,13 @@ export default function Landing({ onAuthOpen }) {
       <section
         style={{ padding: `0 clamp(16px, 4vw, 48px) 80px`, maxWidth: 1100, margin: "0 auto" }}
       >
-        <div
-          style={{
-            position: "relative",
-            animation: "fadeUp .7s ease .5s both",
-          }}
-        >
+        <Reveal direction="up" delay={0.2} threshold={0.2}>
+          <div
+            style={{
+              position: "relative",
+              animation: "fadeUp .7s ease .5s both",
+            }}
+          >
           <div
             style={{
               position: "absolute",
@@ -1080,12 +1082,14 @@ export default function Landing({ onAuthOpen }) {
             </div>
           </div>
         </div>
+        </Reveal>
       </section>
 
       <section
         style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 1220, margin: "0 auto" }}
       >
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
+        <Reveal direction="up" threshold={0.2}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div
             style={{
               display: "inline-flex",
@@ -1311,6 +1315,7 @@ export default function Landing({ onAuthOpen }) {
             );
           })}
         </div>
+        </Reveal>
       </section>
 
       {/* HOW IT WORKS */}
@@ -1322,7 +1327,8 @@ export default function Landing({ onAuthOpen }) {
           textAlign: "center",
         }}
       >
-        <div
+        <Reveal direction="up" threshold={0.2}>
+          <div
           style={{
             fontSize: 10,
             fontWeight: 800,
@@ -1442,6 +1448,7 @@ export default function Landing({ onAuthOpen }) {
             </div>
           ))}
         </div>
+        </Reveal>
       </section>
 
       {/* STATS */}
