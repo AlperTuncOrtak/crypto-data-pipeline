@@ -49,7 +49,7 @@ function Sparkline({ symbol }) {
   const coin = market?.find((c) => c.symbol === symbol);
   // Recharts yerine basit SVG sparkline — daha hızlı
   const isUp = (coin?.price_change_percentage_24h || 0) >= 0;
-  const color = isUp ? "#2ecc71" : "#e74c3c";
+  const color = isUp ? "var(--positive)" : "var(--negative)";
   // Sahte ama tutarlı sparkline (coin'e özel seed ile)
   const seed = symbol.split("").reduce((s, c) => s + c.charCodeAt(0), 0);
   const pts = Array.from({ length: 12 }, (_, i) => {
@@ -260,14 +260,14 @@ function WatchlistPanel({
                 width: 28,
                 height: 28,
                 borderRadius: 7,
-                border: `1px solid ${isAtLimit ? "rgba(231,76,60,0.3)" : showAdd ? "rgba(245,166,35,0.3)" : "var(--border)"}`,
+                border: `1px solid ${isAtLimit ? "rgba(176,38,255,0.3)" : showAdd ? "rgba(245,166,35,0.3)" : "var(--border)"}`,
                 background: isAtLimit
-                  ? "rgba(231,76,60,0.06)"
+                  ? "rgba(176,38,255,0.06)"
                   : showAdd
                     ? "rgba(245,158,11,0.1)"
                     : "transparent",
                 color: isAtLimit
-                  ? "#e74c3c"
+                  ? "var(--negative)"
                   : showAdd
                     ? "var(--accent)"
                     : "var(--text-muted)",
@@ -566,7 +566,7 @@ function WatchlistPanel({
                         style={{
                           fontSize: 11,
                           fontFamily: "monospace",
-                          color: isUp ? "#2ecc71" : "#e74c3c",
+                          color: isUp ? "var(--positive)" : "var(--negative)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "flex-end",
@@ -596,7 +596,7 @@ function WatchlistPanel({
                         flexShrink: 0,
                       }}
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.color = "#e74c3c")
+                        (e.currentTarget.style.color = "var(--negative)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.color = "var(--text-muted)")
@@ -696,7 +696,7 @@ function WatchlistPanel({
             {watchlist.length}
             {!isAtLimit && limit ? `/${limit}` : ""} coins tracked
             {isAtLimit && (
-              <span style={{ color: "#e74c3c", marginLeft: 4 }}>
+              <span style={{ color: "var(--negative)", marginLeft: 4 }}>
                 · Limit reached
               </span>
             )}
@@ -708,7 +708,7 @@ function WatchlistPanel({
             }}
             style={{
               fontSize: 11,
-              color: "#e74c3c",
+              color: "var(--negative)",
               background: "none",
               border: "none",
               cursor: "pointer",
@@ -808,10 +808,10 @@ function AlertsPanel({ marketData, onClose }) {
   }
 
   const TYPE_COLORS = {
-    price_above: "#2ecc71",
-    price_below: "#e74c3c",
-    change_up: "#2ecc71",
-    change_down: "#e74c3c",
+    price_above: "var(--positive)",
+    price_below: "var(--negative)",
+    change_up: "var(--positive)",
+    change_down: "var(--negative)",
     volume_spike: "var(--accent)",
   };
 
@@ -858,8 +858,8 @@ function AlertsPanel({ marketData, onClose }) {
                 fontSize: 11,
                 padding: "1px 6px",
                 borderRadius: 999,
-                background: "rgba(231,76,60,0.15)",
-                color: "#e74c3c",
+                background: "rgba(176,38,255,0.15)",
+                color: "var(--negative)",
                 fontFamily: "monospace",
                 animation: "pulse 1.5s infinite",
               }}
@@ -1094,7 +1094,7 @@ function AlertsPanel({ marketData, onClose }) {
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
-                  color: "#e74c3c",
+                  color: "var(--negative)",
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                   padding: "4px 8px",
@@ -1242,7 +1242,7 @@ function AlertsPanel({ marketData, onClose }) {
                         flexShrink: 0,
                       }}
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.color = "#e74c3c")
+                        (e.currentTarget.style.color = "var(--negative)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.color = "var(--text-muted)")
@@ -1393,7 +1393,7 @@ export default function RightSidebar({
                       borderRadius: "50%",
                       backgroundColor:
                         key === "alerts" && triggeredCount > 0
-                          ? "#e74c3c"
+                          ? "var(--negative)"
                           : "var(--accent)",
                       border: "1px solid #111",
                       animation:

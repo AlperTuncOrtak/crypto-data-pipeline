@@ -74,9 +74,9 @@ export default function GasHeatmap() {
 
   const getStatusColor = (net, gwei) => {
     if (!gwei) return 'var(--text-muted)';
-    if (gwei >= net.highThreshold) return '#e74c3c'; // Red
+    if (gwei >= net.highThreshold) return 'var(--negative)'; // Red
     if (gwei >= net.mediumThreshold) return '#f39c12'; // Yellow
-    return '#2ecc71'; // Green
+    return 'var(--positive)'; // Green
   };
 
   return (

@@ -49,12 +49,12 @@ function Message({ msg }) {
         borderBottomRightRadius: isUser ? 4 : 14,
         borderBottomLeftRadius: isUser ? 14 : 4,
         background: isError
-          ? 'rgba(231,76,60,0.1)'
+          ? 'rgba(176,38,255,0.1)'
           : isUser
             ? 'linear-gradient(135deg, rgba(245,166,35,0.18), rgba(245,166,35,0.08))'
             : 'var(--bg-elevated)',
         border: isError
-          ? '1px solid rgba(231,76,60,0.3)'
+          ? '1px solid rgba(176,38,255,0.3)'
           : isUser
             ? '1px solid rgba(245,166,35,0.3)'
             : '1px solid var(--border)',
@@ -232,8 +232,8 @@ export default function AIChatWidget() {
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.01em' }}>
                   AI Copilot
                 </div>
-                <div style={{ fontSize: 11, color: '#2ecc71', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#2ecc71', boxShadow: '0 0 6px #2ecc71' }} />
+                <div style={{ fontSize: 11, color: 'var(--positive)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--positive)', boxShadow: '0 0 6px var(--positive)' }} />
                   Live market data · Groq LLM
                 </div>
               </div>

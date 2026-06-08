@@ -115,7 +115,7 @@ function DataFreshness({ lastUpdated, dataSource }) {
 
   if (dataSource === "binance" && seconds < 120) {
     label = "Live";
-    color = "#2ecc71";
+    color = "var(--positive)";
     live = true;
   } else if (minutes < 10) {
     label = `${minutes}m ago`;

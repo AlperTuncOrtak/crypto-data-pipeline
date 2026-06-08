@@ -14,8 +14,8 @@ import { useNavigate } from "react-router-dom";
 // ── Helpers ───────────────────────────────────────────────────
 function Toast({ message, type }) {
   if (!message) return null;
-  const color = type === "success" ? "#2ecc71" : "#e74c3c";
-  const bg    = type === "success" ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)";
+  const color = type === "success" ? "var(--positive)" : "var(--negative)";
+  const bg    = type === "success" ? "rgba(0,240,255,0.1)" : "rgba(176,38,255,0.1)";
   const Icon  = type === "success" ? CheckCircle : AlertTriangle;
   return (
     <div style={{
@@ -375,8 +375,8 @@ export default function Settings() {
               onClick={handleCancelSubscription}
               disabled={cancelLoading}
               style={{
-                padding: "8px 16px", borderRadius: 8, background: "rgba(231,76,60,0.1)", border: "1px solid rgba(231,76,60,0.25)",
-                color: "#e74c3c", fontSize: 12, fontWeight: 600, cursor: cancelLoading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
+                padding: "8px 16px", borderRadius: 8, background: "rgba(176,38,255,0.1)", border: "1px solid rgba(176,38,255,0.25)",
+                color: "var(--negative)", fontSize: 12, fontWeight: 600, cursor: cancelLoading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
                 display: "flex", alignItems: "center", gap: 6
               }}
             >
@@ -399,9 +399,9 @@ export default function Settings() {
               disabled={passLoading || passSent}
               style={{
                 padding: "10px 16px", borderRadius: 10, whiteSpace: "nowrap",
-                background: passSent ? "rgba(46,204,113,0.1)" : "var(--bg-elevated)",
-                border: `1px solid ${passSent ? "rgba(46,204,113,0.3)" : "var(--border)"}`,
-                color: passSent ? "#2ecc71" : "var(--text-secondary)",
+                background: passSent ? "rgba(0,240,255,0.1)" : "var(--bg-elevated)",
+                border: `1px solid ${passSent ? "rgba(0,240,255,0.3)" : "var(--border)"}`,
+                color: passSent ? "var(--positive)" : "var(--text-secondary)",
                 fontSize: 12, fontWeight: 600, cursor: passSent ? "default" : "pointer",
                 display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
               }}
@@ -470,12 +470,12 @@ export default function Settings() {
         )}
 
         {user?.phone && !otpSent && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(46,204,113,0.06)", border: "1px solid rgba(46,204,113,0.15)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(0,240,255,0.06)", border: "1px solid rgba(0,240,255,0.15)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <CheckCircle size={13} style={{ color: "#2ecc71" }} />
-              <span style={{ fontSize: 12, color: "#2ecc71", fontWeight: 600 }}>Phone verified: {user.phone}</span>
+              <CheckCircle size={13} style={{ color: "var(--positive)" }} />
+              <span style={{ fontSize: 12, color: "var(--positive)", fontWeight: 600 }}>Phone verified: {user.phone}</span>
             </div>
-            <button onClick={handlePhoneRemove} disabled={phoneLoading} style={{ fontSize: 11, color: "#e74c3c", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+            <button onClick={handlePhoneRemove} disabled={phoneLoading} style={{ fontSize: 11, color: "var(--negative)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
               Remove
             </button>
           </div>
@@ -527,14 +527,14 @@ export default function Settings() {
 
       {/* ── DANGER ZONE ── */}
       <Section title="Danger Zone" icon={Shield}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 10, background: "rgba(231,76,60,0.05)", border: "1px solid rgba(231,76,60,0.15)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 10, background: "rgba(176,38,255,0.05)", border: "1px solid rgba(176,38,255,0.15)" }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Delete Account</div>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>Permanently delete your account and all data. This cannot be undone.</div>
           </div>
           <button
             onClick={() => { if (window.confirm("Are you sure? This cannot be undone.")) { /* supabase.auth.admin.deleteUser(user.id) — requires backend */ alert("Please contact support to delete your account."); } }}
-            style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(231,76,60,0.1)", border: "1px solid rgba(231,76,60,0.25)", color: "#e74c3c", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }}
+            style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(176,38,255,0.1)", border: "1px solid rgba(176,38,255,0.25)", color: "var(--negative)", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }}
           >
             Delete Account
           </button>

@@ -212,13 +212,13 @@ function Tooltip({ coin, pos }) {
           style={{
             marginLeft: "auto",
             flexShrink: 0,
-            background: isUp ? "rgba(46,204,113,0.15)" : "rgba(231,76,60,0.15)",
-            border: `1px solid ${isUp ? "#2ecc7144" : "#e74c3c44"}`,
+            background: isUp ? "rgba(0,240,255,0.15)" : "rgba(176,38,255,0.15)",
+            border: `1px solid ${isUp ? "var(--positive-soft)" : "var(--negative-soft)"}`,
             borderRadius: 6,
             padding: "3px 7px",
             fontSize: 12,
             fontWeight: 700,
-            color: isUp ? "#2ecc71" : "#e74c3c",
+            color: isUp ? "var(--positive)" : "var(--negative)",
           }}
         >
           {isUp ? "▲" : "▼"} {Math.abs(pct).toFixed(2)}%
@@ -724,14 +724,14 @@ export default function Heatmap() {
             return (
               <>
                 <span>Top {coins.length} coins shown</span>
-                <span style={{ color: "#2ecc71" }}>▲ {gainers} up</span>
-                <span style={{ color: "#e74c3c" }}>▼ {losers} down</span>
+                <span style={{ color: "var(--positive)" }}>▲ {gainers} up</span>
+                <span style={{ color: "var(--negative)" }}>▼ {losers} down</span>
                 {neutral > 0 && <span>— {neutral} unchanged</span>}
                 <span>
                   Avg change:{" "}
                   <strong
                     style={{
-                      color: Number(avgChange) >= 0 ? "#2ecc71" : "#e74c3c",
+                      color: Number(avgChange) >= 0 ? "var(--positive)" : "var(--negative)",
                     }}
                   >
                     {avgChange >= 0 ? "+" : ""}

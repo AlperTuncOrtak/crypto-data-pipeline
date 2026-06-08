@@ -130,13 +130,13 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
                 fontSize: 11,
                 fontWeight: 700,
                 color: trend >= 0 ? "var(--positive)" : "var(--negative)",
-                backgroundColor: trend >= 0 ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
+                backgroundColor: trend >= 0 ? "rgba(0,240,255,0.1)" : "rgba(176,38,255,0.1)",
                 padding: "4px 8px",
                 borderRadius: 100,
                 display: "flex",
                 alignItems: "center",
                 gap: 4,
-                border: trend >= 0 ? "1px solid rgba(46,204,113,0.15)" : "1px solid rgba(231,76,60,0.15)",
+                border: trend >= 0 ? "1px solid rgba(0,240,255,0.15)" : "1px solid rgba(176,38,255,0.15)",
               }}
             >
               {trend >= 0 ? <ArrowUpRight size={12} strokeWidth={2.5} /> : <ArrowDownRight size={12} strokeWidth={2.5} />}
@@ -235,10 +235,10 @@ function FearGreedGauge({ coins }) {
     const val = Math.max(0, Math.min(100, Math.round(calculatedScore)));
     setScore(val);
 
-    if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
+    if (val <= 20) { setText("Extreme Fear"); setColor("var(--negative)"); setBg("rgba(176,38,255,0.1)"); }
     else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
     else if (val <= 60) { setText("Neutral"); setColor("var(--accent)"); setBg("rgba(245,158,11,0.1)"); }
-    else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
+    else if (val <= 80) { setText("Greed"); setColor("var(--positive)"); setBg("rgba(0,240,255,0.1)"); }
     else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
     
     setIsLoading(false);
@@ -333,13 +333,13 @@ function FearGreedGauge({ coins }) {
 
         {/* Up/Down stats */}
         <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-          <div style={{ flex: 1, backgroundColor: "rgba(46,204,113,0.06)", border: "1px solid rgba(46,204,113,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
+          <div style={{ flex: 1, backgroundColor: "rgba(0,240,255,0.06)", border: "1px solid rgba(0,240,255,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
             <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "monospace", color: "var(--positive)" }}>↑ {up}</div>
-            <div style={{ fontSize: 11, color: "rgba(46,204,113,0.6)", marginTop: 4, fontWeight: 600 }}>Gaining</div>
+            <div style={{ fontSize: 11, color: "rgba(0,240,255,0.6)", marginTop: 4, fontWeight: 600 }}>Gaining</div>
           </div>
-          <div style={{ flex: 1, backgroundColor: "rgba(231,76,60,0.06)", border: "1px solid rgba(231,76,60,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
+          <div style={{ flex: 1, backgroundColor: "rgba(176,38,255,0.06)", border: "1px solid rgba(176,38,255,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
             <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "monospace", color: "var(--negative)" }}>↓ {down}</div>
-            <div style={{ fontSize: 11, color: "rgba(231,76,60,0.6)", marginTop: 4, fontWeight: 600 }}>Losing</div>
+            <div style={{ fontSize: 11, color: "rgba(176,38,255,0.6)", marginTop: 4, fontWeight: 600 }}>Losing</div>
           </div>
         </div>
       </div>
@@ -410,7 +410,7 @@ function TrendingCoinCard({ coin, navigate }) {
           color: isPos ? "var(--positive)" : "var(--negative)",
           padding: "2px 7px",
           borderRadius: 6,
-          backgroundColor: isPos ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
+          backgroundColor: isPos ? "rgba(0,240,255,0.1)" : "rgba(176,38,255,0.1)",
         }}
       >
         {isPos ? "+" : ""}{change.toFixed(2)}%
@@ -648,7 +648,7 @@ export default function Dashboard() {
                               fontWeight: 700,
                               fontFamily: "monospace",
                               color: isPos ? "var(--positive)" : "var(--negative)",
-                              backgroundColor: isPos ? "rgba(46,204,113,0.08)" : "rgba(231,76,60,0.08)",
+                              backgroundColor: isPos ? "rgba(0,240,255,0.08)" : "rgba(176,38,255,0.08)",
                               padding: "2px 7px",
                               borderRadius: 6,
                             }}

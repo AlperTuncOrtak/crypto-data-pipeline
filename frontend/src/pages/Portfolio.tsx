@@ -53,10 +53,10 @@ const fmtNum = (n) =>
 // ── Colors ───────────────────────────────────────────────────
 const CHART_COLORS = [
   "var(--accent)",
-  "#2ecc71",
+  "var(--positive)",
   "#3498db",
   "#9b59b6",
-  "#e74c3c",
+  "var(--negative)",
   "#1abc9c",
   "#f39c12",
   "#e67e22",
@@ -1343,7 +1343,7 @@ export default function Portfolio() {
                   <div className="flex items-center gap-5">
                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
                       backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.1)' : 'rgba(45,212,191,0.1)',
-                      color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#F59E0B' : '#2DD4BF',
+                      color: aiInsights.risk_score > 7 ? 'var(--negative)' : aiInsights.risk_score > 4 ? 'var(--accent)' : 'var(--positive)',
                       border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.3)' : 'rgba(45,212,191,0.3)'}`
                     }}>
                       {aiInsights.risk_score}/10

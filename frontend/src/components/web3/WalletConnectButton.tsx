@@ -75,10 +75,10 @@ export default function WalletConnectButton() {
                       display: "flex",
                       alignItems: "center",
                       padding: "8px 16px",
-                      background: "rgba(231, 76, 60, 0.1)",
-                      border: "1px solid rgba(231, 76, 60, 0.2)",
+                      background: "rgba(176, 38, 255, 0.1)",
+                      border: "1px solid rgba(176, 38, 255, 0.2)",
                       borderRadius: 20,
-                      color: "#e74c3c",
+                      color: "var(--negative)",
                       fontSize: 13,
                       fontWeight: 600,
                       cursor: "pointer",
@@ -138,8 +138,8 @@ export default function WalletConnectButton() {
                       alignItems: "center",
                       gap: 8,
                       padding: "6px 12px",
-                      background: "rgba(46, 204, 113, 0.1)",
-                      border: "1px solid rgba(46, 204, 113, 0.2)",
+                      background: "rgba(0, 240, 255, 0.1)",
+                      border: "1px solid rgba(0, 240, 255, 0.2)",
                       borderRadius: 20,
                       cursor: "pointer",
                       transition: "all 0.2s ease",
@@ -148,12 +148,12 @@ export default function WalletConnectButton() {
                       fontWeight: 600,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(46, 204, 113, 0.15)";
-                      e.currentTarget.style.borderColor = "rgba(46, 204, 113, 0.3)";
+                      e.currentTarget.style.background = "rgba(0, 240, 255, 0.15)";
+                      e.currentTarget.style.borderColor = "rgba(0, 240, 255, 0.3)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "rgba(46, 204, 113, 0.1)";
-                      e.currentTarget.style.borderColor = "rgba(46, 204, 113, 0.2)";
+                      e.currentTarget.style.background = "rgba(0, 240, 255, 0.1)";
+                      e.currentTarget.style.borderColor = "rgba(0, 240, 255, 0.2)";
                     }}
                   >
                     {account.displayBalance

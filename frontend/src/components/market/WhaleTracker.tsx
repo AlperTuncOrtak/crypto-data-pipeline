@@ -170,10 +170,10 @@ export default function WhaleTracker() {
         </div>
 
         {/* Status Indicator */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500, color: status === "live" ? "#2ecc71" : status === "connecting" ? "var(--accent)" : "#e74c3c" }}>
-          {status === "live" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2ecc71", boxShadow: "0 0 8px #2ecc71", animation: "pulse 2s infinite" }} />}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500, color: status === "live" ? "var(--positive)" : status === "connecting" ? "var(--accent)" : "var(--negative)" }}>
+          {status === "live" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--positive)", boxShadow: "0 0 8px var(--positive)", animation: "pulse 2s infinite" }} />}
           {status === "connecting" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", animation: "pulse 1s infinite" }} />}
-          {status === "error" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e74c3c" }} />}
+          {status === "error" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--negative)" }} />}
           {status.toUpperCase()}
         </div>
       </div>
@@ -195,8 +195,8 @@ export default function WhaleTracker() {
         ) : (
           trades.map((trade) => {
             const isBuy = !trade.isSell;
-            const color = isBuy ? "#2ecc71" : "#ff4560";
-            const bg = isBuy ? "rgba(46, 204, 113, 0.08)" : "rgba(255, 69, 96, 0.08)";
+            const color = isBuy ? "var(--positive)" : "var(--negative)";
+            const bg = isBuy ? "var(--positive-soft)" : "var(--negative-soft)";
             const isMega = trade.value > 500000;
 
             return (
@@ -208,13 +208,13 @@ export default function WhaleTracker() {
                   flexDirection: "column",
                   gap: 16,
                   background: isMega ? "rgba(245, 166, 35, 0.1)" : bg,
-                  border: `1px solid ${isMega ? "rgba(245,166,35,0.4)" : color + "40"}`,
+                  border: `1px solid ${isMega ? "rgba(245,166,35,0.4)" : "var(--border)"}`,
                   borderRadius: 24,
                   padding: "32px 20px",
                   textAlign: "center",
                   position: "relative",
                   overflow: "hidden",
-                  boxShadow: `0 8px 32px ${color}15`
+                  boxShadow: `0 8px 32px ${bg}`
                 }}
               >
                 {isMega && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "var(--accent)", boxShadow: "0 0 16px var(--accent)" }} />}
@@ -225,7 +225,7 @@ export default function WhaleTracker() {
                     {isMega && <AlertTriangle size={14} color="var(--accent)" />}
                 </div>
 
-                <div style={{ fontSize: 48, fontWeight: 800, color: color, textShadow: `0 0 32px ${color}40`, lineHeight: 1 }}>
+                <div style={{ fontSize: 48, fontWeight: 800, color: color, textShadow: `0 0 32px ${bg}`, lineHeight: 1 }}>
                     {formatValue(trade.value)}
                 </div>
 

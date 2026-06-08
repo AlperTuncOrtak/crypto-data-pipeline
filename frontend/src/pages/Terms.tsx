@@ -27,7 +27,7 @@ export default function Terms() {
 
         <section>
           <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>2. Not Financial Advice</h2>
-          <div className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(231, 76, 60, 0.1)', border: '1px solid rgba(231, 76, 60, 0.3)', color: '#e74c3c' }}>
+          <div className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(176, 38, 255, 0.1)', border: '1px solid rgba(176, 38, 255, 0.3)', color: 'var(--negative)' }}>
             <p className="font-bold mb-1">IMPORTANT DISCLAIMER</p>
             <p>CryptoNeko provides data analytics, AI-driven technical analysis, and portfolio tracking tools for informational purposes only. None of the information provided by the Service constitutes financial, investment, or trading advice.</p>
           </div>

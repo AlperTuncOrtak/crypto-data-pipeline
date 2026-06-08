@@ -17,15 +17,15 @@
   --text-secondary: #A1A1AA;
   --text-muted:     #71717A;
 
-  --accent:         #F59E0B;
-  --accent-hover:   #FBBF24;
-  --accent-soft:    rgba(245, 158, 11, 0.12);
-  --accent-border:  rgba(245, 158, 11, 0.25);
+  --accent:         #00F0FF;
+  --accent-hover:   #5EEAD4;
+  --accent-soft:    rgba(0, 240, 255, 0.12);
+  --accent-border:  rgba(0, 240, 255, 0.25);
 
-  --positive:       #2DD4BF;
-  --positive-soft:  rgba(45, 212, 191, 0.12);
-  --negative:       #F43F5E;
-  --negative-soft:  rgba(244, 63, 94, 0.12);
+  --positive:       #00F0FF;
+  --positive-soft:  rgba(0, 240, 255, 0.12);
+  --negative:       #B026FF;
+  --negative-soft:  rgba(176, 38, 255, 0.12);
 
   /* Mobile nav */
   --nav-overlay: rgba(2, 2, 4, 0.95);

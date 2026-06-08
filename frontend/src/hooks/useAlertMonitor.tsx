@@ -301,7 +301,7 @@ export function useAlertMonitor(marketData, isPro = false) {
       triggeredRef.current.add(cooldownKey);
 
       const isUp = alert.type === "price_above" || alert.type === "change_up";
-      const color = isUp ? "#2ecc71" : "#e74c3c";
+      const color = isUp ? "var(--positive)" : "var(--negative)";
       const emoji = isUp ? "🚀" : "⚠️";
       const fmtTgt = alert.type.includes("change")
         ? `${alert.target}%`

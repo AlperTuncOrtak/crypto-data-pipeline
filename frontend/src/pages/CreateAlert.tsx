@@ -21,28 +21,28 @@ const ALERT_TYPES = [
     id: "price_above",
     label: "Price Above",
     icon: TrendingUp,
-    color: "#2ecc71",
+    color: "var(--positive)",
     desc: "Alert when price goes above target",
   },
   {
     id: "price_below",
     label: "Price Below",
     icon: TrendingDown,
-    color: "#e74c3c",
+    color: "var(--negative)",
     desc: "Alert when price drops below target",
   },
   {
     id: "change_up",
     label: "% Change Up",
     icon: TrendingUp,
-    color: "#2ecc71",
+    color: "var(--positive)",
     desc: "Alert when 24h change exceeds threshold",
   },
   {
     id: "change_down",
     label: "% Change Down",
     icon: TrendingDown,
-    color: "#e74c3c",
+    color: "var(--negative)",
     desc: "Alert when 24h change drops below threshold",
   },
   {
@@ -573,7 +573,7 @@ export default function CreateAlert() {
               !selectedCoin || !targetValue
                 ? "rgba(245,166,35,0.2)"
                 : saved
-                  ? "rgba(46,204,113,0.8)"
+                  ? "rgba(0,240,255,0.8)"
                   : "linear-gradient(135deg, var(--accent), #8B5CF6)",
             color: "#111",
             fontSize: 14,
@@ -693,7 +693,7 @@ export default function CreateAlert() {
                       transition: "color 0.15s",
                     }}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "#e74c3c")
+                      (e.currentTarget.style.color = "var(--negative)")
                     }
                     onMouseLeave={(e) =>
                       (e.currentTarget.style.color = "var(--text-muted)")

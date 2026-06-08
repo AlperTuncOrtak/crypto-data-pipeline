@@ -539,7 +539,7 @@ export default function Navbar({
             <span
               style={{
                 fontSize: 11,
-                color: "#2ecc71",
+                color: "var(--positive)",
                 fontFamily: "monospace",
                 fontWeight: 600,
               }}
@@ -552,7 +552,7 @@ export default function Navbar({
             <span
               style={{
                 fontSize: 11,
-                color: "#e74c3c",
+                color: "var(--negative)",
                 fontFamily: "monospace",
                 fontWeight: 600,
               }}
@@ -1395,14 +1395,14 @@ export default function Navbar({
                         }}
                         onMouseEnter={(e) =>
                           (e.currentTarget.style.background =
-                            "rgba(231,76,60,0.08)")
+                            "rgba(176,38,255,0.08)")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.background = "transparent")
                         }
                       >
-                        <LogOut size={13} style={{ color: "#e74c3c" }} />
-                        <span style={{ fontSize: 13, color: "#e74c3c" }}>
+                        <LogOut size={13} style={{ color: "var(--negative)" }} />
+                        <span style={{ fontSize: 13, color: "var(--negative)" }}>
                           Sign Out
                         </span>
                       </div>

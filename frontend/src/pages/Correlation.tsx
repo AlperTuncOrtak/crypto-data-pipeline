@@ -3,7 +3,7 @@ import { useMarket } from '../hooks/useMarket'
 import { useMultiCoinCorrelation } from '../hooks/useAnalysis'
 import { Network, X, Search } from 'lucide-react'
 
-const CHART_COLORS = ['#2ecc71', '#3498db', 'var(--accent)', '#e91e8c', '#9b59b6']
+const CHART_COLORS = ['var(--positive)', '#3498db', 'var(--accent)', '#e91e8c', '#9b59b6']
 
 const TIME_RANGES = [
   { label: '1H',  hours: 1   },
@@ -24,9 +24,9 @@ function formatPrice(n) {
 function getCorrelationColor(corr) {
   if (corr === 1) return 'rgba(255,255,255,0.05)'
   if (corr > 0) {
-    return `rgba(46, 204, 113, ${Math.min(corr * 0.8 + 0.2, 1)})`
+    return `rgba(0, 240, 255, ${Math.min(corr * 0.8 + 0.2, 1)})`
   } else if (corr < 0) {
-    return `rgba(231, 76, 60, ${Math.min(Math.abs(corr) * 0.8 + 0.2, 1)})`
+    return `rgba(176, 38, 255, ${Math.min(Math.abs(corr) * 0.8 + 0.2, 1)})`
   }
   return 'rgba(255,255,255,0.02)'
 }

@@ -374,7 +374,7 @@ export default function Landing({ onAuthOpen }) {
                 style={{
                   fontSize: 10,
                   fontFamily: "monospace",
-                  color: t.change >= 0 ? "#2ecc71" : "#e74c3c",
+                  color: t.change >= 0 ? "var(--positive)" : "var(--negative)",
                   fontWeight: 700,
                 }}
               >
@@ -470,7 +470,7 @@ export default function Landing({ onAuthOpen }) {
               <span style={{
                 fontSize:   11,
                 fontWeight: 700,
-                color:      coin.change >= 0 ? "#2ecc71" : "#e74c3c",
+                color:      coin.change >= 0 ? "var(--positive)" : "var(--negative)",
                 fontFamily: "monospace",
               }}>
                 {coin.change >= 0 ? "▲" : "▼"}
@@ -508,8 +508,8 @@ export default function Landing({ onAuthOpen }) {
             gap: 8,
             padding: "5px 14px",
             borderRadius: 20,
-            background: "rgba(46,204,113,.08)",
-            border: "1px solid rgba(46,204,113,.2)",
+            background: "rgba(0,240,255,.08)",
+            border: "1px solid rgba(0,240,255,.2)",
             marginBottom: 30,
             animation: "fadeUp .5s ease both",
           }}
@@ -519,8 +519,8 @@ export default function Landing({ onAuthOpen }) {
               width: 6,
               height: 6,
               borderRadius: "50%",
-              background: "#2ecc71",
-              boxShadow: "0 0 8px #2ecc71",
+              background: "var(--positive)",
+              boxShadow: "0 0 8px var(--positive)",
               animation: "glow 2s infinite",
             }}
           />
@@ -787,8 +787,8 @@ export default function Landing({ onAuthOpen }) {
                   style={{
                     padding: "20px 24px",
                     borderRadius: 14,
-                    background: "rgba(46,204,113,.07)",
-                    border: "1px solid rgba(46,204,113,.18)",
+                    background: "rgba(0,240,255,.07)",
+                    border: "1px solid rgba(0,240,255,.18)",
                     position: "relative",
                     overflow: "hidden",
                   }}
@@ -801,7 +801,7 @@ export default function Landing({ onAuthOpen }) {
                       width: 120,
                       height: 120,
                       borderRadius: "50%",
-                      background: "rgba(46,204,113,.08)",
+                      background: "rgba(0,240,255,.08)",
                       filter: "blur(30px)",
                     }}
                   />
@@ -809,7 +809,7 @@ export default function Landing({ onAuthOpen }) {
                     style={{
                       fontSize: 9,
                       fontWeight: 800,
-                      color: "rgba(46,204,113,.5)",
+                      color: "rgba(0,240,255,.5)",
                       letterSpacing: ".18em",
                       marginBottom: 6,
                     }}
@@ -820,7 +820,7 @@ export default function Landing({ onAuthOpen }) {
                     style={{
                       fontSize: 44,
                       fontWeight: 900,
-                      color: "#2ecc71",
+                      color: "var(--positive)",
                       letterSpacing: "-0.03em",
                       lineHeight: 1,
                     }}
@@ -847,7 +847,7 @@ export default function Landing({ onAuthOpen }) {
                     >
                       $80,734
                     </span>
-                    <span style={{ color: "#2ecc71", fontFamily: "monospace" }}>
+                    <span style={{ color: "var(--positive)", fontFamily: "monospace" }}>
                       +2.14%
                     </span>
                   </div>
@@ -880,7 +880,7 @@ export default function Landing({ onAuthOpen }) {
                       style={{
                         fontSize: 28,
                         fontWeight: 900,
-                        color: "#2ecc71",
+                        color: "var(--positive)",
                         fontFamily: "monospace",
                       }}
                     >
@@ -938,7 +938,7 @@ export default function Landing({ onAuthOpen }) {
                   {
                     label: "MACD",
                     val: 80,
-                    color: "#2ecc71",
+                    color: "var(--positive)",
                     status: "Bullish",
                   },
                   { label: "BB", val: 45, color: "#3498db", status: "Middle" },
@@ -951,7 +951,7 @@ export default function Landing({ onAuthOpen }) {
                   {
                     label: "EMA",
                     val: 90,
-                    color: "#2ecc71",
+                    color: "var(--positive)",
                     status: "Bullish",
                   },
                 ].map((ind) => (
@@ -1040,7 +1040,7 @@ export default function Landing({ onAuthOpen }) {
                     label: "Stop Loss",
                     value: "$74,374",
                     sub: "−8% from entry",
-                    color: "#e74c3c",
+                    color: "var(--negative)",
                   },
                 ].map((item) => (
                   <div
@@ -1157,8 +1157,8 @@ export default function Landing({ onAuthOpen }) {
             },
             {
               icon: Wallet,
-              color: "#2ecc71",
-              gradFrom: "#2ecc71",
+              color: "var(--positive)",
+              gradFrom: "var(--positive)",
               gradTo: "#1a7a43",
               badge: "TAX REPORTS",
               title: "Portfolio Tracker",
@@ -1187,8 +1187,8 @@ export default function Landing({ onAuthOpen }) {
             },
             {
               icon: Shield,
-              color: "#e74c3c",
-              gradFrom: "#e74c3c",
+              color: "var(--negative)",
+              gradFrom: "var(--negative)",
               gradTo: "#922b21",
               badge: "PRIVATE",
               title: "Privacy First",
@@ -1520,7 +1520,7 @@ export default function Landing({ onAuthOpen }) {
               prefix: "",
               label: "Exchanges Supported",
               desc: "Binance, Bybit, OKX, Coinbase & Kraken CSV import",
-              color: "#2ecc71",
+              color: "var(--positive)",
               Icon: Globe,
             },
             {
@@ -1538,7 +1538,7 @@ export default function Landing({ onAuthOpen }) {
               prefix: "",
               label: "Private by Design",
               desc: "Trade data never leaves your browser — zero servers",
-              color: "#e74c3c",
+              color: "var(--negative)",
               Icon: Shield,
             },
           ].map((s, i) => (

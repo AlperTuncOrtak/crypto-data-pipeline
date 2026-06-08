@@ -61,7 +61,7 @@ function AppInner() {
         title: "Email Verified! 🎉",
         body: "Your email has been successfully verified. Welcome to CryptoNeko!",
         icon: "✅",
-        color: "#2ecc71",
+        color: "var(--positive)",
         duration: 8000
       });
       // Clean up the URL

@@ -39,7 +39,7 @@ const REGION_WARNINGS = {
     flag: "🇬🇧",
     title: "UK Users — Important Notice",
     text: "CryptoNeko is not authorised by the Financial Conduct Authority (FCA). This platform provides technical analysis tools only and does not constitute a financial promotion or investment advice under the Financial Services and Markets Act 2000. Cryptoassets are high risk and largely unregulated in the UK. You are unlikely to be protected if something goes wrong. Please read the FCA's guidance at fca.org.uk/cryptoassets before using this tool.",
-    color: "#e74c3c",
+    color: "var(--negative)",
   },
   EU: {
     flag: "🇪🇺",
@@ -117,7 +117,7 @@ export default function DisclaimerModal({ onAccept }) {
           <div
             style={{
               height: 3,
-              background: "linear-gradient(90deg, #e74c3c, var(--accent), #e74c3c)",
+              background: "linear-gradient(90deg, var(--negative), var(--accent), var(--negative))",
             }}
           />
 
@@ -130,14 +130,14 @@ export default function DisclaimerModal({ onAccept }) {
                   height: 48,
                   borderRadius: 16,
                   flexShrink: 0,
-                  backgroundColor: "rgba(231,76,60,0.15)",
-                  border: "1px solid rgba(231,76,60,0.3)",
+                  backgroundColor: "rgba(176,38,255,0.15)",
+                  border: "1px solid rgba(176,38,255,0.3)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Shield size={22} style={{ color: "#e74c3c" }} />
+                <Shield size={22} style={{ color: "var(--negative)" }} />
               </div>
               <div>
                 <h2
@@ -329,7 +329,7 @@ export default function DisclaimerModal({ onAccept }) {
                       width: 4,
                       height: 4,
                       borderRadius: "50%",
-                      backgroundColor: "#e74c3c",
+                      backgroundColor: "var(--negative)",
                       flexShrink: 0,
                       marginTop: 6,
                     }}
