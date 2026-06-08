@@ -13,6 +13,7 @@ import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
 import HeatmapWidget from "../components/market/HeatmapWidget";
 import WhaleTracker from "../components/market/WhaleTracker";
+import { getCoinColor } from "../utils/colors";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
@@ -628,12 +629,12 @@ export default function Dashboard() {
                             {coin.image_url ? (
                               <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0 }} onError={(e) => { e.target.style.display = "none"; }} />
                             ) : (
-                              <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-elevated)", color: "var(--accent)", fontSize: 10, fontWeight: 700 }}>
+                              <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-elevated)", color: getCoinColor(coin.symbol), fontSize: 10, fontWeight: 700 }}>
                                 {coin.symbol?.slice(0, 1)}
                               </div>
                             )}
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{coin.symbol?.toUpperCase()}</div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}40` }}>{coin.symbol?.toUpperCase()}</div>
                               <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{coin.name}</div>
                             </div>
                           </div>
