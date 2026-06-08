@@ -13,7 +13,7 @@ interface WhaleTrade {
 }
 
 const MIN_WHALE_VALUE = 50000; // $50k threshold
-const MAX_TRADES = 40;
+const MAX_TRADES = 1;
 
 export default function WhaleTracker() {
   const [trades, setTrades] = useState<WhaleTrade[]>([]);
@@ -178,23 +178,14 @@ export default function WhaleTracker() {
         </div>
       </div>
 
-      <div style={{ padding: "10px 20px", display: "grid", gridTemplateColumns: "50px 1fr 1fr 60px", gap: 10, borderBottom: "1px solid rgba(255,255,255,0.02)", fontSize: 11, color: "rgba(255,255,255,0.3)", fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-        <div>Time</div>
-        <div>Asset</div>
-        <div style={{ textAlign: "right" }}>Value</div>
-        <div style={{ textAlign: "right" }}>Price</div>
-      </div>
-
       <div 
         style={{ 
           flex: 1, 
-          overflowY: "auto", 
-          padding: "10px",
           display: "flex",
           flexDirection: "column",
-          gap: 6
+          justifyContent: "center",
+          padding: "20px"
         }}
-        className="custom-scrollbar"
       >
         {trades.length === 0 ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 200, color: "rgba(255,255,255,0.3)", gap: 12 }}>
@@ -206,56 +197,48 @@ export default function WhaleTracker() {
             const isBuy = !trade.isSell;
             const color = isBuy ? "#2ecc71" : "#ff4560";
             const bg = isBuy ? "rgba(46, 204, 113, 0.08)" : "rgba(255, 69, 96, 0.08)";
-            
-            // Mega whale alert
             const isMega = trade.value > 500000;
 
             return (
               <div
                 key={trade.id}
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "50px 1fr 1fr 60px",
-                  gap: 10,
-                  alignItems: "center",
-                  padding: "10px",
-                  borderRadius: 12,
+                  animation: "flashIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 16,
                   background: isMega ? "rgba(245, 166, 35, 0.1)" : bg,
-                  border: `1px solid ${isMega ? "rgba(245,166,35,0.3)" : "transparent"}`,
-                  animation: "slideInRight 0.3s ease-out forwards",
+                  border: `1px solid ${isMega ? "rgba(245,166,35,0.4)" : color + "40"}`,
+                  borderRadius: 24,
+                  padding: "32px 20px",
+                  textAlign: "center",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: `0 8px 32px ${color}15`
                 }}
               >
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
-                  {formatTime(trade.timestamp)}
-                </div>
+                {isMega && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "var(--accent)", boxShadow: "0 0 16px var(--accent)" }} />}
                 
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div 
-                    style={{ 
-                      width: 20, 
-                      height: 20, 
-                      borderRadius: 6, 
-                      background: color + "20",
-                      color: color,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    {isBuy ? <ArrowUpRight size={12} strokeWidth={3} /> : <ArrowDownRight size={12} strokeWidth={3} />}
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
-                    {trade.symbol}
-                  </span>
-                  {isMega && <AlertTriangle size={12} color="var(--accent)" style={{ marginLeft: -2 }} />}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: 2 }}>
+                    {isBuy ? <ArrowUpRight size={16} color={color} /> : <ArrowDownRight size={16} color={color} />}
+                    {isBuy ? "WHALE BUY DETECTED" : "WHALE SELL DETECTED"}
+                    {isMega && <AlertTriangle size={14} color="var(--accent)" />}
                 </div>
 
-                <div style={{ textAlign: "right", fontSize: 13, fontWeight: 600, color: color }}>
-                  {formatValue(trade.value)}
+                <div style={{ fontSize: 48, fontWeight: 800, color: color, textShadow: `0 0 32px ${color}40`, lineHeight: 1 }}>
+                    {formatValue(trade.value)}
                 </div>
 
-                <div style={{ textAlign: "right", fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
-                  {trade.price.toLocaleString(undefined, { maximumFractionDigits: trade.price < 1 ? 4 : 2 })}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                    <span style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{trade.symbol}</span>
+                    <span style={{ fontSize: 16, color: "rgba(255,255,255,0.4)" }}>@</span>
+                    <span style={{ fontSize: 20, fontFamily: "monospace", fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>
+                      ${trade.price.toLocaleString(undefined, {maximumFractionDigits: trade.price < 1 ? 4 : 2})}
+                    </span>
+                </div>
+
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 8 }}>
+                    {formatTime(trade.timestamp)}
                 </div>
               </div>
             );
@@ -264,26 +247,21 @@ export default function WhaleTracker() {
       </div>
 
       <style>{`
-        @keyframes slideInRight {
-          from {
+        @keyframes flashIn {
+          0% {
             opacity: 0;
-            transform: translateX(10px);
+            transform: scale(0.95) translateY(10px);
+            filter: brightness(2);
           }
-          to {
+          50% {
+            transform: scale(1.02);
+            filter: brightness(1.5);
+          }
+          100% {
             opacity: 1;
-            transform: translateX(0);
+            transform: scale(1) translateY(0);
+            filter: brightness(1);
           }
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.1);
-          border-radius: 4px;
         }
       `}</style>
     </div>
