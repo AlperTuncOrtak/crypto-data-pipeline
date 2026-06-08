@@ -42,10 +42,8 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   RESET
+   RESET (Handled by Tailwind Preflight)
 ═══════════════════════════════════════════════════════════ */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { overflow-x: hidden; }
 body {
   background-color: var(--bg-base);

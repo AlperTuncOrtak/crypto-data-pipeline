@@ -923,9 +923,9 @@ function SoftCard({ children, className = "", noPadding = false }) {
       className={[
         "bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl",
         "transition-all duration-300 ease-out overflow-hidden relative",
+        noPadding ? "" : "p-6 sm:p-8",
         className,
       ].filter(Boolean).join(" ")}
-      style={{ padding: noPadding ? 0 : '28px' }}
     >
       {children}
     </div>
@@ -1336,12 +1336,12 @@ export default function Portfolio() {
           )}
 
           {aiInsights && (
-            <div className="space-y-6 relative z-10 animate-fadeInDown">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                  <div className="text-xs font-bold text-gray-500 uppercase mb-3">Risk Assessment</div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl" style={{
+            <div className="space-y-8 relative z-10 animate-fadeInDown mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Risk Assessment</div>
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
                       backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.1)' : 'rgba(45,212,191,0.1)',
                       color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#F59E0B' : '#2DD4BF',
                       border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.3)' : 'rgba(45,212,191,0.3)'}`
@@ -1349,60 +1349,60 @@ export default function Portfolio() {
                       {aiInsights.risk_score}/10
                     </div>
                     <div>
-                      <div className="text-lg font-bold text-gray-200">{aiInsights.risk_label} Risk</div>
-                      <div className="text-xs text-gray-500 mt-1">Correlation to BTC: <span className="text-gray-300 capitalize">{aiInsights.correlation_risk}</span></div>
+                      <div className="text-xl font-black text-gray-200">{aiInsights.risk_label} Risk</div>
+                      <div className="text-sm text-gray-400 mt-1">Correlation to BTC: <span className="text-gray-200 font-bold capitalize">{aiInsights.correlation_risk}</span></div>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                  <div className="text-xs font-bold text-gray-500 uppercase mb-3">Diversification & Sector</div>
-                  <div className="flex items-center gap-4">
-                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30">
+                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Diversification & Sector</div>
+                  <div className="flex items-center gap-5">
+                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-lg shrink-0">
                       {aiInsights.diversification_score}/10
                     </div>
                     <div>
-                      <div className="text-lg font-bold text-gray-200">Dominant Sector</div>
-                      <div className="text-xs text-gray-500 mt-1"><span className="text-gray-300 font-medium">{aiInsights.dominant_sector}</span></div>
+                      <div className="text-xl font-black text-gray-200">Dominant Sector</div>
+                      <div className="text-sm text-gray-400 mt-1"><span className="text-gray-200 font-bold">{aiInsights.dominant_sector}</span></div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
                 <div className="text-xs font-bold text-gray-500 uppercase mb-3">Executive Summary</div>
-                <p className="text-sm text-gray-300 leading-relaxed">{aiInsights.summary}</p>
+                <p className="text-base text-gray-300 leading-relaxed">{aiInsights.summary}</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-3">Strengths</div>
-                  <ul className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-4">Strengths</div>
+                  <ul className="space-y-3">
                     {aiInsights.strengths?.map((s, i) => (
-                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
-                        <span className="text-emerald-500 mt-0.5">•</span> {s}
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
+                        <span className="text-emerald-500 mt-0.5 shrink-0">•</span> <span>{s}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="p-5 rounded-2xl bg-red-500/5 border border-red-500/10">
-                  <div className="text-xs font-bold text-red-500/70 uppercase mb-3">Risks / Weaknesses</div>
-                   <ul className="space-y-2">
+                <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
+                  <div className="text-xs font-bold text-red-500/70 uppercase mb-4">Risks / Weaknesses</div>
+                   <ul className="space-y-3">
                     {aiInsights.risks?.map((r, i) => (
-                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
-                        <span className="text-red-500 mt-0.5">•</span> {r}
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
+                        <span className="text-red-500 mt-0.5 shrink-0">•</span> <span>{r}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20">
-                <div className="text-xs font-bold text-amber-500 uppercase mb-3">Actionable Recommendations</div>
-                <ul className="space-y-3">
+              <div className="p-6 rounded-2xl bg-amber-500/5 border border-amber-500/20">
+                <div className="text-xs font-bold text-amber-500 uppercase mb-4">Actionable Recommendations</div>
+                <ul className="space-y-4">
                   {aiInsights.recommendations?.map((r, i) => (
-                    <li key={i} className="text-sm text-amber-100 flex items-start gap-2">
-                      <span className="text-amber-500 mt-0.5">→</span> {r}
+                    <li key={i} className="text-sm md:text-base text-amber-100/90 flex items-start gap-3">
+                      <span className="text-amber-500 mt-0.5 shrink-0">→</span> <span>{r}</span>
                     </li>
                   ))}
                 </ul>
