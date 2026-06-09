@@ -3,6 +3,7 @@
 // ============================================================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../components/seo/SEO";
 import {
   Brain,
   BarChart2,
@@ -209,6 +210,7 @@ export default function Landing({ onAuthOpen }) {
         overflowX: "hidden",
       }}
     >
+      <SEO />
       <style>{`
         @keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-33.33%)} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }

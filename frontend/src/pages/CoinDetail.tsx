@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import SEO from "../components/seo/SEO";
 import { useCoinDetail, useCoinHistory, useCoinStats } from "../hooks/useCoin";
 import {
   ArrowLeft,
@@ -472,6 +473,11 @@ export default function CoinDetail() {
 
   return (
     <div style={{ color: "var(--text-primary)", maxWidth: 1100 }}>
+      <SEO 
+        title={`${coin.name} (${coin.symbol.toUpperCase()}) Live Price & AI Analysis`} 
+        description={`Get real-time price, charts, and AI-powered technical analysis for ${coin.name} (${coin.symbol.toUpperCase()}).`}
+        image={coin.image}
+      />
       {/* BACK */}
       <button
         onClick={() => navigate(-1)}

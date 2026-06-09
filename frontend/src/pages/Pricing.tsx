@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import SEO from "../components/seo/SEO";
 import { apiClient } from "../api/client";
 import {
   Check,
@@ -375,6 +376,10 @@ export default function Pricing({ onAuthOpen }) {
     <div
       style={{ color: "var(--text-primary)", maxWidth: 1100, margin: "0 auto" }}
     >
+      <SEO 
+        title="Pro Plans & Pricing" 
+        description="Upgrade to CryptoNeko Pro to unlock unlimited AI analysis, advanced portfolio tracking, and priority support."
+      />
       {/* HERO */}
       <div style={{ textAlign: "center", marginBottom: 48 }}>
         <div

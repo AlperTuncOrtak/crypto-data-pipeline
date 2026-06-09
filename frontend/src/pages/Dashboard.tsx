@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../components/seo/SEO";
 import {
   useMarket,
   useGainers,
@@ -446,6 +447,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ color: "var(--text-primary)" }}>
+      <SEO title="Dashboard" />
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
