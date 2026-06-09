@@ -1,46 +1,52 @@
-# 📈 CryptoNeko Analytics Platform
+# 📈 CryptoNeko Analytics & AI Platform
 
-A production-ready, modern cryptocurrency analytics dashboard and data pipeline built with React (Vite), TailwindCSS, and Supabase. Features a premium glassmorphism UI, real-time market data, and an integrated AI Copilot.
+A production-ready, full-stack cryptocurrency analytics dashboard and data pipeline built with **React (Vite)**, **Node.js/Express**, **TailwindCSS**, and **Supabase**. CryptoNeko combines a premium glassmorphism UI with **Llama 3.3 AI-driven technical analysis** to provide institutional-grade insights for retail traders.
 
 ⸻⸻⸻⸻⸻⸻
 
-## 🚀 Features
+## 🚀 Key Features
 
-### 💎 Premium Glassmorphism UI
-- High-end dark mode aesthetics with neon hover effects (`var(--accent)`).
-- Cyberpunk/Bloomberg Terminal inspired interactive components.
-- Seamless transitions, blurred backgrounds (`backdrop-filter`), and radial-gradient lighting.
+### 🧠 AI Technical Analysis (Powered by Groq & Llama 3.3)
+- **Live Signal Generation:** Processes 150+ technical indicators (RSI, MACD, Bollinger Bands) using Llama 3.3 to output actionable Bullish/Bearish/Neutral signals.
+- **Paywalled "Pro" Features:** Protected routes for advanced AI capabilities, dynamically unlocked via Supabase database roles.
+- **AI Copilot Widget:** Context-aware floating AI assistant available on every page for quick market sentiment checks.
 
-### 🧠 AI Copilot Widget
-- Integrated AI assistant available on every page.
-- Context-aware quick actions like "Analyze BTC" or "Market Sentiment".
-- Typing indicators and a floating terminal-style UI.
+### 📊 Real-Time Market Explorer
+- **Live Polling Engine:** High-performance React Query architecture fetching live data for 2,500+ coins every 5 seconds (with `keepPreviousData` to ensure zero UI flickering).
+- **Categorization Filters:** Instantly slice the market into *Majors (Top 20)*, *Altcoins*, *Low-Caps*, and *Micro-Caps/Shitcoins*.
+- **Sparkline Charts:** Real-time mini charts for at-a-glance 24h price trend visualization.
+- **Gas Heatmaps & Dominance:** Live Ethereum Gas trackers and BTC/ETH dominance metrics.
 
-### 📊 Real-Time Market Dashboard
-- Live market stats (Total Volume, BTC Dominance, ETH Dominance).
-- Top 10 coins by market cap with dynamic hover animations.
-- Trending coins and Fear & Greed Index integration.
-- Custom Volume Spike Radar and Market Oracle panels.
+### 💎 Premium Modern Aesthetics
+- **Dynamic Landing Page:** Features a live scrolling ticker tape connected directly to the market API, and floating glassmorphism UI elements.
+- **Dark Mode Design System:** High-end aesthetics utilizing CSS variables, neon hover effects (`var(--accent)`), and custom radial gradients.
+- **Mobile Responsive:** Flawless layout scaling from 4K desktop monitors down to mobile devices with custom bottom navigation.
 
-### 🚨 Advanced Alerts & Watchlist
-- **Audio Notifications:** Synth/Sonar ping audio alerts powered by the browser's `AudioContext` API.
-- Neon-glowing alert rows for high-priority market movements.
-- Interactive Watchlist Sidebar with smooth slide-in animations.
+### 🔐 Authentication & Security (Supabase)
+- **Frictionless Auth:** Secure email/password and Google OAuth login/signup flows.
+- **Security Layers:** Integrated hCaptcha, password strength meters, and rate-limiting protection.
+- **Session Management:** Persistent sessions via Supabase Auth tokens.
 
-### 🔐 Authentication (Supabase)
-- Secure email/password login and signup.
-- Google OAuth integration.
-- Password strength meter, hCaptcha integration, and rate-limiting protection.
+### 🌍 SEO Optimized
+- **Dynamic Meta Tags:** Automated SEO management via `react-helmet-async`, dynamically updating page titles, descriptions, and keywords.
+- **Sitemap Generator:** Automated Node.js script generating `sitemap.xml` for Google Indexing.
 
 ⸻⸻⸻⸻⸻⸻
 
 ## 🛠 Tech Stack
 
-- **Frontend:** React 18, Vite, React Router DOM
-- **Styling:** CSS Variables (Design System), TailwindCSS (`@import`), Glassmorphism techniques
-- **Icons:** Lucide React
-- **Backend & Auth:** Supabase (Auth & Database)
-- **Security:** hCaptcha
+### Frontend
+- **Framework:** React 18 (Vite), React Router DOM
+- **Data Fetching:** TanStack Query (React Query v5)
+- **Styling:** Vanilla CSS Variables & TailwindCSS
+- **Icons & UI:** Lucide React, Recharts (for analytics)
+- **SEO:** React Helmet Async
+
+### Backend & Infrastructure
+- **Server:** Node.js, Express.js
+- **Database & Auth:** Supabase (PostgreSQL)
+- **AI Inference:** Groq API (Llama 3.3 70B)
+- **Deployment:** Vercel (Frontend), Render/Railway (Backend)
 
 ⸻⸻⸻⸻⸻⸻
 
@@ -50,53 +56,70 @@ A production-ready, modern cryptocurrency analytics dashboard and data pipeline 
 crypto-data-pipeline/
 ├── frontend/
 │   ├── src/
+│   │   ├── api/               # Axios clients and interceptors
 │   │   ├── components/
-│   │   │   ├── ai/            # AI Chat Widget
-│   │   │   ├── layout/        # Navbar, Footer, WatchlistSidebar
-│   │   │   ├── market/        # Oracle, Radar, CoinList cards
-│   │   │   └── ui/            # AuthModal, Skeletons
-│   │   ├── hooks/             # Custom hooks (useAuth, useMarket, etc.)
+│   │   │   ├── ai/            # AI Analysis & Chat Widgets
+│   │   │   ├── layout/        # Navbar, Footer, ProtectedRoutes
+│   │   │   ├── market/        # Sparklines, Heatmaps, CoinList
+│   │   │   └── seo/           # SEO Helmet components
+│   │   ├── hooks/             # React Query Hooks (useMarket, useSparklines)
 │   │   ├── lib/               # Supabase client setup
-│   │   ├── pages/             # Dashboard, Alerts, Portfolio, etc.
-│   │   ├── App.jsx            # Main application routing
-│   │   ├── index.css          # Core design system and variables
-│   │   └── main.jsx           # React entry point
+│   │   ├── pages/             # Landing, Market, AIAnalysis, Auth
+│   │   ├── App.tsx            # Main application routing
+│   │   └── index.css          # Core design system & keyframes
 │   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-└── README.md
+│   └── package.json
+└── backend/
+    ├── src/
+    │   ├── controllers/       # Market Data & AI Logic
+    │   ├── routes/            # Express endpoints
+    │   └── server.js          # Express entry point
+    └── package.json
 ```
 
 ⸻⸻⸻⸻⸻⸻
 
-## ▶️ How to Run (Local)
+## ▶️ How to Run (Local Development)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/AlperTuncOrtak/crypto-data-pipeline.git
-   cd crypto-data-pipeline/frontend
-   ```
+### 1. Clone the repository:
+```bash
+git clone https://github.com/AlperTuncOrtak/crypto-data-pipeline.git
+cd crypto-data-pipeline
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 2. Frontend Setup:
+```bash
+cd frontend
+npm install
+```
+Create a `.env` file in the `frontend` directory:
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key
+```
+Start the frontend:
+```bash
+npm run dev
+```
 
-3. **Configure Environment Variables:**
-   Create a `.env` file in the `frontend` directory and add your Supabase and hCaptcha keys:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   VITE_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key
-   ```
+### 3. Backend Setup:
+```bash
+cd ../backend
+npm install
+```
+Create a `.env` file in the `backend` directory:
+```env
+PORT=3000
+GROQ_API_KEY=your_groq_api_key
+```
+Start the backend server:
+```bash
+npm run dev
+```
 
-4. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-   Open your browser and navigate to `http://localhost:5173`.
-
-> **Note for Local Auth:** To test Google Login locally, ensure `http://localhost:5173` is added to the "Redirect URIs" section in your Supabase Authentication settings.
+> **Note:** To test the "Pro" features locally, create an account, then change your `plan` from `free` to `pro` inside your Supabase dashboard.
 
 ⸻⸻⸻⸻⸻⸻
 

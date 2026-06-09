@@ -154,6 +154,7 @@ import GasHeatmap from "../components/market/GasHeatmap";
 export default function Market({ isWatched, toggleWatchlist }) {
   const { data: marketData, isLoading, isError, error } = useMarket(10000);
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
   const [sort, setSort] = useState({ key: "total_volume", direction: "desc" });
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
@@ -171,17 +172,25 @@ export default function Market({ isWatched, toggleWatchlist }) {
 
   const filteredAndSorted = useMemo(() => {
     if (!marketData) return [];
+    
+    // Apply category rank filter
+    let baseRows = marketData;
+    if (category === "majors") baseRows = marketData.slice(0, 20);
+    else if (category === "altcoins") baseRows = marketData.slice(20, 100);
+    else if (category === "lowcaps") baseRows = marketData.slice(100, 500);
+    else if (category === "shitcoins") baseRows = marketData.slice(500);
+
     const term = search.trim().toLowerCase();
-    let rows = marketData;
+    let rows = baseRows;
     if (term) {
-      rows = marketData.filter(
+      rows = baseRows.filter(
         (c) =>
           (c.symbol || "").toLowerCase().includes(term) ||
           (c.name || "").toLowerCase().includes(term),
       );
     }
     return sortRows(rows, sort.key, sort.direction);
-  }, [marketData, search, sort]);
+  }, [marketData, search, sort, category]);
 
   const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
   const paginated = filteredAndSorted.slice(
@@ -288,6 +297,31 @@ export default function Market({ isWatched, toggleWatchlist }) {
             {filteredAndSorted.length} coins — page {page}/{totalPages || 1}
           </p>
         </div>
+      </div>
+
+      {/* CATEGORY FILTERS */}
+      <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar" style={{ marginBottom: 20, paddingBottom: 4 }}>
+        {[
+          { id: "all", label: "All Coins" },
+          { id: "majors", label: "Majors (Top 20)" },
+          { id: "altcoins", label: "Altcoins (21-100)" },
+          { id: "lowcaps", label: "Low-Caps (101-500)" },
+          { id: "shitcoins", label: "Shitcoins (500+)" }
+        ].map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => { setCategory(cat.id); setPage(1); }}
+            className="whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all"
+            style={{
+              backgroundColor: category === cat.id ? "var(--accent)" : "var(--bg-surface)",
+              color: category === cat.id ? "#111" : "var(--text-secondary)",
+              border: `1px solid ${category === cat.id ? "var(--accent)" : "var(--border)"}`,
+              boxShadow: category === cat.id ? "0 0 12px rgba(245, 158, 11, 0.3)" : "none",
+            }}
+          >
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       {/* GAS HEATMAP */}
