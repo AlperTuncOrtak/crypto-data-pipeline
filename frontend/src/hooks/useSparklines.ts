@@ -15,7 +15,7 @@
 // NOT: symbols dizisi bos ise hook hic istek atmaz (enabled: false)
 // ============================================================
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { apiClient } from '../api/client'
 
 
@@ -45,6 +45,9 @@ export function useSparklines(symbols = [], hours = 24) {
 
     // symbols bos ise istek atma
     enabled: symbols.length > 0,
+
+    // Veri yenilenirken (ornegin sembol dizisi degistiginde) eski veriyi ekranda tut (flickeringi engeller)
+    placeholderData: keepPreviousData,
 
     // Sparkline verisi sik degismesine gerek yok - 60 saniye yeterli
     refetchInterval: 60 * 1000,
