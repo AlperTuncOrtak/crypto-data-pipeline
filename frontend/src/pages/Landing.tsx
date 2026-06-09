@@ -1,8 +1,9 @@
 // ============================================================
 // pages/Landing.jsx — v2
 // ============================================================
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMarket } from "../hooks/useMarket";
 import SEO from "../components/seo/SEO";
 import {
   Brain,
@@ -194,7 +195,26 @@ function FaqList() {
 
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
+  const { data: marketData } = useMarket(60000);
   const [scrollY, setScrollY] = useState(0);
+
+  const liveTickers = useMemo(() => {
+    if (!marketData) return TICKERS;
+    return TICKERS.map((t) => {
+      const liveCoin = marketData.find(
+        (c) => (c.symbol || "").toLowerCase() === (t.symbol || "").toLowerCase()
+      );
+      if (liveCoin) {
+        return {
+          ...t,
+          price: liveCoin.current_price,
+          change: liveCoin.price_change_percentage_24h,
+        };
+      }
+      return t;
+    });
+  }, [marketData]);
+
   useEffect(() => {
     const fn = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", fn, { passive: true });
@@ -324,7 +344,7 @@ export default function Landing({ onAuthOpen }) {
             padding: "7px 0",
           }}
         >
-          {[...TICKERS, ...TICKERS, ...TICKERS].map((t, i) => (
+          {[...liveTickers, ...liveTickers, ...liveTickers].map((t, i) => (
             <div
               key={i}
               style={{
