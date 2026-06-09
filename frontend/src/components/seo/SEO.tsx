@@ -11,7 +11,7 @@ interface SEOProps {
 export default function SEO({
   title = 'Pro AI Crypto Analytics',
   description = 'Supercharge your crypto trading with AI-powered technical analysis, real-time market data, and automated portfolio tracking.',
-  keywords = 'crypto, ai crypto analysis, portfolio tracker, cryptocurrency, bitcoin, ethereum',
+  keywords = 'Crypto Neko, cryptoneko, crypto neko, ai analysis crypto, crypto technical analysis, AI crypto tracker, cryptocurrency market analysis, AI indicator, crypto price predictions, bitcoin, ethereum',
   image = 'https://www.cryptoneko.online/logo.png',
   url = 'https://www.cryptoneko.online/',
 }: SEOProps) {
