@@ -195,7 +195,7 @@ function FaqList() {
 
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
-  const { data: marketData } = useMarket(60000);
+  const { data: marketData } = useMarket(100);
   const [scrollY, setScrollY] = useState(0);
 
   const liveTickers = useMemo(() => {
@@ -389,7 +389,7 @@ export default function Landing({ onAuthOpen }) {
                 }}
               >
                 {t.change >= 0 ? "▲" : "▼"}
-                {Math.abs(t.change)}%
+                {Number(Math.abs(t.change)).toFixed(2)}%
               </span>
             </div>
           ))}
