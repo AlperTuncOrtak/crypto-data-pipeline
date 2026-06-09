@@ -765,14 +765,7 @@ export default function Landing({ onAuthOpen }) {
               </div>
             </div>
             <div style={{ background: "#0c0c16", padding: "20px" }}>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1.8fr 1fr",
-                  gap: 12,
-                  marginBottom: 12,
-                }}
-              >
+              <div className="grid grid-cols-1 md:grid-cols-[1.8fr_1fr] gap-3 mb-3">
                 <div
                   style={{
                     padding: "20px 24px",
