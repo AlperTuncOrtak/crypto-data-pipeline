@@ -1105,7 +1105,7 @@ export default function Portfolio() {
       {/* HERO */}
       <div className="relative flex flex-col items-center justify-center py-20 text-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-amber-500/10" />
+          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-[#00f0ff]/10" />
         </div>
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           Total Portfolio Value
@@ -1128,53 +1128,18 @@ export default function Portfolio() {
         </div>
       )}
 
-      {/* ROW 1: Donut + Data Sources */}
+      {/* TWO-COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10 mt-8">
-
-        {/* Donut */}
-        <SoftCard className="lg:col-span-4 flex flex-col min-h-[380px]">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 shrink-0">
-            Asset Allocation
-          </h3>
-          
-          <div className="flex-1 w-full relative min-h-[200px]">
-            {holdings.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500">No assets yet</div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius="60%" outerRadius="80%" paddingAngle={4} dataKey="value" stroke="none">
-                    {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Pie>
-                  <RechartTooltip
-                    formatter={(v) => fmtUSD(v)}
-                    contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "#fff", fontSize: 13, fontWeight: 600 }}
-                    itemStyle={{ color: "#fff" }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-
-          {pieData.length > 0 && (
-            <div className="shrink-0 flex flex-wrap justify-center gap-x-4 gap-y-2 mt-6 pt-4 border-t border-white/[0.04]">
-              {pieData.map((d) => (
-                <span key={d.name} className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
-                  <span className="w-2.5 h-2.5 rounded-full inline-block shadow-sm" style={{ backgroundColor: d.color }} />
-                  {d.name}
-                </span>
-              ))}
-            </div>
-          )}
-        </SoftCard>
-
+        
+        {/* LEFT COLUMN: Data Sources + Table */}
+        <div className="lg:col-span-8 flex flex-col gap-8">
         {/* Data Sources */}
-        <SoftCard className="lg:col-span-8 flex flex-col gap-5">
+        <SoftCard className="w-full flex flex-col gap-5">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
             <button
               onClick={() => setShowAddSource(v => !v)}
-              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
             >
               {showAddSource ? "✕ Close Options" : "+ Add Source"}
             </button>
@@ -1203,11 +1168,11 @@ export default function Portfolio() {
                 value={walletInput} 
                 onChange={e => setWalletInput(e.target.value)} 
                 placeholder="0x..."
-                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.04] transition-all duration-300" 
+                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#00f0ff]/40 focus:bg-white/[0.04] transition-all duration-300" 
               />
               <button 
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
-                className="px-6 py-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+                className="px-6 py-3 rounded-2xl bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
               >
                 {isFetchingWallet ? "Fetching..." : "Add Wallet"}
               </button>
@@ -1240,7 +1205,7 @@ export default function Portfolio() {
                 </span>
               )}
               {binanceKeys.key && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20">
                   <CheckCircle size={12} /> Binance Synced
                 </span>
               )}
@@ -1265,152 +1230,6 @@ export default function Portfolio() {
             )}
           </div>
         </SoftCard>
-      </div>
-
-      {/* TAX SUMMARY */}
-      {trades.length > 0 && taxData && (
-        <SoftCard className="mb-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Tax Summary & Estimator</h3>
-              <p className="text-sm text-gray-400">Based on FIFO method. Estimated 30% short-term and 15% long-term tax rates.</p>
-            </div>
-            <button 
-              onClick={() => exportTaxCSV(taxData)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] whitespace-nowrap"
-            >
-              <FileDown size={16} /> Export Tax Report (CSV)
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Short-Term Tax</div>
-              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estShortTax)}</div>
-              <div className="text-xs text-gray-500 mt-1">Held &lt; 1 year</div>
-            </div>
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Long-Term Tax</div>
-              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estLongTax)}</div>
-              <div className="text-xs text-gray-500 mt-1">Held ≥ 1 year</div>
-            </div>
-            <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 relative overflow-hidden">
-              <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-amber-500/10 rounded-full blur-2xl"></div>
-              <div className="text-xs font-bold text-amber-500/70 uppercase mb-2 relative z-10">Total Estimated Tax</div>
-              <div className="text-3xl font-black font-mono text-amber-400 relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
-            </div>
-          </div>
-        </SoftCard>
-      )}
-
-      {/* AI PORTFOLIO INSIGHTS */}
-      {holdings.length > 0 && (
-        <SoftCard className="mb-10 border-amber-500/20 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
-          
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-1 flex items-center gap-2">
-                <Brain size={14} /> AI Portfolio Analysis
-              </h3>
-              <p className="text-sm text-gray-400">Get deep insights and personalized recommendations powered by CryptoNeko AI.</p>
-            </div>
-            
-            <button 
-              onClick={handleGetAIInsights}
-              disabled={isAnalyzingAI}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isAnalyzingAI ? (
-                <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> Analyzing...</>
-              ) : (
-                <><Brain size={16} /> Generate Insights</>
-              )}
-            </button>
-          </div>
-
-          {aiError && (
-            <div className="p-4 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {aiError}
-            </div>
-          )}
-
-          {aiInsights && (
-            <div className="space-y-8 relative z-10 animate-fadeInDown mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Risk Assessment</div>
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
-                      backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.1)' : 'rgba(45,212,191,0.1)',
-                      color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#F59E0B' : '#2DD4BF',
-                      border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(245,158,11,0.3)' : 'rgba(45,212,191,0.3)'}`
-                    }}>
-                      {aiInsights.risk_score}/10
-                    </div>
-                    <div>
-                      <div className="text-xl font-black text-gray-200">{aiInsights.risk_label} Risk</div>
-                      <div className="text-sm text-gray-400 mt-1">Correlation to BTC: <span className="text-gray-200 font-bold capitalize">{aiInsights.correlation_risk}</span></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Diversification & Sector</div>
-                  <div className="flex items-center gap-5">
-                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-lg shrink-0">
-                      {aiInsights.diversification_score}/10
-                    </div>
-                    <div>
-                      <div className="text-xl font-black text-gray-200">Dominant Sector</div>
-                      <div className="text-sm text-gray-400 mt-1"><span className="text-gray-200 font-bold">{aiInsights.dominant_sector}</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                <div className="text-xs font-bold text-gray-500 uppercase mb-3">Executive Summary</div>
-                <p className="text-base text-gray-300 leading-relaxed">{aiInsights.summary}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-4">Strengths</div>
-                  <ul className="space-y-3">
-                    {aiInsights.strengths?.map((s, i) => (
-                      <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
-                        <span className="text-emerald-500 mt-0.5 shrink-0">•</span> <span>{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
-                  <div className="text-xs font-bold text-red-500/70 uppercase mb-4">Risks / Weaknesses</div>
-                   <ul className="space-y-3">
-                    {aiInsights.risks?.map((r, i) => (
-                      <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
-                        <span className="text-red-500 mt-0.5 shrink-0">•</span> <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-amber-500/5 border border-amber-500/20">
-                <div className="text-xs font-bold text-amber-500 uppercase mb-4">Actionable Recommendations</div>
-                <ul className="space-y-4">
-                  {aiInsights.recommendations?.map((r, i) => (
-                    <li key={i} className="text-sm md:text-base text-amber-100/90 flex items-start gap-3">
-                      <span className="text-amber-500 mt-0.5 shrink-0">→</span> <span>{r}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-        </SoftCard>
-      )}
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 && (
@@ -1471,6 +1290,198 @@ export default function Portfolio() {
         </SoftCard>
       )}
 
+
+        </div>
+
+        {/* RIGHT COLUMN: Donut + AI Insights + Tax Summary */}
+        <div className="lg:col-span-4 flex flex-col gap-8">
+        {/* Donut */}
+        <SoftCard className="w-full flex flex-col min-h-[380px]">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 shrink-0">
+            Asset Allocation
+          </h3>
+          
+          <div className="flex-1 w-full relative min-h-[200px]">
+            {holdings.length === 0 ? (
+              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500">No assets yet</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius="60%" outerRadius="80%" paddingAngle={4} dataKey="value" stroke="none">
+                    {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                  <RechartTooltip
+                    formatter={(v) => fmtUSD(v)}
+                    contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "#fff", fontSize: 13, fontWeight: 600 }}
+                    itemStyle={{ color: "#fff" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {pieData.length > 0 && (
+            <div className="shrink-0 flex flex-wrap justify-center gap-x-4 gap-y-2 mt-6 pt-4 border-t border-white/[0.04]">
+              {pieData.map((d) => (
+                <span key={d.name} className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
+                  <span className="w-2.5 h-2.5 rounded-full inline-block shadow-sm" style={{ backgroundColor: d.color }} />
+                  {d.name}
+                </span>
+              ))}
+            </div>
+          )}
+        </SoftCard>
+
+      {/* AI PORTFOLIO INSIGHTS */}
+      {holdings.length > 0 && (
+        <SoftCard className="mb-10 border-[#00f0ff]/20 relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#00f0ff] mb-1 flex items-center gap-2">
+                <Brain size={14} /> AI Portfolio Analysis
+              </h3>
+              <p className="text-sm text-gray-400">Get deep insights and personalized recommendations powered by CryptoNeko AI.</p>
+            </div>
+            
+            <button 
+              onClick={handleGetAIInsights}
+              disabled={isAnalyzingAI}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f0ff] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {isAnalyzingAI ? (
+                <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> Analyzing...</>
+              ) : (
+                <><Brain size={16} /> Generate Insights</>
+              )}
+            </button>
+          </div>
+
+          {aiError && (
+            <div className="p-4 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {aiError}
+            </div>
+          )}
+
+          {aiInsights && (
+            <div className="space-y-8 relative z-10 animate-fadeInDown mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Risk Assessment</div>
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
+                      backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.1)' : 'rgba(45,212,191,0.1)',
+                      color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#00f0ff' : '#2DD4BF',
+                      border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.3)' : 'rgba(45,212,191,0.3)'}`
+                    }}>
+                      {aiInsights.risk_score}/10
+                    </div>
+                    <div>
+                      <div className="text-xl font-black text-gray-200">{aiInsights.risk_label} Risk</div>
+                      <div className="text-sm text-gray-400 mt-1">Correlation to BTC: <span className="text-gray-200 font-bold capitalize">{aiInsights.correlation_risk}</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Diversification & Sector</div>
+                  <div className="flex items-center gap-5">
+                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-lg shrink-0">
+                      {aiInsights.diversification_score}/10
+                    </div>
+                    <div>
+                      <div className="text-xl font-black text-gray-200">Dominant Sector</div>
+                      <div className="text-sm text-gray-400 mt-1"><span className="text-gray-200 font-bold">{aiInsights.dominant_sector}</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                <div className="text-xs font-bold text-gray-500 uppercase mb-3">Executive Summary</div>
+                <p className="text-base text-gray-300 leading-relaxed">{aiInsights.summary}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-4">Strengths</div>
+                  <ul className="space-y-3">
+                    {aiInsights.strengths?.map((s, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
+                        <span className="text-emerald-500 mt-0.5 shrink-0">•</span> <span>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
+                  <div className="text-xs font-bold text-red-500/70 uppercase mb-4">Risks / Weaknesses</div>
+                   <ul className="space-y-3">
+                    {aiInsights.risks?.map((r, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
+                        <span className="text-red-500 mt-0.5 shrink-0">•</span> <span>{r}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#00f0ff]/5 border border-[#00f0ff]/20">
+                <div className="text-xs font-bold text-[#00f0ff] uppercase mb-4">Actionable Recommendations</div>
+                <ul className="space-y-4">
+                  {aiInsights.recommendations?.map((r, i) => (
+                    <li key={i} className="text-sm md:text-base text-[#00f0ff]/90 flex items-start gap-3">
+                      <span className="text-[#00f0ff] mt-0.5 shrink-0">→</span> <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </SoftCard>
+      )}
+
+
+      {/* TAX SUMMARY */}
+      {trades.length > 0 && taxData && (
+        <SoftCard className="mb-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Tax Summary & Estimator</h3>
+              <p className="text-sm text-gray-400">Based on FIFO method. Estimated 30% short-term and 15% long-term tax rates.</p>
+            </div>
+            <button 
+              onClick={() => exportTaxCSV(taxData)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)] whitespace-nowrap"
+            >
+              <FileDown size={16} /> Export Tax Report (CSV)
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Short-Term Tax</div>
+              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estShortTax)}</div>
+              <div className="text-xs text-gray-500 mt-1">Held &lt; 1 year</div>
+            </div>
+            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Long-Term Tax</div>
+              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estLongTax)}</div>
+              <div className="text-xs text-gray-500 mt-1">Held ≥ 1 year</div>
+            </div>
+            <div className="p-5 rounded-2xl bg-[#00f0ff]/5 border border-[#00f0ff]/20 relative overflow-hidden">
+              <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-[#00f0ff]/10 rounded-full blur-2xl"></div>
+              <div className="text-xs font-bold text-[#00f0ff]/70 uppercase mb-2 relative z-10">Total Estimated Tax</div>
+              <div className="text-3xl font-black font-mono text-[#00f0ff] relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
+            </div>
+          </div>
+        </SoftCard>
+      )}
+
+
+        </div>
+      </div>
+
       {/* Empty state */}
       {holdings.length === 0 && trades.length === 0 && wallets.length === 0 && !binanceKeys.key && (
         <SoftCard className="text-center py-20">
@@ -1478,7 +1489,7 @@ export default function Portfolio() {
           <p className="font-semibold text-base mb-2 text-gray-400">Your portfolio is empty</p>
           <p className="text-sm mb-6 text-gray-500">Upload a CSV from your exchange to get started.</p>
           <button onClick={() => setShowAddSource(true)} 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.05)] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
           >
             + Add Data Source
           </button>
