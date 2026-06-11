@@ -17,22 +17,22 @@ import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDown
 
 // ─── THEME TOKENS ────────────────────────────────────────────────
 const T = {
-  bg: "#0a0a0f",
-  card: "#0f0f1a",
-  cardHov: "#13131f",
-  purple: "#8b5cf6",
-  purpleLight: "#a78bfa",
-  green: "#34d399",
-  greenBg: "rgba(16,185,129,0.1)",
-  greenBorder: "rgba(52,211,153,0.2)",
-  red: "#f87171",
-  redBg: "rgba(248,113,113,0.1)",
-  redBorder: "rgba(248,113,113,0.2)",
-  textPrimary: "#f1f5f9",
+  bg: "#020617",
+  card: "#0b1227",
+  cardHov: "#0f172a",
+  purple: "#00f0ff",
+  purpleLight: "#00ffff",
+  green: "#2dd4bf",
+  greenBg: "rgba(45,212,191,0.1)",
+  greenBorder: "rgba(45,212,191,0.2)",
+  red: "#f43f5e",
+  redBg: "rgba(244,63,94,0.1)",
+  redBorder: "rgba(244,63,94,0.2)",
+  textPrimary: "#ffffff",
   textSecondary: "#94a3b8",
-  textMuted: "#6b7280",
+  textMuted: "#64748b",
   border: "rgba(255,255,255,0.06)",
-  borderFeat: "rgba(139,92,246,0.25)",
+  borderFeat: "rgba(0,240,255,0.25)",
 };
 
 function formatLargeNumber(n) {
@@ -96,15 +96,15 @@ function Card({ children, style = {}, featured = false, onClick }) {
       onClick={onClick}
       style={{
         background: T.card,
-        border: `1px solid ${hov ? (featured ? "rgba(139,92,246,0.4)" : "rgba(139,92,246,0.2)") : (featured ? T.borderFeat : T.border)}`,
+        border: `1px solid ${hov ? (featured ? "rgba(0,240,255,0.35)" : "rgba(0,240,255,0.15)") : (featured ? T.borderFeat : T.border)}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
         transition: "all 200ms ease",
         cursor: onClick ? "pointer" : "default",
         ...(featured && {
-          background: "rgba(139,92,246,0.05)",
-          boxShadow: hov ? "0 0 40px rgba(139,92,246,0.15)" : "none",
+          background: "rgba(0,240,255,0.04)",
+          boxShadow: hov ? "0 0 40px rgba(0,240,255,0.12)" : "none",
         }),
         ...(hov && !featured && { background: T.cardHov }),
         ...style,
@@ -173,7 +173,7 @@ function CoinCard({ coin, navigate, featured = false }) {
       <div style={{
         position: "absolute", top: -40, right: -40,
         width: 120, height: 120, borderRadius: "50%",
-        background: `radial-gradient(circle, ${featured ? "rgba(139,92,246,0.2)" : color + "15"} 0%, transparent 60%)`,
+        background: `radial-gradient(circle, ${featured ? "rgba(0,240,255,0.15)" : color + "15"} 0%, transparent 60%)`,
         filter: "blur(20px)", pointerEvents: "none",
       }} />
 
@@ -186,7 +186,7 @@ function CoinCard({ coin, navigate, featured = false }) {
             ) : (
               <div style={{
                 width: 36, height: 36, borderRadius: "50%",
-                background: `${featured ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.06)"}`,
+                background: `${featured ? "rgba(0,240,255,0.15)" : "rgba(255,255,255,0.06)"}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 800, color: featured ? T.purple : T.textMuted,
               }}>
@@ -490,7 +490,7 @@ export default function Dashboard() {
                               {coin.image_url ? (
                                 <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%" }} />
                               ) : (
-                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(139,92,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: T.purple }}>
+                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(0,240,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: T.purple }}>
                                   {coin.symbol?.slice(0, 1)}
                                 </div>
                               )}

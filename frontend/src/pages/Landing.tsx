@@ -11,22 +11,22 @@ import {
 
 // ─── THEME ───────────────────────────────────────────────────────
 const T = {
-  bg: "#0a0a0f",
-  card: "#0f0f1a",
-  cardHov: "#13131f",
-  purple: "#8b5cf6",
-  purpleLight: "#a78bfa",
-  purpleDim: "rgba(139,92,246,0.15)",
-  green: "#34d399",
-  greenBg: "rgba(16,185,129,0.1)",
-  greenBorder: "rgba(52,211,153,0.2)",
-  red: "#f87171",
-  redBg: "rgba(248,113,113,0.1)",
-  textPrimary: "#f1f5f9",
+  bg: "#020617",
+  card: "#0b1227",
+  cardHov: "#0f172a",
+  purple: "#00f0ff",        // accent = cyan, T.purple kullanılan yerlerde artık cyan
+  purpleLight: "#00ffff",
+  purpleDim: "rgba(0,240,255,0.12)",
+  green: "#2dd4bf",
+  greenBg: "rgba(45,212,191,0.1)",
+  greenBorder: "rgba(45,212,191,0.2)",
+  red: "#f43f5e",
+  redBg: "rgba(244,63,94,0.1)",
+  textPrimary: "#ffffff",
   textSecondary: "#94a3b8",
-  textMuted: "#6b7280",
+  textMuted: "#64748b",
   border: "rgba(255,255,255,0.06)",
-  borderFeat: "rgba(139,92,246,0.25)",
+  borderFeat: "rgba(0,240,255,0.25)",
 };
 
 // ─── COUNTER ─────────────────────────────────────────────────────
@@ -77,13 +77,13 @@ function Card({ children, style = {}, featured = false }) {
   return (
     <div
       style={{
-        background: featured ? "rgba(139,92,246,0.05)" : T.card,
-        border: `1px solid ${hov ? (featured ? "rgba(139,92,246,0.5)" : "rgba(139,92,246,0.2)") : (featured ? T.borderFeat : T.border)}`,
+        background: featured ? "rgba(0,240,255,0.04)" : T.card,
+        border: `1px solid ${hov ? (featured ? "rgba(0,240,255,0.4)" : "rgba(0,240,255,0.15)") : (featured ? T.borderFeat : T.border)}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
         transition: "all 200ms ease",
-        boxShadow: hov && featured ? "0 0 40px rgba(139,92,246,0.1)" : "none",
+        boxShadow: hov && featured ? "0 0 40px rgba(0,240,255,0.08)" : "none",
         ...style,
       }}
       onMouseEnter={() => setHov(true)}
@@ -117,7 +117,7 @@ function Faq({ q, a }) {
       style={{
         borderRadius: 16,
         border: `1px solid ${open ? T.borderFeat : T.border}`,
-        background: open ? "rgba(139,92,246,0.04)" : T.card,
+        background: open ? "rgba(0,240,255,0.04)" : T.card,
         transition: "all 200ms ease",
         cursor: "pointer",
         overflow: "hidden",
@@ -143,7 +143,7 @@ function DashboardMockup() {
     { sym: "BNB", price: "$724", change: "+3.2%", up: true },
   ];
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,92,246,0.1)" }}>
+    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,240,255,0.08)" }}>
       {/* Browser bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
         {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
@@ -172,7 +172,7 @@ function DashboardMockup() {
           {coins.map((c, i) => (
             <div key={c.sym} style={{
               padding: "14px 16px", borderRadius: 14,
-              background: i === 0 ? "rgba(139,92,246,0.06)" : T.bg,
+              background: i === 0 ? "rgba(0,240,255,0.05)" : T.bg,
               border: `1px solid ${i === 0 ? T.borderFeat : T.border}`,
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -252,7 +252,7 @@ export default function Landing({ onAuthOpen }) {
       mockupSide: "left",
       mockup: (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(139,92,246,0.08)", border: `1px solid ${T.borderFeat}` }}>
+          <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,240,255,0.06)", border: `1px solid ${T.borderFeat}` }}>
             <div style={{ fontSize: 9, color: T.purple, fontWeight: 800, letterSpacing: ".15em", marginBottom: 8 }}>🤖 NEKO AI</div>
             <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }}>Your BTC is up <span style={{ color: "#00c6ff", fontWeight: 700 }}>+18.4%</span>. Consider taking <span style={{ color: T.purple, fontWeight: 700 }}>15% profits</span> to rebalance ETH allocation.</div>
           </div>
@@ -366,7 +366,7 @@ export default function Landing({ onAuthOpen }) {
       <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
         {/* Background orbs */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: "10%", left: "15%", width: 500, height: 500, background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 60%)", filter: "blur(60px)" }} />
+          <div style={{ position: "absolute", top: "10%", left: "15%", width: 500, height: 500, background: "radial-gradient(circle, rgba(0,240,255,0.1) 0%, transparent 60%)", filter: "blur(60px)" }} />
           <div style={{ position: "absolute", top: "30%", right: "10%", width: 400, height: 400, background: "radial-gradient(circle, rgba(0,198,255,0.08) 0%, transparent 60%)", filter: "blur(60px)" }} />
           {/* Dot grid */}
           <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)", backgroundSize: "36px 36px", maskImage: "linear-gradient(to bottom, black 40%, transparent 90%)", WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 90%)" }} />
@@ -382,7 +382,7 @@ export default function Landing({ onAuthOpen }) {
         <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
           <span style={{ color: T.textPrimary }}>The smartest way to<br />analyze </span>
           <span style={{
-            background: `linear-gradient(135deg, ${T.purple} 0%, ${T.purpleLight} 50%, #00c6ff 100%)`,
+            background: `linear-gradient(135deg, #00f0ff 0%, #00ffff 40%, #38bdf8 100%)`,
             backgroundSize: "200% auto",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -405,12 +405,12 @@ export default function Landing({ onAuthOpen }) {
                 padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
                 background: T.purple, color: "white",
                 fontSize: 15, fontWeight: 800,
-                boxShadow: `0 0 32px rgba(139,92,246,0.4)`,
+                boxShadow: `0 0 32px rgba(0,240,255,0.35)`,
                 transition: "all 200ms ease",
                 display: "flex", alignItems: "center", gap: 8,
               }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(0,240,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.35)"; e.currentTarget.style.transform = ""; }}
             >
               Get Started Free <ArrowRight size={16} />
             </button>
@@ -424,7 +424,7 @@ export default function Landing({ onAuthOpen }) {
               fontSize: 15, fontWeight: isLoggedIn ? 800 : 600,
               border: isLoggedIn ? "none" : `1px solid ${T.border}`,
               transition: "all 200ms ease",
-              boxShadow: isLoggedIn ? "0 0 32px rgba(139,92,246,0.4)" : "none",
+              boxShadow: isLoggedIn ? "0 0 32px rgba(0,240,255,0.35)" : "none",
               display: "flex", alignItems: "center", gap: 8,
             }}
             onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
@@ -457,7 +457,7 @@ export default function Landing({ onAuthOpen }) {
       <section style={{ padding: "0 clamp(20px,5vw,80px) 80px", maxWidth: 1000, margin: "0 auto" }}>
         <Reveal>
           <div style={{ position: "relative" }}>
-            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(139,92,246,0.15) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(0,240,255,0.12) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
             <DashboardMockup />
           </div>
         </Reveal>
@@ -558,7 +558,7 @@ export default function Landing({ onAuthOpen }) {
                   </div>
                 )}
                 {/* Corner glow */}
-                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
+                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(0,240,255,0.15) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
 
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? T.purple : T.textMuted, marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
@@ -577,7 +577,7 @@ export default function Landing({ onAuthOpen }) {
                       fontSize: 14, fontWeight: 700,
                       transition: "all 200ms ease",
                       marginBottom: 32,
-                      boxShadow: plan.featured ? "0 0 24px rgba(139,92,246,0.35)" : "none",
+                      boxShadow: plan.featured ? "0 0 24px rgba(0,240,255,0.3)" : "none",
                     }}
                     onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
@@ -588,7 +588,7 @@ export default function Landing({ onAuthOpen }) {
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {plan.perks.map((perk, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 6, background: plan.featured ? "rgba(139,92,246,0.15)" : T.greenBg, border: `1px solid ${plan.featured ? T.borderFeat : T.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: plan.featured ? "rgba(0,240,255,0.12)" : T.greenBg, border: `1px solid ${plan.featured ? T.borderFeat : T.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           <Check size={10} style={{ color: plan.featured ? T.purple : T.green }} />
                         </div>
                         <span style={{ fontSize: 13, color: T.textSecondary }}>{perk}</span>
@@ -620,8 +620,8 @@ export default function Landing({ onAuthOpen }) {
       {/* ─── FINAL CTA ───────────────────────────────────────── */}
       <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
         <Reveal>
-          <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "rgba(139,92,246,0.06)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, rgba(139,92,246,0.2) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
+          <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "rgba(0,240,255,0.05)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, rgba(0,240,255,0.15) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 20 }}>◆ Get Started</div>
               <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 16px" }}>Ready to analyze smarter?</h2>
@@ -632,18 +632,18 @@ export default function Landing({ onAuthOpen }) {
                 {!isLoggedIn ? (
                   <button
                     onClick={() => onAuthOpen?.("signup")}
-                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(139,92,246,0.4)", transition: "all 200ms" }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(0,240,255,0.35)", transition: "all 200ms" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(0,240,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.35)"; e.currentTarget.style.transform = ""; }}
                   >
                     Create Free Account
                   </button>
                 ) : (
                   <button
                     onClick={() => navigate("/dashboard")}
-                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(139,92,246,0.4)", transition: "all 200ms", display: "flex", alignItems: "center", gap: 8 }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(0,240,255,0.35)", transition: "all 200ms", display: "flex", alignItems: "center", gap: 8 }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(0,240,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.35)"; e.currentTarget.style.transform = ""; }}
                   >
                     Go to Dashboard <ArrowRight size={16} />
                   </button>
