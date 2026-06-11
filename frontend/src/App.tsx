@@ -133,17 +133,10 @@ function AppInner() {
           <Route
             path="/"
             element={
-              isLoggedIn ? (
-                <Dashboard
-                  isWatched={isWatched}
-                  toggleWatchlist={toggleWatchlist}
-                />
-              ) : (
-                <Landing onAuthOpen={(mode = "login") => {
-                  setAuthMode(mode);
-                  setAuthOpen(true);
-                }} />
-              )
+              <Landing onAuthOpen={(mode = "login") => {
+                setAuthMode(mode);
+                setAuthOpen(true);
+              }} />
             }
           />
           <Route
