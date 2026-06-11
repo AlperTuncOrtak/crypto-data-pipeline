@@ -4,9 +4,10 @@ import { X, RotateCcw } from "lucide-react";
 
 interface MotoGameModalProps {
   onClose: () => void;
+  chartData?: { time: string; price: number }[];
 }
 
-export default function MotoGameModal({ onClose }: MotoGameModalProps) {
+export default function MotoGameModal({ onClose, chartData }: MotoGameModalProps) {
   const [score, setScore] = useState(0);
   const [time, setTime] = useState("0:00.0");
   const [isGameOver, setIsGameOver] = useState(false);
@@ -142,6 +143,7 @@ export default function MotoGameModal({ onClose }: MotoGameModalProps) {
           isPaused={isGameOver}
           restartTrigger={restartTrigger}
           onRestart={handleRestart}
+          chartData={chartData}
         />
 
         {/* GAME OVER OVERLAY */}

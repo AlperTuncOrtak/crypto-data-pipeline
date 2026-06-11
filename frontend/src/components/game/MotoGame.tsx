@@ -6,6 +6,7 @@ interface MotoGameProps {
   isPaused: boolean;
   onRestart: () => void;
   restartTrigger: number;
+  chartData?: { time: string; price: number }[];
 }
 
 export default function MotoGame({
@@ -13,6 +14,7 @@ export default function MotoGame({
   onGameOver,
   isPaused,
   restartTrigger,
+  chartData,
 }: MotoGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -26,6 +28,18 @@ export default function MotoGame({
     let height = canvas.clientHeight;
     canvas.width = width;
     canvas.height = height;
+
+    // --- CHART TERRAIN SETUP ---
+    let prices: number[] = [];
+    let minP = 0, maxP = 0;
+    const pixelsPerPoint = 150; // Each data point is 150 pixels apart
+    
+    if (chartData && chartData.length > 1) {
+      prices = chartData.map(d => d.price);
+      minP = Math.min(...prices);
+      maxP = Math.max(...prices);
+      if (maxP === minP) maxP = minP + 1; // avoid division by zero
+    }
 
     // --- GAME STATE ---
     let animationId: number;
@@ -54,14 +68,41 @@ export default function MotoGame({
     window.addEventListener("keyup", handleKeyUp);
 
     // --- TERRAIN ---
-    // Smooth hills using multiple sine waves
     const getTerrainHeight = (x: number) => {
-      return (
-        Math.sin(x / 400) * 120 +
-        Math.sin(x / 150) * 50 +
-        Math.sin(x / 60) * 15 +
-        300
-      );
+      if (prices.length > 1) {
+        // Use chart data
+        let idx = x / pixelsPerPoint;
+        if (idx < 0) idx = 0;
+        
+        // If beyond data, extend flatly
+        if (idx >= prices.length - 1) {
+          idx = prices.length - 1;
+        }
+
+        const i0 = Math.floor(idx);
+        const i1 = Math.min(i0 + 1, prices.length - 1);
+        const fract = idx - i0;
+
+        const p0 = prices[i0];
+        const p1 = prices[i1];
+        
+        // Smooth interpolation (cosine)
+        const mu2 = (1 - Math.cos(fract * Math.PI)) / 2;
+        const pInterp = p0 * (1 - mu2) + p1 * mu2;
+
+        // Map price to height: maxPrice -> 100, minPrice -> 600
+        const yTop = 150;
+        const yBottom = Math.max(600, height * 0.8);
+        return yBottom - ((pInterp - minP) / (maxP - minP)) * (yBottom - yTop);
+      } else {
+        // Fallback to sine waves
+        return (
+          Math.sin(x / 400) * 120 +
+          Math.sin(x / 150) * 50 +
+          Math.sin(x / 60) * 15 +
+          300
+        );
+      }
     };
 
     const getTerrainNormal = (x: number) => {

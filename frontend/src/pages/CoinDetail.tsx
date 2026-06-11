@@ -24,6 +24,7 @@ import {
 import { AnimatedPrice } from "../components/ui/AnimatedPrice";
 import LightweightCandleChart from "../components/market/LightweightCandleChart";
 import { useAuth } from "../hooks/useAuth";
+import MotoGameModal from "../components/game/MotoGameModal";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 
@@ -377,6 +378,7 @@ export default function CoinDetail() {
   const navigate = useNavigate();
   const [range, setRange] = useState("24h");
   const [chartType, setChartType] = useState("simple");
+  const [isGameOpen, setIsGameOpen] = useState(false);
 
   const {
     data: coin,
@@ -824,6 +826,28 @@ export default function CoinDetail() {
             >
               <CandlestickChart size={13} /> Pro 🕯️
             </button>
+            <button
+              onClick={() => setIsGameOpen(true)}
+              style={{
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
+                background: "linear-gradient(90deg, rgba(139,92,246,0.15) 0%, rgba(0,240,255,0.15) 100%)",
+                border: "1px solid rgba(139,92,246,0.3)",
+                color: "#fff",
+                cursor: "pointer", transition: "all 0.15s",
+                marginLeft: 10,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.05)";
+                e.currentTarget.style.boxShadow = "0 0 15px rgba(0,240,255,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              🏍️ Ride this chart
+            </button>
           </div>
         </div>
 
@@ -919,6 +943,8 @@ export default function CoinDetail() {
         <SectionTitle>Latest News</SectionTitle>
         <CryptoNews symbol={coin.symbol} />
       </div>
+      
+      {isGameOpen && <MotoGameModal onClose={() => setIsGameOpen(false)} chartData={chartData} />}
     </div>
   );
 }
