@@ -32,17 +32,13 @@ export default function MotoGame({
     // --- CHART TERRAIN SETUP ---
     let prices: number[] = [];
     let minP = 0, maxP = 0;
-    const pixelsPerPoint = 1000; // Much smoother slopes
-    const runwayLength = 5; // Flat runway at start
+    const pixelsPerPoint = 150; // Each data point is 150 pixels apart
     
     if (chartData && chartData.length > 1) {
-      const validPrices = chartData.map(d => Number(d.price)).filter(p => !isNaN(p));
-      if (validPrices.length > 0) {
-        prices = Array(runwayLength).fill(validPrices[0]).concat(validPrices);
-        minP = Math.min(...prices);
-        maxP = Math.max(...prices);
-        if (maxP === minP) maxP = minP + 1; // avoid division by zero
-      }
+      prices = chartData.map(d => d.price);
+      minP = Math.min(...prices);
+      maxP = Math.max(...prices);
+      if (maxP === minP) maxP = minP + 1; // avoid division by zero
     }
 
     // --- GAME STATE ---
@@ -201,9 +197,20 @@ export default function MotoGame({
 
     // --- MOTORCYCLE SETUP ---
     // A wireframe bike: 2 wheels and a chassis center
-    const w1 = new Particle(100, 100, WHEEL_RADIUS); // back wheel
-    const w2 = new Particle(180, 100, WHEEL_RADIUS); // front wheel
-    const chassis = new Particle(140, 60, 10, true); // rider/chassis head
+    // Spawn them exactly above the starting terrain so they don't die from massive drops
+    const spawnX = 140;
+    let spawnY = 300;
+    if (prices.length > 1) {
+      // Find the starting height based on the new chart data
+      const ty = getTerrainHeight(spawnX);
+      spawnY = ty;
+    } else {
+      spawnY = getTerrainHeight(spawnX);
+    }
+
+    const w1 = new Particle(100, spawnY - 30, WHEEL_RADIUS); // back wheel
+    const w2 = new Particle(180, spawnY - 30, WHEEL_RADIUS); // front wheel
+    const chassis = new Particle(140, spawnY - 80, 10, true); // rider/chassis head
 
     const springs = [
       new Spring(w1, w2, 80, 0.8), // wheelbase

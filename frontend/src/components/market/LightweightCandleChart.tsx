@@ -2,10 +2,9 @@ import React, { useEffect, useRef, useMemo } from 'react';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 
 function aggregateToOHLC(data: any[], targetBuckets = 60) {
-  const validData = data.filter(d => d && d.time && d.price != null && !isNaN(Number(d.price)) && !isNaN(new Date(d.time).getTime()));
-  if (validData.length === 0) return [];
+  if (!data || data.length === 0) return [];
 
-  const sorted = [...validData].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+  const sorted = [...data].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
   const startTime = new Date(sorted[0].time).getTime();
   const endTime = new Date(sorted[sorted.length - 1].time).getTime();
   
@@ -23,10 +22,10 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
     const t = new Date(point.time).getTime();
     let idx = Math.floor((t - startTime) / interval);
     if (idx >= actualBuckets) idx = actualBuckets - 1;
-    buckets[idx].prices.push(Number(point.price));
+    buckets[idx].prices.push(point.price);
   });
 
-  let lastValidClose = Number(sorted[0].price);
+  let lastValidClose = sorted[0].price;
   let lastTime = 0;
 
   return buckets.map(b => {
@@ -71,56 +70,63 @@ export default function LightweightCandleChart({ data }: { data: any[] }) {
   useEffect(() => {
     if (!chartContainerRef.current || ohlcData.length === 0) return;
 
-    chartContainerRef.current.innerHTML = '';
-
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: 'rgba(255, 255, 255, 0.5)',
-      },
-      grid: {
-        vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
-        horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-      },
-      timeScale: {
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        timeVisible: true,
-        secondsVisible: false,
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: chartContainerRef.current.clientHeight,
-    });
-
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#2ecc71',
-      downColor: '#e74c3c',
-      borderVisible: false,
-      wickUpColor: '#2ecc71',
-      wickDownColor: '#e74c3c',
-    });
+    let chart: any;
 
     try {
+      chartContainerRef.current.innerHTML = '';
+
+      chart = createChart(chartContainerRef.current, {
+        layout: {
+          background: { type: ColorType.Solid, color: 'transparent' },
+          textColor: 'rgba(255, 255, 255, 0.5)',
+        },
+        grid: {
+          vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
+          horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        },
+        crosshair: {
+          mode: CrosshairMode.Normal,
+        },
+        rightPriceScale: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+        },
+        timeScale: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          timeVisible: true,
+          secondsVisible: false,
+        },
+        width: chartContainerRef.current.clientWidth,
+        height: chartContainerRef.current.clientHeight,
+      });
+
+      const candlestickSeries = chart.addCandlestickSeries({
+        upColor: '#2ecc71',
+        downColor: '#e74c3c',
+        borderVisible: false,
+        wickUpColor: '#2ecc71',
+        wickDownColor: '#e74c3c',
+      });
+
       candlestickSeries.setData(ohlcData);
       chart.timeScale().fitContent();
+
     } catch (err) {
-      console.error("LightweightCharts failed to set data:", err);
+      console.error("LightweightCharts initialization failed:", err);
     }
 
     const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current?.clientWidth });
+      if (chart && chartContainerRef.current) {
+        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      }
     };
 
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      chart.remove();
+      if (chart) {
+        chart.remove();
+      }
     };
   }, [ohlcData]);
 
