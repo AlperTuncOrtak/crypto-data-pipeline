@@ -8,6 +8,7 @@ import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
   Check, ChevronDown, TrendingUp, Zap, Globe, Star,
 } from "lucide-react";
+import MotoGameModal from "../components/game/MotoGameModal";
 
 // ─── THEME ───────────────────────────────────────────────────────
 const T = {
@@ -202,6 +203,23 @@ export default function Landing({ onAuthOpen }) {
   const { isLoggedIn } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const featuresRef = useRef<HTMLDivElement>(null);
+  
+  // MotoGame Easter Egg
+  const [isGameOpen, setIsGameOpen] = useState(false);
+  const clickCount = useRef(0);
+  const clickTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSecretClick = () => {
+    clickCount.current += 1;
+    if (clickCount.current >= 3) {
+      setIsGameOpen(true);
+      clickCount.current = 0;
+    }
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    clickTimer.current = setTimeout(() => {
+      clickCount.current = 0;
+    }, 1000); // Need 3 clicks within 1 second
+  };
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -710,9 +728,16 @@ export default function Landing({ onAuthOpen }) {
               </span>
             ))}
           </div>
-          <div style={{ fontSize: 12, color: T.textMuted }}>© 2025 CryptoNeko. Not financial advice.</div>
+          <div 
+            style={{ fontSize: 12, color: T.textMuted, cursor: "pointer", userSelect: "none" }}
+            onClick={handleSecretClick}
+          >
+            © 2025 CryptoNeko. Not financial advice.
+          </div>
         </div>
       </footer>
+      
+      {isGameOpen && <MotoGameModal onClose={() => setIsGameOpen(false)} />}
     </div>
   );
 }
