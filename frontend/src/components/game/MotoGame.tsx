@@ -147,9 +147,11 @@ export default function MotoGame({
         const ty = getTerrainHeight(this.x);
         if (this.y + this.radius > ty) {
           if (this.isChassis) {
-            // CRASH
-            isGameOver = true;
-            onGameOver();
+            // Give 1.5 seconds of invulnerability at spawn so physics can settle
+            if (Date.now() - startTime > 1500) {
+              isGameOver = true;
+              onGameOver();
+            }
           }
 
           // Push out of ground
@@ -195,16 +197,17 @@ export default function MotoGame({
 
     // --- MOTORCYCLE SETUP ---
     const spawnX = 140;
-    let spawnY = 300;
-    if (prices.length > 1) {
-      spawnY = getTerrainHeight(spawnX);
-    } else {
-      spawnY = getTerrainHeight(spawnX);
-    }
+    
+    // Find precise terrain heights for all parts to prevent massive drops
+    const tyBack = getTerrainHeight(100);
+    const tyFront = getTerrainHeight(180);
+    const tyChassis = getTerrainHeight(140);
 
-    const w1 = new Particle(100, spawnY - 30, WHEEL_RADIUS); // back wheel
-    const w2 = new Particle(180, spawnY - 30, WHEEL_RADIUS); // front wheel
-    const chassis = new Particle(140, spawnY - 80, 10, true); // rider/chassis head
+    const w1 = new Particle(100, tyBack - WHEEL_RADIUS, WHEEL_RADIUS); // back wheel
+    const w2 = new Particle(180, tyFront - WHEEL_RADIUS, WHEEL_RADIUS); // front wheel
+    
+    // Position chassis above ground. Springs are length 65, wheel radius is 18
+    const chassis = new Particle(140, tyChassis - 65 - WHEEL_RADIUS, 10, true); // rider/chassis head
 
     const springs = [
       new Spring(w1, w2, 80, 0.8), // wheelbase
