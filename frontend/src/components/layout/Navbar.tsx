@@ -184,18 +184,18 @@ function NavItem({ item, isActive }) {
           fontSize: 13,
           fontWeight: isActive ? 600 : 500,
           color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)",
-          background: isActive ? "rgba(245,158,11,0.08)" : "transparent",
+          background: isActive ? "var(--accent-soft)" : "transparent",
           border: isActive
-            ? "1px solid rgba(245,158,11,0.25)"
+            ? "1px solid var(--accent-border)"
             : "1px solid transparent",
-          boxShadow: isActive ? "0 0 16px rgba(245,158,11,0.12)" : "none",
+          boxShadow: isActive ? "0 0 16px rgba(0,240,255,0.2)" : "none",
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           backdropFilter: isActive ? "blur(8px)" : "none",
         }}
         onMouseEnter={(e) => {
           if (!isActive) {
             e.currentTarget.style.color = "var(--accent)";
-            e.currentTarget.style.background = "rgba(245,158,11,0.04)";
+            e.currentTarget.style.background = "rgba(0,240,255,0.04)";
           }
         }}
         onMouseLeave={(e) => {
@@ -229,12 +229,12 @@ function NavItem({ item, isActive }) {
             borderRadius: 16,
             overflow: "hidden",
             minWidth: 280,
-            background: "rgba(10,10,12,0.85)",
+            background: "rgba(2,6,23,0.85)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
             border: "1px solid rgba(255,255,255,0.08)",
             boxShadow:
-              "0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(245,166,35,0.06), inset 0 1px 0 rgba(255,255,255,0.05)",
+              "0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,240,255,0.1), inset 0 1px 0 rgba(255,255,255,0.05)",
             opacity: open ? 1 : 0,
             transform: open
               ? "translateY(0) scale(1)"
@@ -599,13 +599,13 @@ export default function Navbar({
           zIndex: 100,
           padding: "10px 20px",
           transition: "all 0.3s ease",
-          background: scrolled ? "rgba(12, 12, 22, 0.85)" : "rgba(12, 12, 22, 0.65)",
+          background: scrolled ? "rgba(2, 6, 23, 0.85)" : "rgba(2, 6, 23, 0.5)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
           borderBottom: scrolled
-            ? "1px solid rgba(245,158,11,0.15)"
+            ? "1px solid var(--accent-border)"
             : "1px solid rgba(255,255,255,0.06)",
-          boxShadow: scrolled ? "0 12px 48px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(245,158,11,0.05)" : "none",
+          boxShadow: scrolled ? "0 12px 48px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(0,240,255,0.1)" : "none",
         }}
       >
         <div

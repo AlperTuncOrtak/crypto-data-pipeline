@@ -106,9 +106,9 @@ function AuthInput({ icon: Icon, rightEl, ...props }) {
           width: "100%",
           padding: rightEl ? "13px 44px 13px 40px" : "13px 15px 13px 40px",
           background: focused
-            ? "rgba(245,166,35,0.08)"
+            ? "var(--accent-soft)"
             : "rgba(255,255,255,0.04)",
-          border: `1px solid ${focused ? "rgba(245,166,35,0.4)" : "rgba(255,255,255,0.06)"}`,
+          border: `1px solid ${focused ? "var(--accent-border)" : "rgba(255,255,255,0.06)"}`,
           borderRadius: 16,
           color: "#fff",
           fontSize: 13,
@@ -368,7 +368,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
       >
         <div
           style={{
-            background: "rgba(10, 13, 20, 0.97)",
+            background: "rgba(2, 6, 23, 0.95)",
             backdropFilter: "blur(24px)",
             borderRadius: 24,
             border: "1px solid rgba(255,255,255,0.05)",
@@ -380,7 +380,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
             style={{
               height: 1,
               background:
-                "linear-gradient(90deg, transparent, rgba(245,166,35,0.4), transparent)",
+                "linear-gradient(90deg, transparent, var(--accent), transparent)",
             }}
           />
 

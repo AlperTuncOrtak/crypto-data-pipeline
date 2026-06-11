@@ -4,23 +4,30 @@
    DARK THEME (default)
 ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg-base:     #000000;
-  --bg-surface:  #0a0a0a;
-  --bg-elevated: #111111;
-  --bg-card:     #0d0d0d;
+  /* Deep Navy Backgrounds */
+  --bg-base:     #020617;
+  --bg-surface:  #081028;
+  --bg-elevated: #0f172a;
+  --bg-card:     #0b1227;
 
+  /* Borders & Glass */
   --border:      rgba(255,255,255,0.06);
   --border-soft: rgba(255,255,255,0.03);
-  --border-glow: rgba(245, 158, 11, 0.15);
+  --border-glow: rgba(0, 240, 255, 0.15);
 
   --text-primary:   #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --text-muted:     #71717A;
+  --text-secondary: #94A3B8;
+  --text-muted:     #64748B;
 
-  --accent:         #F59E0B;
-  --accent-hover:   #FBBF24;
-  --accent-soft:    rgba(245, 158, 11, 0.12);
-  --accent-border:  rgba(245, 158, 11, 0.25);
+  /* Neon Cyan Accent */
+  --accent:         #00F0FF;
+  --accent-hover:   #00FFFF;
+  --accent-soft:    rgba(0, 240, 255, 0.12);
+  --accent-border:  rgba(0, 240, 255, 0.25);
+
+  /* Neon Purple Secondary Accent */
+  --secondary:      #B026FF;
+  --secondary-soft: rgba(176, 38, 255, 0.12);
 
   --positive:       #2DD4BF;
   --positive-soft:  rgba(45, 212, 191, 0.12);
@@ -28,17 +35,35 @@
   --negative-soft:  rgba(244, 63, 94, 0.12);
 
   /* Mobile nav */
-  --nav-overlay: rgba(2, 2, 4, 0.95);
+  --nav-overlay: rgba(2, 6, 23, 0.95);
   
   --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.glass-card {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.01), 0 8px 32px rgba(0,0,0,0.4);
+}
+
 .glass-panel {
-  background: rgba(10, 10, 15, 0.4);
+  background: rgba(2, 6, 23, 0.6);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 20px rgba(255,255,255,0.01), 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.neon-text-cyan {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0,240,255,0.5), 0 0 20px rgba(0,240,255,0.3);
+}
+
+.neon-text-purple {
+  color: var(--secondary);
+  text-shadow: 0 0 10px rgba(176,38,255,0.5), 0 0 20px rgba(176,38,255,0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════

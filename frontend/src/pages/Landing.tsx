@@ -204,7 +204,7 @@ export default function Landing({ onAuthOpen }) {
   return (
     <div
       style={{
-        background: "#07070f",
+        background: "var(--bg-base)",
         color: "#f0f0f0",
         minHeight: "100vh",
         overflowX: "hidden",
@@ -251,7 +251,7 @@ export default function Landing({ onAuthOpen }) {
           justifyContent: "space-between",
           padding: "0 clamp(16px, 4vw, 48px)",
           height: 58,
-          background: scrollY > 30 ? "rgba(7,7,15,.94)" : "transparent",
+          background: scrollY > 30 ? "rgba(2, 6, 23, .94)" : "transparent",
           backdropFilter: scrollY > 30 ? "blur(20px)" : "none",
           borderBottom:
             scrollY > 30 ? "1px solid rgba(255,255,255,.06)" : "none",
@@ -493,9 +493,16 @@ export default function Landing({ onAuthOpen }) {
           
           {/* Subtle Center Glow */}
           <div style={{
-            position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)",
+            position: "absolute", top: "10%", left: "30%", transform: "translateX(-50%)",
             width: 800, height: 500,
-            background: "radial-gradient(ellipse, rgba(245,166,35,.06) 0%, transparent 60%)",
+            background: "radial-gradient(ellipse, rgba(0,240,255,.08) 0%, transparent 60%)",
+            filter: "blur(60px)",
+            borderRadius: "50%"
+          }} />
+          <div style={{
+            position: "absolute", top: "20%", left: "70%", transform: "translateX(-50%)",
+            width: 800, height: 500,
+            background: "radial-gradient(ellipse, rgba(176,38,255,.08) 0%, transparent 60%)",
             filter: "blur(60px)",
             borderRadius: "50%"
           }} />

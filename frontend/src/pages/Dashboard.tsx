@@ -56,7 +56,7 @@ function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouse
       className={className}
       style={{
         ...bentoBase,
-        borderColor: hov ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.05)",
+        borderColor: hov ? "var(--accent-border)" : "rgba(255,255,255,0.05)",
         backgroundColor: hov ? "rgba(255,255,255,0.025)" : "rgba(255,255,255,0.02)",
         transform: hov ? "scale(1.01)" : "scale(1)",
         ...style,
@@ -83,7 +83,7 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
           width: 120,
           height: 120,
           background: accent 
-            ? "radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%)" 
+            ? "radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)" 
             : "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)",
           filter: "blur(20px)",
           transition: "all 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
@@ -108,13 +108,13 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
               alignItems: "center",
               justifyContent: "center",
               background: accent
-                ? "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))"
+                ? "linear-gradient(135deg, rgba(0,240,255,0.15), rgba(0,240,255,0.05))"
                 : "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01))",
               border: accent 
-                ? "1px solid rgba(245,166,35,0.2)" 
+                ? "1px solid rgba(0,240,255,0.2)" 
                 : "1px solid rgba(255,255,255,0.05)",
               color: accent ? "var(--accent)" : "var(--text-secondary)",
-              boxShadow: accent ? "0 4px 12px rgba(245,158,11,0.1)" : "0 4px 12px rgba(0,0,0,0.2)",
+              boxShadow: accent ? "0 4px 12px rgba(0,240,255,0.1)" : "0 4px 12px rgba(0,0,0,0.2)",
               transition: "all 0.4s ease",
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
@@ -157,7 +157,7 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
               color: accent ? "var(--text-primary)" : "var(--text-primary)",
               letterSpacing: "-0.03em",
               lineHeight: 1,
-              textShadow: accent ? "0 0 24px rgba(245,166,35,0.2)" : "none",
+              textShadow: accent ? "0 0 24px rgba(0,240,255,0.2)" : "none",
             }}
           >
             {value}
@@ -236,7 +236,7 @@ function FearGreedGauge({ coins }) {
 
     if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
     else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
-    else if (val <= 60) { setText("Neutral"); setColor("var(--accent)"); setBg("rgba(245,158,11,0.1)"); }
+    else if (val <= 60) { setText("Neutral"); setColor("var(--accent)"); setBg("rgba(0,240,255,0.1)"); }
     else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
     else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
     
@@ -463,9 +463,9 @@ export default function Dashboard() {
             <span>Live data from</span>
             {[{ label: "Gate.io", href: "https://www.gate.io/" }, { label: "Bybit", href: "https://www.bybit.com/" }, { label: "OKX", href: "https://www.okx.com/" }].map((s) => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                style={{ color: "rgba(245,166,35,0.7)", textDecoration: "none", fontWeight: 600, transition: "color 0.15s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(245,166,35,0.7)")}
+                style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600, transition: "color 0.15s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--accent)")}
               >
                 {s.label}
               </a>
@@ -516,7 +516,7 @@ export default function Dashboard() {
           {/* Trending */}
           <BentoCard className="lg:col-span-2" style={{ padding: "22px 24px", minHeight: 160 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,158,11,0.05))", border: "1px solid rgba(245,166,35,0.2)" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,240,255,0.05))", border: "1px solid var(--accent-border)" }}>
                 <Flame size={13} style={{ color: "var(--accent)" }} />
               </div>
               <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
