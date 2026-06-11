@@ -24,20 +24,22 @@ export default function MotoGame({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let width = canvas.clientWidth;
-    let height = canvas.clientHeight;
+    let width = canvas.clientWidth || window.innerWidth;
+    let height = canvas.clientHeight || window.innerHeight;
     canvas.width = width;
     canvas.height = height;
 
     // --- CHART TERRAIN SETUP ---
     let prices: number[] = [];
-    let minP = 0, maxP = 0;
-    const pixelsPerPoint = 150; // Each data point is 150 pixels apart
+    let minP = Infinity, maxP = -Infinity;
+    const pixelsPerPoint = 300; // Spread points out so slopes aren't vertical walls
     
     if (chartData && chartData.length > 1) {
       prices = chartData.map(d => d.price);
-      minP = Math.min(...prices);
-      maxP = Math.max(...prices);
+      for (let i = 0; i < prices.length; i++) {
+        if (prices[i] < minP) minP = prices[i];
+        if (prices[i] > maxP) maxP = prices[i];
+      }
       if (maxP === minP) maxP = minP + 1; // avoid division by zero
     }
 
@@ -90,10 +92,11 @@ export default function MotoGame({
         const mu2 = (1 - Math.cos(fract * Math.PI)) / 2;
         const pInterp = p0 * (1 - mu2) + p1 * mu2;
 
-        // Map price to height: maxPrice -> 100, minPrice -> 600
-        const yTop = 150;
+        // Map price to height
+        // To make it drivable, we restrict the total height variation to ~400 pixels
+        const yRange = 400;
         const yBottom = Math.max(600, height * 0.8);
-        return yBottom - ((pInterp - minP) / (maxP - minP)) * (yBottom - yTop);
+        return yBottom - ((pInterp - minP) / (maxP - minP)) * yRange;
       } else {
         // Fallback to sine waves
         return (
