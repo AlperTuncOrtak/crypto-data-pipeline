@@ -88,7 +88,7 @@ function AppInner() {
       style={{
         minHeight: "100vh",
         backgroundColor: "var(--bg-base)",
-        overflowX: "hidden",
+        overflowX: "clip",
         position: "relative",
       }}
     >

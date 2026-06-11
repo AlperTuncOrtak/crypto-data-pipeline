@@ -207,7 +207,7 @@ export default function Landing({ onAuthOpen }) {
         background: "var(--bg-base)",
         color: "#f0f0f0",
         minHeight: "100vh",
-        overflowX: "hidden",
+        overflowX: "clip",
       }}
     >
       <style>{`
