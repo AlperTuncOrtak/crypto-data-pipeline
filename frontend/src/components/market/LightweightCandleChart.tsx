@@ -30,7 +30,10 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
 
   return buckets.map(b => {
     let t = Math.floor(b.time / 1000);
-    if (t <= lastTime) t = lastTime + 1; // lightweight-charts requires strictly increasing time
+    // LightweightCharts requires strictly ascending, unique times
+    if (t <= lastTime) {
+      t = lastTime + 1;
+    }
     lastTime = t;
 
     if (b.prices.length === 0) {
@@ -101,8 +104,12 @@ export default function LightweightCandleChart({ data }: { data: any[] }) {
       wickDownColor: '#e74c3c',
     });
 
-    candlestickSeries.setData(ohlcData);
-    chart.timeScale().fitContent();
+    try {
+      candlestickSeries.setData(ohlcData);
+      chart.timeScale().fitContent();
+    } catch (err) {
+      console.error("LightweightCharts failed to set data:", err);
+    }
 
     const handleResize = () => {
       chart.applyOptions({ width: chartContainerRef.current?.clientWidth });
