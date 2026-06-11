@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import MotoGame from "./MotoGame";
 import { X, RotateCcw } from "lucide-react";
 
@@ -21,21 +21,21 @@ export default function MotoGameModal({ onClose, chartData }: MotoGameModalProps
     };
   }, []);
 
-  const handleScoreUpdate = (dist: number, timeStr: string) => {
+  const handleScoreUpdate = useCallback((dist: number, timeStr: string) => {
     setScore(dist);
     setTime(timeStr);
-  };
+  }, []);
 
-  const handleGameOver = () => {
+  const handleGameOver = useCallback(() => {
     setIsGameOver(true);
-  };
+  }, []);
 
-  const handleRestart = () => {
+  const handleRestart = useCallback(() => {
     setIsGameOver(false);
     setScore(0);
     setTime("0:00.0");
     setRestartTrigger(prev => prev + 1);
-  };
+  }, []);
 
   return (
     <div
