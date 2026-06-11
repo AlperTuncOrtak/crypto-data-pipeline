@@ -1139,186 +1139,145 @@ export default function Landing({ onAuthOpen }) {
           </h2>
         </div>
 
-        <div className="relative mx-auto mt-32 pb-40" style={{ maxWidth: 1100 }}>
-          {[
-            {
-              badge: "LIVE DATA",
-              title: "Real-Time Market Tracking",
-              desc: "Track 2,500+ cryptocurrencies with blazing fast updates. Never miss a volume spike or a whale movement again with our interactive heatmap.",
-              color: "#00f0ff",
-              icon: BarChart2,
-            },
-            {
-              badge: "NEKO AI",
-              title: "AI Portfolio Manager",
-              desc: "Get deep insights powered by Groq Llama 3.3. Our AI agent analyzes your holdings, detects correlation risks, and gives actionable rebalancing recommendations.",
-              color: "#b026ff",
-              icon: Brain,
-            },
-            {
-              badge: "TAX & REPORTS",
-              title: "Automated Tax Calculation",
-              desc: "Connect your Ethereum wallets or import Binance CSVs. We automatically calculate your FIFO P&L and generate exportable tax reports in seconds.",
-              color: "#2ecc71",
-              icon: Wallet,
+        <div className="relative mx-auto mt-32 pb-40" style={{ maxWidth: 1200 }}>
+          <style>{`
+            .stagger-card {
+              opacity: 0;
+              transform: translateY(40px);
             }
-          ].map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={i}
-                style={{
-                  position: "sticky",
-                  top: `calc(120px + ${i * 40}px)`,
-                  minHeight: "60vh",
-                  marginBottom: i === 2 ? 0 : "80vh",
-                  padding: "80px",
-                  borderRadius: "40px",
-                  background: "rgba(2, 6, 23, 0.95)",
-                  backdropFilter: "blur(60px)",
-                  WebkitBackdropFilter: "blur(60px)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  boxShadow: `0 40px 100px rgba(0,0,0,0.9), inset 0 2px 0 0 rgba(255,255,255,0.05), inset 0 0 0 1px ${feature.color}30`,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  gap: 32,
-                  zIndex: i + 10,
-                  transformOrigin: "top center",
-                  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-                }}
-              >
-                <div style={{
-                  position: "absolute",
-                  top: "-20%", right: "-10%",
-                  width: "80%", height: "140%",
-                  background: `radial-gradient(circle, ${feature.color}15 0%, transparent 60%)`,
-                  borderRadius: "50%",
-                  filter: "blur(60px)",
-                  pointerEvents: "none",
-                  zIndex: 0,
-                }} />
+            .is-visible .stagger-card {
+              animation: fadeUpStagger 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            @keyframes fadeUpStagger {
+              to { opacity: 1; transform: translateY(0); }
+            }
+            .stagger-card:nth-child(1) { animation-delay: 0ms; }
+            .stagger-card:nth-child(2) { animation-delay: 150ms; }
+            .stagger-card:nth-child(3) { animation-delay: 300ms; }
+          `}</style>
+          
+          <Reveal direction="up" threshold={0.2}>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              gap: "24px",
+              className: "stagger-grid"
+            }}>
+              {[
+                {
+                  badge: "LIVE DATA",
+                  title: "Real-Time Tracking",
+                  desc: "Track 2,500+ cryptocurrencies with blazing fast updates. Interactive heatmap & volume alerts.",
+                  color: "#00f0ff",
+                  icon: BarChart2,
+                },
+                {
+                  badge: "NEKO AI",
+                  title: "AI Portfolio Manager",
+                  desc: "Deep insights powered by Llama 3.3. Analyzes holdings, detects risks & suggests rebalancing.",
+                  color: "#b026ff",
+                  icon: Brain,
+                },
+                {
+                  badge: "TAX & REPORTS",
+                  title: "Automated Tax",
+                  desc: "Connect wallets or import CSVs. We calculate FIFO P&L and generate exportable tax reports.",
+                  color: "#2ecc71",
+                  icon: Wallet,
+                }
+              ].map((feature, i) => {
+                const Icon = feature.icon;
+                return (
+                  <div
+                    key={i}
+                    className="stagger-card"
+                    style={{
+                      position: "relative",
+                      padding: "40px",
+                      borderRadius: "24px",
+                      background: "rgba(2, 6, 23, 0.7)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      boxShadow: `0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)`,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 20,
+                      overflow: "hidden",
+                      transition: "transform 0.3s ease, border-color 0.3s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.borderColor = `${feature.color}50`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
+                    }}
+                  >
+                    <div style={{
+                      position: "absolute",
+                      top: -60, right: -60,
+                      width: 160, height: 160,
+                      background: `radial-gradient(circle, ${feature.color}25 0%, transparent 70%)`,
+                      borderRadius: "50%",
+                      filter: "blur(30px)",
+                      pointerEvents: "none",
+                      zIndex: 0,
+                    }} />
 
-                <div style={{
-                  position: "relative",
-                  zIndex: 1,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "8px 24px",
-                  borderRadius: 100,
-                  background: `${feature.color}15`,
-                  border: `1px solid ${feature.color}40`,
-                  color: feature.color,
-                  fontSize: 16,
-                  fontWeight: 800,
-                  letterSpacing: ".15em",
-                  width: "max-content",
-                  boxShadow: `0 0 30px ${feature.color}30`
-                }}>
-                  <Icon size={20} />
-                  {feature.badge}
-                </div>
-                
-                <h3 style={{
-                  position: "relative",
-                  zIndex: 1,
-                  fontSize: "clamp(48px, 6vw, 72px)",
-                  fontWeight: 900,
-                  color: "white",
-                  margin: 0,
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.1
-                }}>
-                  {feature.title}
-                </h3>
-                
-                <p style={{
-                  position: "relative",
-                  zIndex: 1,
-                  fontSize: "clamp(20px, 2.5vw, 28px)",
-                  color: "rgba(255, 255, 255, 0.6)",
-                  lineHeight: 1.6,
-                  maxWidth: "900px",
-                  margin: 0
-                }}>
-                  {feature.desc}
-                </p>
-              </div>
-            );
-          })}
+                    <div style={{
+                      position: "relative",
+                      zIndex: 1,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "6px 14px",
+                      borderRadius: 100,
+                      background: `${feature.color}15`,
+                      border: `1px solid ${feature.color}30`,
+                      color: feature.color,
+                      fontSize: 11,
+                      fontWeight: 800,
+                      letterSpacing: ".1em",
+                      width: "max-content"
+                    }}>
+                      <Icon size={14} />
+                      {feature.badge}
+                    </div>
+                    
+                    <h3 style={{
+                      position: "relative",
+                      zIndex: 1,
+                      fontSize: "clamp(24px, 2vw, 32px)",
+                      fontWeight: 900,
+                      color: "white",
+                      margin: 0,
+                      letterSpacing: "-0.02em",
+                      lineHeight: 1.1
+                    }}>
+                      {feature.title}
+                    </h3>
+                    
+                    <p style={{
+                      position: "relative",
+                      zIndex: 1,
+                      fontSize: "15px",
+                      color: "rgba(255, 255, 255, 0.5)",
+                      lineHeight: 1.6,
+                      margin: 0
+                    }}>
+                      {feature.desc}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
         </div>
         </Reveal>
       </section>
-      {/* SUPPORTED CHAINS MARQUEE */}
-      <section style={{ padding: "80px 0", overflow: "hidden", position: "relative", background: "rgba(2,6,23,0.4)" }}>
-        <Reveal direction="up">
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: "var(--accent)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
-              40+ SUPPORTED CHAINS
-            </span>
-            <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 900, marginTop: 16, letterSpacing: "-0.03em" }}>
-              Every network. One dashboard.
-            </h2>
-          </div>
-          
-          <div style={{
-            position: "relative", width: "100%", display: "flex", flexDirection: "column", gap: 20, overflow: "hidden",
-            maskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-            WebkitMaskImage: "-webkit-linear-gradient(left, transparent, black 15%, black 85%, transparent)"
-          }}>
-            {/* Top Row (Left to Right) */}
-            <div className="marquee-track" style={{ animation: "marquee 40s linear infinite" }}>
-              {[
-                { name: "Ethereum", color: "#627EEA" }, { name: "Solana", color: "#14F195" }, { name: "Arbitrum", color: "#28A0F0" },
-                { name: "Optimism", color: "#FF0420" }, { name: "Polygon", color: "#8247E5" }, { name: "Base", color: "#0052FF" },
-                { name: "Avalanche", color: "#E84142" }, { name: "BSC", color: "#F3BA2F" },
-                { name: "Ethereum", color: "#627EEA" }, { name: "Solana", color: "#14F195" }, { name: "Arbitrum", color: "#28A0F0" },
-                { name: "Optimism", color: "#FF0420" }, { name: "Polygon", color: "#8247E5" }, { name: "Base", color: "#0052FF" },
-                { name: "Avalanche", color: "#E84142" }, { name: "BSC", color: "#F3BA2F" }
-              ].map((chain, i) => (
-                <div key={i} style={{
-                  display: "flex", alignItems: "center", gap: 12,
-                  padding: "16px 32px",
-                  margin: "0 10px",
-                  borderRadius: "100px",
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  boxShadow: `inset 0 0 20px ${chain.color}05`,
-                }}>
-                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: chain.color, boxShadow: `0 0 10px ${chain.color}` }} />
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "white" }}>{chain.name}</span>
-                </div>
-              ))}
-            </div>
 
-            {/* Bottom Row (Right to Left / Reverse) */}
-            <div className="marquee-track" style={{ animation: "marqueeReverse 45s linear infinite" }}>
-              {[
-                { name: "Fantom", color: "#1969FF" }, { name: "Cronos", color: "#002D74" }, { name: "Mantle", color: "#65B3AE" },
-                { name: "Linea", color: "#121212" }, { name: "ZkSync", color: "#8C8DFC" }, { name: "Blast", color: "#FCFC03" },
-                { name: "Scroll", color: "#FFEEDA" }, { name: "Celo", color: "#35D07F" },
-                { name: "Fantom", color: "#1969FF" }, { name: "Cronos", color: "#002D74" }, { name: "Mantle", color: "#65B3AE" },
-                { name: "Linea", color: "#121212" }, { name: "ZkSync", color: "#8C8DFC" }, { name: "Blast", color: "#FCFC03" },
-                { name: "Scroll", color: "#FFEEDA" }, { name: "Celo", color: "#35D07F" }
-              ].map((chain, i) => (
-                <div key={i} style={{
-                  display: "flex", alignItems: "center", gap: 12,
-                  padding: "16px 32px",
-                  margin: "0 10px",
-                  borderRadius: "100px",
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  boxShadow: `inset 0 0 20px ${chain.color}05`,
-                }}>
-                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: chain.color, boxShadow: `0 0 10px ${chain.color}` }} />
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "white" }}>{chain.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      </section>
 
 
 
