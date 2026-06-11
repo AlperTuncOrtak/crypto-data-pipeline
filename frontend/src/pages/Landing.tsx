@@ -456,34 +456,6 @@ export default function Landing({ onAuthOpen }) {
         </Reveal>
       </section>
 
-      {/* ─── PRICE TICKER ────────────────────────────────────── */}
-      <div style={{ borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`, overflow: "hidden", padding: "12px 0", marginBottom: 120 }}>
-        <div style={{ display: "flex", width: "max-content", animation: "lp-ticker 30s linear infinite" }}>
-          {[...Array(2)].map((_, rep) => (
-            <div key={rep} style={{ display: "flex", alignItems: "center" }}>
-              {[
-                { s: "BTC", p: "$107,412", c: "+2.4%", up: true },
-                { s: "ETH", p: "$3,891", c: "+1.8%", up: true },
-                { s: "SOL", p: "$182", c: "-0.9%", up: false },
-                { s: "BNB", p: "$724", c: "+3.2%", up: true },
-                { s: "XRP", p: "$2.14", c: "+1.1%", up: true },
-                { s: "ADA", p: "$0.71", c: "-0.5%", up: false },
-                { s: "DOGE", p: "$0.168", c: "+5.2%", up: true },
-                { s: "AVAX", p: "$38.2", c: "-1.5%", up: false },
-                { s: "LINK", p: "$13.2", c: "+1.9%", up: true },
-                { s: "DOT", p: "$4.81", c: "-0.4%", up: false },
-              ].map((t, i) => (
-                <div key={`${rep}-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 28px", borderRight: `1px solid ${T.border}` }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: T.textSecondary }}>{t.s}</span>
-                  <span style={{ fontSize: 12, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{t.p}</span>
-                  <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: t.up ? T.green : T.red }}>{t.c}</span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* ─── FEATURE STICKY CARDS ────────────────────────────── */}
       <section style={{ padding: "0 clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto 160px" }}>
         <div style={{ textAlign: "center", marginBottom: 80 }}>
