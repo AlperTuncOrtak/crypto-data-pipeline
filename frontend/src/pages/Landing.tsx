@@ -1,2186 +1,699 @@
 // ============================================================
-// pages/Landing.jsx — v2
+// pages/Landing.tsx — Purple Design System v3
 // ============================================================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Brain,
-  BarChart2,
-  Wallet,
-  Bell,
-  TrendingUp,
-  TrendingDown,
-  ChevronRight,
-  Shield,
-  Zap,
-  Globe,
-  ArrowRight,
-  Check,
-  Star,
+  Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
+  Check, ChevronDown, TrendingUp, Zap, Globe, Star,
 } from "lucide-react";
-import Reveal from "../components/ui/Reveal";
 
-function Counter({ to, suffix = "", prefix = "", duration = 2000 }) {
+// ─── THEME ───────────────────────────────────────────────────────
+const T = {
+  bg: "#0a0a0f",
+  card: "#0f0f1a",
+  cardHov: "#13131f",
+  purple: "#8b5cf6",
+  purpleLight: "#a78bfa",
+  purpleDim: "rgba(139,92,246,0.15)",
+  green: "#34d399",
+  greenBg: "rgba(16,185,129,0.1)",
+  greenBorder: "rgba(52,211,153,0.2)",
+  red: "#f87171",
+  redBg: "rgba(248,113,113,0.1)",
+  textPrimary: "#f1f5f9",
+  textSecondary: "#94a3b8",
+  textMuted: "#6b7280",
+  border: "rgba(255,255,255,0.06)",
+  borderFeat: "rgba(139,92,246,0.25)",
+};
+
+// ─── COUNTER ─────────────────────────────────────────────────────
+function Counter({ to, suffix = "", prefix = "" }) {
   const [val, setVal] = useState(0);
   const ref = useRef(null);
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
-        const start = Date.now();
-        const tick = () => {
-          const p = Math.min((Date.now() - start) / duration, 1);
-          setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-        observer.disconnect();
-      },
-      { threshold: 0.5 },
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      const start = Date.now();
+      const tick = () => {
+        const p = Math.min((Date.now() - start) / 1800, 1);
+        setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      obs.disconnect();
+    }, { threshold: 0.5 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
   }, [to]);
-  return (
-    <span ref={ref}>
-      {prefix}
-      {val.toLocaleString()}
-      {suffix}
-    </span>
-  );
+  return <span ref={ref}>{prefix}{val.toLocaleString()}{suffix}</span>;
 }
 
-const TICKERS = [
-  { symbol: "BTC", price: 80734, change: -0.91, color: "#f7931a" },
-  { symbol: "ETH", price: 2279, change: -2.29, color: "#627eea" },
-  { symbol: "SOL", price: 134, change: +3.14, color: "#9945ff" },
-  { symbol: "BNB", price: 598, change: +0.82, color: "#f3ba2f" },
-  { symbol: "XRP", price: 2.14, change: +1.44, color: "#346aa9" },
-  { symbol: "ADA", price: 0.712, change: -1.03, color: "#0033ad" },
-  { symbol: "DOGE", price: 0.168, change: +5.21, color: "#c2a633" },
-  { symbol: "AVAX", price: 22.4, change: +2.87, color: "#e84142" },
-  { symbol: "LINK", price: 13.2, change: +1.92, color: "#375bd2" },
-  { symbol: "DOT", price: 4.81, change: -0.44, color: "#e6007a" },
-];
-
-function FaqList() {
-  const [open, setOpen] = useState(null);
-  const faqs = [
-    {
-      q: "How does the AI analysis work?",
-      a: "We combine Altfins pre-computed signals (150+ technical indicators across 2,500+ coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA, Fear & Greed Index and news sentiment — then produces a bullish/bearish/neutral signal with confidence score.",
-    },
-    {
-      q: "Is CryptoNeko really free?",
-      a: "Yes. The free plan includes live market data for 2,500+ coins, market heatmap, coin comparison, watchlist (up to 10 coins) and basic price alerts — forever. No credit card required. Pro plan ($10/mo) unlocks AI analysis, portfolio tracker, tax reports and unlimited alerts.",
-    },
-    {
-      q: "Is my data safe and private?",
-      a: "Completely. Your portfolio and trade data never leaves your browser — CSV files are parsed locally in JavaScript. We never store, sell or transmit your financial information. Only your email address is stored for authentication via Supabase.",
-    },
-    {
-      q: "Which exchanges are supported for portfolio import?",
-      a: "We support CSV exports from Binance, Bybit, OKX, Coinbase and Kraken. Simply export your trade history from your exchange and drag & drop the file into the Portfolio Tracker. P&L and tax calculations happen instantly in your browser.",
-    },
-    {
-      q: "Is this financial advice?",
-      a: "No. CryptoNeko is a technical analysis tool only. All signals, scores and analysis are based on technical indicators and are for informational purposes only. Never make investment decisions based solely on this tool. Always do your own research and consult a financial advisor.",
-    },
-    {
-      q: "How often is the market data updated?",
-      a: "Live prices are streamed via WebSocket from multiple exchanges and update every few seconds. The AI analysis uses Altfins signals which are refreshed continuously. Fear & Greed Index is updated daily from Alternative.me.",
-    },
-    {
-      q: "Can I cancel my Pro subscription anytime?",
-      a: "Yes, you can cancel at any time. Your Pro access continues until the end of your billing period, then automatically reverts to the free plan — no questions asked.",
-    },
-  ];
-
+// ─── REVEAL ──────────────────────────────────────────────────────
+function Reveal({ children, delay = 0 }) {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: 0.12 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {faqs.map((faq, i) => (
-        <div
-          key={i}
-          style={{
-            borderRadius: 14,
-            border: `1px solid ${open === i ? "rgba(245,166,35,.25)" : "rgba(255,255,255,.07)"}`,
-            background:
-              open === i ? "rgba(245,158,11,0.04)" : "rgba(255,255,255,.02)",
-            overflow: "hidden",
-            transition: "all .2s",
-          }}
-        >
-          <button
-            onClick={() => setOpen(open === i ? null : i)}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "18px 22px",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              textAlign: "left",
-              gap: 16,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color:
-                  open === i ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.7)",
-                lineHeight: 1.4,
-              }}
-            >
-              {faq.q}
-            </span>
-            <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: "50%",
-                background:
-                  open === i ? "rgba(245,166,35,.15)" : "rgba(255,255,255,.06)",
-                border: `1px solid ${open === i ? "rgba(245,166,35,.3)" : "rgba(255,255,255,.1)"}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                transition: "all .2s",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 14,
-                  color: open === i ? "var(--accent)" : "rgba(255,255,255,.4)",
-                  lineHeight: 1,
-                  transform: open === i ? "rotate(45deg)" : "rotate(0)",
-                  display: "block",
-                  transition: "transform .2s",
-                }}
-              >
-                +
-              </span>
-            </div>
-          </button>
-          {open === i && (
-            <div style={{ padding: "0 22px 18px" }}>
-              <div
-                style={{
-                  height: 1,
-                  background: "rgba(255,255,255,.06)",
-                  marginBottom: 14,
-                }}
-              />
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "rgba(255,255,255,.45)",
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}
-              >
-                {faq.a}
-              </p>
-            </div>
-          )}
-        </div>
-      ))}
+    <div ref={ref} style={{
+      opacity: vis ? 1 : 0,
+      transform: vis ? "translateY(0)" : "translateY(28px)",
+      transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+    }}>
+      {children}
     </div>
   );
 }
 
+// ─── CARD ────────────────────────────────────────────────────────
+function Card({ children, style = {}, featured = false }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      style={{
+        background: featured ? "rgba(139,92,246,0.05)" : T.card,
+        border: `1px solid ${hov ? (featured ? "rgba(139,92,246,0.5)" : "rgba(139,92,246,0.2)") : (featured ? T.borderFeat : T.border)}`,
+        borderRadius: 20,
+        position: "relative",
+        overflow: "hidden",
+        transition: "all 200ms ease",
+        boxShadow: hov && featured ? "0 0 40px rgba(139,92,246,0.1)" : "none",
+        ...style,
+      }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── FAKE SPARKLINE ──────────────────────────────────────────────
+function Sparkline({ up = true }) {
+  const pts = Array.from({ length: 16 }, (_, i) => {
+    const v = up ? i * 3.5 + Math.sin(i * 1.3) * 6 : (16 - i) * 3.5 + Math.sin(i * 1.3) * 6;
+    return `${(i / 15) * 80},${36 - Math.min(36, Math.max(0, v - 10))}`;
+  }).join(" ");
+  const color = up ? T.green : T.red;
+  return (
+    <svg width={80} height={36} style={{ overflow: "visible" }}>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// ─── FAQ ─────────────────────────────────────────────────────────
+function Faq({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      onClick={() => setOpen(!open)}
+      style={{
+        borderRadius: 16,
+        border: `1px solid ${open ? T.borderFeat : T.border}`,
+        background: open ? "rgba(139,92,246,0.04)" : T.card,
+        transition: "all 200ms ease",
+        cursor: "pointer",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px" }}>
+        <span style={{ fontSize: 15, fontWeight: 600, color: T.textPrimary }}>{q}</span>
+        <ChevronDown size={16} style={{ color: T.purple, transition: "transform 200ms", transform: open ? "rotate(180deg)" : "none", flexShrink: 0, marginLeft: 12 }} />
+      </div>
+      {open && (
+        <div style={{ padding: "0 22px 20px", fontSize: 14, color: T.textSecondary, lineHeight: 1.7 }}>{a}</div>
+      )}
+    </div>
+  );
+}
+
+// ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
+function DashboardMockup() {
+  const coins = [
+    { sym: "BTC", price: "$107,412", change: "+2.4%", up: true },
+    { sym: "ETH", price: "$3,891", change: "+1.8%", up: true },
+    { sym: "SOL", price: "$182", change: "-0.9%", up: false },
+    { sym: "BNB", price: "$724", change: "+3.2%", up: true },
+  ];
+  return (
+    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,92,246,0.1)" }}>
+      {/* Browser bar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
+        {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
+        <div style={{ flex: 1, marginLeft: 8, height: 22, borderRadius: 6, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: 10, color: T.textMuted }}>cryptoneko.app/dashboard</span>
+        </div>
+      </div>
+
+      <div style={{ padding: "20px 20px" }}>
+        {/* Stat strip */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 16 }}>
+          {[
+            { l: "Market Cap", v: "$3.42T" },
+            { l: "BTC Dom", v: "54.2%" },
+            { l: "Coins", v: "2,500+" },
+          ].map((s, i) => (
+            <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
+              <div style={{ fontSize: 9, color: T.textMuted, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>{s.l}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: T.textPrimary, fontFamily: "monospace" }}>{s.v}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* 2x2 coin grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          {coins.map((c, i) => (
+            <div key={c.sym} style={{
+              padding: "14px 16px", borderRadius: 14,
+              background: i === 0 ? "rgba(139,92,246,0.06)" : T.bg,
+              border: `1px solid ${i === 0 ? T.borderFeat : T.border}`,
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
+                  <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{c.price}</div>
+                </div>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 8,
+                  color: c.up ? T.green : T.red,
+                  background: c.up ? T.greenBg : T.redBg,
+                  fontFamily: "monospace",
+                }}>{c.change}</span>
+              </div>
+              <Sparkline up={c.up} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN ────────────────────────────────────────────────────────
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
-  const [scrollY, setScrollY] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const fn = () => setScrollY(window.scrollY);
+    const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  const features = [
+    {
+      badge: "LIVE DATA",
+      badgeColor: "#00c6ff",
+      icon: BarChart2,
+      title: "Real-Time Market Tracking",
+      desc: "Track 2,500+ cryptocurrencies with instant updates. Interactive heatmap, whale alerts, and volume spike detection — all in one place.",
+      points: ["Live WebSocket price feeds", "Interactive market heatmap", "Volume anomaly detection"],
+      mockupSide: "right",
+      mockup: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {[
+            { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, bar: 82 },
+            { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, bar: 71 },
+            { sym: "SOL", price: "$182", change: "-0.9%", up: false, bar: 44 },
+            { sym: "BNB", price: "$724", change: "+3.2%", up: true, bar: 60 },
+            { sym: "AVAX", price: "$38", change: "-1.5%", up: false, bar: 35 },
+          ].map((c, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(0,198,255,0.1)", border: "1px solid rgba(0,198,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#00c6ff" }}>{c.sym.slice(0,1)}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
+                <div style={{ height: 3, width: 50, borderRadius: 2, background: T.border, marginTop: 4 }}>
+                  <div style={{ width: `${c.bar}%`, height: "100%", borderRadius: 2, background: c.up ? T.green : T.red }} />
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary, fontFamily: "monospace" }}>{c.price}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: c.up ? T.green : T.red, fontFamily: "monospace" }}>{c.change}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      badge: "NEKO AI",
+      badgeColor: T.purple,
+      icon: Brain,
+      title: "AI Portfolio Manager",
+      desc: "Powered by Groq Llama 3.3. Neko AI analyzes your full portfolio, detects correlation risks, and gives actionable rebalancing suggestions.",
+      points: ["150+ technical indicators analyzed", "MACD, RSI, Bollinger, EMA signals", "Natural language insights"],
+      mockupSide: "left",
+      mockup: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(139,92,246,0.08)", border: `1px solid ${T.borderFeat}` }}>
+            <div style={{ fontSize: 9, color: T.purple, fontWeight: 800, letterSpacing: ".15em", marginBottom: 8 }}>🤖 NEKO AI</div>
+            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }}>Your BTC is up <span style={{ color: "#00c6ff", fontWeight: 700 }}>+18.4%</span>. Consider taking <span style={{ color: T.purple, fontWeight: 700 }}>15% profits</span> to rebalance ETH allocation.</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {[
+              { l: "Portfolio Score", v: "87/100", c: T.green },
+              { l: "Risk Level", v: "Medium", c: "#f59e0b" },
+              { l: "Correlation", v: "0.72", c: T.purple },
+              { l: "Sharpe Ratio", v: "1.84", c: "#00c6ff" },
+            ].map((s, i) => (
+              <div key={i} style={{ padding: "12px 14px", borderRadius: 10, background: T.bg, border: `1px solid ${T.border}` }}>
+                <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 4 }}>{s.l}</div>
+                <div style={{ fontSize: 17, fontWeight: 900, color: s.c, fontFamily: "monospace" }}>{s.v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      badge: "TAX & REPORTS",
+      badgeColor: T.green,
+      icon: Wallet,
+      title: "Automated Tax Calculation",
+      desc: "Import from Binance, Bybit, OKX, Coinbase or Kraken. FIFO P&L calculated instantly in your browser. Export ready tax reports in seconds.",
+      points: ["Browser-only — data never leaves device", "FIFO P&L calculation", "CSV export for tax filing"],
+      mockupSide: "right",
+      mockup: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <span style={{ fontSize: 10, color: T.textMuted, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>Transaction History</span>
+            <span style={{ fontSize: 10, color: T.green, fontWeight: 700, background: T.greenBg, padding: "2px 10px", borderRadius: 100, border: `1px solid ${T.greenBorder}` }}>FY 2024</span>
+          </div>
+          {[
+            { type: "BUY", asset: "BTC", amount: "+0.42", value: "$43,210", pnl: null },
+            { type: "SELL", asset: "ETH", amount: "-2.5", value: "$8,340", pnl: "+$1,240" },
+            { type: "SELL", asset: "SOL", amount: "-45", value: "$6,750", pnl: "+$3,100" },
+            { type: "BUY", asset: "BNB", amount: "+8.2", value: "$4,120", pnl: null },
+          ].map((t, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, background: T.bg, border: `1px solid ${T.border}` }}>
+              <span style={{ fontSize: 9, fontWeight: 800, padding: "2px 8px", borderRadius: 6, color: t.type === "BUY" ? T.green : T.red, background: t.type === "BUY" ? T.greenBg : T.redBg, letterSpacing: ".08em" }}>{t.type}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary }}>{t.asset} <span style={{ color: T.textMuted, fontSize: 11 }}>{t.amount}</span></div>
+                <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textMuted }}>{t.value}</div>
+              </div>
+              {t.pnl && <span style={{ fontSize: 12, fontWeight: 800, color: T.green, fontFamily: "monospace" }}>{t.pnl}</span>}
+            </div>
+          ))}
+          <div style={{ padding: "12px 16px", borderRadius: 12, background: T.greenBg, border: `1px solid ${T.greenBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: T.textMuted }}>Total Realized P&L</span>
+            <span style={{ fontSize: 20, fontWeight: 900, color: T.green, fontFamily: "monospace" }}>+$4,340</span>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const plans = [
+    {
+      name: "Free",
+      price: "$0",
+      sub: "forever",
+      featured: false,
+      cta: "Get Started",
+      perks: [
+        "Live prices for 2,500+ coins",
+        "Market heatmap",
+        "Watchlist (up to 10 coins)",
+        "Basic price alerts",
+        "Coin comparison tool",
+        "Correlation matrix",
+      ],
+    },
+    {
+      name: "Pro",
+      price: "$10",
+      sub: "/ month",
+      featured: true,
+      cta: "Start Pro",
+      perks: [
+        "Everything in Free",
+        "AI Technical Analysis",
+        "Portfolio tracker & P&L",
+        "Automated tax reports (CSV)",
+        "Unlimited price alerts",
+        "Volume spike radar",
+        "Priority data access",
+      ],
+    },
+  ];
+
+  const faqs = [
+    { q: "How does AI analysis work?", a: "We combine Altfins pre-computed signals (150+ technical indicators across 2,500+ coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA — and produces bullish/bearish/neutral signals with confidence scores." },
+    { q: "Is CryptoNeko really free?", a: "Yes. The free plan includes live data for 2,500+ coins, heatmap, coin comparison, watchlist (up to 10), and basic alerts — forever. No credit card needed. Pro ($10/mo) unlocks AI analysis, portfolio tracker, tax reports, and unlimited alerts." },
+    { q: "Is my data safe?", a: "Completely. Your portfolio and trade data never leaves your browser — CSV files are parsed locally in JavaScript. We never store, sell or transmit your financial data. Only your email is stored via Supabase for authentication." },
+    { q: "Which exchanges are supported?", a: "CSV imports from Binance, Bybit, OKX, Coinbase and Kraken. Export your trade history and drag & drop into Portfolio Tracker. P&L and tax calculations happen instantly in your browser." },
+    { q: "Can I cancel anytime?", a: "Yes. Your Pro access continues until end of billing period, then reverts to free — no questions asked." },
+  ];
+
   return (
-    <div
-      style={{
-        background: "var(--bg-base)",
-        color: "#f0f0f0",
-        minHeight: "100vh",
-        overflowX: "clip",
-      }}
-    >
+    <div style={{ background: T.bg, color: T.textPrimary, fontFamily: "Inter, sans-serif", overflowX: "clip" }}>
       <style>{`
-
-        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes marqueeReverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-        .marquee-track { display: flex; width: max-content; }
-
-        @keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-33.33%)} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-        @keyframes glow { 0%,100%{opacity:.5} 50%{opacity:1} }
-        @keyframes floatY { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-14px)} }
-        @keyframes floatY2 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
-        @keyframes floatY3 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-10px)} }
-        .lp-primary { transition:all .2s ease !important }
-        .lp-primary:hover { transform:translateY(-2px) !important; box-shadow:0 16px 48px rgba(0,240,255,.35) !important }
-        .lp-ghost:hover { border-color:rgba(0,240,255,.4) !important; color:rgba(255,255,255,.85) !important; background:rgba(0,240,255,.05) !important }
-        .feat:hover { transform:translateY(-5px) !important; }
-        .fcoin { transition: filter .35s ease, transform .35s ease, box-shadow .35s ease !important; }
-        .fcoin:hover { filter: blur(0px) !important; transform: scale(1.12) !important; box-shadow: 0 0 32px var(--fcoin-glow) !important; }
-        .fcoin:hover .fcoin-label { opacity:1 !important; transform:translateX(0) !important; pointer-events:none; }
-        @media (max-width: 640px) {
-          .lp-fcoin { display: none !important; }
-          .lp-hero-ctas { flex-direction: column !important; align-items: stretch !important; }
-          .lp-hero-ctas button { width: 100% !important; justify-content: center !important; }
-          .lp-stats-row { flex-wrap: wrap !important; gap: 0 !important; }
-          .lp-stats-row > div { flex: 0 0 50% !important; padding: 12px 0 !important; border-right: none !important; border-bottom: 1px solid rgba(255,255,255,.07) !important; }
-          .lp-workflow-grid { grid-template-columns: 1fr !important; }
-          .lp-workflow-line { display: none !important; }
-          .lp-bignums-grid { grid-template-columns: 1fr 1fr !important; }
-          .lp-pricing-grid { grid-template-columns: 1fr !important; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @keyframes lp-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes lp-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        @keyframes lp-ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes lp-grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
       `}</style>
 
-      {/* NAVBAR */}
-      <nav
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 200,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 clamp(16px, 4vw, 48px)",
-          height: 58,
-          background: scrollY > 30 ? "rgba(2, 6, 23, .94)" : "transparent",
-          backdropFilter: scrollY > 30 ? "blur(20px)" : "none",
-          borderBottom:
-            scrollY > 30 ? "1px solid rgba(255,255,255,.06)" : "none",
-          transition: "all .3s",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 8,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-              overflow: "hidden"
-            }}
-          >
-            <img src="/logo.png" alt="CryptoNeko Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          </div>
-          <span
-            style={{ fontSize: 15, fontWeight: 800, letterSpacing: "-0.02em" }}
-          >
-            <span style={{ color: "var(--accent)" }}>Crypto</span>Neko
-          </span>
+      {/* ─── HERO ────────────────────────────────────────────── */}
+      <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
+        {/* Background orbs */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: "10%", left: "15%", width: 500, height: 500, background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 60%)", filter: "blur(60px)" }} />
+          <div style={{ position: "absolute", top: "30%", right: "10%", width: 400, height: 400, background: "radial-gradient(circle, rgba(0,198,255,0.08) 0%, transparent 60%)", filter: "blur(60px)" }} />
+          {/* Dot grid */}
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)", backgroundSize: "36px 36px", maskImage: "linear-gradient(to bottom, black 40%, transparent 90%)", WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 90%)" }} />
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => onAuthOpen?.("login")}
-            className="lp-ghost"
-            style={{
-              padding: "7px 18px",
-              borderRadius: 9,
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,.1)",
-              color: "rgba(255,255,255,.5)",
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all .2s",
-            }}
-          >
-            Sign In
-          </button>
+
+        {/* Live badge */}
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · 2,500+ coins tracked</span>
+        </div>
+
+        {/* Headline */}
+        <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
+          <span style={{ color: T.textPrimary }}>The smartest way to<br />analyze </span>
+          <span style={{
+            background: `linear-gradient(135deg, ${T.purple} 0%, ${T.purpleLight} 50%, #00c6ff 100%)`,
+            backgroundSize: "200% auto",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            animation: "lp-grad 6s linear infinite",
+          }}>
+            crypto markets.
+          </span>
+        </h1>
+
+        <p style={{ fontSize: "clamp(16px, 2.2vw, 20px)", color: T.textSecondary, maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7 }}>
+          Real-time data, AI-driven technical analysis, and portfolio tracking — all in one blazing fast platform.
+        </p>
+
+        {/* CTAs */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
           <button
             onClick={() => onAuthOpen?.("signup")}
-            className="lp-primary"
             style={{
-              padding: "7px 20px",
-              borderRadius: 9,
-              background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
-              color: "#111",
-              fontSize: 13,
-              fontWeight: 700,
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(245,166,35,.3)",
+              padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
+              background: T.purple, color: "white",
+              fontSize: 15, fontWeight: 800,
+              boxShadow: `0 0 32px rgba(139,92,246,0.4)`,
+              transition: "all 200ms ease",
+              display: "flex", alignItems: "center", gap: 8,
             }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
           >
-            Get Started Free
+            Get Started Free <ArrowRight size={16} />
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{
+              padding: "14px 32px", borderRadius: 14, cursor: "pointer",
+              background: "transparent", color: T.textSecondary,
+              fontSize: 15, fontWeight: 600,
+              border: `1px solid ${T.border}`,
+              transition: "all 200ms ease",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.3)"; e.currentTarget.style.color = T.textPrimary; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSecondary; }}
+          >
+            View Dashboard →
           </button>
         </div>
-      </nav>
+        <div style={{ fontSize: 12, color: T.textMuted }}>No credit card required · Free plan available forever</div>
 
-      {/* TICKER */}
-      <div
-        style={{
-          paddingTop: 58,
-          overflow: "hidden",
-          background: "rgba(0,0,0,.5)",
-          borderBottom: "1px solid rgba(255,255,255,.04)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            animation: "tickerScroll 40s linear infinite",
-            width: "max-content",
-            padding: "7px 0",
-          }}
-        >
-          {[...TICKERS, ...TICKERS, ...TICKERS].map((t, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "0 20px",
-                borderRight: "1px solid rgba(255,255,255,.04)",
-                flexShrink: 0,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 800,
-                  color: t.color,
-                  fontFamily: "monospace",
-                }}
-              >
-                {t.symbol}
-              </span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontFamily: "monospace",
-                  color: "rgba(255,255,255,.5)",
-                }}
-              >
-                $
-                {t.price < 1
-                  ? t.price.toFixed(3)
-                  : t.price < 100
-                    ? t.price.toFixed(2)
-                    : t.price.toLocaleString()}
-              </span>
-              <span
-                style={{
-                  fontSize: 10,
-                  fontFamily: "monospace",
-                  color: t.change >= 0 ? "#2ecc71" : "#e74c3c",
-                  fontWeight: 700,
-                }}
-              >
-                {t.change >= 0 ? "▲" : "▼"}
-                {Math.abs(t.change)}%
-              </span>
+        {/* Stat row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
+          {[
+            { v: 2500, s: "+", p: "", l: "Coins Tracked" },
+            { v: 5, s: "+", p: "", l: "AI Indicators" },
+            { v: 99, s: "%", p: "", l: "Uptime" },
+            { v: 0, s: "", p: "$", l: "To Get Started" },
+          ].map((st, i) => (
+            <div key={i} style={{ padding: "0 clamp(20px,4vw,48px)", borderRight: i < 3 ? `1px solid ${T.border}` : "none", textAlign: "center" }}>
+              <div style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 900, color: T.purple, fontFamily: "monospace", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                <Counter to={st.v} suffix={st.s} prefix={st.p} />
+              </div>
+              <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, letterSpacing: "0.06em", textTransform: "uppercase" }}>{st.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── DASHBOARD PREVIEW ───────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 80px", maxWidth: 1000, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ position: "relative" }}>
+            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(139,92,246,0.15) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
+            <DashboardMockup />
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ─── PRICE TICKER ────────────────────────────────────── */}
+      <div style={{ borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`, overflow: "hidden", padding: "12px 0", marginBottom: 120 }}>
+        <div style={{ display: "flex", width: "max-content", animation: "lp-ticker 30s linear infinite" }}>
+          {[...Array(2)].map((_, rep) => (
+            <div key={rep} style={{ display: "flex", alignItems: "center" }}>
+              {[
+                { s: "BTC", p: "$107,412", c: "+2.4%", up: true },
+                { s: "ETH", p: "$3,891", c: "+1.8%", up: true },
+                { s: "SOL", p: "$182", c: "-0.9%", up: false },
+                { s: "BNB", p: "$724", c: "+3.2%", up: true },
+                { s: "XRP", p: "$2.14", c: "+1.1%", up: true },
+                { s: "ADA", p: "$0.71", c: "-0.5%", up: false },
+                { s: "DOGE", p: "$0.168", c: "+5.2%", up: true },
+                { s: "AVAX", p: "$38.2", c: "-1.5%", up: false },
+                { s: "LINK", p: "$13.2", c: "+1.9%", up: true },
+                { s: "DOT", p: "$4.81", c: "-0.4%", up: false },
+              ].map((t, i) => (
+                <div key={`${rep}-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 28px", borderRight: `1px solid ${T.border}` }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: T.textSecondary }}>{t.s}</span>
+                  <span style={{ fontSize: 12, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{t.p}</span>
+                  <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: t.up ? T.green : T.red }}>{t.c}</span>
+                </div>
+              ))}
             </div>
           ))}
         </div>
       </div>
 
-      {/* FLOATING COINS HERO LAYER */}
-      <section
-        style={{
-          position: "relative",
-          padding: "88px clamp(16px, 5vw, 48px) 64px",
-          textAlign: "center",
-          overflow: "hidden",
-        }}
-      >
-        {/* ── FLOATING COIN ORBS ─────────────────────────────────────────── */}
-        {[
-          { slug: "bitcoin",  sym: "BTC", change: -0.91, color: "#f7931a", img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",        top: "12%", left: "6%",  size: 58, anim: "floatY 6s ease-in-out infinite",              delay: "0s"    },
-          { slug: "ethereum", sym: "ETH", change: -2.29, color: "#627eea", img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",      top: "55%", left: "3%",  size: 48, anim: "floatY2 7.5s ease-in-out infinite",            delay: "1.2s"  },
-          { slug: "solana",   sym: "SOL", change: +3.14, color: "#9945ff", img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",       top: "78%", left: "12%", size: 44, anim: "floatY3 5.5s ease-in-out infinite",            delay: "0.4s"  },
-          { slug: "binancecoin", sym: "BNB", change: +0.82, color: "#f3ba2f", img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "22%", left: "88%", size: 54, anim: "floatY 8s ease-in-out infinite",               delay: "0.8s"  },
-          { slug: "ripple",  sym: "XRP", change: +1.44, color: "#346aa9", img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "60%", left: "91%", size: 44, anim: "floatY2 6.5s ease-in-out infinite",       delay: "2s"    },
-          { slug: "dogecoin", sym: "DOGE", change: +5.21, color: "#c2a633", img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",        top: "82%", left: "82%", size: 42, anim: "floatY3 7s ease-in-out infinite",              delay: "1.6s"  },
-          { slug: "cardano", sym: "ADA", change: -1.03, color: "#0033ad",  img: "https://assets.coingecko.com/coins/images/975/small/cardano.png",        top: "38%", left: "93%", size: 38, anim: "floatY 5s ease-in-out infinite",               delay: "0.6s"  },
-          { slug: "avalanche-2", sym: "AVAX", change: +2.87, color: "#e84142", img: "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png", top: "14%", left: "82%", size: 46, anim: "floatY2 9s ease-in-out infinite", delay: "1s" },
-        ].map((coin) => (
-          <div
-            key={coin.slug}
-            className="fcoin lp-fcoin"
-            onClick={() => navigate(`/coin/${coin.slug}`)}
-            style={{
-              position:  "absolute",
-              top:       coin.top,
-              left:      coin.left,
-              width:     coin.size,
-              height:    coin.size,
-              borderRadius: "50%",
-              cursor:    "pointer",
-              filter:    "blur(3px)",
-              animation: coin.anim,
-              animationDelay: coin.delay,
-              zIndex:    2,
-              "--fcoin-glow": `${coin.color}66`,
-            }}
-          >
-            {/* Logo bubble */}
-            <img
-              src={coin.img}
-              alt={coin.sym}
-              style={{
-                width:  "100%",
-                height: "100%",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: `2px solid ${coin.color}44`,
-                boxShadow: `0 0 18px ${coin.color}33`,
-                display: "block",
-                backgroundColor: "rgba(255,255,255,.05)",
-              }}
-              onError={(e) => { e.target.style.display = "none"; }}
-            />
-
-            {/* Hover label — slides in from right */}
-            <div
-              className="fcoin-label"
-              style={{
-                position:   "absolute",
-                top:        "50%",
-                left:       "calc(100% + 10px)",
-                transform:  "translateX(-8px)",
-                opacity:    0,
-                transition: "opacity .3s ease, transform .3s ease",
-                pointerEvents: "none",
-                whiteSpace: "nowrap",
-                display:    "flex",
-                alignItems: "center",
-                gap:        6,
-                marginTop:  "-16px",
-              }}
-            >
-              <span style={{
-                fontSize:   12,
-                fontWeight: 800,
-                color:      coin.color,
-                fontFamily: "monospace",
-                letterSpacing: ".04em",
-              }}>{coin.sym}</span>
-              <span style={{
-                fontSize:   11,
-                fontWeight: 700,
-                color:      coin.change >= 0 ? "#2ecc71" : "#e74c3c",
-                fontFamily: "monospace",
-              }}>
-                {coin.change >= 0 ? "▲" : "▼"}
-                {Math.abs(coin.change)}%
-              </span>
-            </div>
-          </div>
-        ))}
-
-        {/* AMBIENT GLOW ORBS (Simplified for flat style) */}
-        <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-          {/* Grid Pattern */}
-          <div style={{
-            position: "absolute", inset: 0,
-            backgroundImage: "radial-gradient(rgba(255,255,255,.02) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-            maskImage: "linear-gradient(to bottom, black 40%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 100%)"
-          }} />
-          
-          {/* Subtle Center Glow */}
-          <div style={{
-            position: "absolute", top: "10%", left: "30%", transform: "translateX(-50%)",
-            width: 800, height: 500,
-            background: "radial-gradient(ellipse, rgba(0,240,255,.08) 0%, transparent 60%)",
-            filter: "blur(60px)",
-            borderRadius: "50%"
-          }} />
-          <div style={{
-            position: "absolute", top: "20%", left: "70%", transform: "translateX(-50%)",
-            width: 800, height: 500,
-            background: "radial-gradient(ellipse, rgba(176,38,255,.08) 0%, transparent 60%)",
-            filter: "blur(60px)",
-            borderRadius: "50%"
-          }} />
+      {/* ─── FEATURE STICKY CARDS ────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto 160px" }}>
+        <div style={{ textAlign: "center", marginBottom: 80 }}>
+          <Reveal>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>◆ Features</div>
+            <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0, lineHeight: 1.1 }}>
+              Professional tools.<br />
+              <span style={{ color: T.textMuted }}>Zero complexity.</span>
+            </h2>
+          </Reveal>
         </div>
 
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "5px 14px",
-            borderRadius: 20,
-            background: "rgba(46,204,113,.08)",
-            border: "1px solid rgba(46,204,113,.2)",
-            marginBottom: 30,
-            animation: "fadeUp .5s ease both",
-          }}
-        >
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "#2ecc71",
-              boxShadow: "0 0 8px #2ecc71",
-              animation: "glow 2s infinite",
-            }}
-          />
-          <span
-            style={{
-              fontSize: 12,
-              color: "rgba(255,255,255,.5)",
-              fontWeight: 600,
-            }}
-          >
-            Live · 2,500+ coins tracked in real-time
-          </span>
-        </div>
-
-        <h1
-          style={{
-            fontSize: "clamp(48px, 7vw, 88px)",
-            fontWeight: 900,
-            lineHeight: 1.05,
-            letterSpacing: "-0.04em",
-            margin: "0 auto 24px",
-            maxWidth: 900,
-            position: "relative",
-            zIndex: 10,
-            animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .1s both",
-          }}
-        >
-          <span style={{ color: "rgba(255,255,255,.98)", textShadow: "0 4px 24px rgba(0,0,0,0.5)" }}>
-            The smartest way
-            <br />
-            to analyze{" "}
-          </span>
-          <span
-            style={{
-              background: "linear-gradient(135deg, var(--accent) 0%, #5EEAD4 30%, #00C3FF 70%, var(--accent) 100%)",
-              backgroundSize: "200% auto",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              display: "inline-block",
-              animation: "gradShift 6s linear infinite",
-              filter: "drop-shadow(0 4px 16px rgba(245,166,35,0.3))"
-            }}
-          >
-            crypto markets.
-          </span>
-        </h1>
-
-        <p
-          style={{
-            fontSize: "clamp(16px, 2vw, 19px)",
-            color: "rgba(255,255,255,.6)",
-            maxWidth: 580,
-            margin: "0 auto 40px",
-            lineHeight: 1.6,
-            position: "relative",
-            zIndex: 10,
-            animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .2s both",
-          }}
-        >
-          Real-time data, AI-driven technical analysis, and portfolio tracking —
-          all in one blazing fast platform.
-        </p>
-
-        <div
-          className="lp-hero-ctas"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 16,
-            position: "relative",
-            zIndex: 10,
-            animation: "fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) .3s both",
-            padding: "0 16px",
-          }}
-        >
-          <button
-            onClick={() => onAuthOpen?.("signup")}
-            className="lp-primary"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "16px 36px",
-              borderRadius: 100,
-              background: "var(--accent)",
-              color: "#111",
-              fontSize: 16,
-              fontWeight: 700,
-              border: "none",
-              cursor: "pointer",
-              transition: "all .2s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            Start for Free <ArrowRight size={16} />
-          </button>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="lp-ghost"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "15px 32px",
-              borderRadius: 100,
-              background: "rgba(255,255,255,.04)",
-              color: "rgba(255,255,255,.8)",
-              fontSize: 15,
-              fontWeight: 600,
-              border: "1px solid rgba(255,255,255,.08)",
-              cursor: "pointer",
-              transition: "all .2s",
-            }}
-          >
-            View Live Demo <ChevronRight size={15} />
-          </button>
-        </div>
-
-        <div
-          style={{
-            marginTop: 22,
-            fontSize: 12,
-            color: "rgba(255,255,255,.2)",
-            animation: "fadeUp .55s ease .32s both",
-          }}
-        >
-          No credit card required · Free plan available forever
-        </div>
-
-        <div
-          className="lp-stats-row"
-          style={{
-            marginTop: 56,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            animation: "fadeUp .55s ease .4s both",
-          }}
-        >
-          {[
-            { value: 2500, suffix: "+", prefix: "", label: "Coins Tracked" },
-            { value: 5, suffix: "+", prefix: "", label: "AI Indicators" },
-            { value: 99, suffix: "%", prefix: "", label: "Uptime" },
-            { value: 0, suffix: "", prefix: "$", label: "To Get Started" },
-          ].map((s, i) => (
-            <div
-              key={i}
-              style={{
-                padding: "0 clamp(12px, 3vw, 36px)",
-                borderRight: i < 3 ? "1px solid rgba(255,255,255,.07)" : "none",
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "clamp(26px,3vw,38px)",
-                  fontWeight: 900,
-                  color: "var(--accent)",
-                  fontFamily: "monospace",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1,
-                }}
-              >
-                <Counter to={s.value} suffix={s.suffix} prefix={s.prefix} />
-              </div>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: "rgba(255,255,255,.28)",
-                  marginTop: 5,
-                  letterSpacing: ".06em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* DASHBOARD PREVIEW */}
-      <section
-        style={{ padding: `0 clamp(16px, 4vw, 48px) 80px`, maxWidth: 1100, margin: "0 auto" }}
-      >
-        <Reveal direction="up" delay={0.2} threshold={0.2}>
-          <div
-            style={{
-              position: "relative",
-              animation: "fadeUp .7s ease .5s both",
-            }}
-          >
-          <div
-            style={{
-              position: "absolute",
-              inset: -32,
-              background: "radial-gradient(ellipse at center, rgba(245,166,35,.15) 0%, rgba(139,92,246,.1) 30%, transparent 70%)",
-              pointerEvents: "none",
-              filter: "blur(30px)",
-              animation: "glow 8s ease-in-out infinite alternate"
-            }}
-          />
-          <div
-            style={{
-              position: "relative",
-              borderRadius: 20,
-              overflow: "hidden",
-              border: "1px solid rgba(255,255,255,.12)",
-              boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)",
-              background: "rgba(12,12,22,0.8)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              transform: "translateZ(0)"
-            }}
-          >
-            <div
-              style={{
-                background: "#0e0e18",
-                padding: "10px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                borderBottom: "1px solid rgba(255,255,255,.05)",
-              }}
-            >
-              {["#ff5f57", "#febc2e", "#28c840"].map((c, i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: c,
-                  }}
-                />
-              ))}
-              <div
-                style={{
-                  flex: 1,
-                  marginLeft: 8,
-                  height: 20,
-                  borderRadius: 5,
-                  background: "rgba(255,255,255,.04)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,.18)" }}>
-                  cryptoneko.app · AI Technical Analysis
-                </span>
-              </div>
-            </div>
-            <div style={{ background: "#0c0c16", padding: "20px" }}>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1.8fr 1fr",
-                  gap: 12,
-                  marginBottom: 12,
-                }}
-              >
-                <div
-                  style={{
-                    padding: "20px 24px",
-                    borderRadius: 14,
-                    background: "rgba(46,204,113,.07)",
-                    border: "1px solid rgba(46,204,113,.18)",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -30,
-                      right: -30,
-                      width: 120,
-                      height: 120,
-                      borderRadius: "50%",
-                      background: "rgba(46,204,113,.08)",
-                      filter: "blur(30px)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      fontSize: 9,
-                      fontWeight: 800,
-                      color: "rgba(46,204,113,.5)",
-                      letterSpacing: ".18em",
-                      marginBottom: 6,
-                    }}
-                  >
-                    TECHNICAL OUTLOOK
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 44,
-                      fontWeight: 900,
-                      color: "#2ecc71",
-                      letterSpacing: "-0.03em",
-                      lineHeight: 1,
-                    }}
-                  >
-                    BULLISH
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 12,
-                      color: "rgba(255,255,255,.3)",
-                      marginTop: 8,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <span>Bitcoin</span>
-                    <span
-                      style={{
-                        color: "rgba(255,255,255,.5)",
-                        fontFamily: "monospace",
-                        fontWeight: 600,
-                      }}
-                    >
-                      $80,734
-                    </span>
-                    <span style={{ color: "#2ecc71", fontFamily: "monospace" }}>
-                      +2.14%
-                    </span>
-                  </div>
-                </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
-                >
-                  <div
-                    style={{
-                      flex: 1,
-                      padding: "14px 16px",
-                      borderRadius: 12,
-                      background: "rgba(255,255,255,.03)",
-                      border: "1px solid rgba(255,255,255,.06)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 9,
-                        color: "rgba(255,255,255,.3)",
-                        letterSpacing: ".1em",
-                      }}
-                    >
-                      CONFIDENCE
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 28,
-                        fontWeight: 900,
-                        color: "#2ecc71",
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      79%
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      flex: 1,
-                      padding: "14px 16px",
-                      borderRadius: 12,
-                      background: "rgba(255,255,255,.03)",
-                      border: "1px solid rgba(255,255,255,.06)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 9,
-                        color: "rgba(255,255,255,.3)",
-                        letterSpacing: ".1em",
-                      }}
-                    >
-                      RISK LEVEL
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 900,
-                        color: "var(--accent)",
-                      }}
-                    >
-                      MEDIUM
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit,minmax(min(80px,100%),1fr))",
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                {[
-                  {
-                    label: "RSI",
-                    val: 67,
-                    color: "var(--accent)",
-                    status: "Neutral",
-                  },
-                  {
-                    label: "MACD",
-                    val: 80,
-                    color: "#2ecc71",
-                    status: "Bullish",
-                  },
-                  { label: "BB", val: 45, color: "#3498db", status: "Middle" },
-                  {
-                    label: "Stoch",
-                    val: 72,
-                    color: "var(--accent)",
-                    status: "Neutral",
-                  },
-                  {
-                    label: "EMA",
-                    val: 90,
-                    color: "#2ecc71",
-                    status: "Bullish",
-                  },
-                ].map((ind) => (
-                  <div
-                    key={ind.label}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: 10,
-                      background: "rgba(255,255,255,.025)",
-                      border: "1px solid rgba(255,255,255,.05)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginBottom: 6,
-                      }}
-                    >
-                      <span
-                        style={{ fontSize: 9, color: "rgba(255,255,255,.3)" }}
-                      >
-                        {ind.label}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 9,
-                          color: ind.color,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {ind.status}
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        height: 3,
-                        borderRadius: 2,
-                        background: "rgba(255,255,255,.06)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${ind.val}%`,
-                          height: "100%",
-                          background: `linear-gradient(90deg,${ind.color}70,${ind.color})`,
-                          borderRadius: 2,
-                        }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: ind.color,
-                        fontWeight: 700,
-                        marginTop: 4,
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {ind.val}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit,minmax(min(100px,100%),1fr))",
-                  gap: 8,
-                }}
-              >
-                {[
-                  {
-                    label: "Fear & Greed",
-                    value: "48",
-                    sub: "Neutral",
-                    color: "var(--accent)",
-                  },
-                  {
-                    label: "7-Day Trend",
-                    value: "+0.2%",
-                    sub: "Sideways",
-                    color: "#3498db",
-                  },
-                  {
-                    label: "Stop Loss",
-                    value: "$74,374",
-                    sub: "−8% from entry",
-                    color: "#e74c3c",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    style={{
-                      padding: "10px 14px",
-                      borderRadius: 10,
-                      background: "rgba(255,255,255,.02)",
-                      border: "1px solid rgba(255,255,255,.05)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 9,
-                        color: "rgba(255,255,255,.3)",
-                        marginBottom: 4,
-                      }}
-                    >
-                      {item.label}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 800,
-                        color: item.color,
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {item.value}
-                    </div>
-                    <div
-                      style={{ fontSize: 10, color: "rgba(255,255,255,.25)" }}
-                    >
-                      {item.sub}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        </Reveal>
-      </section>
-
-      <section
-        style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 1220, margin: "0 auto" }}
-      >
-        <Reveal direction="up" threshold={0.2}>
-          <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "5px 14px",
-              borderRadius: 20,
-              background: "rgba(245,166,35,.08)",
-              border: "1px solid rgba(245,166,35,.2)",
-              marginBottom: 20,
-            }}
-          >
-            <span style={{ fontSize: 10, fontWeight: 800, color: "var(--accent)", letterSpacing: ".22em", textTransform: "uppercase" }}>
-              Everything you need
-            </span>
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(30px,4vw,54px)",
-              fontWeight: 900,
-              letterSpacing: "-0.03em",
-              lineHeight: 1.08,
-              margin: 0,
-            }}
-          >
-            Professional tools.
-            <br />
-            <span style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.15) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}>
-              Zero complexity.
-            </span>
-          </h2>
-        </div>
-
-        <div style={{ position: "relative", padding: "0 clamp(16px, 4vw, 48px)" }}>
-          {[
-            {
-              badge: "LIVE DATA",
-              badgeColor: "#00f0ff",
-              icon: BarChart2,
-              title: "Real-Time Market Tracking",
-              desc: "Track 2,500+ cryptocurrencies with blazing fast updates. Never miss a volume spike or a whale movement again with our interactive heatmap.",
-              mockupContent: (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {[
-                    { name: "Bitcoin", sym: "BTC", price: "$107,412", change: "+2.4%", up: true, bar: 82 },
-                    { name: "Ethereum", sym: "ETH", price: "$3,891", change: "+1.8%", up: true, bar: 71 },
-                    { name: "Solana", sym: "SOL", price: "$182", change: "-0.9%", up: false, bar: 58 },
-                    { name: "BNB", sym: "BNB", price: "$724", change: "+3.2%", up: true, bar: 64 },
-                    { name: "Avalanche", sym: "AVAX", price: "$38", change: "-1.5%", up: false, bar: 42 },
-                  ].map((c, i) => (
-                    <div key={i} style={{
-                      display: "flex", alignItems: "center", gap: 12,
-                      padding: "12px 16px", borderRadius: 12,
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                    }}>
-                      <div style={{
-                        width: 36, height: 36, borderRadius: "50%",
-                        background: "rgba(0,240,255,0.1)",
-                        border: "1px solid rgba(0,240,255,0.2)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 10, fontWeight: 800, color: "#00f0ff"
-                      }}>{c.sym.slice(0,1)}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "white" }}>{c.name}</div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-                          <div style={{ height: 3, width: 60, borderRadius: 2, background: "rgba(255,255,255,0.06)" }}>
-                            <div style={{ width: c.bar + "%", height: "100%", borderRadius: 2, background: c.up ? "#00f0ff" : "#ff4757" }} />
-                          </div>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{c.sym}</span>
-                        </div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "white", fontFamily: "monospace" }}>{c.price}</div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: c.up ? "#00f0ff" : "#ff4757", fontFamily: "monospace" }}>{c.change}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ),
-            },
-            {
-              badge: "NEKO AI",
-              badgeColor: "#b026ff",
-              icon: Brain,
-              title: "AI Portfolio Manager",
-              desc: "Get deep insights powered by Groq Llama 3.3. Our AI agent analyzes your holdings, detects correlation risks, and gives actionable rebalancing recommendations.",
-              mockupContent: (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div style={{ padding: "16px", borderRadius: 12, background: "rgba(176,38,255,0.08)", border: "1px solid rgba(176,38,255,0.2)" }}>
-                    <div style={{ fontSize: 10, color: "rgba(176,38,255,0.8)", fontWeight: 800, letterSpacing: ".15em", marginBottom: 8 }}>AI NEKO ANALYSIS</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.6 }}>Your BTC position is up <span style={{ color: "#00f0ff", fontWeight: 700 }}>+18.4%</span> since last month. Consider taking <span style={{ color: "#b026ff", fontWeight: 700 }}>15% profits</span> to rebalance your ETH allocation.</div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {[
-                      { label: "Portfolio Score", value: "87/100", color: "#2ecc71" },
-                      { label: "Risk Level", value: "Medium", color: "#f39c12" },
-                      { label: "Correlation", value: "0.72", color: "#b026ff" },
-                      { label: "Sharpe Ratio", value: "1.84", color: "#00f0ff" },
-                    ].map((s, i) => (
-                      <div key={i} style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>{s.label}</div>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: s.color, fontFamily: "monospace" }}>{s.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ),
-            },
-            {
-              badge: "TAX & REPORTS",
-              badgeColor: "#2ecc71",
-              icon: Wallet,
-              title: "Automated Tax Calculation",
-              desc: "Connect your Ethereum wallets or import Binance CSVs. We automatically calculate your FIFO P&L and generate exportable tax reports in seconds.",
-              mockupContent: (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontWeight: 700, letterSpacing: ".1em" }}>TRANSACTION HISTORY</span>
-                    <span style={{ fontSize: 10, color: "#2ecc71", fontWeight: 700, background: "rgba(46,204,113,0.1)", padding: "3px 10px", borderRadius: 100 }}>FY 2024</span>
-                  </div>
-                  {[
-                    { type: "BUY", asset: "BTC", amount: "+0.42", value: "$43,210", pnl: null, date: "Jan 14" },
-                    { type: "SELL", asset: "ETH", amount: "-2.5", value: "$8,340", pnl: "+$1,240", date: "Mar 22" },
-                    { type: "SELL", asset: "SOL", amount: "-45", value: "$6,750", pnl: "+$3,100", date: "May 8" },
-                    { type: "BUY", asset: "BNB", amount: "+8.2", value: "$4,120", pnl: null, date: "Aug 3" },
-                  ].map((t, i) => (
-                    <div key={i} style={{
-                      display: "flex", alignItems: "center", gap: 12,
-                      padding: "10px 14px", borderRadius: 10,
-                      background: "rgba(255,255,255,0.02)",
-                      border: "1px solid rgba(255,255,255,0.05)"
-                    }}>
-                      <div style={{
-                        fontSize: 9, fontWeight: 800, padding: "3px 8px", borderRadius: 6,
-                        background: t.type === "BUY" ? "rgba(46,204,113,0.1)" : "rgba(255,71,87,0.1)",
-                        color: t.type === "BUY" ? "#2ecc71" : "#ff4757",
-                        border: "1px solid " + (t.type === "BUY" ? "rgba(46,204,113,0.2)" : "rgba(255,71,87,0.2)"),
-                        letterSpacing: ".08em"
-                      }}>{t.type}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "white" }}>{t.asset} <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.amount}</span></div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{t.date}</div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.7)", fontFamily: "monospace" }}>{t.value}</div>
-                        {t.pnl && <div style={{ fontSize: 11, fontWeight: 700, color: "#2ecc71", fontFamily: "monospace" }}>{t.pnl}</div>}
-                      </div>
-                    </div>
-                  ))}
-                  <div style={{
-                    marginTop: 4, padding: "14px 16px", borderRadius: 12,
-                    background: "rgba(46,204,113,0.08)", border: "1px solid rgba(46,204,113,0.2)",
-                    display: "flex", justifyContent: "space-between", alignItems: "center"
-                  }}>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Total Realized P&L</span>
-                    <span style={{ fontSize: 20, fontWeight: 900, color: "#2ecc71", fontFamily: "monospace" }}>+$4,340</span>
-                  </div>
-                </div>
-              ),
-            }
-          ].map((feature, i) => {
-            const Icon = feature.icon;
-            const isEven = i % 2 === 0;
+        <div style={{ position: "relative" }}>
+          {features.map((f, i) => {
+            const Icon = f.icon;
+            const isRight = f.mockupSide === "right";
             return (
               <div
                 key={i}
                 style={{
                   position: "sticky",
-                  top: (100 + i * 30) + "px",
-                  marginBottom: i === 2 ? 0 : "90vh",
-                  zIndex: i + 10,
+                  top: `calc(100px + ${i * 28}px)`,
+                  marginBottom: i === features.length - 1 ? 0 : "80vh",
+                  zIndex: i + 5,
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: 60,
                   alignItems: "center",
-                  padding: "80px 80px",
-                  borderRadius: "40px",
-                  background: "rgba(2, 6, 23, 0.98)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  boxShadow: "0 40px 120px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05)",
+                  padding: "72px 72px",
+                  borderRadius: 36,
+                  background: `rgba(15,15,26,0.98)`,
+                  border: `1px solid ${T.border}`,
+                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
                   overflow: "hidden",
                 }}
               >
-                {/* BG glow */}
-                <div style={{
-                  position: "absolute",
-                  top: "-30%",
-                  left: isEven ? "-10%" : "auto",
-                  right: isEven ? "auto" : "-10%",
-                  width: "50%", height: "200%",
-                  background: "radial-gradient(circle, " + feature.badgeColor + "12 0%, transparent 55%)",
-                  filter: "blur(80px)",
-                  pointerEvents: "none", zIndex: 0,
-                }} />
+                {/* bg glow */}
+                <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
 
-                {/* Text side */}
-                <div style={{ position: "relative", zIndex: 1, order: isEven ? 1 : 2 }}>
-                  <div style={{
-                    display: "inline-flex", alignItems: "center", gap: 10,
-                    padding: "8px 20px", borderRadius: 100,
-                    background: feature.badgeColor + "12",
-                    border: "1px solid " + feature.badgeColor + "35",
-                    color: feature.badgeColor,
-                    fontSize: 12, fontWeight: 800, letterSpacing: ".15em",
-                    marginBottom: 32,
-                    boxShadow: "0 0 24px " + feature.badgeColor + "20",
-                  }}>
-                    <Icon size={14} />
-                    {feature.badge}
+                {/* Text */}
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: `0 0 20px ${f.badgeColor}20` }}>
+                    <Icon size={14} />{f.badge}
                   </div>
-                  <h3 style={{
-                    fontSize: "clamp(36px, 4.5vw, 56px)",
-                    fontWeight: 900, color: "white",
-                    margin: "0 0 24px",
-                    letterSpacing: "-0.03em", lineHeight: 1.08,
-                  }}>
-                    {feature.title}
-                  </h3>
-                  <p style={{
-                    fontSize: "clamp(16px, 1.8vw, 20px)",
-                    color: "rgba(255, 255, 255, 0.5)",
-                    lineHeight: 1.7, margin: "0 0 40px", maxWidth: 460,
-                  }}>
-                    {feature.desc}
-                  </p>
-                  <div style={{
-                    display: "inline-flex", alignItems: "center", gap: 8,
-                    color: feature.badgeColor, fontSize: 14, fontWeight: 700, cursor: "pointer",
-                  }}>
-                    Learn more <ArrowRight size={16} />
+                  <h3 style={{ fontSize: "clamp(30px,4vw,48px)", fontWeight: 900, color: T.textPrimary, margin: "0 0 20px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
+                  <p style={{ fontSize: "clamp(15px,1.8vw,18px)", color: T.textSecondary, lineHeight: 1.7, margin: "0 0 32px", maxWidth: 460 }}>{f.desc}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {f.points.map((pt, j) => (
+                      <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: `${f.badgeColor}15`, border: `1px solid ${f.badgeColor}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={10} style={{ color: f.badgeColor }} />
+                        </div>
+                        <span style={{ fontSize: 14, color: T.textSecondary }}>{pt}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Mockup panel */}
-                <div style={{
-                  position: "relative", zIndex: 1,
-                  order: isEven ? 2 : 1,
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  borderRadius: 24, padding: "24px",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px " + feature.badgeColor + "10",
-                }}>
-                  <div style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    marginBottom: 20, paddingBottom: 16,
-                    borderBottom: "1px solid rgba(255,255,255,0.05)"
-                  }}>
-                    {["#ff5f57","#febc2e","#28c840"].map((c,idx) => (
-                      <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />
-                    ))}
-                    <div style={{
-                      flex: 1, marginLeft: 8, height: 18, borderRadius: 5,
-                      background: "rgba(255,255,255,0.04)",
-                      display: "flex", alignItems: "center", justifyContent: "center"
-                    }}>
-                      <span style={{ fontSize: 9, color: "rgba(255,255,255,0.15)" }}>cryptoneko.app</span>
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1, background: "rgba(10,10,15,0.8)", border: `1px solid ${T.border}`, borderRadius: 20, padding: "20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
+                    {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+                    <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 9, color: T.textMuted }}>cryptoneko.app</span>
                     </div>
                   </div>
-                  {feature.mockupContent}
+                  {f.mockup}
                 </div>
               </div>
             );
           })}
         </div>
+      </section>
+
+      {/* ─── PRICING ─────────────────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>◆ Pricing</div>
+            <h2 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>Start free.<br /><span style={{ color: T.textMuted }}>Upgrade when ready.</span></h2>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            {plans.map((plan) => (
+              <Card key={plan.name} featured={plan.featured} style={{ padding: "40px 36px" }}>
+                {plan.featured && (
+                  <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)" }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", padding: "4px 16px", borderRadius: 100, background: T.purple, color: "white" }}>MOST POPULAR</div>
+                  </div>
+                )}
+                {/* Corner glow */}
+                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
+
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? T.purple : T.textMuted, marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 32 }}>
+                    <span style={{ fontSize: 52, fontWeight: 900, color: T.textPrimary, letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
+                    <span style={{ fontSize: 16, color: T.textMuted, marginBottom: 8 }}>{plan.sub}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onAuthOpen?.("signup")}
+                    style={{
+                      width: "100%", padding: "13px", borderRadius: 12, cursor: "pointer",
+                      border: plan.featured ? "none" : `1px solid ${T.borderFeat}`,
+                      background: plan.featured ? T.purple : "transparent",
+                      color: plan.featured ? "white" : T.purple,
+                      fontSize: 14, fontWeight: 700,
+                      transition: "all 200ms ease",
+                      marginBottom: 32,
+                      boxShadow: plan.featured ? "0 0 24px rgba(139,92,246,0.35)" : "none",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
+                  >
+                    {plan.cta}
+                  </button>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {plan.perks.map((perk, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: plan.featured ? "rgba(139,92,246,0.15)" : T.greenBg, border: `1px solid ${plan.featured ? T.borderFeat : T.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={10} style={{ color: plan.featured ? T.purple : T.green }} />
+                        </div>
+                        <span style={{ fontSize: 13, color: T.textSecondary }}>{perk}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </Reveal>
       </section>
 
-
-
-
-
-
-
-      {/* HOW IT WORKS */}
-      <section
-        style={{
-          padding: `60px clamp(16px, 4vw, 48px)`,
-          maxWidth: 860,
-          margin: "0 auto",
-          textAlign: "center",
-        }}
-      >
-        <Reveal direction="up" threshold={0.2}>
-          <div
-          style={{
-            fontSize: 10,
-            fontWeight: 800,
-            color: "var(--accent)",
-            letterSpacing: ".22em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-          }}
-        >
-          Simple workflow
-        </div>
-        <h2
-          style={{
-            fontSize: "clamp(24px,3.5vw,42px)",
-            fontWeight: 900,
-            letterSpacing: "-0.03em",
-            marginBottom: 56,
-          }}
-        >
-          From data to decision
-          <br />
-          <span style={{ color: "rgba(255,255,255,.22)" }}>in seconds.</span>
-        </h2>
-        <div
-          className="lp-workflow-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
-            gap: 24,
-            position: "relative",
-          }}
-        >
-          <div
-            className="lp-workflow-line"
-            style={{
-              position: "absolute",
-              top: 30,
-              left: "17%",
-              right: "17%",
-              height: 1,
-              background:
-                "linear-gradient(to right,transparent,rgba(0,240,255,.2),transparent)",
-              pointerEvents: "none",
-            }}
-          />
-          {[
-            {
-              step: "01",
-              Icon: BarChart2,
-              color: "#3498db",
-              title: "Pick a coin",
-              desc: "Search from 2,500+ live cryptocurrencies with real-time prices.",
-            },
-            {
-              step: "02",
-              Icon: Brain,
-              color: "#9b59b6",
-              title: "Run AI analysis",
-              desc: "AI processes 5+ indicators, news sentiment and Fear & Greed Index instantly.",
-            },
-            {
-              step: "03",
-              Icon: Zap,
-              color: "var(--accent)",
-              title: "Act with confidence",
-              desc: "Clear signal, stop-loss level and personalized advice for your position.",
-            },
-          ].map((s, i) => (
-            <div key={i} style={{ padding: "0 16px" }}>
-              <div
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: "50%",
-                  background: `${s.color}12`,
-                  border: `1px solid ${s.color}22`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 16px",
-                  position: "relative",
-                  zIndex: 1,
-                }}
-              >
-                <s.Icon size={22} style={{ color: s.color }} />
-              </div>
-              <div
-                style={{
-                  fontSize: 9,
-                  fontWeight: 800,
-                  color: `${s.color}55`,
-                  letterSpacing: ".15em",
-                  marginBottom: 8,
-                }}
-              >
-                STEP {s.step}
-              </div>
-              <div
-                style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,.9)",
-                  marginBottom: 8,
-                }}
-              >
-                {s.title}
-              </div>
-              <div
-                style={{
-                  fontSize: 12.5,
-                  color: "rgba(255,255,255,.3)",
-                  lineHeight: 1.65,
-                }}
-              >
-                {s.desc}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* ─── FAQ ─────────────────────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 740, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>◆ FAQ</div>
+            <h2 style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>Common questions</h2>
+          </div>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {faqs.map((faq, i) => <Faq key={i} {...faq} />)}
+          </div>
         </Reveal>
       </section>
 
-      {/* STATS */}
-      <section
-        style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 1060, margin: "0 auto" }}
-      >
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 800,
-              color: "var(--accent)",
-              letterSpacing: ".22em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            By the numbers
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(24px,3.5vw,42px)",
-              fontWeight: 900,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Built for serious traders
-          </h2>
-        </div>
-        <div
-          className="lp-bignums-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
-            gap: 14,
-          }}
-        >
-          {[
-            {
-              value: 2500,
-              suffix: "+",
-              prefix: "",
-              label: "Coins Tracked",
-              desc: "Real-time prices, 24h changes, volume & market cap",
-              color: "var(--accent)",
-              Icon: BarChart2,
-            },
-            {
-              value: 5,
-              suffix: "+",
-              prefix: "",
-              label: "AI Indicators",
-              desc: "RSI, MACD, Bollinger Bands, Stochastic & EMA",
-              color: "#9b59b6",
-              Icon: Brain,
-            },
-            {
-              value: 99,
-              suffix: "%",
-              prefix: "",
-              label: "Uptime",
-              desc: "Always-on live data pipeline with Redis caching",
-              color: "#3498db",
-              Icon: Zap,
-            },
-            {
-              value: 5,
-              suffix: "",
-              prefix: "",
-              label: "Exchanges Supported",
-              desc: "Binance, Bybit, OKX, Coinbase & Kraken CSV import",
-              color: "#2ecc71",
-              Icon: Globe,
-            },
-            {
-              value: 0,
-              suffix: "",
-              prefix: "$",
-              label: "To Get Started",
-              desc: "Full free plan — no credit card required",
-              color: "#1abc9c",
-              Icon: Star,
-            },
-            {
-              value: 100,
-              suffix: "%",
-              prefix: "",
-              label: "Private by Design",
-              desc: "Trade data never leaves your browser — zero servers",
-              color: "#e74c3c",
-              Icon: Shield,
-            },
-          ].map((s, i) => (
-            <div
-              key={i}
-              style={{
-                padding: "28px 24px",
-                borderRadius: 16,
-                background: "rgba(255,255,255,.02)",
-                border: "1px solid rgba(255,255,255,.06)",
-                animation: `fadeUp .6s ease ${0.05 + i * 0.07}s both`,
-                transition: "all .3s ease",
-                position: "relative",
-                overflow: "hidden",
-                display: "flex",
-                alignItems: "center",
-                gap: 20,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = `${s.color}30`;
-                e.currentTarget.style.background = `${s.color}05`;
-                e.currentTarget.style.transform = "translateY(-3px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,.06)";
-                e.currentTarget.style.background = "rgba(255,255,255,.02)";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  top: -20,
-                  right: -20,
-                  width: 80,
-                  height: 80,
-                  borderRadius: "50%",
-                  background: `${s.color}08`,
-                  filter: "blur(20px)",
-                  pointerEvents: "none",
-                }}
-              />
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 13,
-                  background: `${s.color}12`,
-                  border: `1px solid ${s.color}20`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <s.Icon size={20} style={{ color: s.color }} />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontSize: "clamp(22px,2.5vw,32px)",
-                    fontWeight: 900,
-                    color: s.color,
-                    fontFamily: "monospace",
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1,
-                    marginBottom: 4,
-                  }}
+      {/* ─── FINAL CTA ───────────────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "rgba(139,92,246,0.06)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, rgba(139,92,246,0.2) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 20 }}>◆ Get Started</div>
+              <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 16px" }}>Ready to analyze smarter?</h2>
+              <p style={{ fontSize: 18, color: T.textSecondary, margin: "0 0 48px", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
+                Join thousands of traders using CryptoNeko to stay ahead of the market.
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+                <button
+                  onClick={() => onAuthOpen?.("signup")}
+                  style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(139,92,246,0.4)", transition: "all 200ms" }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
                 >
-                  <Counter to={s.value} suffix={s.suffix} prefix={s.prefix} />
-                </div>
-                <div
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: "rgba(255,255,255,.75)",
-                    marginBottom: 3,
-                  }}
+                  Create Free Account
+                </button>
+                <button
+                  onClick={() => navigate("/market")}
+                  style={{ padding: "14px 32px", borderRadius: 14, cursor: "pointer", background: "transparent", color: T.textSecondary, fontSize: 15, fontWeight: 600, border: `1px solid ${T.border}`, transition: "all 200ms" }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderFeat; e.currentTarget.style.color = T.textPrimary; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSecondary; }}
                 >
-                  {s.label}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "rgba(255,255,255,.28)",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {s.desc}
-                </div>
+                  Explore Markets
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        </Reveal>
       </section>
 
-      {/* PRICING */}
-      <section
-        style={{ padding: `60px clamp(16px, 4vw, 48px)`, maxWidth: 820, margin: "0 auto" }}
-      >
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 800,
-              color: "var(--accent)",
-              letterSpacing: ".22em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            Pricing
+      {/* ─── FOOTER ──────────────────────────────────────────── */}
+      <footer style={{ borderTop: `1px solid ${T.border}`, padding: "40px clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: T.purple, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/logo.png" alt="CryptoNeko" style={{ width: "100%", borderRadius: 8 }} />
+            </div>
+            <span style={{ fontSize: 14, fontWeight: 800, color: T.textPrimary }}>CryptoNeko</span>
           </div>
-          <h2
-            style={{
-              fontSize: "clamp(24px,3.5vw,42px)",
-              fontWeight: 900,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Start free, upgrade when ready
-          </h2>
-          <p
-            style={{
-              fontSize: 14,
-              color: "rgba(255,255,255,.28)",
-              marginTop: 10,
-            }}
-          >
-            No credit card required. Cancel anytime.
-          </p>
-        </div>
-        <div
-          className="lp-pricing-grid"
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
-        >
-          <div
-            style={{
-              padding: "30px",
-              borderRadius: 20,
-              background: "rgba(255,255,255,.025)",
-              border: "1px solid rgba(255,255,255,.07)",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "rgba(255,255,255,.3)",
-                textTransform: "uppercase",
-                letterSpacing: ".12em",
-                marginBottom: 14,
-              }}
-            >
-              Free
-            </div>
-            <div
-              style={{
-                fontSize: 46,
-                fontWeight: 900,
-                letterSpacing: "-0.03em",
-                marginBottom: 6,
-              }}
-            >
-              Free
-            </div>
-            <div
-              style={{
-                fontSize: 13,
-                color: "rgba(255,255,255,.28)",
-                marginBottom: 26,
-                lineHeight: 1.5,
-              }}
-            >
-              Everything you need to explore crypto markets.
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 26,
-              }}
-            >
-              {[
-                "Live market data — 2,500+ coins",
-                "Market heatmap & coin compare",
-                "Watchlist (up to 10 coins)",
-                "Basic price alerts",
-              ].map((f, i) => (
-                <div
-                  key={i}
-                  style={{ display: "flex", alignItems: "center", gap: 9 }}
-                >
-                  <div
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: "50%",
-                      background: "rgba(255,255,255,.05)",
-                      border: "1px solid rgba(255,255,255,.09)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Check
-                      size={9}
-                      style={{ color: "rgba(255,255,255,.35)" }}
-                    />
-                  </div>
-                  <span
-                    style={{ fontSize: 13, color: "rgba(255,255,255,.42)" }}
-                  >
-                    {f}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={() => onAuthOpen?.("signup")}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: 11,
-                background: "rgba(255,255,255,.05)",
-                color: "rgba(255,255,255,.5)",
-                fontWeight: 700,
-                fontSize: 14,
-                border: "1px solid rgba(255,255,255,.08)",
-                cursor: "pointer",
-                transition: "all .2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,.09)";
-                e.currentTarget.style.color = "rgba(255,255,255,.75)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,.05)";
-                e.currentTarget.style.color = "rgba(255,255,255,.5)";
-              }}
-            >
-              Get Started Free
-            </button>
-          </div>
-          <div
-            style={{
-              padding: "30px",
-              borderRadius: 20,
-              background:
-                "linear-gradient(135deg,rgba(245,166,35,.1),rgba(245,158,11,0.04))",
-              border: "1px solid rgba(245,166,35,.28)",
-              position: "relative",
-              boxShadow: "0 0 60px rgba(245,166,35,.07)",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: 14,
-                right: 14,
-                fontSize: 9,
-                fontWeight: 900,
-                padding: "3px 10px",
-                borderRadius: 20,
-                background: "var(--accent)",
-                color: "#111",
-                letterSpacing: ".1em",
-              }}
-            >
-              MOST POPULAR
-            </div>
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "var(--accent)",
-                textTransform: "uppercase",
-                letterSpacing: ".12em",
-                marginBottom: 14,
-              }}
-            >
-              Pro
-            </div>
-            <div style={{ marginBottom: 6 }}>
-              <span
-                style={{
-                  fontSize: 46,
-                  fontWeight: 900,
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                $10
-              </span>
-              <span
-                style={{
-                  fontSize: 14,
-                  color: "rgba(255,255,255,.28)",
-                  marginLeft: 4,
-                }}
-              >
-                /month
-              </span>
-            </div>
-            <div
-              style={{
-                fontSize: 13,
-                color: "rgba(255,255,255,.32)",
-                marginBottom: 26,
-                lineHeight: 1.5,
-              }}
-            >
-              Unlock AI analysis, portfolio tracking and unlimited features.
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 26,
-              }}
-            >
-              {[
-                "Everything in Free",
-                "AI Technical Analysis (unlimited)",
-                "Portfolio Tracker & Tax Reports",
-                "Unlimited watchlist & alerts",
-                "News sentiment analysis",
-                "Priority support",
-              ].map((f, i) => (
-                <div
-                  key={i}
-                  style={{ display: "flex", alignItems: "center", gap: 9 }}
-                >
-                  <div
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: "50%",
-                      background: "rgba(245,166,35,.14)",
-                      border: "1px solid rgba(245,166,35,.28)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Check size={9} style={{ color: "var(--accent)" }} />
-                  </div>
-                  <span
-                    style={{ fontSize: 13, color: "rgba(255,255,255,.62)" }}
-                  >
-                    {f}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={() => navigate("/pricing")}
-              className="lp-primary"
-              style={{
-                width: "100%",
-                padding: "13px",
-                borderRadius: 11,
-                background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
-                color: "#111",
-                fontWeight: 800,
-                fontSize: 14,
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 8px 24px rgba(245,166,35,.3)",
-              }}
-            >
-              Start Pro Trial →
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section
-        style={{ padding: "60px 48px", maxWidth: 760, margin: "0 auto" }}
-      >
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 800,
-              color: "var(--accent)",
-              letterSpacing: ".22em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            FAQ
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(24px,3.5vw,42px)",
-              fontWeight: 900,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Common questions
-          </h2>
-        </div>
-        <FaqList />
-      </section>
-
-      {/* FINAL CTA */}
-      <section
-        style={{
-          padding: "80px 48px",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%,-50%)",
-            width: 600,
-            height: 300,
-            background:
-              "radial-gradient(ellipse,rgba(245,166,35,.07) 0%,transparent 65%)",
-            pointerEvents: "none",
-          }}
-        />
-        <div style={{ position: "relative" }}>
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 800,
-              color: "var(--accent)",
-              letterSpacing: ".22em",
-              textTransform: "uppercase",
-              marginBottom: 16,
-            }}
-          >
-            Get started today
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(28px,5vw,58px)",
-              fontWeight: 900,
-              letterSpacing: "-0.03em",
-              marginBottom: 16,
-              lineHeight: 1.05,
-            }}
-          >
-            Ready to trade
-            <br />
-            smarter?
-          </h2>
-          <p
-            style={{
-              fontSize: 15,
-              color: "rgba(255,255,255,.28)",
-              maxWidth: 400,
-              margin: "0 auto 40px",
-              lineHeight: 1.65,
-            }}
-          >
-            Free account. No credit card. Upgrade to Pro when you're ready.
-          </p>
-          <button
-            onClick={() => onAuthOpen?.("signup")}
-            className="lp-primary"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 9,
-              padding: "16px 38px",
-              borderRadius: 14,
-              background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
-              color: "#111",
-              fontSize: 16,
-              fontWeight: 800,
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 8px 32px rgba(245,166,35,.35)",
-            }}
-          >
-            Create Free Account <ArrowRight size={17} />
-          </button>
-          <div
-            style={{
-              marginTop: 16,
-              fontSize: 12,
-              color: "rgba(255,255,255,.2)",
-            }}
-          >
-            Free forever · No credit card required
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer
-        style={{
-          padding: "24px 48px",
-          borderTop: "1px solid rgba(255,255,255,.05)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1160,
-            margin: "0 auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 12,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 6,
-                background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 900,
-                color: "#111",
-              }}
-            >
-              N
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 700 }}>
-              <span style={{ color: "var(--accent)" }}>Crypto</span>Neko
-            </span>
-            <span
-              style={{
-                fontSize: 11,
-                color: "rgba(255,255,255,.15)",
-                marginLeft: 6,
-              }}
-            >
-              &copy; {new Date().getFullYear()}
-            </span>
-          </div>
-          <div
-            style={{
-              fontSize: 11,
-              color: "rgba(255,255,255,.16)",
-              maxWidth: 360,
-              textAlign: "center",
-            }}
-          >
-            Technical analysis tools only. Not financial advice.
-          </div>
-          <div style={{ display: "flex", gap: 20 }}>
-            {["Privacy Policy", "Terms of Use", "Contact"].map((link) => (
-              <span
-                key={link}
-                style={{
-                  fontSize: 12,
-                  color: "rgba(255,255,255,.2)",
-                  cursor: "pointer",
-                  transition: "color .15s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,.6)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,.2)")
-                }
-              >
-                {link}
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+            {[
+              { l: "Terms", p: "/terms" },
+              { l: "Privacy", p: "/privacy" },
+              { l: "Docs", p: "/docs" },
+              { l: "Pricing", p: "/pricing" },
+            ].map(link => (
+              <span key={link.l} onClick={() => navigate(link.p)} style={{ fontSize: 13, color: T.textMuted, cursor: "pointer", transition: "color 150ms" }}
+                onMouseEnter={e => e.currentTarget.style.color = T.textPrimary}
+                onMouseLeave={e => e.currentTarget.style.color = T.textMuted}>
+                {link.l}
               </span>
             ))}
           </div>
+          <div style={{ fontSize: 12, color: T.textMuted }}>© 2025 CryptoNeko. Not financial advice.</div>
         </div>
       </footer>
     </div>
