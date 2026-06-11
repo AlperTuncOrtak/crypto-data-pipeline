@@ -22,7 +22,7 @@ import {
   CandlestickChart,
 } from "lucide-react";
 import { AnimatedPrice } from "../components/ui/AnimatedPrice";
-import CustomCandlestickChart from "../components/market/CustomCandlestickChart";
+import LightweightCandleChart from "../components/market/LightweightCandleChart";
 import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
@@ -839,7 +839,7 @@ export default function CoinDetail() {
                 No data for this time range.
               </div>
             ) : (
-              <CustomCandlestickChart data={chartData} range={range} />
+              <LightweightCandleChart data={chartData} />
             )}
           </div>
         )}
