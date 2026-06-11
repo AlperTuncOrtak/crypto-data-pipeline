@@ -30,8 +30,7 @@ function fmtChartTime(iso: string, range: string) {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-// Frontend'de ham fiyat verisini mum verisine (OHLC) ceviren yardimci fonksiyon
-function aggregateToOHLC(data: any[], numBuckets = 60) {
+function aggregateToOHLC(data: any[], targetBuckets = 60) {
   if (!data || data.length === 0) return [];
 
   const sorted = [...data].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
@@ -40,8 +39,11 @@ function aggregateToOHLC(data: any[], numBuckets = 60) {
   
   if (startTime === endTime) return [];
 
-  const interval = (endTime - startTime) / numBuckets;
-  const buckets = Array.from({ length: numBuckets }, (_, i) => ({
+  // Veri azsa mum sayisini dusur ki her mum bos olmasin
+  const actualBuckets = Math.min(targetBuckets, Math.max(12, Math.floor(sorted.length / 2)));
+  const interval = (endTime - startTime) / actualBuckets;
+  
+  const buckets = Array.from({ length: actualBuckets }, (_, i) => ({
     time: startTime + i * interval,
     prices: [] as number[],
   }));
@@ -49,16 +51,31 @@ function aggregateToOHLC(data: any[], numBuckets = 60) {
   sorted.forEach(point => {
     const t = new Date(point.time).getTime();
     let idx = Math.floor((t - startTime) / interval);
-    if (idx >= numBuckets) idx = numBuckets - 1;
+    if (idx >= actualBuckets) idx = actualBuckets - 1;
     buckets[idx].prices.push(point.price);
   });
 
+  let lastValidClose = sorted[0].price;
+
   return buckets.map(b => {
-    if (b.prices.length === 0) return null;
+    if (b.prices.length === 0) {
+      // Bosluklari onceki kapanis fiyatiyla doldur (yatay cizgi olur)
+      return {
+        time: b.time,
+        open: lastValidClose,
+        high: lastValidClose,
+        low: lastValidClose,
+        close: lastValidClose,
+        range: [lastValidClose, lastValidClose]
+      };
+    }
     const open = b.prices[0];
     const close = b.prices[b.prices.length - 1];
     const high = Math.max(...b.prices);
     const low = Math.min(...b.prices);
+    
+    lastValidClose = close;
+    
     return {
       time: b.time,
       open,
@@ -68,7 +85,7 @@ function aggregateToOHLC(data: any[], numBuckets = 60) {
       // For charting, we need a bar value array [low, high] to map to Y axis correctly
       range: [low, high]
     };
-  }).filter(Boolean); // bos bucket'lari atla
+  });
 }
 
 const CandlestickShape = (props: any) => {
@@ -81,9 +98,11 @@ const CandlestickShape = (props: any) => {
   // Since high is larger, it maps to the top of the chart (y), and low maps to the bottom (y + height).
   // Y coordinate increases downwards.
   
-  // Prevent division by zero if high == low
-  const rangeDiff = high - low || 1;
-  const getY = (price: number) => y + height * ((high - price) / rangeDiff);
+  const rangeDiff = high - low;
+  const getY = (price: number) => {
+    if (rangeDiff === 0) return y + height / 2;
+    return y + height * ((high - price) / rangeDiff);
+  };
 
   const yOpen = getY(open);
   const yClose = getY(close);
