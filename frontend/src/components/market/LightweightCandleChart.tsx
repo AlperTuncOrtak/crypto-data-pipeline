@@ -26,11 +26,16 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
   });
 
   let lastValidClose = sorted[0].price;
+  let lastTime = 0;
 
   return buckets.map(b => {
+    let t = Math.floor(b.time / 1000);
+    if (t <= lastTime) t = lastTime + 1; // lightweight-charts requires strictly increasing time
+    lastTime = t;
+
     if (b.prices.length === 0) {
       return {
-        time: Math.floor(b.time / 1000) as any,
+        time: t as any,
         open: lastValidClose,
         high: lastValidClose,
         low: lastValidClose,
@@ -45,7 +50,7 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
     lastValidClose = close;
     
     return {
-      time: Math.floor(b.time / 1000) as any,
+      time: t as any,
       open,
       high,
       low,
