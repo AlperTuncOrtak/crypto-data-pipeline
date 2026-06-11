@@ -1133,6 +1133,7 @@ export default function Landing({ onAuthOpen }) {
             </span>
           </h2>
         </div>
+        </Reveal>
 
         <div className="relative mx-auto mt-20 pb-40" style={{ maxWidth: 1000 }}>
           {[
@@ -1239,9 +1240,7 @@ export default function Landing({ onAuthOpen }) {
             );
           })}
         </div>
-        </Reveal>
       </section>
-
 
       {/* HOW IT WORKS */}
       <section
