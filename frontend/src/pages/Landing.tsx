@@ -1133,9 +1133,8 @@ export default function Landing({ onAuthOpen }) {
             </span>
           </h2>
         </div>
-        </Reveal>
 
-        <div className="relative mx-auto mt-20 pb-40" style={{ maxWidth: 1000 }}>
+        <div className="relative mx-auto mt-32 pb-40" style={{ maxWidth: 1100 }}>
           {[
             {
               badge: "LIVE DATA",
@@ -1165,18 +1164,20 @@ export default function Landing({ onAuthOpen }) {
                 key={i}
                 style={{
                   position: "sticky",
-                  top: `calc(140px + ${i * 20}px)`,
-                  marginBottom: i === 2 ? 0 : "30vh",
-                  padding: "48px",
-                  borderRadius: "32px",
-                  background: "rgba(2, 6, 23, 0.85)",
-                  backdropFilter: "blur(40px)",
-                  WebkitBackdropFilter: "blur(40px)",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
-                  boxShadow: `0 20px 80px rgba(0,0,0,0.8), inset 0 0 0 1px ${feature.color}20`,
+                  top: `calc(120px + ${i * 40}px)`,
+                  minHeight: "60vh",
+                  marginBottom: i === 2 ? 0 : "80vh",
+                  padding: "80px",
+                  borderRadius: "40px",
+                  background: "rgba(2, 6, 23, 0.95)",
+                  backdropFilter: "blur(60px)",
+                  WebkitBackdropFilter: "blur(60px)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  boxShadow: `0 40px 100px rgba(0,0,0,0.9), inset 0 2px 0 0 rgba(255,255,255,0.05), inset 0 0 0 1px ${feature.color}30`,
                   display: "flex",
                   flexDirection: "column",
-                  gap: 24,
+                  justifyContent: "center",
+                  gap: 32,
                   zIndex: i + 10,
                   transformOrigin: "top center",
                   transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -1184,11 +1185,11 @@ export default function Landing({ onAuthOpen }) {
               >
                 <div style={{
                   position: "absolute",
-                  top: -100, right: -100,
-                  width: 300, height: 300,
+                  top: "-20%", right: "-10%",
+                  width: "80%", height: "140%",
                   background: `radial-gradient(circle, ${feature.color}15 0%, transparent 60%)`,
                   borderRadius: "50%",
-                  filter: "blur(40px)",
+                  filter: "blur(60px)",
                   pointerEvents: "none",
                   zIndex: 0,
                 }} />
@@ -1198,29 +1199,31 @@ export default function Landing({ onAuthOpen }) {
                   zIndex: 1,
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 8,
-                  padding: "6px 16px",
+                  gap: 12,
+                  padding: "8px 24px",
                   borderRadius: 100,
-                  background: `${feature.color}10`,
-                  border: `1px solid ${feature.color}30`,
+                  background: `${feature.color}15`,
+                  border: `1px solid ${feature.color}40`,
                   color: feature.color,
-                  fontSize: 12,
+                  fontSize: 16,
                   fontWeight: 800,
-                  letterSpacing: ".1em",
-                  width: "max-content"
+                  letterSpacing: ".15em",
+                  width: "max-content",
+                  boxShadow: `0 0 30px ${feature.color}30`
                 }}>
-                  <Icon size={14} />
+                  <Icon size={20} />
                   {feature.badge}
                 </div>
                 
                 <h3 style={{
                   position: "relative",
                   zIndex: 1,
-                  fontSize: "clamp(32px, 4vw, 48px)",
+                  fontSize: "clamp(48px, 6vw, 72px)",
                   fontWeight: 900,
                   color: "white",
                   margin: 0,
-                  letterSpacing: "-0.02em"
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.1
                 }}>
                   {feature.title}
                 </h3>
@@ -1228,10 +1231,10 @@ export default function Landing({ onAuthOpen }) {
                 <p style={{
                   position: "relative",
                   zIndex: 1,
-                  fontSize: "clamp(16px, 2vw, 20px)",
-                  color: "rgba(255, 255, 255, 0.5)",
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
+                  color: "rgba(255, 255, 255, 0.6)",
                   lineHeight: 1.6,
-                  maxWidth: "800px",
+                  maxWidth: "900px",
                   margin: 0
                 }}>
                   {feature.desc}
@@ -1240,7 +1243,10 @@ export default function Landing({ onAuthOpen }) {
             );
           })}
         </div>
+        </Reveal>
       </section>
+
+
 
       {/* HOW IT WORKS */}
       <section
