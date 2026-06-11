@@ -449,146 +449,95 @@ export default function Navbar({
         }
       `}</style>
 
-      {/* ── STATS BAR ───────────────────────────────────────── */}
+      {/* ── SCROLLING STATS MARQUEE ───────────────────────────────────────── */}
       <div
         style={{
           backgroundColor: "rgba(12, 12, 22, 0.65)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
-          overflowX: "auto",
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "center",
+          height: "36px",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 0,
-            padding: "6px 16px",
-            maxWidth: 1440,
-            margin: "0 auto",
-            minWidth: "max-content",
-          }}
-        >
-          {[
-            {
-              label: "Coins",
-              value: statsData?.coin_count ?? marketData?.length ?? 0,
-              valueColor: "rgba(255,255,255,0.6)",
-            },
-            {
-              label: "24h Vol",
-              value: formatLarge(totalVolume),
-              valueColor: "rgba(255,255,255,0.6)",
-            },
-            {
-              label: "BTC",
-              value: btcPrice
-                ? `$${Number(btcPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-                : "—",
-              valueColor: "var(--accent)",
-            },
-            {
-              label: "BTC Dom",
-              value: `${btcDom}%`,
-              valueColor: "rgba(255,255,255,0.6)",
-            },
-          ].map((s, i) => (
-            <div
-              key={s.label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "0 16px",
-                borderRight: "1px solid rgba(255,255,255,0.05)",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 10,
-                  color: "rgba(255,255,255,0.25)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                }}
-              >
-                {s.label}
-              </span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: s.valueColor,
-                  fontFamily: "monospace",
-                }}
-              >
-                {s.value}
-              </span>
+        <style>{`
+          @keyframes marqueeNavbar {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .marquee-content {
+            display: flex;
+            align-items: center;
+            width: max-content;
+            animation: marqueeNavbar 30s linear infinite;
+          }
+          .marquee-content:hover {
+            animation-play-state: paused;
+          }
+          .stat-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 24px;
+            border-right: 1px solid rgba(255,255,255,0.05);
+          }
+        `}</style>
+
+        {(() => {
+          const content = (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div className="stat-item">
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Coins</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "monospace" }}>
+                  {statsData?.coin_count ?? marketData?.length ?? 0}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>24h Vol</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "monospace" }}>
+                  {formatLarge(totalVolume)}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", fontFamily: "monospace" }}>
+                  {btcPrice ? `$${Number(btcPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "—"}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC Dom</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "monospace" }}>
+                  {btcDom}%
+                </span>
+              </div>
+              <div className="stat-item" style={{ gap: 12 }}>
+                <span style={{ fontSize: 11, color: "#2ecc71", fontFamily: "monospace", fontWeight: 600 }}>↑ {gainers}</span>
+                <span style={{ fontSize: 11, color: "#e74c3c", fontFamily: "monospace", fontWeight: 600 }}>↓ {losers}</span>
+              </div>
+              {marketData?.slice(0, 10).map((coin) => (
+                <div key={coin.symbol} className="stat-item">
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.6)", fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
+                  <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.9)" }}>
+                    ${Number(coin.current_price) < 1 ? Number(coin.current_price).toFixed(4) : Number(coin.current_price).toLocaleString()}
+                  </span>
+                  <span style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 600, color: Number(coin.price_change_percentage_24h) >= 0 ? "#2ecc71" : "#e74c3c" }}>
+                    {Number(coin.price_change_percentage_24h) >= 0 ? "+" : ""}{Number(coin.price_change_percentage_24h).toFixed(1)}%
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "0 16px",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 11,
-                color: "#2ecc71",
-                fontFamily: "monospace",
-                fontWeight: 600,
-              }}
-            >
-              ↑ {gainers}
-            </span>
-            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.15)" }}>
-              ·
-            </span>
-            <span
-              style={{
-                fontSize: 11,
-                color: "#e74c3c",
-                fontFamily: "monospace",
-                fontWeight: 600,
-              }}
-            >
-              ↓ {losers}
-            </span>
-          </div>
-          <div
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <div
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                backgroundColor: "var(--accent)",
-                animation: "pulseGlow 2s infinite",
-              }}
-            />
-            <span
-              style={{
-                fontSize: 10,
-                color: "var(--accent)",
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-              }}
-            >
-              LIVE
-            </span>
-          </div>
-        </div>
+          );
+
+          return (
+            <div className="marquee-content">
+              {content}
+              {content}
+            </div>
+          );
+        })()}
       </div>
 
       {/* ── MAIN NAVBAR ─────────────────────────────────────── */}
