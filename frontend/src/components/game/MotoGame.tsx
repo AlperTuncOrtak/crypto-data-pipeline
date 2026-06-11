@@ -32,7 +32,7 @@ export default function MotoGame({
     // --- CHART TERRAIN SETUP ---
     let prices: number[] = [];
     let minP = Infinity, maxP = -Infinity;
-    const pixelsPerPoint = 100; // Closer points for more pronounced hills
+    const pixelsPerPoint = 150; // Closer points for more pronounced hills, but 150 prevents extreme cliffs
     
     if (chartData && chartData.length > 1) {
       prices = chartData.map(d => d.price);
@@ -93,8 +93,8 @@ export default function MotoGame({
         const pInterp = p0 * (1 - mu2) + p1 * mu2;
 
         // Map price to height
-        // To make it drivable, we restrict the total height variation to ~300 pixels
-        const yRange = 300;
+        // To make it drivable, we restrict the total height variation to ~200 pixels
+        const yRange = 250;
         const yBottom = Math.max(600, height * 0.8);
         return yBottom - ((pInterp - minP) / (maxP - minP)) * yRange;
       } else {
@@ -196,18 +196,24 @@ export default function MotoGame({
     }
 
     // --- MOTORCYCLE SETUP ---
-    const spawnX = 140;
+    const startX = 140;
     
-    // Find precise terrain heights for all parts to prevent massive drops
-    const tyBack = getTerrainHeight(100);
-    const tyFront = getTerrainHeight(180);
-    const tyChassis = getTerrainHeight(140);
-
-    const w1 = new Particle(100, tyBack - WHEEL_RADIUS, WHEEL_RADIUS); // back wheel
-    const w2 = new Particle(180, tyFront - WHEEL_RADIUS, WHEEL_RADIUS); // front wheel
+    // Find the ground angle at the spawn point
+    const { angle: spawnAngle } = getTerrainNormal(startX);
     
-    // Position chassis above ground. Springs are length 65, wheel radius is 18
-    const chassis = new Particle(140, tyChassis - 65 - WHEEL_RADIUS, 10, true); // rider/chassis head
+    // Position wheels based on slope angle so the horizontal distance aligns with the 80px spring
+    // In 2D canvas, Y is down.
+    const w1x = startX - Math.cos(spawnAngle) * 40;
+    const w2x = startX + Math.cos(spawnAngle) * 40;
+    
+    const w1 = new Particle(w1x, getTerrainHeight(w1x) - WHEEL_RADIUS, WHEEL_RADIUS); // back wheel
+    const w2 = new Particle(w2x, getTerrainHeight(w2x) - WHEEL_RADIUS, WHEEL_RADIUS); // front wheel
+    
+    // Position chassis perfectly perpendicular to the slope, 65px above the wheels
+    const cx = startX - Math.sin(spawnAngle) * 65;
+    const cy = getTerrainHeight(startX) - Math.cos(spawnAngle) * 65 - WHEEL_RADIUS;
+    
+    const chassis = new Particle(cx, cy, 10, true); // rider/chassis head
 
     const springs = [
       new Spring(w1, w2, 80, 0.8), // wheelbase
@@ -242,6 +248,24 @@ export default function MotoGame({
       if (tiltForce !== 0) {
         w1.vy += tiltForce;
         w2.vy -= tiltForce;
+      } else {
+        // Auto-stabilization (keeps the bike upright if no tilt keys are pressed)
+        const dx = w2.x - w1.x;
+        const dy = w2.y - w1.y;
+        const bikeAngle = Math.atan2(dy, dx);
+        
+        // Target angle is the ground slope directly under the bike
+        const { angle: groundAngle } = getTerrainNormal((w1.x + w2.x) / 2);
+        
+        // Calculate shortest angular distance
+        let diff = bikeAngle - groundAngle;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        
+        // Apply corrective force to auto-align bike to the ground
+        const correctiveForce = diff * 0.15;
+        w1.vy += correctiveForce;
+        w2.vy -= correctiveForce;
       }
 
       // Physics integration
