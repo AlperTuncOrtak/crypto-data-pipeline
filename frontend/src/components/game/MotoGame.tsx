@@ -32,13 +32,17 @@ export default function MotoGame({
     // --- CHART TERRAIN SETUP ---
     let prices: number[] = [];
     let minP = 0, maxP = 0;
-    const pixelsPerPoint = 150; // Each data point is 150 pixels apart
+    const pixelsPerPoint = 1000; // Much smoother slopes
+    const runwayLength = 5; // Flat runway at start
     
     if (chartData && chartData.length > 1) {
-      prices = chartData.map(d => d.price);
-      minP = Math.min(...prices);
-      maxP = Math.max(...prices);
-      if (maxP === minP) maxP = minP + 1; // avoid division by zero
+      const validPrices = chartData.map(d => Number(d.price)).filter(p => !isNaN(p));
+      if (validPrices.length > 0) {
+        prices = Array(runwayLength).fill(validPrices[0]).concat(validPrices);
+        minP = Math.min(...prices);
+        maxP = Math.max(...prices);
+        if (maxP === minP) maxP = minP + 1; // avoid division by zero
+      }
     }
 
     // --- GAME STATE ---

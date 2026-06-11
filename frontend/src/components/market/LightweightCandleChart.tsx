@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useMemo } from 'react';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 
 function aggregateToOHLC(data: any[], targetBuckets = 60) {
-  if (!data || data.length === 0) return [];
+  const validData = data.filter(d => d && d.time && d.price != null && !isNaN(Number(d.price)) && !isNaN(new Date(d.time).getTime()));
+  if (validData.length === 0) return [];
 
-  const sorted = [...data].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+  const sorted = [...validData].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
   const startTime = new Date(sorted[0].time).getTime();
   const endTime = new Date(sorted[sorted.length - 1].time).getTime();
   
@@ -22,10 +23,10 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
     const t = new Date(point.time).getTime();
     let idx = Math.floor((t - startTime) / interval);
     if (idx >= actualBuckets) idx = actualBuckets - 1;
-    buckets[idx].prices.push(point.price);
+    buckets[idx].prices.push(Number(point.price));
   });
 
-  let lastValidClose = sorted[0].price;
+  let lastValidClose = Number(sorted[0].price);
   let lastTime = 0;
 
   return buckets.map(b => {
