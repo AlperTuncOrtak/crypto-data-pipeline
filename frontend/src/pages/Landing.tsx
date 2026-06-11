@@ -211,6 +211,11 @@ export default function Landing({ onAuthOpen }) {
       }}
     >
       <style>{`
+
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes marqueeReverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        .marquee-track { display: flex; width: max-content; }
+
         @keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-33.33%)} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
         @keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
@@ -1245,6 +1250,77 @@ export default function Landing({ onAuthOpen }) {
         </div>
         </Reveal>
       </section>
+      {/* SUPPORTED CHAINS MARQUEE */}
+      <section style={{ padding: "80px 0", overflow: "hidden", position: "relative", background: "rgba(2,6,23,0.4)" }}>
+        <Reveal direction="up">
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: "var(--accent)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+              40+ SUPPORTED CHAINS
+            </span>
+            <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 900, marginTop: 16, letterSpacing: "-0.03em" }}>
+              Every network. One dashboard.
+            </h2>
+          </div>
+          
+          <div style={{
+            position: "relative", width: "100%", display: "flex", flexDirection: "column", gap: 20, overflow: "hidden",
+            maskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+            WebkitMaskImage: "-webkit-linear-gradient(left, transparent, black 15%, black 85%, transparent)"
+          }}>
+            {/* Top Row (Left to Right) */}
+            <div className="marquee-track" style={{ animation: "marquee 40s linear infinite" }}>
+              {[
+                { name: "Ethereum", color: "#627EEA" }, { name: "Solana", color: "#14F195" }, { name: "Arbitrum", color: "#28A0F0" },
+                { name: "Optimism", color: "#FF0420" }, { name: "Polygon", color: "#8247E5" }, { name: "Base", color: "#0052FF" },
+                { name: "Avalanche", color: "#E84142" }, { name: "BSC", color: "#F3BA2F" },
+                { name: "Ethereum", color: "#627EEA" }, { name: "Solana", color: "#14F195" }, { name: "Arbitrum", color: "#28A0F0" },
+                { name: "Optimism", color: "#FF0420" }, { name: "Polygon", color: "#8247E5" }, { name: "Base", color: "#0052FF" },
+                { name: "Avalanche", color: "#E84142" }, { name: "BSC", color: "#F3BA2F" }
+              ].map((chain, i) => (
+                <div key={i} style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: "16px 32px",
+                  margin: "0 10px",
+                  borderRadius: "100px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  boxShadow: `inset 0 0 20px ${chain.color}05`,
+                }}>
+                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: chain.color, boxShadow: `0 0 10px ${chain.color}` }} />
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "white" }}>{chain.name}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom Row (Right to Left / Reverse) */}
+            <div className="marquee-track" style={{ animation: "marqueeReverse 45s linear infinite" }}>
+              {[
+                { name: "Fantom", color: "#1969FF" }, { name: "Cronos", color: "#002D74" }, { name: "Mantle", color: "#65B3AE" },
+                { name: "Linea", color: "#121212" }, { name: "ZkSync", color: "#8C8DFC" }, { name: "Blast", color: "#FCFC03" },
+                { name: "Scroll", color: "#FFEEDA" }, { name: "Celo", color: "#35D07F" },
+                { name: "Fantom", color: "#1969FF" }, { name: "Cronos", color: "#002D74" }, { name: "Mantle", color: "#65B3AE" },
+                { name: "Linea", color: "#121212" }, { name: "ZkSync", color: "#8C8DFC" }, { name: "Blast", color: "#FCFC03" },
+                { name: "Scroll", color: "#FFEEDA" }, { name: "Celo", color: "#35D07F" }
+              ].map((chain, i) => (
+                <div key={i} style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: "16px 32px",
+                  margin: "0 10px",
+                  borderRadius: "100px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  boxShadow: `inset 0 0 20px ${chain.color}05`,
+                }}>
+                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: chain.color, boxShadow: `0 0 10px ${chain.color}` }} />
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "white" }}>{chain.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+
 
 
 
