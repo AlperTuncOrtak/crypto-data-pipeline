@@ -32,7 +32,7 @@ export default function MotoGame({
     // --- CHART TERRAIN SETUP ---
     let prices: number[] = [];
     let minP = Infinity, maxP = -Infinity;
-    const pixelsPerPoint = 300; // Spread points out so slopes aren't vertical walls
+    const pixelsPerPoint = 100; // Closer points for more pronounced hills
     
     if (chartData && chartData.length > 1) {
       prices = chartData.map(d => d.price);
@@ -53,17 +53,17 @@ export default function MotoGame({
     const keys = { w: false, s: false, a: false, d: false, up: false, down: false, left: false, right: false };
     
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") keys.up = true;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") keys.down = true;
-      if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") keys.left = true;
-      if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") keys.right = true;
+      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp" || e.key === "ArrowRight") keys.up = true;
+      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown" || e.key === "ArrowLeft") keys.down = true;
+      if (e.key === "a" || e.key === "A") keys.left = true;
+      if (e.key === "d" || e.key === "D") keys.right = true;
     };
     
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") keys.up = false;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") keys.down = false;
-      if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") keys.left = false;
-      if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") keys.right = false;
+      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp" || e.key === "ArrowRight") keys.up = false;
+      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown" || e.key === "ArrowLeft") keys.down = false;
+      if (e.key === "a" || e.key === "A") keys.left = false;
+      if (e.key === "d" || e.key === "D") keys.right = false;
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -93,8 +93,8 @@ export default function MotoGame({
         const pInterp = p0 * (1 - mu2) + p1 * mu2;
 
         // Map price to height
-        // To make it drivable, we restrict the total height variation to ~400 pixels
-        const yRange = 400;
+        // To make it drivable, we restrict the total height variation to ~300 pixels
+        const yRange = 300;
         const yBottom = Math.max(600, height * 0.8);
         return yBottom - ((pInterp - minP) / (maxP - minP)) * yRange;
       } else {
@@ -116,9 +116,9 @@ export default function MotoGame({
     };
 
     // --- PHYSICS ENGINE ---
-    const GRAVITY = 0.4;
-    const FRICTION = 0.99;
-    const WHEEL_RADIUS = 16;
+    const GRAVITY = 0.5;
+    const FRICTION = 0.98;
+    const WHEEL_RADIUS = 18;
 
     class Particle {
       x: number;
@@ -155,12 +155,7 @@ export default function MotoGame({
           // Push out of ground
           this.y = ty - this.radius;
 
-          // Align velocity with ground slope
-          const { angle } = getTerrainNormal(this.x);
-          
           // Simple collision response
-          const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-          // If we hit hard, kill some vertical speed
           this.vy *= 0.5;
 
           // Apply friction from ground
@@ -199,14 +194,10 @@ export default function MotoGame({
     }
 
     // --- MOTORCYCLE SETUP ---
-    // A wireframe bike: 2 wheels and a chassis center
-    // Spawn them exactly above the starting terrain so they don't die from massive drops
     const spawnX = 140;
     let spawnY = 300;
     if (prices.length > 1) {
-      // Find the starting height based on the new chart data
-      const ty = getTerrainHeight(spawnX);
-      spawnY = ty;
+      spawnY = getTerrainHeight(spawnX);
     } else {
       spawnY = getTerrainHeight(spawnX);
     }
@@ -229,12 +220,12 @@ export default function MotoGame({
 
       // Controls
       let enginePower = 0;
-      if (keys.up) enginePower = 1.8;
+      if (keys.up) enginePower = 2.5; // Increased power
       if (keys.down) enginePower = -1.5; // brake/reverse
 
       // Apply torque/engine to back wheel if on ground
       const tyBack = getTerrainHeight(w1.x);
-      if (w1.y + w1.radius >= tyBack - 2) {
+      if (w1.y + w1.radius >= tyBack - 5) { // More forgiving traction
         const { angle } = getTerrainNormal(w1.x);
         w1.vx += Math.cos(angle) * enginePower;
         w1.vy += Math.sin(angle) * enginePower;
@@ -242,13 +233,10 @@ export default function MotoGame({
 
       // Air tilt (rotation)
       let tiltForce = 0;
-      if (keys.left) tiltForce = -0.5;
-      if (keys.right) tiltForce = 0.5;
+      if (keys.left) tiltForce = -0.6;
+      if (keys.right) tiltForce = 0.6;
 
       if (tiltForce !== 0) {
-        const cx = (w1.x + w2.x) / 2;
-        const cy = (w1.y + w2.y) / 2;
-        
         w1.vy += tiltForce;
         w2.vy -= tiltForce;
       }
@@ -280,8 +268,8 @@ export default function MotoGame({
       
       // Update canvas size if resized
       if (canvas.clientWidth !== width || canvas.clientHeight !== height) {
-        width = canvas.clientWidth;
-        height = canvas.clientHeight;
+        width = canvas.clientWidth || window.innerWidth;
+        height = canvas.clientHeight || window.innerHeight;
         canvas.width = width;
         canvas.height = height;
       }
@@ -295,16 +283,29 @@ export default function MotoGame({
 
       ctx.save();
       // Translate for camera
-      // Smooth vertical camera tracking (less jittery)
       const smoothCamY = Math.max(0, camY - 100); 
       ctx.translate(-camX, -smoothCamY);
+
+      // --- DRAW BACKGROUND GRID ---
+      const startX = Math.floor(camX / 100) * 100 - 100;
+      const endX = startX + width + 200;
+      
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
+      ctx.lineWidth = 1;
+      for (let x = startX; x <= endX; x += 100) {
+        ctx.moveTo(x, smoothCamY);
+        ctx.lineTo(x, height + smoothCamY + 1000);
+      }
+      for (let y = Math.floor(smoothCamY / 100) * 100; y <= smoothCamY + height; y += 100) {
+        ctx.moveTo(startX, y);
+        ctx.lineTo(endX, y);
+      }
+      ctx.stroke();
 
       // Draw Terrain
       ctx.beginPath();
       // start drawing from left of camera to right of camera
-      const startX = Math.floor(camX / 20) * 20 - 20;
-      const endX = startX + width + 40;
-      
       ctx.moveTo(startX, height + smoothCamY + 1000);
       ctx.lineTo(startX, getTerrainHeight(startX));
 
@@ -382,6 +383,14 @@ export default function MotoGame({
       ctx.fillStyle = isGameOver ? "#e74c3c" : "#fff";
       ctx.fill();
 
+      // Show temporary instruction text
+      if (Date.now() - startTime < 4000) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+        ctx.font = "700 24px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("PRESS W OR ➡️ TO DRIVE", chassis.x, chassis.y - 100);
+      }
+
       ctx.restore();
     };
 
@@ -398,7 +407,7 @@ export default function MotoGame({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isPaused, restartTrigger, onGameOver, onScoreUpdate]);
+  }, [isPaused, restartTrigger, onGameOver, onScoreUpdate, chartData]);
 
   return (
     <canvas
