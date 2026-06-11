@@ -93,8 +93,8 @@ export default function MotoGame({
         const pInterp = p0 * (1 - mu2) + p1 * mu2;
 
         // Map price to height
-        // To make it drivable, we restrict the total height variation to ~200 pixels
-        const yRange = 250;
+        // To make it drivable without physics explosions, keep yRange small
+        const yRange = 150;
         const yBottom = Math.max(600, height * 0.8);
         return yBottom - ((pInterp - minP) / (maxP - minP)) * yRange;
       } else {
@@ -140,6 +140,13 @@ export default function MotoGame({
         this.vx *= FRICTION;
         this.vy *= FRICTION;
 
+        // Velocity clamping to prevent violent physics explosions!
+        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        if (speed > 15) {
+          this.vx = (this.vx / speed) * 15;
+          this.vy = (this.vy / speed) * 15;
+        }
+
         this.x += this.vx;
         this.y += this.vy;
 
@@ -147,8 +154,8 @@ export default function MotoGame({
         const ty = getTerrainHeight(this.x);
         if (this.y + this.radius > ty) {
           if (this.isChassis) {
-            // Give 1.5 seconds of invulnerability at spawn so physics can settle
-            if (Date.now() - startTime > 1500) {
+            // Give 2.5 seconds of invulnerability at spawn so physics can settle completely
+            if (Date.now() - startTime > 2500) {
               isGameOver = true;
               onGameOver();
             }
@@ -196,24 +203,14 @@ export default function MotoGame({
     }
 
     // --- MOTORCYCLE SETUP ---
-    const startX = 140;
-    
-    // Find the ground angle at the spawn point
-    const { angle: spawnAngle } = getTerrainNormal(startX);
-    
-    // Position wheels based on slope angle so the horizontal distance aligns with the 80px spring
-    // In 2D canvas, Y is down.
-    const w1x = startX - Math.cos(spawnAngle) * 40;
-    const w2x = startX + Math.cos(spawnAngle) * 40;
-    
-    const w1 = new Particle(w1x, getTerrainHeight(w1x) - WHEEL_RADIUS, WHEEL_RADIUS); // back wheel
-    const w2 = new Particle(w2x, getTerrainHeight(w2x) - WHEEL_RADIUS, WHEEL_RADIUS); // front wheel
-    
-    // Position chassis perfectly perpendicular to the slope, 65px above the wheels
-    const cx = startX - Math.sin(spawnAngle) * 65;
-    const cy = getTerrainHeight(startX) - Math.cos(spawnAngle) * 65 - WHEEL_RADIUS;
-    
-    const chassis = new Particle(cx, cy, 10, true); // rider/chassis head
+    // Simple vertical spawns to prevent math anomalies on extreme slopes
+    const tyBack = getTerrainHeight(100);
+    const tyFront = getTerrainHeight(180);
+    const tyChassis = getTerrainHeight(140);
+
+    const w1 = new Particle(100, tyBack - WHEEL_RADIUS, WHEEL_RADIUS); // back wheel
+    const w2 = new Particle(180, tyFront - WHEEL_RADIUS, WHEEL_RADIUS); // front wheel
+    const chassis = new Particle(140, tyChassis - 65 - WHEEL_RADIUS, 10, true); // rider/chassis head
 
     const springs = [
       new Spring(w1, w2, 80, 0.8), // wheelbase
