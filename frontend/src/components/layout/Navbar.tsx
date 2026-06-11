@@ -1360,40 +1360,69 @@ export default function Navbar({
                 )}
               </div>
             ) : (
-              <button
-                className="hide-mobile"
-                onClick={() => {
-                  onAuthOpen?.();
-                  setAuthOpen?.(true);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "7px 16px",
-                  borderRadius: 10,
-                  cursor: "pointer",
-                  background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
-                  color: "#111",
-                  border: "none",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  boxShadow: "0 4px 16px rgba(245,166,35,0.3)",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 6px 24px rgba(245,166,35,0.5)";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 16px rgba(245,166,35,0.3)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                Sign In <span style={{ opacity: 0.7 }}>→</span>
-              </button>
+              <div className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button
+                  onClick={() => {
+                    onAuthOpen?.("login");
+                    setAuthOpen?.(true);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "7px 16px",
+                    borderRadius: 10,
+                    cursor: "pointer",
+                    background: "transparent",
+                    color: "rgba(255,255,255,0.7)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                    e.currentTarget.style.color = "white";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => {
+                    onAuthOpen?.("signup");
+                    setAuthOpen?.(true);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "7px 18px",
+                    borderRadius: 10,
+                    cursor: "pointer",
+                    background: "var(--accent)",
+                    color: "#020617",
+                    border: "none",
+                    fontSize: 13,
+                    fontWeight: 800,
+                    boxShadow: "0 0 20px rgba(0,240,255,0.35)",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.55)";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 0 20px rgba(0,240,255,0.35)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  Get Started
+                </button>
+              </div>
             )}
           </div>
         </div>
