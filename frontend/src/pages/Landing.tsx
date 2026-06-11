@@ -201,10 +201,32 @@ export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const featuresRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const cards = featuresRef.current?.querySelectorAll('.feature-card');
+      cards?.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        // Here we align with the `top` css property. The card sticks at calc(100px + i*24px)
+        const topVal = 100 + i * 24;
+        const overlap = topVal - rect.top;
+        const progress = Math.min(Math.max(overlap / (card.clientHeight * 0.6), 0), 1);
+        const el = card as HTMLElement;
+        el.style.transform = `scale(${1 - progress * 0.04})`;
+        el.style.opacity = String(1 - progress * 0.35);
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once on mount
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const features = [
@@ -477,29 +499,35 @@ export default function Landing({ onAuthOpen }) {
           </Reveal>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 100, position: "relative" }}>
+        <div ref={featuresRef} style={{ position: "relative" }}>
           {features.map((f, i) => {
             const Icon = f.icon;
             const isRight = f.mockupSide === "right";
             return (
-              <Reveal key={i} delay={0.1}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 60,
-                    alignItems: "center",
-                    padding: "72px 72px",
-                    borderRadius: 36,
-                    background: `rgba(15,15,26,0.98)`,
-                    border: `1px solid ${T.border}`,
-                    boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  {/* bg glow */}
-                  <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
+              <div
+                key={i}
+                className="feature-card"
+                style={{
+                  position: "sticky",
+                  top: `calc(100px + ${i * 24}px)`,
+                  marginBottom: 24,
+                  zIndex: i + 5,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 60,
+                  alignItems: "center",
+                  padding: "72px 72px",
+                  borderRadius: 36,
+                  background: `rgba(15,15,26,0.98)`,
+                  border: `1px solid ${T.border}`,
+                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
+                  overflow: "hidden",
+                  transition: "transform 0.3s ease, opacity 0.3s ease",
+                  transformOrigin: "top center",
+                }}
+              >
+                {/* bg glow */}
+                <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
 
                 {/* Text */}
                 <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
@@ -531,7 +559,6 @@ export default function Landing({ onAuthOpen }) {
                   {f.mockup}
                 </div>
               </div>
-              </Reveal>
             );
           })}
         </div>
