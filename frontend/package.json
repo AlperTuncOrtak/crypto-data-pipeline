@@ -16,6 +16,7 @@
     "@tanstack/react-query": "^5.100.14",
     "axios": "^1.7.0",
     "ethers": "^6.16.0",
+    "framer-motion": "^12.40.0",
     "lightweight-charts": "^5.2.0",
     "lucide-react": "^1.11.0",
     "react": "^18.3.1",

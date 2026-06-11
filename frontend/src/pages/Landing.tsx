@@ -2,6 +2,7 @@
 // pages/Landing.tsx — Purple Design System v3
 // ============================================================
 import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import {
@@ -197,9 +198,80 @@ function DashboardMockup() {
 }
 
 // ─── MAIN ────────────────────────────────────────────────────────
-export default function Landing({ onAuthOpen }) {
+const FeatureCard = ({ f, i, total, progress }: any) => {
+  const Icon = f.icon;
+  const isRight = f.mockupSide === "right";
+
+  // Sona dogru scale kucultme animasyonu (sayfa kaydikca alttaki kuculur)
+  const targetScale = 1 - ((total - i) * 0.05);
+  const scale = useTransform(progress, [i / total, 1], [1, targetScale]);
+  
+  // Yavasca matlasma animasyonu
+  const opacity = useTransform(progress, [i / total, 1], [1, 0.3]);
+
+  return (
+    <motion.div
+      style={{
+        scale,
+        opacity,
+        position: "sticky",
+        top: `calc(100px + ${i * 28}px)`,
+        marginBottom: i === total - 1 ? 0 : "80vh",
+        zIndex: i + 5,
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 60,
+        alignItems: "center",
+        padding: "72px 72px",
+        borderRadius: 36,
+        background: `rgba(15,15,26,0.98)`,
+        border: `1px solid ${T.border}`,
+        boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
+
+      <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: `0 0 20px ${f.badgeColor}20` }}>
+          <Icon size={14} />{f.badge}
+        </div>
+        <h3 style={{ fontSize: "clamp(30px,4vw,48px)", fontWeight: 900, color: T.textPrimary, margin: "0 0 20px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
+        <p style={{ fontSize: "clamp(15px,1.8vw,18px)", color: T.textSecondary, lineHeight: 1.7, margin: "0 0 32px", maxWidth: 460 }}>{f.desc}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {f.points.map((pt: string, j: number) => (
+            <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 18, height: 18, borderRadius: 6, background: `${f.badgeColor}15`, border: `1px solid ${f.badgeColor}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Check size={10} style={{ color: f.badgeColor }} />
+              </div>
+              <span style={{ fontSize: 14, color: T.textSecondary }}>{pt}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1, background: "rgba(10,10,15,0.8)", border: `1px solid ${T.border}`, borderRadius: 20, padding: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
+          {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+          <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 9, color: T.textMuted }}>cryptoneko.app</span>
+          </div>
+        </div>
+        {f.mockup}
+      </div>
+    </motion.div>
+  );
+};
+
+export default function Landing({ onAuthOpen }: any) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+  
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -477,65 +549,10 @@ export default function Landing({ onAuthOpen }) {
           </Reveal>
         </div>
 
-        <div style={{ position: "relative" }}>
-          {features.map((f, i) => {
-            const Icon = f.icon;
-            const isRight = f.mockupSide === "right";
-            return (
-              <div
-                key={i}
-                style={{
-                  position: "sticky",
-                  top: `calc(100px + ${i * 28}px)`,
-                  marginBottom: i === features.length - 1 ? 0 : "80vh",
-                  zIndex: i + 5,
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 60,
-                  alignItems: "center",
-                  padding: "72px 72px",
-                  borderRadius: 36,
-                  background: `rgba(15,15,26,0.98)`,
-                  border: `1px solid ${T.border}`,
-                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
-                  overflow: "hidden",
-                }}
-              >
-                {/* bg glow */}
-                <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
-
-                {/* Text */}
-                <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: `0 0 20px ${f.badgeColor}20` }}>
-                    <Icon size={14} />{f.badge}
-                  </div>
-                  <h3 style={{ fontSize: "clamp(30px,4vw,48px)", fontWeight: 900, color: T.textPrimary, margin: "0 0 20px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
-                  <p style={{ fontSize: "clamp(15px,1.8vw,18px)", color: T.textSecondary, lineHeight: 1.7, margin: "0 0 32px", maxWidth: 460 }}>{f.desc}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {f.points.map((pt, j) => (
-                      <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 6, background: `${f.badgeColor}15`, border: `1px solid ${f.badgeColor}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <Check size={10} style={{ color: f.badgeColor }} />
-                        </div>
-                        <span style={{ fontSize: 14, color: T.textSecondary }}>{pt}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mockup panel */}
-                <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1, background: "rgba(10,10,15,0.8)", border: `1px solid ${T.border}`, borderRadius: 20, padding: "20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
-                    {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
-                    <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 9, color: T.textMuted }}>cryptoneko.app</span>
-                    </div>
-                  </div>
-                  {f.mockup}
-                </div>
-              </div>
-            );
-          })}
+        <div ref={containerRef} style={{ position: "relative" }}>
+          {features.map((f, i) => (
+            <FeatureCard key={i} f={f} i={i} total={features.length} progress={scrollYProgress} />
+          ))}
         </div>
       </section>
 
