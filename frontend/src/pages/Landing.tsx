@@ -2,6 +2,7 @@
 // pages/Landing.tsx — Purple Design System v3
 // ============================================================
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
@@ -198,6 +199,7 @@ function DashboardMockup() {
 // ─── MAIN ────────────────────────────────────────────────────────
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -396,37 +398,42 @@ export default function Landing({ onAuthOpen }) {
 
         {/* CTAs */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
-          <button
-            onClick={() => onAuthOpen?.("signup")}
-            style={{
-              padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
-              background: T.purple, color: "white",
-              fontSize: 15, fontWeight: 800,
-              boxShadow: `0 0 32px rgba(139,92,246,0.4)`,
-              transition: "all 200ms ease",
-              display: "flex", alignItems: "center", gap: 8,
-            }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
-          >
-            Get Started Free <ArrowRight size={16} />
-          </button>
+          {!isLoggedIn && (
+            <button
+              onClick={() => onAuthOpen?.("signup")}
+              style={{
+                padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
+                background: T.purple, color: "white",
+                fontSize: 15, fontWeight: 800,
+                boxShadow: `0 0 32px rgba(139,92,246,0.4)`,
+                transition: "all 200ms ease",
+                display: "flex", alignItems: "center", gap: 8,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
+            >
+              Get Started Free <ArrowRight size={16} />
+            </button>
+          )}
           <button
             onClick={() => navigate("/dashboard")}
             style={{
               padding: "14px 32px", borderRadius: 14, cursor: "pointer",
-              background: "transparent", color: T.textSecondary,
-              fontSize: 15, fontWeight: 600,
-              border: `1px solid ${T.border}`,
+              background: isLoggedIn ? T.purple : "transparent",
+              color: isLoggedIn ? "white" : T.textSecondary,
+              fontSize: 15, fontWeight: isLoggedIn ? 800 : 600,
+              border: isLoggedIn ? "none" : `1px solid ${T.border}`,
               transition: "all 200ms ease",
+              boxShadow: isLoggedIn ? "0 0 32px rgba(139,92,246,0.4)" : "none",
+              display: "flex", alignItems: "center", gap: 8,
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.3)"; e.currentTarget.style.color = T.textPrimary; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSecondary; }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
           >
-            View Dashboard →
+            {isLoggedIn ? "Go to Dashboard" : "View Dashboard →"} {isLoggedIn && <ArrowRight size={16} />}
           </button>
         </div>
-        <div style={{ fontSize: 12, color: T.textMuted }}>No credit card required · Free plan available forever</div>
+        {!isLoggedIn && <div style={{ fontSize: 12, color: T.textMuted }}>No credit card required · Free plan available forever</div>}
 
         {/* Stat row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
@@ -455,6 +462,8 @@ export default function Landing({ onAuthOpen }) {
           </div>
         </Reveal>
       </section>
+
+
 
       {/* ─── FEATURE STICKY CARDS ────────────────────────────── */}
       <section style={{ padding: "0 clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto 160px" }}>
@@ -620,14 +629,25 @@ export default function Landing({ onAuthOpen }) {
                 Join thousands of traders using CryptoNeko to stay ahead of the market.
               </p>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
-                <button
-                  onClick={() => onAuthOpen?.("signup")}
-                  style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(139,92,246,0.4)", transition: "all 200ms" }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
-                >
-                  Create Free Account
-                </button>
+                {!isLoggedIn ? (
+                  <button
+                    onClick={() => onAuthOpen?.("signup")}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(139,92,246,0.4)", transition: "all 200ms" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
+                  >
+                    Create Free Account
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(139,92,246,0.4)", transition: "all 200ms", display: "flex", alignItems: "center", gap: 8 }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(139,92,246,0.6)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(139,92,246,0.4)"; e.currentTarget.style.transform = ""; }}
+                  >
+                    Go to Dashboard <ArrowRight size={16} />
+                  </button>
+                )}
                 <button
                   onClick={() => navigate("/market")}
                   style={{ padding: "14px 32px", borderRadius: 14, cursor: "pointer", background: "transparent", color: T.textSecondary, fontSize: 15, fontWeight: 600, border: `1px solid ${T.border}`, transition: "all 200ms" }}
