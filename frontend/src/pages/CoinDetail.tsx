@@ -21,7 +21,9 @@ import {
   LineChart,
   CandlestickChart,
 } from "lucide-react";
-import TradingViewWidget from "../components/market/TradingViewWidget";
+import { AnimatedPrice } from "../components/ui/AnimatedPrice";
+import CustomCandlestickChart from "../components/market/CustomCandlestickChart";
+import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 
@@ -827,8 +829,18 @@ export default function CoinDetail() {
 
         {/* Pro chart always rendered when selected so chart mounts */}
         {chartType === "pro" && (
-          <div style={{ width: "100%", height: 600, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)", marginTop: 16 }}>
-            <TradingViewWidget symbol={coin.symbol} theme="dark" />
+          <div style={{ width: "100%", height: 340, marginTop: 16 }}>
+            {historyLoading ? (
+              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+                Loading chart...
+              </div>
+            ) : chartData.length === 0 ? (
+              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+                No data for this time range.
+              </div>
+            ) : (
+              <CustomCandlestickChart data={chartData} range={range} />
+            )}
           </div>
         )}
 
