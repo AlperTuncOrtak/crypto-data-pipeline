@@ -12,9 +12,28 @@ import CoinListCard from "../components/market/CoinListCard";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
 import HeatmapWidget from "../components/market/HeatmapWidget";
-import { TableRowSkeleton } from "../components/ui/Skeleton";
 import Reveal from "../components/ui/Reveal";
-import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight, BarChart2, Bell, Zap } from "lucide-react";
+
+// ─── THEME TOKENS ────────────────────────────────────────────────
+const T = {
+  bg: "#0a0a0f",
+  card: "#0f0f1a",
+  cardHov: "#13131f",
+  purple: "#8b5cf6",
+  purpleLight: "#a78bfa",
+  green: "#34d399",
+  greenBg: "rgba(16,185,129,0.1)",
+  greenBorder: "rgba(52,211,153,0.2)",
+  red: "#f87171",
+  redBg: "rgba(248,113,113,0.1)",
+  redBorder: "rgba(248,113,113,0.2)",
+  textPrimary: "#f1f5f9",
+  textSecondary: "#94a3b8",
+  textMuted: "#6b7280",
+  border: "rgba(255,255,255,0.06)",
+  borderFeat: "rgba(139,92,246,0.25)",
+};
 
 function formatLargeNumber(n) {
   const num = Number(n);
@@ -22,187 +41,188 @@ function formatLargeNumber(n) {
   if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`;
   if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
   if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
-  if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`;
-  return `$${num.toFixed(2)}`;
+  return `$${num.toFixed(0)}`;
 }
 
 function formatPrice(n) {
   const num = Number(n);
   if (isNaN(num)) return "—";
-  if (num >= 1000)
-    return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+  if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
   if (num >= 1) return `$${num.toFixed(2)}`;
   if (num >= 0.01) return `$${num.toFixed(4)}`;
   if (num >= 0.0001) return `$${num.toFixed(6)}`;
-  if (num >= 0.000001) return `$${num.toFixed(8)}`;
   return `<$0.000001`;
 }
 
-// ─── BENTO CARD BASE ────────────────────────────────────────────
-const bentoBase = {
-  backgroundColor: "rgba(255,255,255,0.02)",
-  border: "1px solid rgba(255,255,255,0.05)",
-  borderRadius: 24,
-  overflow: "hidden",
-  position: "relative",
-  transition: "all 0.5s cubic-bezier(0.25, 1, 0.5, 1)",
-  transform: "translateZ(0)",
-};
+// ─── SPARKLINE ───────────────────────────────────────────────────
+function Sparkline({ data, color, width = 80, height = 32 }) {
+  if (!data || data.length < 2) {
+    // Fake data for demo
+    data = Array.from({ length: 12 }, (_, i) => 50 + Math.sin(i * 0.8) * 20 + Math.random() * 10);
+  }
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((v - min) / range) * height;
+    return `${x},${y}`;
+  }).join(" ");
+  return (
+    <svg width={width} height={height} style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id={`grad-${color}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polyline
+        points={pts}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
-function BentoCard({ children, style = {}, className = "", onMouseEnter, onMouseLeave }) {
+// ─── CARD BASE ───────────────────────────────────────────────────
+function Card({ children, style = {}, featured = false, onClick }) {
   const [hov, setHov] = useState(false);
   return (
     <div
-      className={className}
+      onClick={onClick}
       style={{
-        ...bentoBase,
-        borderColor: hov ? "var(--accent-border)" : "rgba(255,255,255,0.05)",
-        backgroundColor: hov ? "rgba(255,255,255,0.025)" : "rgba(255,255,255,0.02)",
-        transform: hov ? "scale(1.01)" : "scale(1)",
+        background: T.card,
+        border: `1px solid ${hov ? (featured ? "rgba(139,92,246,0.4)" : "rgba(139,92,246,0.2)") : (featured ? T.borderFeat : T.border)}`,
+        borderRadius: 20,
+        position: "relative",
+        overflow: "hidden",
+        transition: "all 200ms ease",
+        cursor: onClick ? "pointer" : "default",
+        ...(featured && {
+          background: "rgba(139,92,246,0.05)",
+          boxShadow: hov ? "0 0 40px rgba(139,92,246,0.15)" : "none",
+        }),
+        ...(hov && !featured && { background: T.cardHov }),
         ...style,
       }}
-      onMouseEnter={(e) => { setHov(true); if(onMouseEnter) onMouseEnter(e); }}
-      onMouseLeave={(e) => { setHov(false); if(onMouseLeave) onMouseLeave(e); }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
     >
       {children}
     </div>
   );
 }
 
-// ─── STAT CARD (Zerion Style) ──────────────────────────────────────
-function StatCard({ icon: Icon, label, value, sub, accent = false, trend }) {
-  const [hovered, setHovered] = useState(false);
+// ─── SECTION LABEL ───────────────────────────────────────────────
+function SectionLabel({ children }) {
   return (
-    <BentoCard style={{ padding: 0 }}>
-      {/* Zerion-style ambient glow in the corner */}
-      <div
-        style={{
-          position: "absolute",
-          top: -20,
-          right: -20,
-          width: 120,
-          height: 120,
-          background: accent 
-            ? "radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)" 
-            : "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)",
-          filter: "blur(20px)",
-          transition: "all 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
-          transform: hovered ? "scale(1.5) translate(-10px, 10px)" : "scale(1)",
-          pointerEvents: "none",
-        }}
-      />
-      
-      <div
-        style={{ padding: "24px", display: "flex", flexDirection: "column", gap: 16, position: "relative", zIndex: 2, height: "100%" }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          {/* Polished Icon Container */}
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: accent
-                ? "linear-gradient(135deg, rgba(0,240,255,0.15), rgba(0,240,255,0.05))"
-                : "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01))",
-              border: accent 
-                ? "1px solid rgba(0,240,255,0.2)" 
-                : "1px solid rgba(255,255,255,0.05)",
-              color: accent ? "var(--accent)" : "var(--text-secondary)",
-              boxShadow: accent ? "0 4px 12px rgba(0,240,255,0.1)" : "0 4px 12px rgba(0,0,0,0.2)",
-              transition: "all 0.4s ease",
-              transform: hovered ? "scale(1.05)" : "scale(1)",
-            }}
-          >
-            <Icon size={20} style={{ opacity: 0.9 }} />
-          </div>
-          
-          {/* Trend Pill */}
-          {trend !== undefined && (
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: trend >= 0 ? "var(--positive)" : "var(--negative)",
-                backgroundColor: trend >= 0 ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
-                padding: "4px 8px",
-                borderRadius: 100,
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                border: trend >= 0 ? "1px solid rgba(46,204,113,0.15)" : "1px solid rgba(231,76,60,0.15)",
-              }}
-            >
-              {trend >= 0 ? <ArrowUpRight size={12} strokeWidth={2.5} /> : <ArrowDownRight size={12} strokeWidth={2.5} />}
-              {Math.abs(trend).toFixed(1)}%
-            </div>
-          )}
-        </div>
-        
-        {/* Text Content */}
-        <div style={{ marginTop: "auto" }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.02em" }}>
-            {label}
-          </div>
-          <div
-            style={{
-              fontSize: 26,
-              fontWeight: 800,
-              fontFamily: "Inter, sans-serif",
-              color: accent ? "var(--text-primary)" : "var(--text-primary)",
-              letterSpacing: "-0.03em",
-              lineHeight: 1,
-              textShadow: accent ? "0 0 24px rgba(0,240,255,0.2)" : "none",
-            }}
-          >
-            {value}
-          </div>
-          {sub && (
-            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8, fontWeight: 500 }}>
-              {sub}
-            </div>
-          )}
-        </div>
-      </div>
-    </BentoCard>
+    <div style={{
+      fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+      textTransform: "uppercase", color: T.textMuted, marginBottom: 16,
+    }}>
+      {children}
+    </div>
   );
 }
 
-// ─── LAST UPDATED ────────────────────────────────────────────────
-function LastUpdated({ marketData }) {
-  const [seconds, setSeconds] = useState(0);
-  useEffect(() => {
-    setSeconds(0);
-    const interval = setInterval(() => setSeconds((s) => s + 1), 1000);
-    return () => clearInterval(interval);
-  }, [marketData]);
-  const label =
-    seconds < 60
-      ? `${seconds}s ago`
-      : `${Math.floor(seconds / 60)}m ${seconds % 60}s ago`;
+// ─── STAT ROW ────────────────────────────────────────────────────
+function HeroStat({ label, value, sub, color = T.purple }) {
   return (
-    <div
-      className="flex items-center gap-1.5"
-      style={{ color: "var(--text-muted)", fontSize: 12 }}
-    >
-      <div
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          backgroundColor: "var(--accent)",
-          boxShadow: "0 0 6px var(--accent)",
-          animation: "pulse 2s infinite",
-        }}
-      />
-      <Clock size={11} />
-      <span>Updated {label}</span>
+    <div style={{
+      flex: 1, padding: "20px 24px",
+      borderRight: `1px solid ${T.border}`,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: T.textMuted, marginBottom: 10 }}>
+        {label}
+      </div>
+      <div style={{ fontSize: 28, fontWeight: 800, color: T.textPrimary, letterSpacing: "-0.03em", lineHeight: 1 }}>
+        {value}
+      </div>
+      {sub && (
+        <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>{sub}</div>
+      )}
     </div>
+  );
+}
+
+// ─── COIN CARD (2x2) ─────────────────────────────────────────────
+function CoinCard({ coin, navigate, featured = false }) {
+  const change = Number(coin.price_change_percentage_24h);
+  const isPos = change >= 0;
+  const color = isPos ? T.green : T.red;
+  const bg = isPos ? T.greenBg : T.redBg;
+  const border = isPos ? T.greenBorder : T.redBorder;
+
+  // Generate fake sparkline from price change direction
+  const fakeSparkline = Array.from({ length: 16 }, (_, i) => {
+    const trend = isPos ? i * 2 : (16 - i) * 2;
+    return 40 + trend + Math.sin(i * 1.2) * 8;
+  });
+
+  return (
+    <Card
+      featured={featured}
+      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+      style={{ padding: "20px 22px" }}
+    >
+      {/* Corner glow */}
+      <div style={{
+        position: "absolute", top: -40, right: -40,
+        width: 120, height: 120, borderRadius: "50%",
+        background: `radial-gradient(circle, ${featured ? "rgba(139,92,246,0.2)" : color + "15"} 0%, transparent 60%)`,
+        filter: "blur(20px)", pointerEvents: "none",
+      }} />
+
+      <div style={{ position: "relative", zIndex: 1 }}>
+        {/* Top row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {coin.image_url ? (
+              <img src={coin.image_url} alt={coin.symbol} style={{ width: 36, height: 36, borderRadius: "50%" }} />
+            ) : (
+              <div style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: `${featured ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.06)"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 800, color: featured ? T.purple : T.textMuted,
+              }}>
+                {coin.symbol?.slice(0, 1)}
+              </div>
+            )}
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.textPrimary }}>{coin.symbol?.toUpperCase()}</div>
+              <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
+            </div>
+          </div>
+          {/* 24h pill */}
+          <div style={{
+            fontSize: 12, fontWeight: 700, padding: "4px 10px",
+            borderRadius: 100, color, background: bg,
+            border: `1px solid ${border}`,
+            fontFamily: "monospace",
+          }}>
+            {isPos ? "+" : ""}{change.toFixed(2)}%
+          </div>
+        </div>
+
+        {/* Price + sparkline */}
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: T.textPrimary, letterSpacing: "-0.02em", fontFamily: "monospace" }}>
+              {formatPrice(coin.current_price)}
+            </div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 3 }}>
+              MCap: {formatLargeNumber(coin.market_cap)}
+            </div>
+          </div>
+          <Sparkline data={fakeSparkline} color={color} width={80} height={36} />
+        </div>
+      </div>
+    </Card>
   );
 }
 
@@ -210,216 +230,121 @@ function LastUpdated({ marketData }) {
 function FearGreedGauge({ coins }) {
   const [score, setScore] = useState(50);
   const [text, setText] = useState("Neutral");
-  const [color, setColor] = useState("var(--accent)");
-  const [bg, setBg] = useState("rgba(245,158,11,0.1)");
-  const [isLoading, setIsLoading] = useState(true);
+  const [color, setColor] = useState(T.purple);
 
   useEffect(() => {
     if (!coins || coins.length === 0) return;
-
-    const upCount = coins.filter((c) => Number(c.price_change_percentage_24h) > 0).length;
-    const downCount = coins.filter((c) => Number(c.price_change_percentage_24h) < 0).length;
-    const totalCount = upCount + downCount || 1;
-
-    const btc = coins.find(c => c.symbol.toLowerCase() === 'btc');
+    const up = coins.filter(c => Number(c.price_change_percentage_24h) > 0).length;
+    const total = coins.length || 1;
+    const btc = coins.find(c => c.symbol.toLowerCase() === "btc");
     const btcChange = btc ? Number(btc.price_change_percentage_24h) : 0;
-
-    // Base score from 0 to 100 based on the ratio of gaining coins
-    let calculatedScore = (upCount / totalCount) * 100;
-
-    // BTC is the market driver, adjust the score heavily based on its 24h performance
-    // e.g. +5% BTC change adds +20 points to the sentiment
-    calculatedScore += (btcChange * 4);
-
-    const val = Math.max(0, Math.min(100, Math.round(calculatedScore)));
+    const val = Math.max(0, Math.min(100, Math.round((up / total) * 100 + btcChange * 4)));
     setScore(val);
-
-    if (val <= 20) { setText("Extreme Fear"); setColor("#e74c3c"); setBg("rgba(231,76,60,0.1)"); }
-    else if (val <= 40) { setText("Fear"); setColor("#e67e22"); setBg("rgba(230,126,34,0.1)"); }
-    else if (val <= 60) { setText("Neutral"); setColor("var(--accent)"); setBg("rgba(0,240,255,0.1)"); }
-    else if (val <= 80) { setText("Greed"); setColor("#2ecc71"); setBg("rgba(46,204,113,0.1)"); }
-    else { setText("Extreme Greed"); setColor("#27ae60"); setBg("rgba(39,174,96,0.1)"); }
-    
-    setIsLoading(false);
+    if (val <= 20) { setText("Extreme Fear"); setColor(T.red); }
+    else if (val <= 40) { setText("Fear"); setColor("#f97316"); }
+    else if (val <= 60) { setText("Neutral"); setColor(T.purple); }
+    else if (val <= 80) { setText("Greed"); setColor(T.green); }
+    else { setText("Extreme Greed"); setColor("#10b981"); }
   }, [coins]);
 
-  const up = coins?.filter((c) => Number(c.price_change_percentage_24h) > 0).length || 0;
-  const down = coins?.filter((c) => Number(c.price_change_percentage_24h) < 0).length || 0;
-  const total = up + down || 1;
-
-  const radius = 80;
+  const up = coins?.filter(c => Number(c.price_change_percentage_24h) > 0).length || 0;
+  const down = coins?.filter(c => Number(c.price_change_percentage_24h) < 0).length || 0;
+  const radius = 68;
   const circumference = Math.PI * radius;
-  const strokeDashoffset = isLoading ? circumference : circumference - (score / 100) * circumference;
+  const dashOffset = circumference - (score / 100) * circumference;
 
   return (
-    <BentoCard style={{ padding: 0, background: "linear-gradient(180deg, rgba(12,12,22,1) 0%, var(--bg-surface) 100%)", overflow: "hidden" }}>
-      {/* Dynamic Background Glow */}
-      <div
-        style={{
-          position: "absolute",
-          top: "30%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 200,
-          height: 100,
-          background: `radial-gradient(ellipse, ${color}22, transparent 70%)`,
-          filter: "blur(40px)",
-          pointerEvents: "none",
-          transition: "background 1s ease",
-        }}
-      />
-      
-      <div style={{ padding: "22px 24px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Market Sentiment
-          </span>
-          {!isLoading && (
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                padding: "4px 12px",
-                borderRadius: 100,
-                backgroundColor: bg,
-                color,
-                border: `1px solid ${color}44`,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                boxShadow: `0 0 12px ${color}22`,
-              }}
-            >
-              {text}
-            </span>
-          )}
-        </div>
+    <Card style={{ padding: "24px" }}>
+      <SectionLabel>Market Sentiment</SectionLabel>
 
-        {/* SVG Gauge */}
-        <div style={{ position: "relative", width: "100%", maxWidth: 220, margin: "0 auto 20px" }}>
-          <svg viewBox="0 0 200 115" style={{ width: "100%", overflow: "visible" }}>
-            {/* Background Arc */}
-            <path
-              d="M 20 100 A 80 80 0 0 1 180 100"
-              fill="none"
-              stroke="rgba(255,255,255,0.04)"
-              strokeWidth="14"
-              strokeLinecap="round"
-            />
-            {/* Colored Arc */}
-            <path
-              d="M 20 100 A 80 80 0 0 1 180 100"
-              fill="none"
-              stroke={isLoading ? "rgba(255,255,255,0.1)" : color}
-              strokeWidth="14"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              style={{
-                transition: "stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1), stroke 1s ease",
-                filter: `drop-shadow(0 0 8px ${color}66)`,
-              }}
-            />
-          </svg>
-          
-          {/* Score Text in Center */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
-            <div style={{ fontSize: 48, fontWeight: 900, fontFamily: "monospace", color: isLoading ? "var(--text-muted)" : color, lineHeight: 1, letterSpacing: "-0.04em", textShadow: `0 0 20px ${color}44` }}>
-              {isLoading ? "--" : score}
-            </div>
-            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>/100</div>
+      {/* Gauge */}
+      <div style={{ position: "relative", width: 180, margin: "0 auto 20px" }}>
+        <svg viewBox="0 0 160 95" style={{ width: "100%", overflow: "visible" }}>
+          <path d="M 14 80 A 68 68 0 0 1 146 80" fill="none" stroke={T.border} strokeWidth="10" strokeLinecap="round" />
+          <path
+            d="M 14 80 A 68 68 0 0 1 146 80"
+            fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
+            strokeDasharray={circumference} strokeDashoffset={dashOffset}
+            style={{ transition: "stroke-dashoffset 1.5s cubic-bezier(0.25,1,0.5,1), stroke 0.8s ease", filter: `drop-shadow(0 0 6px ${color}88)` }}
+          />
+        </svg>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
+          <div style={{ fontSize: 40, fontWeight: 900, color, letterSpacing: "-0.04em", fontFamily: "monospace", textShadow: `0 0 20px ${color}66` }}>
+            {score}
           </div>
-        </div>
-
-        {/* Up/Down stats */}
-        <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-          <div style={{ flex: 1, backgroundColor: "rgba(46,204,113,0.06)", border: "1px solid rgba(46,204,113,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "monospace", color: "var(--positive)" }}>↑ {up}</div>
-            <div style={{ fontSize: 11, color: "rgba(46,204,113,0.6)", marginTop: 4, fontWeight: 600 }}>Gaining</div>
-          </div>
-          <div style={{ flex: 1, backgroundColor: "rgba(231,76,60,0.06)", border: "1px solid rgba(231,76,60,0.1)", borderRadius: 16, padding: "12px 10px", textAlign: "center", transition: "all 0.3s ease" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "monospace", color: "var(--negative)" }}>↓ {down}</div>
-            <div style={{ fontSize: 11, color: "rgba(231,76,60,0.6)", marginTop: 4, fontWeight: 600 }}>Losing</div>
-          </div>
+          <div style={{ fontSize: 11, color: T.textMuted }}>/ 100 · {text}</div>
         </div>
       </div>
-    </BentoCard>
+
+      {/* Up / Down pills */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.greenBg, border: `1px solid ${T.greenBorder}`, textAlign: "center" }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: T.green, fontFamily: "monospace" }}>↑ {up}</div>
+          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>Gaining</div>
+        </div>
+        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.redBg, border: `1px solid ${T.redBorder}`, textAlign: "center" }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: T.red, fontFamily: "monospace" }}>↓ {down}</div>
+          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>Losing</div>
+        </div>
+      </div>
+    </Card>
   );
 }
 
-// ─── TRENDING MINI CARD ──────────────────────────────────────────
-function TrendingCoinCard({ coin, navigate }) {
-  const change = Number(coin.price_change_percentage_24h);
-  const isPos = change >= 0;
+// ─── ALERTS WIDGET ───────────────────────────────────────────────
+function AlertsWidget() {
+  const alerts = [
+    { dot: T.purple, msg: "BTC crossed $100K threshold", time: "2m ago" },
+    { dot: T.green, msg: "ETH whale wallet moved 12,400 ETH", time: "8m ago" },
+    { dot: "#f59e0b", msg: "SOL volume spike detected (+340%)", time: "15m ago" },
+    { dot: T.red, msg: "DOGE dropped below $0.15 support", time: "22m ago" },
+    { dot: T.purple, msg: "New listing: MOG/USDT on Gate.io", time: "1h ago" },
+  ];
   return (
-    <div
-      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "10px 12px",
-        borderRadius: 16,
-        cursor: "pointer",
-        backgroundColor: "rgba(255,255,255,0.015)",
-        border: "1px solid rgba(255,255,255,0.03)",
-        transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
-        position: "relative",
-        overflow: "hidden",
-        transform: "translateZ(0)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-        e.currentTarget.style.transform = "scale(1.01)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
-        if (glow) { glow.style.transform = "translateY(-50%) scale(1.5)"; glow.style.opacity = "1"; }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.015)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.03)";
-        e.currentTarget.style.transform = "scale(1)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
-        if (glow) { glow.style.transform = "translateY(-50%) scale(1)"; glow.style.opacity = "0"; }
-      }}
-    >
-      <div className="feat-bg-glow" style={{
-        position: "absolute", top: "50%", right: -20, width: 80, height: 80,
-        borderRadius: "50%", background: `radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)`,
-        filter: "blur(12px)", pointerEvents: "none", zIndex: 0,
-        transform: "translateY(-50%) scale(1)", opacity: 0,
-        transition: "all .4s cubic-bezier(0.25, 1, 0.5, 1)",
-      }} />
-      <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
-      {coin.image_url ? (
-        <img src={coin.image_url} alt={coin.symbol} style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0 }} />
-      ) : (
-        <div style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-elevated)", color: "var(--accent)", fontSize: 12, fontWeight: 700 }}>
-          {coin.symbol?.slice(0, 1)}
-        </div>
-      )}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{coin.symbol?.toUpperCase()}</div>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{formatPrice(coin.current_price)}</div>
+    <Card style={{ padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <SectionLabel>Smart Alerts</SectionLabel>
+        <span style={{ fontSize: 10, color: T.purple, fontWeight: 700, cursor: "pointer" }}>View all →</span>
       </div>
-      <div
-        style={{
-          fontSize: 12,
-          fontWeight: 700,
-          fontFamily: "monospace",
-          color: isPos ? "var(--positive)" : "var(--negative)",
-          padding: "2px 7px",
-          borderRadius: 6,
-          backgroundColor: isPos ? "rgba(46,204,113,0.1)" : "rgba(231,76,60,0.1)",
-        }}
-      >
-        {isPos ? "+" : ""}{change.toFixed(2)}%
+      <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        {alerts.map((a, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex", alignItems: "center", gap: 12,
+              padding: "12px 0",
+              borderBottom: i < alerts.length - 1 ? `1px solid ${T.border}` : "none",
+            }}
+          >
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: a.dot, boxShadow: `0 0 6px ${a.dot}`, flexShrink: 0 }} />
+            <div style={{ flex: 1, fontSize: 13, color: T.textSecondary, lineHeight: 1.4 }}>{a.msg}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, flexShrink: 0, fontFamily: "monospace" }}>{a.time}</div>
+          </div>
+        ))}
       </div>
-      </div>
+    </Card>
+  );
+}
+
+// ─── LAST UPDATED ────────────────────────────────────────────────
+function LastUpdated({ marketData }) {
+  const [sec, setSec] = useState(0);
+  useEffect(() => {
+    setSec(0);
+    const iv = setInterval(() => setSec(s => s + 1), 1000);
+    return () => clearInterval(iv);
+  }, [marketData]);
+  const label = sec < 60 ? `${sec}s ago` : `${Math.floor(sec / 60)}m ${sec % 60}s ago`;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: T.textMuted }}>
+      <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 6px ${T.green}`, animation: "dash-pulse 2s infinite" }} />
+      <Clock size={11} />
+      <span>Updated {label}</span>
     </div>
   );
 }
 
-// ─── MAIN DASHBOARD ──────────────────────────────────────────────
+// ─── MAIN ────────────────────────────────────────────────────────
 export default function Dashboard() {
   const market = useMarket(500);
   const gainers = useGainers(5);
@@ -430,291 +355,272 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const coins = market.data || [];
-  const totalVolume = coins.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0;
-  const allMarketCap = market.data?.reduce((s, c) => s + (Number(c.market_cap) || 0), 0) || 0;
-  const btcData = market.data?.find((c) => c.symbol === "BTC");
-  const ethData = market.data?.find((c) => c.symbol === "ETH");
-  const btcDom = allMarketCap && btcData ? ((Number(btcData.market_cap) / allMarketCap) * 100).toFixed(1) : "—";
-  const ethDom = allMarketCap && ethData ? ((Number(ethData.market_cap) / allMarketCap) * 100).toFixed(1) : "—";
+  const totalVolume = coins.reduce((s, c) => s + (Number(c.total_volume) || 0), 0);
+  const allMCap = coins.reduce((s, c) => s + (Number(c.market_cap) || 0), 0);
+  const btcData = coins.find(c => c.symbol === "BTC");
+  const ethData = coins.find(c => c.symbol === "ETH");
+  const btcDom = allMCap && btcData ? ((Number(btcData.market_cap) / allMCap) * 100).toFixed(1) : "—";
+  const ethDom = allMCap && ethData ? ((Number(ethData.market_cap) / allMCap) * 100).toFixed(1) : "—";
 
-  const top10 = market.data
-    ? [...market.data]
-        .filter((c) => Number(c.market_cap) > 0)
-        .sort((a, b) => Number(b.market_cap) - Number(a.market_cap))
-        .slice(0, 10)
+  const top10 = coins.length > 0
+    ? [...coins].filter(c => Number(c.market_cap) > 0).sort((a, b) => Number(b.market_cap) - Number(a.market_cap)).slice(0, 10)
     : [];
 
+  // Top 4 coins for the 2×2 grid
+  const top4 = top10.slice(0, 4);
+
   return (
-    <div style={{ color: "var(--text-primary)" }}>
+    <div style={{ color: T.textPrimary, fontFamily: "Inter, sans-serif" }}>
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @keyframes dash-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary)", lineHeight: 1.1 }}>
-            Dashboard
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: T.purple, marginBottom: 8 }}>
+            ◆ Live Dashboard
+          </div>
+          <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", color: T.textPrimary, lineHeight: 1.1, margin: 0 }}>
+            Market Overview
           </h1>
-          <p style={{ marginTop: 6, fontSize: 13, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <span>Live data from</span>
-            {[{ label: "Gate.io", href: "https://www.gate.io/" }, { label: "Bybit", href: "https://www.bybit.com/" }, { label: "OKX", href: "https://www.okx.com/" }].map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600, transition: "color 0.15s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--accent)")}
-              >
-                {s.label}
-              </a>
-            ))}
+          <p style={{ fontSize: 13, color: T.textMuted, marginTop: 6 }}>
+            Real-time data · Gate.io · Bybit · OKX
           </p>
         </div>
         <LastUpdated marketData={market.data} />
       </div>
 
-      {/* ── BENTO GRID ── */}
-      <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4">
-        {/* ── ROW 1: 4 Stat cards ── */}
-        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.1}>
-          <StatCard
-            icon={DollarSign}
-            label="Total 24h Volume"
-            value={formatLargeNumber(totalVolume)}
-            accent={true}
-          />
-        </Reveal>
-        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.2}>
-          <StatCard
-            icon={Activity}
-            label="BTC Dominance"
-            value={`${btcDom}%`}
-            sub="by market cap"
-          />
-        </Reveal>
-        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.3}>
-          <StatCard
-            icon={TrendingUp}
-            label="ETH Dominance"
-            value={`${ethDom}%`}
-            sub="by market cap"
-          />
-        </Reveal>
-        <Reveal className="col-span-1 md:col-span-3 lg:col-span-3" delay={0.4}>
-          <StatCard
-            icon={Flame}
-            label="Coins Tracked"
-            value={`${stats.data?.coin_count || market.data?.length || 0}+`}
-            sub="live data"
-          />
-        </Reveal>
-
-        {/* ── ROW 2: Trending (8) + Fear&Greed (4) — always full 12 cols ── */}
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-4" delay={0.2}>
-          {/* Trending */}
-          <BentoCard className="lg:col-span-2" style={{ padding: "22px 24px", minHeight: 160 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,240,255,0.05))", border: "1px solid var(--accent-border)" }}>
-                <Flame size={13} style={{ color: "var(--accent)" }} />
+      {/* ── HERO STAT STRIP ── */}
+      <Reveal delay={0.05}>
+        <Card style={{ marginBottom: 28, padding: 0, overflow: "hidden" }}>
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            <HeroStat label="Total Market Cap" value={formatLargeNumber(allMCap)} sub={`${coins.length} assets tracked`} />
+            <HeroStat label="24h Volume" value={formatLargeNumber(totalVolume)} sub="across all pairs" />
+            <HeroStat label="BTC Dominance" value={`${btcDom}%`} sub="of total market cap" />
+            <HeroStat label="ETH Dominance" value={`${ethDom}%`} sub="of total market cap" />
+            <div style={{ flex: 1, padding: "20px 24px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: T.textMuted, marginBottom: 10 }}>
+                Coins Tracked
               </div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Trending Now
-              </span>
+              <div style={{ fontSize: 28, fontWeight: 800, color: T.purple, letterSpacing: "-0.03em", lineHeight: 1 }}>
+                {stats.data?.coin_count || coins.length || 0}+
+              </div>
+              <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>live data</div>
             </div>
-            {trending.isLoading || !trending.data || trending.data.length === 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} style={{ height: 52, borderRadius: 12, background: "rgba(255,255,255,0.04)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          </div>
+        </Card>
+      </Reveal>
+
+      {/* ── MAIN GRID ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 380px", gap: 20 }}>
+
+        {/* ── LEFT + CENTER: 2×2 Coin Cards ── */}
+        <div style={{ gridColumn: "1 / 3", display: "flex", flexDirection: "column", gap: 20 }}>
+
+          {/* 2×2 Coin Grid */}
+          <Reveal delay={0.1}>
+            <div>
+              <SectionLabel>Featured Coins</SectionLabel>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                {top4.length > 0 ? top4.map((coin, i) => (
+                  <CoinCard key={coin.symbol} coin={coin} navigate={navigate} featured={i === 0} />
+                )) : Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} style={{ height: 140, borderRadius: 20, background: T.card, border: `1px solid ${T.border}`, animation: "dash-pulse 1.5s infinite" }} />
                 ))}
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
-                {trending.data.map((coin) => (
-                  <TrendingCoinCard key={coin.symbol} coin={coin} navigate={navigate} />
-                ))}
-              </div>
-            )}
-          </BentoCard>
-
-          {/* Fear & Greed */}
-          {coins.length > 0 ? (
-            <div className="lg:col-span-1">
-              <FearGreedGauge coins={coins} />
             </div>
-          ) : (
-            <BentoCard className="lg:col-span-1" style={{ padding: "22px 24px", minHeight: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Loading…</div>
-            </BentoCard>
-          )}
-        </Reveal>
+          </Reveal>
 
-        {/* ── ROW 3: Top 10 Table (8) + Gainers/Losers stacked (4) ── */}
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-8" delay={0.2}>
-          <BentoCard style={{ padding: "22px 24px", overflowX: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <Activity size={13} style={{ color: "var(--text-muted)" }} />
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  Top 10 by Market Cap
+          {/* Top 10 Table */}
+          <Reveal delay={0.15}>
+            <Card style={{ padding: "24px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+                <SectionLabel>Top 10 by Market Cap</SectionLabel>
+                <span
+                  onClick={() => navigate("/market")}
+                  style={{ fontSize: 11, color: T.purple, cursor: "pointer", fontWeight: 700, opacity: 0.8, transition: "opacity 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "0.8"}
+                >
+                  View all →
                 </span>
               </div>
-              <span
-                onClick={() => navigate("/market")}
-                style={{ fontSize: 11, color: "var(--accent)", cursor: "pointer", fontWeight: 600, opacity: 0.7, transition: "opacity 0.15s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.7)}
-              >
-                View all →
-              </span>
-            </div>
 
-            {(market.isLoading || (!market.isLoading && top10.length === 0)) && (
-              <table className="w-full">
-                <tbody>{Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={5} />)}</tbody>
-              </table>
-            )}
-            {top10.length > 0 && (
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                    {["#", "Asset", "Price", "24h", "Market Cap"].map((h, i) => (
-                      <th
-                        key={h}
-                        style={{
-                          paddingBottom: 10,
-                          fontSize: 10,
-                          fontWeight: 700,
-                          color: "var(--text-muted)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
+              {top10.length === 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} style={{ height: 44, borderRadius: 12, background: T.card, animation: "dash-pulse 1.5s infinite" }} />
+                  ))}
+                </div>
+              ) : (
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      {["#", "Asset", "Price", "24h Change", "Market Cap"].map((h, i) => (
+                        <th key={h} style={{
+                          paddingBottom: 12, fontSize: 10, fontWeight: 700, color: T.textMuted,
+                          textTransform: "uppercase", letterSpacing: "0.08em",
                           textAlign: i <= 1 ? "left" : "right",
-                        }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {top10.map((coin, idx) => {
-                    const change = Number(coin.price_change_percentage_24h);
-                    const isPos = change >= 0;
-                    return (
-                      <tr
-                        key={coin.symbol}
-                        onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                        style={{ cursor: "pointer", transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.025)";
-                          e.currentTarget.style.transform = "scale(1.006) translateX(2px)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.transform = "scale(1) translateX(0)";
-                        }}
-                      >
-                        <td style={{ padding: "11px 12px 11px 0", width: 28 }}>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.2)", fontFamily: "monospace" }}>
-                            {idx + 1}
-                          </span>
-                        </td>
-                        <td style={{ padding: "11px 0" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            {coin.image_url ? (
-                              <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0 }} onError={(e) => { e.target.style.display = "none"; }} />
-                            ) : (
-                              <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-elevated)", color: "var(--accent)", fontSize: 10, fontWeight: 700 }}>
-                                {coin.symbol?.slice(0, 1)}
+                          borderBottom: `1px solid ${T.border}`,
+                        }}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {top10.map((coin, idx) => {
+                      const change = Number(coin.price_change_percentage_24h);
+                      const isPos = change >= 0;
+                      return (
+                        <tr
+                          key={coin.symbol}
+                          onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                          style={{ cursor: "pointer", transition: "all 180ms ease", borderBottom: `1px solid ${T.border}` }}
+                          onMouseEnter={e => { e.currentTarget.style.background = T.cardHov; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                        >
+                          <td style={{ padding: "12px 12px 12px 0", width: 28 }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, fontFamily: "monospace" }}>{idx + 1}</span>
+                          </td>
+                          <td style={{ padding: "12px 0" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              {coin.image_url ? (
+                                <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%" }} />
+                              ) : (
+                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(139,92,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: T.purple }}>
+                                  {coin.symbol?.slice(0, 1)}
+                                </div>
+                              )}
+                              <div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary }}>{coin.symbol?.toUpperCase()}</div>
+                                <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
                               </div>
-                            )}
-                            <div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{coin.symbol?.toUpperCase()}</div>
-                              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{coin.name}</div>
                             </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: "11px 0", textAlign: "right", fontFamily: "monospace", fontSize: 13, color: "var(--text-primary)", fontWeight: 600 }}>
-                          {formatPrice(coin.current_price)}
-                        </td>
-                        <td style={{ padding: "11px 0", textAlign: "right" }}>
-                          <span
-                            style={{
-                              fontSize: 12,
-                              fontWeight: 700,
-                              fontFamily: "monospace",
-                              color: isPos ? "var(--positive)" : "var(--negative)",
-                              backgroundColor: isPos ? "rgba(46,204,113,0.08)" : "rgba(231,76,60,0.08)",
-                              padding: "2px 7px",
-                              borderRadius: 6,
-                            }}
-                          >
-                            {isPos ? "+" : ""}{change.toFixed(2)}%
-                          </span>
-                        </td>
-                        <td style={{ padding: "11px 0 11px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: "var(--text-muted)" }}>
-                          {formatLargeNumber(coin.market_cap)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                          <td style={{ padding: "12px 0", textAlign: "right", fontFamily: "monospace", fontSize: 13, color: T.textPrimary, fontWeight: 600 }}>
+                            {formatPrice(coin.current_price)}
+                          </td>
+                          <td style={{ padding: "12px 0", textAlign: "right" }}>
+                            <span style={{
+                              fontSize: 12, fontWeight: 700, fontFamily: "monospace",
+                              color: isPos ? T.green : T.red,
+                              background: isPos ? T.greenBg : T.redBg,
+                              border: `1px solid ${isPos ? T.greenBorder : T.redBorder}`,
+                              padding: "3px 8px", borderRadius: 8,
+                            }}>
+                              {isPos ? "+" : ""}{change.toFixed(2)}%
+                            </span>
+                          </td>
+                          <td style={{ padding: "12px 0 12px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: T.textMuted }}>
+                            {formatLargeNumber(coin.market_cap)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </Card>
+          </Reveal>
+
+          {/* Heatmap */}
+          <Reveal delay={0.2}>
+            <HeatmapWidget limit={50} />
+          </Reveal>
+        </div>
+
+        {/* ── RIGHT SIDEBAR ── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+          {/* Fear & Greed */}
+          <Reveal delay={0.1}>
+            {coins.length > 0 ? <FearGreedGauge coins={coins} /> : (
+              <Card style={{ padding: "24px", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ fontSize: 12, color: T.textMuted }}>Loading sentiment…</div>
+              </Card>
             )}
-          </BentoCard>
-        </Reveal>
+          </Reveal>
 
-        {/* Gainers + Losers stacked in right col */}
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-4" delay={0.4} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <CoinListCard
-            title="Top Gainers (24h)"
-            accent="orange"
-            data={gainers.data}
-            isLoading={gainers.isLoading}
-            isError={gainers.isError}
-            renderValue={(coin) => {
-              const pct = Number(coin.price_change_percentage_24h);
-              return <span style={{ color: "var(--positive)" }}>+{pct.toFixed(2)}%</span>;
+          {/* Gainers */}
+          <Reveal delay={0.15}>
+            <CoinListCard
+              title="Top Gainers (24h)"
+              accent="green"
+              data={gainers.data}
+              isLoading={gainers.isLoading}
+              isError={gainers.isError}
+              renderValue={(coin) => {
+                const pct = Number(coin.price_change_percentage_24h);
+                return <span style={{ color: T.green }}>+{pct.toFixed(2)}%</span>;
+              }}
+            />
+          </Reveal>
+
+          {/* Losers */}
+          <Reveal delay={0.2}>
+            <CoinListCard
+              title="Top Losers (24h)"
+              accent="red"
+              data={losers.data}
+              isLoading={losers.isLoading}
+              isError={losers.isError}
+              renderValue={(coin) => {
+                const pct = Number(coin.price_change_percentage_24h);
+                return <span style={{ color: T.red }}>{pct.toFixed(2)}%</span>;
+              }}
+            />
+          </Reveal>
+
+          {/* Smart Alerts */}
+          <Reveal delay={0.25}>
+            <AlertsWidget />
+          </Reveal>
+
+          {/* Volume Spike */}
+          <Reveal delay={0.3}>
+            <VolumeSpikeRadar />
+          </Reveal>
+
+          {/* Market Oracle */}
+          <Reveal delay={0.35}>
+            <MarketOracle />
+          </Reveal>
+        </div>
+      </div>
+
+      {/* ── BOTTOM NAV ── */}
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0,
+        background: "rgba(10,10,15,0.95)",
+        backdropFilter: "blur(24px)",
+        borderTop: `1px solid ${T.border}`,
+        display: "none",
+        zIndex: 200,
+      }} className="bottom-nav">
+        {[
+          { icon: BarChart2, label: "Markets", path: "/market" },
+          { icon: DollarSign, label: "Portfolio", path: "/portfolio" },
+          { icon: Bell, label: "Alerts", path: "/alerts" },
+          { icon: Zap, label: "Settings", path: "/settings" },
+        ].map(({ icon: Icon, label, path }) => (
+          <div
+            key={label}
+            onClick={() => navigate(path)}
+            style={{
+              flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+              justifyContent: "center", gap: 4, padding: "12px 0",
+              cursor: "pointer", color: T.textMuted, transition: "color 150ms",
             }}
-          />
-          <CoinListCard
-            title="Top Losers (24h)"
-            accent="red"
-            data={losers.data}
-            isLoading={losers.isLoading}
-            isError={losers.isError}
-            renderValue={(coin) => {
-              const pct = Number(coin.price_change_percentage_24h);
-              return <span style={{ color: "var(--negative)" }}>{pct.toFixed(2)}%</span>;
-            }}
-          />
-          <CoinListCard
-            title="Highest Volume (24h)"
-            accent="blue"
-            data={volume.data}
-            isLoading={volume.isLoading}
-            isError={volume.isError}
-            renderValue={(coin) => (
-              <span style={{ color: "var(--text-secondary)" }}>{formatLargeNumber(coin.total_volume)}</span>
-            )}
-          />
-        </Reveal>
-
-        {/* ── ROW 4: Heatmap (12 cols) ── */}
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-12" delay={0.2}>
-          <HeatmapWidget limit={50} />
-        </Reveal>
-
-        {/* ── ROW 5: Volume Spike (6) + Market Oracle (6) ── */}
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-6" delay={0.2}>
-          <VolumeSpikeRadar />
-        </Reveal>
-        <Reveal className="col-span-1 md:col-span-6 lg:col-span-6" delay={0.4}>
-          <MarketOracle />
-        </Reveal>
+            onMouseEnter={e => { e.currentTarget.style.color = T.purple; }}
+            onMouseLeave={e => { e.currentTarget.style.color = T.textMuted; }}
+          >
+            <Icon size={20} />
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em" }}>{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
