@@ -1134,196 +1134,114 @@ export default function Landing({ onAuthOpen }) {
           </h2>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(min(320px, 100%), 1fr))",
-            gap: 18,
-          }}
-        >
+        <div className="relative mx-auto mt-20 pb-40" style={{ maxWidth: 1000 }}>
           {[
             {
-              icon: Brain,
-              color: "#9b59b6",
-              gradFrom: "#9b59b6",
-              gradTo: "#6c3483",
-              badge: "AI POWERED",
-              title: "AI Technical Analysis",
-              desc: "Groq Llama 3.3 processes RSI, MACD, Bollinger Bands, Stochastic & EMA. Get bullish/bearish signals with stop-loss and take-profit levels.",
-              stat: { label: "Indicators analyzed", value: "150+" },
-            },
-            {
-              icon: BarChart2,
-              color: "#3498db",
-              gradFrom: "#3498db",
-              gradTo: "#1a5276",
               badge: "LIVE DATA",
-              title: "Live Market Data",
-              desc: "Track 2,500+ cryptocurrencies with real-time prices, volume, market cap, trending coins and an interactive heatmap.",
-              stat: { label: "Coins tracked", value: "2,500+" },
+              title: "Real-Time Market Tracking",
+              desc: "Track 2,500+ cryptocurrencies with blazing fast updates. Never miss a volume spike or a whale movement again with our interactive heatmap.",
+              color: "#00f0ff",
+              icon: BarChart2,
             },
             {
-              icon: Wallet,
+              badge: "NEKO AI",
+              title: "AI Portfolio Manager",
+              desc: "Get deep insights powered by Groq Llama 3.3. Our AI agent analyzes your holdings, detects correlation risks, and gives actionable rebalancing recommendations.",
+              color: "#b026ff",
+              icon: Brain,
+            },
+            {
+              badge: "TAX & REPORTS",
+              title: "Automated Tax Calculation",
+              desc: "Connect your Ethereum wallets or import Binance CSVs. We automatically calculate your FIFO P&L and generate exportable tax reports in seconds.",
               color: "#2ecc71",
-              gradFrom: "#2ecc71",
-              gradTo: "#1a7a43",
-              badge: "TAX REPORTS",
-              title: "Portfolio Tracker",
-              desc: "Import trades from Binance, Bybit, OKX & more. Automatic FIFO P&L calculation and exportable tax reports — all in your browser.",
-              stat: { label: "Supported exchanges", value: "5+" },
-            },
-            {
-              icon: Bell,
-              color: "var(--accent)",
-              gradFrom: "var(--accent)",
-              gradTo: "#b7770d",
-              badge: "INSTANT",
-              title: "Smart Price Alerts",
-              desc: "Set price targets, % change triggers and volume spike alerts. Get browser push notifications the moment your conditions are met.",
-              stat: { label: "Alert delivery", value: "<1s" },
-            },
-            {
-              icon: Globe,
-              color: "#1abc9c",
-              gradFrom: "#1abc9c",
-              gradTo: "#0e6655",
-              badge: "FREE",
-              title: "Market Sentiment",
-              desc: "Real-time Fear & Greed Index, 7-day trend analysis and volume anomaly detection — injected into your AI analysis automatically.",
-              stat: { label: "Update interval", value: "Daily" },
-            },
-            {
-              icon: Shield,
-              color: "#e74c3c",
-              gradFrom: "#e74c3c",
-              gradTo: "#922b21",
-              badge: "PRIVATE",
-              title: "Privacy First",
-              desc: "Your trade data never leaves your browser. CSV files are parsed locally — we never store, sell or transmit your financial information.",
-              stat: { label: "Data stored on server", value: "Zero" },
-            },
-          ].map((f, i) => {
-            const Icon = f.icon;
+              icon: Wallet,
+            }
+          ].map((feature, i) => {
+            const Icon = feature.icon;
             return (
               <div
                 key={i}
-                className="feat"
                 style={{
-                  padding: "32px",
-                  borderRadius: 24,
-                  background: "rgba(255,255,255,.02)",
-                  border: "1px solid rgba(255,255,255,.05)",
-                  transition: "all .5s cubic-bezier(0.25, 1, 0.5, 1)",
-                  position: "relative",
-                  overflow: "hidden",
-                  animation: `fadeUp .6s ease ${0.1 + i * 0.07}s both`,
+                  position: "sticky",
+                  top: `calc(140px + ${i * 20}px)`,
+                  marginBottom: i === 2 ? 0 : "30vh",
+                  padding: "48px",
+                  borderRadius: "32px",
+                  background: "rgba(2, 6, 23, 0.85)",
+                  backdropFilter: "blur(40px)",
+                  WebkitBackdropFilter: "blur(40px)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  boxShadow: `0 20px 80px rgba(0,0,0,0.8), inset 0 0 0 1px ${feature.color}20`,
                   display: "flex",
                   flexDirection: "column",
-                  transform: "translateZ(0)"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.01)";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,.08)";
-                  e.currentTarget.style.backgroundColor = "rgba(255,255,255,.03)";
-                  const glow = e.currentTarget.querySelector('.feat-bg-glow');
-                  if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
-                  const iconBox = e.currentTarget.querySelector('.feat-icon-box');
-                  if (iconBox) { iconBox.style.transform = "scale(1.05)"; }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,.05)";
-                  e.currentTarget.style.backgroundColor = "rgba(255,255,255,.02)";
-                  const glow = e.currentTarget.querySelector('.feat-bg-glow');
-                  if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0.7"; }
-                  const iconBox = e.currentTarget.querySelector('.feat-icon-box');
-                  if (iconBox) { iconBox.style.transform = "scale(1)"; }
+                  gap: 24,
+                  zIndex: i + 10,
+                  transformOrigin: "top center",
+                  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 }}
               >
-                {/* Zerion style corner glow */}
-                <div className="feat-bg-glow" style={{
-                  position: "absolute", top: -20, right: -20, width: 140, height: 140,
-                  borderRadius: "50%", background: `radial-gradient(circle, ${f.color}15 0%, transparent 70%)`,
-                  filter: "blur(20px)", pointerEvents: "none", zIndex: 0,
-                  transform: "scale(1)", opacity: 0.7,
-                  transition: "all .6s cubic-bezier(0.25, 1, 0.5, 1)",
+                <div style={{
+                  position: "absolute",
+                  top: -100, right: -100,
+                  width: 300, height: 300,
+                  background: `radial-gradient(circle, ${feature.color}15 0%, transparent 60%)`,
+                  borderRadius: "50%",
+                  filter: "blur(40px)",
+                  pointerEvents: "none",
+                  zIndex: 0,
                 }} />
 
-                {/* Content */}
-                <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
-
-                  {/* Top row: icon + badge */}
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
-                    {/* Icon with gradient bg */}
-                    <div className="feat-icon-box" style={{
-                      width: 48, height: 48, borderRadius: 12,
-                      background: `linear-gradient(135deg, ${f.color}15, ${f.color}05)`,
-                      border: `1px solid ${f.color}25`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      boxShadow: `0 4px 12px rgba(0,0,0,0.2)`,
-                      transition: "all 0.4s ease",
-                    }}>
-                      <Icon size={22} style={{ color: f.color, opacity: 0.9 }} />
-                    </div>
-
-                    {/* Badge */}
-                    <span style={{
-                      fontSize: 10, fontWeight: 800,
-                      padding: "4px 12px", borderRadius: 100,
-                      background: `${f.color}12`,
-                      color: f.color,
-                      border: `1px solid ${f.color}28`,
-                      letterSpacing: ".1em",
-                      fontFamily: "Inter, sans-serif"
-                    }}>
-                      {f.badge}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <div style={{
-                    fontSize: 18, fontWeight: 800,
-                    color: "rgba(255,255,255,.95)",
-                    marginBottom: 10,
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1.2,
-                  }}>
-                    {f.title}
-                  </div>
-
-                  {/* Description */}
-                  <div style={{
-                    fontSize: 13, color: "rgba(255,255,255,.38)",
-                    lineHeight: 1.7, flexGrow: 1, marginBottom: 24,
-                  }}>
-                    {f.desc}
-                  </div>
-
-                  {/* Stat bar — the "proof" line */}
-                  <div style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    paddingTop: 16,
-                    borderTop: `1px solid ${f.color}18`,
-                  }}>
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: ".04em" }}>
-                      {f.stat.label}
-                    </span>
-                    <span style={{
-                      fontSize: 14, fontWeight: 900,
-                      color: f.color,
-                      fontFamily: "monospace",
-                      letterSpacing: "-0.02em",
-                    }}>
-                      {f.stat.value}
-                    </span>
-                  </div>
+                <div style={{
+                  position: "relative",
+                  zIndex: 1,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "6px 16px",
+                  borderRadius: 100,
+                  background: `${feature.color}10`,
+                  border: `1px solid ${feature.color}30`,
+                  color: feature.color,
+                  fontSize: 12,
+                  fontWeight: 800,
+                  letterSpacing: ".1em",
+                  width: "max-content"
+                }}>
+                  <Icon size={14} />
+                  {feature.badge}
                 </div>
+                
+                <h3 style={{
+                  position: "relative",
+                  zIndex: 1,
+                  fontSize: "clamp(32px, 4vw, 48px)",
+                  fontWeight: 900,
+                  color: "white",
+                  margin: 0,
+                  letterSpacing: "-0.02em"
+                }}>
+                  {feature.title}
+                </h3>
+                
+                <p style={{
+                  position: "relative",
+                  zIndex: 1,
+                  fontSize: "clamp(16px, 2vw, 20px)",
+                  color: "rgba(255, 255, 255, 0.5)",
+                  lineHeight: 1.6,
+                  maxWidth: "800px",
+                  margin: 0
+                }}>
+                  {feature.desc}
+                </p>
               </div>
             );
           })}
         </div>
         </Reveal>
       </section>
+
 
       {/* HOW IT WORKS */}
       <section

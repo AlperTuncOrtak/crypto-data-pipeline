@@ -47,12 +47,7 @@ function AppInner() {
   const { isPro, isEnterprise, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  useEffect(() => {
-    // If logged in and on root without preview query, redirect to dashboard
-    if (isLoggedIn && window.location.pathname === "/" && !window.location.search.includes("preview=1")) {
-      navigate("/dashboard");
-    }
-  }, [isLoggedIn, navigate]);
+  // Auto-redirect removed so users can see the Landing page animations
 
   const { addToast } = useToast();
   useEffect(() => {
