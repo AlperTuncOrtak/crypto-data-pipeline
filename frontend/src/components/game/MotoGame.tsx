@@ -1,447 +1,588 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 
 interface MotoGameProps {
-  onScoreUpdate: (dist: number, timeStr: string) => void;
-  onGameOver: () => void;
-  isPaused: boolean;
-  onRestart: () => void;
+  priceData: number[];
+  symbol: string;
+  onGameOver: (distance: number) => void;
+  onDistanceUpdate: (distance: number) => void;
   restartTrigger: number;
-  chartData?: { time: string; price: number }[];
 }
 
 export default function MotoGame({
-  onScoreUpdate,
+  priceData,
+  symbol,
   onGameOver,
-  isPaused,
+  onDistanceUpdate,
   restartTrigger,
-  chartData,
 }: MotoGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameRef = useRef<any>(null);
 
-  useEffect(() => {
+  const startGame = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
 
-    let width = canvas.clientWidth || window.innerWidth;
-    let height = canvas.clientHeight || window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    // --- CHART TERRAIN SETUP ---
-    let prices: number[] = [];
-    let minP = Infinity, maxP = -Infinity;
-    const pixelsPerPoint = 150; // Closer points for more pronounced hills, but 150 prevents extreme cliffs
-    
-    if (chartData && chartData.length > 1) {
-      prices = chartData.map(d => d.price);
-      for (let i = 0; i < prices.length; i++) {
-        if (prices[i] < minP) minP = prices[i];
-        if (prices[i] > maxP) maxP = prices[i];
-      }
-      if (maxP === minP) maxP = minP + 1; // avoid division by zero
+    // Stop previous game loop if any
+    if (gameRef.current?.raf) {
+      cancelAnimationFrame(gameRef.current.raf);
+    }
+    if (gameRef.current?.keydownHandler) {
+      window.removeEventListener("keydown", gameRef.current.keydownHandler);
+      window.removeEventListener("keyup", gameRef.current.keyupHandler);
     }
 
-    // --- GAME STATE ---
-    let animationId: number;
-    let isGameOver = false;
+    const ctx = canvas.getContext("2d")!;
+    const W = canvas.width;
+    const H = canvas.height;
+
+    // ──────────────────────────────────────────────
+    // 1. TERRAIN FROM PRICE DATA
+    // ──────────────────────────────────────────────
+    const PIXELS_PER_POINT = 180;
+    const Y_MIN_PX = H * 0.15;   // top 15%
+    const Y_MAX_PX = H * 0.82;   // bottom 82%
+
+    // Use fallback sine terrain if no price data
+    const rawPrices: number[] =
+      priceData && priceData.length > 4
+        ? priceData
+        : Array.from({ length: 60 }, (_, i) =>
+            100 +
+            Math.sin(i / 6) * 30 +
+            Math.sin(i / 2.5) * 10 +
+            Math.cos(i / 4) * 15
+          );
+
+    // Moving average smoothing (window = 3)
+    const smooth = (arr: number[], w = 3): number[] =>
+      arr.map((_, i) => {
+        const slice = arr.slice(Math.max(0, i - w), i + w + 1);
+        return slice.reduce((s, v) => s + v, 0) / slice.length;
+      });
+
+    const smoothed = smooth(smooth(rawPrices, 3), 3);
+    const minP = Math.min(...smoothed);
+    const maxP = Math.max(...smoothed);
+
+    const priceToY = (p: number) => {
+      if (maxP === minP) return (Y_MIN_PX + Y_MAX_PX) / 2;
+      return Y_MAX_PX - ((p - minP) / (maxP - minP)) * (Y_MAX_PX - Y_MIN_PX);
+    };
+
+    // Build terrain points: each price = PIXELS_PER_POINT apart
+    const terrainPoints: { x: number; y: number }[] = smoothed.map((p, i) => ({
+      x: i * PIXELS_PER_POINT,
+      y: priceToY(p),
+    }));
+    const TOTAL_WIDTH = terrainPoints[terrainPoints.length - 1].x;
+
+    const getTerrainY = (worldX: number): number => {
+      // Extrapolate at boundaries
+      if (worldX <= 0) return terrainPoints[0].y;
+      if (worldX >= TOTAL_WIDTH) return terrainPoints[terrainPoints.length - 1].y;
+      const idx = worldX / PIXELS_PER_POINT;
+      const i0 = Math.floor(idx);
+      const i1 = Math.min(i0 + 1, terrainPoints.length - 1);
+      const t = idx - i0;
+      // Cosine interpolation for smoothness
+      const mu = (1 - Math.cos(t * Math.PI)) / 2;
+      return terrainPoints[i0].y * (1 - mu) + terrainPoints[i1].y * mu;
+    };
+
+    const getTerrainAngle = (worldX: number): number => {
+      const dx = 2;
+      const dy = getTerrainY(worldX + dx) - getTerrainY(worldX - dx);
+      return Math.atan2(dy, dx * 2);
+    };
+
+    // ──────────────────────────────────────────────
+    // 2. BIKE STATE
+    // ──────────────────────────────────────────────
+    const WHEEL_R = 18;
+    const AXLE_LEN = 55; // distance between wheels
+    const CHASSIS_H = 32; // rider height above axle center
+
+    let worldX = AXLE_LEN / 2 + 20; // back wheel world X
+    let vy = 0;
+    let bikeAngle = 0; // visual tilt angle of bike body
+    let angularVel = 0;
+
+    const getGroundY = () => getTerrainY(worldX);
+    const getContactY = () => getGroundY() - WHEEL_R;
+
+    let posY = getContactY();
+    let vely = 0;
+    let onGround = false;
+
+    let cameraX = 0;
+    let score = 0;
     let startTime = Date.now();
-    let distance = 0;
+    let gameOver = false;
 
-    // --- INPUT ---
-    const keys = { w: false, s: false, a: false, d: false, up: false, down: false, left: false, right: false };
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp" || e.key === "ArrowRight") keys.up = true;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown" || e.key === "ArrowLeft") keys.down = true;
-      if (e.key === "a" || e.key === "A") keys.left = true;
-      if (e.key === "d" || e.key === "D") keys.right = true;
-    };
-    
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp" || e.key === "ArrowRight") keys.up = false;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown" || e.key === "ArrowLeft") keys.down = false;
-      if (e.key === "a" || e.key === "A") keys.left = false;
-      if (e.key === "d" || e.key === "D") keys.right = false;
-    };
+    const GRAVITY = 0.55;
+    const FRICTION = 0.88;
+    const TRACTION = 0.7;
+    const JUMP_POWER = -9;
+    const ENGINE_POWER = 0.45;
+    const MAX_VX = 12;
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    let vx = 0;
+    let jumpPressed = false;
+    const keys: Record<string, boolean> = {};
 
-    // --- TERRAIN ---
-    const getTerrainHeight = (x: number) => {
-      if (prices.length > 1) {
-        // Use chart data
-        let idx = x / pixelsPerPoint;
-        if (idx < 0) idx = 0;
-        
-        // If beyond data, extend flatly
-        if (idx >= prices.length - 1) {
-          idx = prices.length - 1;
-        }
+    // ──────────────────────────────────────────────
+    // 3. HIGH SCORE from localStorage
+    // ──────────────────────────────────────────────
+    const HS_KEY = `moto_hs_${symbol}`;
+    let highScore = parseInt(localStorage.getItem(HS_KEY) || "0", 10);
 
-        const i0 = Math.floor(idx);
-        const i1 = Math.min(i0 + 1, prices.length - 1);
-        const fract = idx - i0;
-
-        const p0 = prices[i0];
-        const p1 = prices[i1];
-        
-        // Smooth interpolation (cosine)
-        const mu2 = (1 - Math.cos(fract * Math.PI)) / 2;
-        const pInterp = p0 * (1 - mu2) + p1 * mu2;
-
-        // Map price to height
-        // To make it drivable without physics explosions, keep yRange small
-        const yRange = 150;
-        const yBottom = Math.max(600, height * 0.8);
-        return yBottom - ((pInterp - minP) / (maxP - minP)) * yRange;
-      } else {
-        // Fallback to sine waves
-        return (
-          Math.sin(x / 400) * 120 +
-          Math.sin(x / 150) * 50 +
-          Math.sin(x / 60) * 15 +
-          300
-        );
+    // ──────────────────────────────────────────────
+    // 4. INPUT
+    // ──────────────────────────────────────────────
+    const onKeyDown = (e: KeyboardEvent) => {
+      keys[e.code] = true;
+      if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
+        e.preventDefault();
+        if (onGround) { vely = JUMP_POWER; onGround = false; }
       }
     };
+    const onKeyUp = (e: KeyboardEvent) => { keys[e.code] = false; };
 
-    const getTerrainNormal = (x: number) => {
-      const dx = 1;
-      const dy = getTerrainHeight(x + dx) - getTerrainHeight(x - dx);
-      const mag = Math.sqrt(dx * 2 * dx * 2 + dy * dy);
-      return { nx: -(dy) / mag, ny: (dx * 2) / mag, angle: Math.atan2(dy, dx * 2) };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+
+    // Touch support
+    const onTouchStart = () => {
+      if (onGround) { vely = JUMP_POWER; onGround = false; }
     };
+    canvas.addEventListener("touchstart", onTouchStart);
 
-    // --- PHYSICS ENGINE ---
-    const GRAVITY = 0.5;
-    const FRICTION = 0.98;
-    const WHEEL_RADIUS = 18;
-
-    class Particle {
-      x: number;
-      y: number;
-      vx: number = 0;
-      vy: number = 0;
-      radius: number;
-      isChassis: boolean;
-
-      constructor(x: number, y: number, r: number, isChassis = false) {
-        this.x = x;
-        this.y = y;
-        this.radius = r;
-        this.isChassis = isChassis;
-      }
-
-      update() {
-        this.vy += GRAVITY;
-        this.vx *= FRICTION;
-        this.vy *= FRICTION;
-
-        // Velocity clamping to prevent violent physics explosions!
-        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-        if (speed > 15) {
-          this.vx = (this.vx / speed) * 15;
-          this.vy = (this.vy / speed) * 15;
-        }
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // Collision with terrain
-        const ty = getTerrainHeight(this.x);
-        if (this.y + this.radius > ty) {
-          if (this.isChassis) {
-            // Give 2.5 seconds of invulnerability at spawn so physics can settle completely
-            if (Date.now() - startTime > 2500) {
-              isGameOver = true;
-              onGameOver();
-            }
-          }
-
-          // Push out of ground
-          this.y = ty - this.radius;
-
-          // Simple collision response
-          this.vy *= 0.5;
-
-          // Apply friction from ground
-          this.vx *= 0.95;
-        }
-      }
-    }
-
-    class Spring {
-      p1: Particle;
-      p2: Particle;
-      length: number;
-      stiffness: number;
-
-      constructor(p1: Particle, p2: Particle, length: number, stiffness: number = 0.5) {
-        this.p1 = p1;
-        this.p2 = p2;
-        this.length = length;
-        this.stiffness = stiffness;
-      }
-
-      update() {
-        const dx = this.p2.x - this.p1.x;
-        const dy = this.p2.y - this.p1.y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const diff = (this.length - dist) / dist;
-        
-        const offsetX = dx * diff * 0.5 * this.stiffness;
-        const offsetY = dy * diff * 0.5 * this.stiffness;
-
-        this.p1.x -= offsetX;
-        this.p1.y -= offsetY;
-        this.p2.x += offsetX;
-        this.p2.y += offsetY;
-      }
-    }
-
-    // --- MOTORCYCLE SETUP ---
-    // Simple vertical spawns to prevent math anomalies on extreme slopes
-    const tyBack = getTerrainHeight(100);
-    const tyFront = getTerrainHeight(180);
-    const tyChassis = getTerrainHeight(140);
-
-    const w1 = new Particle(100, tyBack - WHEEL_RADIUS, WHEEL_RADIUS); // back wheel
-    const w2 = new Particle(180, tyFront - WHEEL_RADIUS, WHEEL_RADIUS); // front wheel
-    const chassis = new Particle(140, tyChassis - 65 - WHEEL_RADIUS, 10, true); // rider/chassis head
-
-    const springs = [
-      new Spring(w1, w2, 80, 0.8), // wheelbase
-      new Spring(w1, chassis, 65, 0.4), // rear suspension
-      new Spring(w2, chassis, 65, 0.4), // front suspension
-    ];
-
-    const particles = [w1, w2, chassis];
-
-    // --- GAME LOOP ---
-    const update = () => {
-      if (isGameOver || isPaused) return;
-
-      // Controls
-      let enginePower = 0;
-      if (keys.up) enginePower = 2.5; // Increased power
-      if (keys.down) enginePower = -1.5; // brake/reverse
-
-      // Apply torque/engine to back wheel if on ground
-      const tyBack = getTerrainHeight(w1.x);
-      if (w1.y + w1.radius >= tyBack - 5) { // More forgiving traction
-        const { angle } = getTerrainNormal(w1.x);
-        w1.vx += Math.cos(angle) * enginePower;
-        w1.vy += Math.sin(angle) * enginePower;
-      }
-
-      // Air tilt (rotation)
-      let tiltForce = 0;
-      if (keys.left) tiltForce = -0.6;
-      if (keys.right) tiltForce = 0.6;
-
-      if (tiltForce !== 0) {
-        w1.vy += tiltForce;
-        w2.vy -= tiltForce;
-      } else {
-        // Auto-stabilization (keeps the bike upright if no tilt keys are pressed)
-        const dx = w2.x - w1.x;
-        const dy = w2.y - w1.y;
-        const bikeAngle = Math.atan2(dy, dx);
-        
-        // Target angle is the ground slope directly under the bike
-        const { angle: groundAngle } = getTerrainNormal((w1.x + w2.x) / 2);
-        
-        // Calculate shortest angular distance
-        let diff = bikeAngle - groundAngle;
-        while (diff > Math.PI) diff -= Math.PI * 2;
-        while (diff < -Math.PI) diff += Math.PI * 2;
-        
-        // Apply corrective force to auto-align bike to the ground
-        const correctiveForce = diff * 0.15;
-        w1.vy += correctiveForce;
-        w2.vy -= correctiveForce;
-      }
-
-      // Physics integration
-      particles.forEach(p => p.update());
-      
-      // Satisfy constraints multiple times for stability
-      for (let i = 0; i < 5; i++) {
-        springs.forEach(s => s.update());
-      }
-
-      // Track distance
-      distance = Math.max(0, w1.x - 100);
-
-      // Update HUD
-      const now = Date.now();
-      const diff = now - startTime;
-      const ms = Math.floor((diff % 1000) / 100);
-      const sec = Math.floor((diff / 1000) % 60);
-      const min = Math.floor(diff / 60000);
-      const timeStr = `${min}:${sec.toString().padStart(2, "0")}.${ms}`;
-      
-      onScoreUpdate(Math.floor(distance / 10), timeStr);
-    };
-
-    const draw = () => {
-      if (!ctx || !canvas) return;
-      
-      // Update canvas size if resized
-      if (canvas.clientWidth !== width || canvas.clientHeight !== height) {
-        width = canvas.clientWidth || window.innerWidth;
-        height = canvas.clientHeight || window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-      }
-
-      // Clear
-      ctx.clearRect(0, 0, width, height);
-
-      // Camera follows the bike
-      const camX = chassis.x - width / 3;
-      const camY = chassis.y - height / 2;
-
+    // ──────────────────────────────────────────────
+    // 5. DRAW HELPERS
+    // ──────────────────────────────────────────────
+    const drawTerrain = () => {
       ctx.save();
-      // Translate for camera
-      const smoothCamY = Math.max(0, camY - 100); 
-      ctx.translate(-camX, -smoothCamY);
-
-      // --- DRAW BACKGROUND GRID ---
-      const startX = Math.floor(camX / 100) * 100 - 100;
-      const endX = startX + width + 200;
-      
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
-      ctx.lineWidth = 1;
-      for (let x = startX; x <= endX; x += 100) {
-        ctx.moveTo(x, smoothCamY);
-        ctx.lineTo(x, height + smoothCamY + 1000);
-      }
-      for (let y = Math.floor(smoothCamY / 100) * 100; y <= smoothCamY + height; y += 100) {
-        ctx.moveTo(startX, y);
-        ctx.lineTo(endX, y);
-      }
-      ctx.stroke();
 
-      // Draw Terrain
-      ctx.beginPath();
-      // start drawing from left of camera to right of camera
-      ctx.moveTo(startX, height + smoothCamY + 1000);
-      ctx.lineTo(startX, getTerrainHeight(startX));
+      // Build clipped terrain path in screen coords
+      const startI = Math.max(0, Math.floor((cameraX - 100) / PIXELS_PER_POINT));
+      const endI = Math.min(terrainPoints.length - 1, Math.ceil((cameraX + W + 100) / PIXELS_PER_POINT));
 
-      for (let x = startX; x <= endX; x += 20) {
-        ctx.lineTo(x, getTerrainHeight(x));
+      ctx.moveTo(terrainPoints[startI].x - cameraX, terrainPoints[startI].y);
+      for (let i = startI + 1; i <= endI; i++) {
+        ctx.lineTo(terrainPoints[i].x - cameraX, terrainPoints[i].y);
       }
-      ctx.lineTo(endX, height + smoothCamY + 1000);
-      
-      ctx.fillStyle = "#0f0f1a"; // Dark navy/grey fill
+
+      // Close bottom
+      ctx.lineTo(terrainPoints[endI].x - cameraX, H + 20);
+      ctx.lineTo(terrainPoints[startI].x - cameraX, H + 20);
+      ctx.closePath();
+
+      // Dark fill with subtle gradient
+      const grad = ctx.createLinearGradient(0, Y_MAX_PX, 0, H);
+      grad.addColorStop(0, "rgba(0,255,128,0.08)");
+      grad.addColorStop(1, "rgba(0,255,128,0.02)");
+      ctx.fillStyle = grad;
       ctx.fill();
 
-      // Draw Neon line on top
+      // Neon green stroke
       ctx.beginPath();
-      for (let x = startX; x <= endX; x += 20) {
-        if (x === startX) ctx.moveTo(x, getTerrainHeight(x));
-        else ctx.lineTo(x, getTerrainHeight(x));
+      ctx.moveTo(terrainPoints[startI].x - cameraX, terrainPoints[startI].y);
+      for (let i = startI + 1; i <= endI; i++) {
+        ctx.lineTo(terrainPoints[i].x - cameraX, terrainPoints[i].y);
       }
-      ctx.strokeStyle = "#00f0ff"; // Neon Cyan
-      ctx.lineWidth = 4;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.shadowColor = "#00f0ff";
-      ctx.shadowBlur = 15;
+      ctx.strokeStyle = "#00ff80";
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = "#00ff80";
+      ctx.shadowBlur = 10;
       ctx.stroke();
-      ctx.shadowBlur = 0; // reset
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    };
 
-      // Draw Motorcycle Wireframe
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 3;
+    const drawGrid = () => {
+      ctx.save();
+      ctx.strokeStyle = "rgba(0,255,128,0.04)";
+      ctx.lineWidth = 1;
+      const gridSpacing = 80;
+      for (let x = -(cameraX % gridSpacing); x < W; x += gridSpacing) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += gridSpacing) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+      ctx.restore();
+    };
 
-      // Suspension Springs (Lines)
-      ctx.beginPath();
-      ctx.moveTo(w1.x, w1.y);
-      ctx.lineTo(chassis.x, chassis.y);
-      ctx.lineTo(w2.x, w2.y);
-      ctx.stroke();
+    const drawBike = (screenX: number, screenY: number, angle: number) => {
+      ctx.save();
+      ctx.translate(screenX, screenY);
+      ctx.rotate(angle);
 
-      // Chassis connection
-      ctx.beginPath();
-      ctx.moveTo(w1.x, w1.y);
-      ctx.lineTo(w2.x, w2.y);
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
-      ctx.stroke();
-
-      // Wheels
-      const drawWheel = (p: Particle) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "#020617";
-        ctx.fill();
-        ctx.strokeStyle = "#00f0ff";
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Draw spokes based on distance to simulate rotation
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.x / p.radius); // fake rotation
-        ctx.beginPath();
-        ctx.moveTo(-p.radius, 0);
-        ctx.lineTo(p.radius, 0);
-        ctx.moveTo(0, -p.radius);
-        ctx.lineTo(0, p.radius);
-        ctx.strokeStyle = "rgba(0, 240, 255, 0.5)";
-        ctx.stroke();
-        ctx.restore();
+      const glow = (color: string, blur: number) => {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = blur;
       };
 
-      drawWheel(w1);
-      drawWheel(w2);
-
-      // Rider head (Chassis)
+      // Back wheel
       ctx.beginPath();
-      ctx.arc(chassis.x, chassis.y, chassis.radius, 0, Math.PI * 2);
-      ctx.fillStyle = isGameOver ? "#e74c3c" : "#fff";
+      ctx.arc(-AXLE_LEN / 2, 0, WHEEL_R, 0, Math.PI * 2);
+      glow("#00f0ff", 14);
+      ctx.strokeStyle = "#00f0ff";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(0,240,255,0.12)";
       ctx.fill();
 
-      // Show temporary instruction text
-      if (Date.now() - startTime < 4000) {
-        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-        ctx.font = "700 24px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText("PRESS W OR ➡️ TO DRIVE", chassis.x, chassis.y - 100);
+      // Front wheel
+      ctx.beginPath();
+      ctx.arc(AXLE_LEN / 2, 0, WHEEL_R, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fill();
+
+      // Spokes
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(-AXLE_LEN / 2, 0, WHEEL_R * 0.55, a, a + 0.05);
+        ctx.moveTo(-AXLE_LEN / 2, 0);
+        ctx.lineTo(-AXLE_LEN / 2 + Math.cos(a) * (WHEEL_R - 3), Math.sin(a) * (WHEEL_R - 3));
+        ctx.strokeStyle = "rgba(0,240,255,0.5)";
+        ctx.lineWidth = 1;
+        ctx.shadowBlur = 0;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(AXLE_LEN / 2, 0);
+        ctx.lineTo(AXLE_LEN / 2 + Math.cos(a) * (WHEEL_R - 3), Math.sin(a) * (WHEEL_R - 3));
+        ctx.stroke();
       }
+
+      // Frame (chassis body)
+      ctx.shadowColor = "#00f0ff";
+      ctx.shadowBlur = 12;
+      ctx.strokeStyle = "#00f0ff";
+      ctx.lineWidth = 3;
+
+      // Swingarm (rear)
+      ctx.beginPath();
+      ctx.moveTo(-AXLE_LEN / 2, 0);
+      ctx.lineTo(-8, -CHASSIS_H * 0.5);
+      ctx.stroke();
+
+      // Main frame
+      ctx.beginPath();
+      ctx.moveTo(-8, -CHASSIS_H * 0.5);
+      ctx.lineTo(AXLE_LEN / 2, 0);
+      ctx.stroke();
+
+      // Top tube
+      ctx.beginPath();
+      ctx.moveTo(-8, -CHASSIS_H * 0.5);
+      ctx.lineTo(14, -CHASSIS_H);
+      ctx.stroke();
+
+      // Fork
+      ctx.beginPath();
+      ctx.moveTo(14, -CHASSIS_H);
+      ctx.lineTo(AXLE_LEN / 2, 0);
+      ctx.stroke();
+
+      // Seat / tank
+      ctx.beginPath();
+      ctx.moveTo(-8, -CHASSIS_H * 0.5);
+      ctx.quadraticCurveTo(-2, -CHASSIS_H * 0.85, 8, -CHASSIS_H * 0.7);
+      ctx.strokeStyle = "rgba(0,240,255,0.6)";
+      ctx.lineWidth = 5;
+      ctx.stroke();
+
+      // Rider body
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = "#fff";
+
+      // Torso
+      ctx.strokeStyle = "#e0e8ff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-2, -CHASSIS_H * 0.75);
+      ctx.lineTo(4, -CHASSIS_H * 1.35);
+      ctx.stroke();
+
+      // Head (helmet)
+      ctx.beginPath();
+      ctx.arc(4, -CHASSIS_H * 1.5, 8, 0, Math.PI * 2);
+      ctx.fillStyle = "#00f0ff";
+      ctx.shadowBlur = 12;
+      ctx.fill();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Arm
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#aac0d8";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(4, -CHASSIS_H * 1.3);
+      ctx.lineTo(14, -CHASSIS_H * 0.9);
+      ctx.stroke();
 
       ctx.restore();
     };
 
-    const loop = () => {
-      update();
-      draw();
-      animationId = requestAnimationFrame(loop);
+    // ──────────────────────────────────────────────
+    // 6. GAME LOOP
+    // ──────────────────────────────────────────────
+    let raf: number;
+
+    const tick = () => {
+      if (gameOver) return;
+
+      // ── Physics ──
+      const terrainAngle = getTerrainAngle(worldX);
+      const slopeCos = Math.cos(terrainAngle);
+      const slopeSin = Math.sin(terrainAngle);
+
+      // Engine / brake input (Right arrow / D to go fast, also always auto-accelerate slightly)
+      let engine = ENGINE_POWER * 0.4; // always rolling forward
+      if (keys["ArrowRight"] || keys["KeyD"] || keys["ArrowUp"] || keys["KeyW"]) engine = ENGINE_POWER;
+      if (keys["ArrowLeft"] || keys["KeyA"]) engine = -ENGINE_POWER * 0.6;
+
+      // Apply engine force along slope
+      if (onGround) {
+        vx += slopeCos * engine * TRACTION;
+        vely += slopeSin * engine * TRACTION;
+      }
+
+      // Air tilt
+      let tilt = 0;
+      if (keys["ArrowLeft"] || keys["KeyA"]) tilt = -0.025;
+      if (keys["ArrowRight"] || keys["KeyD"]) tilt = 0.018;
+      angularVel += tilt;
+      angularVel *= 0.88;
+      bikeAngle += angularVel;
+
+      // Gravity
+      vely += GRAVITY;
+
+      // Clamp horizontal speed
+      vx = Math.max(-MAX_VX, Math.min(MAX_VX, vx));
+
+      // Friction when on ground
+      if (onGround) {
+        vx *= FRICTION;
+      }
+
+      // Update position
+      worldX += vx;
+      posY += vely;
+
+      // Ground collision
+      const groundY = getContactY();
+      if (posY >= groundY) {
+        posY = groundY;
+        vely = 0;
+        onGround = true;
+
+        // Align bike angle to terrain when on ground
+        const targetAngle = terrainAngle;
+        const angleDiff = targetAngle - bikeAngle;
+        bikeAngle += angleDiff * 0.25;
+        angularVel *= 0.6;
+      } else {
+        onGround = false;
+      }
+
+      // Camera smoothly follows bike
+      const targetCamX = worldX - W * 0.35;
+      cameraX += (targetCamX - cameraX) * 0.08;
+      cameraX = Math.max(0, cameraX);
+
+      // Score = distance in "meters" (pixels / 10)
+      score = Math.max(score, Math.round(worldX / 10));
+      onDistanceUpdate(score);
+
+      // Flip detection — if bike angle exceeds ±70 degrees, crashed
+      const absAngle = Math.abs(bikeAngle);
+      if (absAngle > 1.22) { // 70 deg in radians
+        endGame();
+        return;
+      }
+
+      // Fell off track (went backward off screen or below canvas)
+      if (posY > H + 100) {
+        endGame();
+        return;
+      }
+
+      // Win / reached end
+      if (worldX >= TOTAL_WIDTH - AXLE_LEN) {
+        endGame();
+        return;
+      }
+
+      // ── Draw ──
+      ctx.clearRect(0, 0, W, H);
+
+      // Background
+      ctx.fillStyle = "#0d1117";
+      ctx.fillRect(0, 0, W, H);
+
+      drawGrid();
+      drawTerrain();
+
+      const screenX = worldX - cameraX;
+      const screenY = posY;
+      drawBike(screenX, screenY, bikeAngle);
+
+      // HUD
+      drawHUD();
+
+      raf = requestAnimationFrame(tick);
     };
 
-    loop();
+    const drawHUD = () => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const mins = Math.floor(elapsed / 60);
+      const secs = (elapsed % 60).toFixed(1).padStart(4, "0");
+      const timeStr = `${mins}:${secs}`;
+
+      // Coin symbol top left
+      ctx.save();
+      ctx.font = "bold 22px 'Courier New', monospace";
+      ctx.fillStyle = "#00f0ff";
+      ctx.shadowColor = "#00f0ff";
+      ctx.shadowBlur = 12;
+      ctx.fillText(`🏍 ${symbol}`, 20, 36);
+
+      // Timer top center
+      ctx.font = "bold 28px 'Courier New', monospace";
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowColor = "rgba(255,255,255,0.5)";
+      ctx.shadowBlur = 8;
+      ctx.textAlign = "center";
+      ctx.fillText(timeStr, W / 2, 36);
+
+      // Distance top right
+      ctx.textAlign = "right";
+      ctx.font = "bold 22px 'Courier New', monospace";
+      ctx.fillStyle = "#00ff80";
+      ctx.shadowColor = "#00ff80";
+      ctx.shadowBlur = 12;
+      ctx.fillText(`${score}m`, W - 20, 36);
+
+      // High score
+      ctx.font = "13px 'Courier New', monospace";
+      ctx.fillStyle = "rgba(0,255,128,0.5)";
+      ctx.shadowBlur = 0;
+      ctx.fillText(`BEST: ${highScore}m`, W - 20, 56);
+
+      // Controls hint at bottom
+      ctx.textAlign = "center";
+      ctx.font = "12px 'Courier New', monospace";
+      ctx.fillStyle = "rgba(255,255,255,0.25)";
+      ctx.fillText("SPACE / W — Jump  •  A/D — Tilt  •  →/D — Accelerate", W / 2, H - 16);
+
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    };
+
+    const endGame = () => {
+      gameOver = true;
+      cancelAnimationFrame(raf);
+
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem(HS_KEY, String(highScore));
+      }
+
+      // Draw end screen
+      ctx.save();
+      ctx.fillStyle = "rgba(13,17,23,0.7)";
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.font = "bold 72px 'Courier New', monospace";
+      ctx.fillStyle = "#e74c3c";
+      ctx.shadowColor = "#e74c3c";
+      ctx.shadowBlur = 40;
+      ctx.textAlign = "center";
+      ctx.fillText("CRASHED", W / 2, H / 2 - 60);
+
+      ctx.font = "bold 28px 'Courier New', monospace";
+      ctx.fillStyle = "#00f0ff";
+      ctx.shadowColor = "#00f0ff";
+      ctx.shadowBlur = 16;
+      ctx.fillText(`Distance: ${score}m`, W / 2, H / 2);
+
+      if (score >= highScore && score > 0) {
+        ctx.font = "bold 18px 'Courier New', monospace";
+        ctx.fillStyle = "#ffd700";
+        ctx.shadowColor = "#ffd700";
+        ctx.shadowBlur = 12;
+        ctx.fillText("🏆 NEW BEST!", W / 2, H / 2 + 40);
+      }
+
+      ctx.font = "bold 20px 'Courier New', monospace";
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.shadowBlur = 0;
+      ctx.fillText("Press R or click RESTART", W / 2, H / 2 + 90);
+      ctx.restore();
+
+      onGameOver(score);
+    };
+
+    // Store refs for cleanup
+    gameRef.current = {
+      raf,
+      keydownHandler: onKeyDown,
+      keyupHandler: onKeyUp,
+      touchHandler: onTouchStart,
+      canvas,
+    };
+
+    // R key to restart
+    const onRestart = (e: KeyboardEvent) => {
+      if (e.code === "KeyR" && gameOver) startGame();
+    };
+    window.addEventListener("keydown", onRestart);
+
+    raf = requestAnimationFrame(tick);
+    gameRef.current.raf = raf;
+
+  }, [priceData, symbol, onGameOver, onDistanceUpdate]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentElement!;
+    canvas.width = parent.clientWidth || window.innerWidth;
+    canvas.height = parent.clientHeight || window.innerHeight;
+    startGame();
+
+    const handleResize = () => {
+      canvas.width = parent.clientWidth || window.innerWidth;
+      canvas.height = parent.clientHeight || window.innerHeight;
+      startGame();
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("resize", handleResize);
+      if (gameRef.current?.raf) cancelAnimationFrame(gameRef.current.raf);
+      if (gameRef.current?.keydownHandler) {
+        window.removeEventListener("keydown", gameRef.current.keydownHandler);
+        window.removeEventListener("keyup", gameRef.current.keyupHandler);
+      }
+      if (gameRef.current?.canvas && gameRef.current?.touchHandler) {
+        gameRef.current.canvas.removeEventListener("touchstart", gameRef.current.touchHandler);
+      }
     };
-  }, [isPaused, restartTrigger, onGameOver, onScoreUpdate, chartData]);
+  }, [startGame, restartTrigger]);
 
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "block",
-        background: "#020617", // Main theme bg
-      }}
+      style={{ display: "block", width: "100%", height: "100%" }}
     />
   );
 }
