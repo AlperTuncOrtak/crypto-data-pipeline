@@ -24,7 +24,7 @@ import {
 import { AnimatedPrice } from "../components/ui/AnimatedPrice";
 import LightweightCandleChart from "../components/market/LightweightCandleChart";
 import { useAuth } from "../hooks/useAuth";
-import MotoGameModal from "../components/game/MotoGameModal";
+import MotoGame from "../components/MotoGame/MotoGame";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 
@@ -378,7 +378,6 @@ export default function CoinDetail() {
   const navigate = useNavigate();
   const [range, setRange] = useState("24h");
   const [chartType, setChartType] = useState("simple");
-  const [isGameOpen, setIsGameOpen] = useState(false);
 
   const {
     data: coin,
@@ -826,28 +825,7 @@ export default function CoinDetail() {
             >
               <CandlestickChart size={13} /> Pro 🕯️
             </button>
-            <button
-              onClick={() => setIsGameOpen(true)}
-              style={{
-                display: "flex", alignItems: "center", gap: 5,
-                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                background: "linear-gradient(90deg, rgba(139,92,246,0.15) 0%, rgba(0,240,255,0.15) 100%)",
-                border: "1px solid rgba(139,92,246,0.3)",
-                color: "#fff",
-                cursor: "pointer", transition: "all 0.15s",
-                marginLeft: 10,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              🏍️ Ride this chart
-            </button>
+
           </div>
         </div>
 
@@ -938,13 +916,35 @@ export default function CoinDetail() {
         </div>{/* end position:relative inner */}
       </div>
 
+      {/* RIDE THE CHART — MotoGame */}
+      {chartData.length > 1 && (() => {
+        // Build OHLC from history data (each point has time + price)
+        // We synthesize OHLC by treating each point as a candle
+        const ohlcForGame = chartData.map((d, i, arr) => {
+          const p = Number(d.price);
+          const prev = i > 0 ? Number(arr[i - 1].price) : p;
+          return {
+            time: new Date(d.time).getTime() / 1000,
+            open:  prev,
+            high:  Math.max(p, prev),
+            low:   Math.min(p, prev),
+            close: p,
+          };
+        });
+        return (
+          <MotoGame
+            ohlcData={ohlcForGame}
+            symbol={coin.symbol?.toUpperCase() ?? ""}
+            coinId={slug ?? ""}
+          />
+        );
+      })()}
+
       {/* LATEST NEWS */}
       <div style={{ marginTop: 32 }}>
         <SectionTitle>Latest News</SectionTitle>
         <CryptoNews symbol={coin.symbol} />
       </div>
-      
-      {isGameOpen && <MotoGameModal onClose={() => setIsGameOpen(false)} chartData={chartData} />}
     </div>
   );
 }
