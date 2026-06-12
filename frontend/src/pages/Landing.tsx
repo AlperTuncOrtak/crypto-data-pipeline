@@ -3,6 +3,7 @@
 // ============================================================
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useMarketStats } from "../hooks/useMarket";
 import { useNavigate } from "react-router-dom";
 import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
@@ -201,6 +202,7 @@ function DashboardMockup() {
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+  const { data: stats } = useMarketStats();
   const [scrolled, setScrolled] = useState(false);
   const featuresRef = useRef<HTMLDivElement>(null);
   
@@ -415,7 +417,7 @@ export default function Landing({ onAuthOpen }) {
         {/* Live badge */}
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · 2,500+ coins tracked</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · {(stats?.coin_count || 2500).toLocaleString()}+ coins tracked</span>
         </div>
 
         {/* Headline */}
@@ -478,7 +480,7 @@ export default function Landing({ onAuthOpen }) {
         {/* Stat row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
           {[
-            { v: 2500, s: "+", p: "", l: "Coins Tracked" },
+            { v: stats?.coin_count || 2500, s: "+", p: "", l: "Coins Tracked" },
             { v: 5, s: "+", p: "", l: "AI Indicators" },
             { v: 99, s: "%", p: "", l: "Uptime" },
             { v: 0, s: "", p: "$", l: "To Get Started" },
