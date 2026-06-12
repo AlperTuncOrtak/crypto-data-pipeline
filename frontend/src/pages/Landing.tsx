@@ -3,8 +3,8 @@
 // ============================================================
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useMarketStats } from "../hooks/useMarket";
 import { useNavigate } from "react-router-dom";
+import { useMarketStats } from "../hooks/useMarket";
 import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
   Check, ChevronDown, TrendingUp, Zap, Globe, Star,
@@ -137,7 +137,7 @@ function Faq({ q, a }) {
 }
 
 // ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
-function DashboardMockup() {
+function DashboardMockup({ coinsStr }: { coinsStr: string }) {
   const coins = [
     { sym: "BTC", price: "$107,412", change: "+2.4%", up: true },
     { sym: "ETH", price: "$3,891", change: "+1.8%", up: true },
@@ -160,7 +160,7 @@ function DashboardMockup() {
           {[
             { l: "Market Cap", v: "$3.42T" },
             { l: "BTC Dom", v: "54.2%" },
-            { l: "Coins", v: "2,500+" },
+            { l: "Coins", v: coinsStr },
           ].map((s, i) => (
             <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
               <div style={{ fontSize: 9, color: T.textMuted, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>{s.l}</div>
@@ -203,6 +203,19 @@ export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { data: stats } = useMarketStats();
+  
+  let coinsTracked = 2500;
+  let coinsStr = "2,500+";
+  if (stats && stats.coin_count) {
+    if (stats.coin_count >= 1000) {
+      coinsTracked = Math.floor(stats.coin_count / 1000) * 1000;
+      coinsStr = `${Math.floor(coinsTracked / 1000)},000+`;
+    } else {
+      coinsTracked = stats.coin_count;
+      coinsStr = `${coinsTracked}+`;
+    }
+  }
+
   const [scrolled, setScrolled] = useState(false);
   const featuresRef = useRef<HTMLDivElement>(null);
   
@@ -255,7 +268,7 @@ export default function Landing({ onAuthOpen }) {
       badgeColor: "#00c6ff",
       icon: BarChart2,
       title: "Real-Time Market Tracking",
-      desc: "Track 2,500+ cryptocurrencies with instant updates. Interactive heatmap, whale alerts, and volume spike detection — all in one place.",
+      desc: `Track ${coinsStr} cryptocurrencies with instant updates. Interactive heatmap, whale alerts, and volume spike detection — all in one place.`,
       points: ["Live WebSocket price feeds", "Interactive market heatmap", "Volume anomaly detection"],
       mockupSide: "right",
       mockup: (
@@ -417,7 +430,7 @@ export default function Landing({ onAuthOpen }) {
         {/* Live badge */}
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · {(stats?.coin_count || 2500).toLocaleString()}+ coins tracked</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · 2,500+ coins tracked</span>
         </div>
 
         {/* Headline */}
@@ -480,7 +493,7 @@ export default function Landing({ onAuthOpen }) {
         {/* Stat row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
           {[
-            { v: stats?.coin_count || 2500, s: "+", p: "", l: "Coins Tracked" },
+            { v: coinsTracked, s: "+", p: "", l: "Coins Tracked" },
             { v: 5, s: "+", p: "", l: "AI Indicators" },
             { v: 99, s: "%", p: "", l: "Uptime" },
             { v: 0, s: "", p: "$", l: "To Get Started" },
@@ -500,7 +513,7 @@ export default function Landing({ onAuthOpen }) {
         <Reveal>
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(0,240,255,0.12) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
-            <DashboardMockup />
+            <DashboardMockup coinsStr={coinsStr} />
           </div>
         </Reveal>
       </section>
