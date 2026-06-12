@@ -188,7 +188,7 @@ function NavItem({ item, isActive }) {
           border: isActive
             ? "1px solid var(--accent-border)"
             : "1px solid transparent",
-          boxShadow: isActive ? "0 0 16px rgba(0,240,255,0.2)" : "none",
+          boxShadow: "none",
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           backdropFilter: isActive ? "blur(8px)" : "none",
         }}
@@ -233,8 +233,7 @@ function NavItem({ item, isActive }) {
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
             border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow:
-              "0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,240,255,0.1), inset 0 1px 0 rgba(255,255,255,0.05)",
+            boxShadow: "none",
             opacity: open ? 1 : 0,
             transform: open
               ? "translateY(0) scale(1)"
@@ -554,7 +553,7 @@ export default function Navbar({
           borderBottom: scrolled
             ? "1px solid var(--accent-border)"
             : "1px solid rgba(255,255,255,0.06)",
-          boxShadow: scrolled ? "0 12px 48px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(0,240,255,0.1)" : "none",
+          boxShadow: "none",
         }}
       >
         <div
@@ -1408,15 +1407,15 @@ export default function Navbar({
                     border: "none",
                     fontSize: 13,
                     fontWeight: 800,
-                    boxShadow: "0 0 20px rgba(0,240,255,0.35)",
+                    boxShadow: "none",
                     transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.55)";
+                    e.currentTarget.style.boxShadow = "none";
                     e.currentTarget.style.transform = "translateY(-1px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "0 0 20px rgba(0,240,255,0.35)";
+                    e.currentTarget.style.boxShadow = "none";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >

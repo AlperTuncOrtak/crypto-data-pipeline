@@ -781,8 +781,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                     onMouseEnter={(e) => {
                       if (!submitDisabled) {
                         e.currentTarget.style.transform = "translateY(-2px)";
-                        e.currentTarget.style.boxShadow =
-                          "0 8px 24px rgba(245,166,35,0.45)";
+                        e.currentTarget.style.boxShadow = "none";
                       }
                     }}
                     onMouseLeave={(e) => {

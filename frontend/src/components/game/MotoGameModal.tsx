@@ -119,7 +119,7 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
               flexDirection: "column",
               alignItems: "center",
               gap: 20,
-              boxShadow: "0 0 80px rgba(231,76,60,0.2), 0 0 0 1px rgba(231,76,60,0.1)",
+              boxShadow: "none",
               maxWidth: 420,
               width: "90%",
             }}
@@ -129,7 +129,7 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
                 fontSize: "clamp(48px, 8vw, 80px)",
                 fontWeight: 900,
                 color: "#e74c3c",
-                textShadow: "0 0 40px rgba(231,76,60,0.7)",
+                textShadow: "none",
                 margin: 0,
                 fontFamily: "monospace",
                 letterSpacing: "0.05em",
@@ -143,7 +143,7 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", letterSpacing: "0.1em", marginBottom: 4 }}>
                 DISTANCE
               </div>
-              <div style={{ fontSize: 48, fontWeight: 900, color: "#00f0ff", fontFamily: "monospace", textShadow: "0 0 20px rgba(0,240,255,0.6)" }}>
+              <div style={{ fontSize: 48, fontWeight: 900, color: "#00f0ff", fontFamily: "monospace", textShadow: "none" }}>
                 {finalScore}m
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
                   border: "none",
                   cursor: "pointer",
                   fontFamily: "monospace",
-                  boxShadow: "0 0 30px rgba(0,240,255,0.4)",
+                  boxShadow: "none",
                   transition: "transform 0.1s ease, box-shadow 0.1s ease",
                 }}
                 onMouseDown={e => { e.currentTarget.style.transform = "scale(0.96)"; }}

@@ -105,7 +105,7 @@ export default function ProtectedRoute({
               display: "flex",
               alignItems: "center",
               gap: 8,
-              boxShadow: "0 4px 20px rgba(245,166,35,0.35)",
+              boxShadow: "none",
             }}
           >
             Sign In <ArrowRight size={15} />
@@ -251,7 +251,7 @@ export default function ProtectedRoute({
               alignItems: "center",
               justifyContent: "center",
               gap: 8,
-              boxShadow: "0 4px 20px rgba(245,166,35,0.35)",
+              boxShadow: "none",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.transform = "translateY(-1px)")

@@ -354,7 +354,7 @@ function PriceRangeBar({ current, ath, atl }) {
             borderRadius: "50%",
             background: "var(--accent)",
             border: "2px solid var(--bg-base)",
-            boxShadow: "0 0 6px rgba(245,166,35,0.6)",
+            boxShadow: "none",
           }}
         />
       </div>
@@ -839,7 +839,7 @@ export default function CoinDetail() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = "0 0 15px rgba(0,240,255,0.3)";
+                e.currentTarget.style.boxShadow = "none";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";

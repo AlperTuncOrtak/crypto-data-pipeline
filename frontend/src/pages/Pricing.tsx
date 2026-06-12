@@ -149,7 +149,7 @@ function PlanCard({
         background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
         color: "#111",
         border: "none",
-        boxShadow: "0 4px 20px rgba(245,166,35,0.4)",
+        boxShadow: "none",
       }
     : isPurple
       ? {
@@ -175,7 +175,7 @@ function PlanCard({
         display: "flex",
         flexDirection: "column",
         transition: "transform 0.2s",
-        boxShadow: isPrimary ? "0 0 40px rgba(245,166,35,0.08)" : "none",
+        boxShadow: "none",
       }}
       onMouseEnter={(e) =>
         (e.currentTarget.style.transform = "translateY(-4px)")
@@ -632,7 +632,7 @@ export default function Pricing({ onAuthOpen }) {
             fontSize: 14,
             border: "none",
             cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(245,166,35,0.35)",
+            boxShadow: "none",
           }}
         >
           Get started for free →

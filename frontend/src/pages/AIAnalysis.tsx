@@ -1500,7 +1500,7 @@ export default function AIAnalysis() {
                       fontSize: 14,
                       fontWeight: 700,
                       cursor: "pointer",
-                      boxShadow: "0 4px 20px rgba(245,166,35,0.3)",
+                      boxShadow: "none",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1636,9 +1636,7 @@ export default function AIAnalysis() {
             border: `1px solid ${showDropdown ? "rgba(245,166,35,0.3)" : "rgba(255,255,255,0.07)"}`,
             borderRadius: 16,
             transition: "border-color 0.2s, box-shadow 0.2s",
-            boxShadow: showDropdown
-              ? "0 0 0 3px rgba(245,166,35,0.06)"
-              : "none",
+            boxShadow: "none",
           }}
         >
           {/* Left: coin icon or search icon */}
@@ -1802,16 +1800,12 @@ export default function AIAnalysis() {
               cursor: selected && !loading ? "pointer" : "not-allowed",
               fontSize: 13,
               fontWeight: 700,
-              boxShadow:
-                selected && !loading
-                  ? "0 4px 16px rgba(245,166,35,0.3)"
-                  : "none",
+              boxShadow: "none",
               transition: "all 0.2s",
             }}
             onMouseEnter={(e) => {
               if (selected && !loading) {
-                e.currentTarget.style.boxShadow =
-                  "0 6px 24px rgba(245,166,35,0.5)";
+                e.currentTarget.style.boxShadow = "none";
                 e.currentTarget.style.transform = "translateY(-1px)";
               }
             }}

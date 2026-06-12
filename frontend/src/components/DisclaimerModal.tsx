@@ -414,7 +414,7 @@ export default function DisclaimerModal({ onAccept }) {
                 fontSize: 14,
                 fontWeight: 800,
                 cursor: checked ? "pointer" : "not-allowed",
-                boxShadow: checked ? "0 4px 24px rgba(245,166,35,0.4)" : "none",
+                boxShadow: "none",
                 transition: "all 0.2s",
               }}
             >

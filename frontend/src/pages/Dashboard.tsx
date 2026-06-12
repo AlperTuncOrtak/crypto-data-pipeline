@@ -104,7 +104,7 @@ function Card({ children, style = {}, featured = false, onClick }) {
         cursor: onClick ? "pointer" : "default",
         ...(featured && {
           background: "rgba(0,240,255,0.04)",
-          boxShadow: hov ? "0 0 40px rgba(0,240,255,0.12)" : "none",
+          boxShadow: "none",
         }),
         ...(hov && !featured && { background: T.cardHov }),
         ...style,

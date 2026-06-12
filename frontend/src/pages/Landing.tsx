@@ -85,7 +85,7 @@ function Card({ children, style = {}, featured = false }) {
         position: "relative",
         overflow: "hidden",
         transition: "all 200ms ease",
-        boxShadow: hov && featured ? "0 0 40px rgba(0,240,255,0.08)" : "none",
+        boxShadow: "none",
         ...style,
       }}
       onMouseEnter={() => setHov(true)}
@@ -145,7 +145,7 @@ function DashboardMockup({ coinsStr }: { coinsStr: string }) {
     { sym: "BNB", price: "$724", change: "+3.2%", up: true },
   ];
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,240,255,0.08)" }}>
+    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "none" }}>
       {/* Browser bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
         {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
@@ -460,12 +460,12 @@ export default function Landing({ onAuthOpen }) {
                 padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
                 background: T.purple, color: "white",
                 fontSize: 15, fontWeight: 800,
-                boxShadow: `0 0 32px rgba(0,240,255,0.35)`,
+                boxShadow: "none",
                 transition: "all 200ms ease",
                 display: "flex", alignItems: "center", gap: 8,
               }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(0,240,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.35)"; e.currentTarget.style.transform = ""; }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
             >
               Get Started Free <ArrowRight size={16} />
             </button>
@@ -479,7 +479,7 @@ export default function Landing({ onAuthOpen }) {
               fontSize: 15, fontWeight: isLoggedIn ? 800 : 600,
               border: isLoggedIn ? "none" : `1px solid ${T.border}`,
               transition: "all 200ms ease",
-              boxShadow: isLoggedIn ? "0 0 32px rgba(0,240,255,0.35)" : "none",
+              boxShadow: "none",
               display: "flex", alignItems: "center", gap: 8,
             }}
             onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
@@ -635,7 +635,7 @@ export default function Landing({ onAuthOpen }) {
                       fontSize: 14, fontWeight: 700,
                       transition: "all 200ms ease",
                       marginBottom: 32,
-                      boxShadow: plan.featured ? "0 0 24px rgba(0,240,255,0.3)" : "none",
+                      boxShadow: "none",
                     }}
                     onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
@@ -690,18 +690,18 @@ export default function Landing({ onAuthOpen }) {
                 {!isLoggedIn ? (
                   <button
                     onClick={() => onAuthOpen?.("signup")}
-                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(0,240,255,0.35)", transition: "all 200ms" }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(0,240,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.35)"; e.currentTarget.style.transform = ""; }}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "none", transition: "all 200ms" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
                   >
                     Create Free Account
                   </button>
                 ) : (
                   <button
                     onClick={() => navigate("/dashboard")}
-                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "0 0 32px rgba(0,240,255,0.35)", transition: "all 200ms", display: "flex", alignItems: "center", gap: 8 }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 48px rgba(0,240,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,240,255,0.35)"; e.currentTarget.style.transform = ""; }}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "none", transition: "all 200ms", display: "flex", alignItems: "center", gap: 8 }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
                   >
                     Go to Dashboard <ArrowRight size={16} />
                   </button>
