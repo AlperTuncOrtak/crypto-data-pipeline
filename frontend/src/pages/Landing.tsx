@@ -373,7 +373,7 @@ export default function Landing({ onAuthOpen }) {
       featured: false,
       cta: "Get Started",
       perks: [
-        "Live prices for 2,500+ coins",
+        `Live prices for ${coinsStr} coins`,
         "Market heatmap",
         "Watchlist (up to 10 coins)",
         "Basic price alerts",
@@ -400,8 +400,8 @@ export default function Landing({ onAuthOpen }) {
   ];
 
   const faqs = [
-    { q: "How does AI analysis work?", a: "We combine Altfins pre-computed signals (150+ technical indicators across 2,500+ coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA — and produces bullish/bearish/neutral signals with confidence scores." },
-    { q: "Is CryptoNeko really free?", a: "Yes. The free plan includes live data for 2,500+ coins, heatmap, coin comparison, watchlist (up to 10), and basic alerts — forever. No credit card needed. Pro ($10/mo) unlocks AI analysis, portfolio tracker, tax reports, and unlimited alerts." },
+    { q: "How does AI analysis work?", a: `We combine Altfins pre-computed signals (150+ technical indicators across ${coinsStr} coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA — and produces bullish/bearish/neutral signals with confidence scores.` },
+    { q: "Is CryptoNeko really free?", a: `Yes. The free plan includes live data for ${coinsStr} coins, heatmap, coin comparison, watchlist (up to 10), and basic alerts — forever. No credit card needed. Pro ($10/mo) unlocks AI analysis, portfolio tracker, tax reports, and unlimited alerts.` },
     { q: "Is my data safe?", a: "Completely. Your portfolio and trade data never leaves your browser — CSV files are parsed locally in JavaScript. We never store, sell or transmit your financial data. Only your email is stored via Supabase for authentication." },
     { q: "Which exchanges are supported?", a: "CSV imports from Binance, Bybit, OKX, Coinbase and Kraken. Export your trade history and drag & drop into Portfolio Tracker. P&L and tax calculations happen instantly in your browser." },
     { q: "Can I cancel anytime?", a: "Yes. Your Pro access continues until end of billing period, then reverts to free — no questions asked." },
@@ -430,7 +430,7 @@ export default function Landing({ onAuthOpen }) {
         {/* Live badge */}
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · 2,500+ coins tracked</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · {coinsStr} coins tracked</span>
         </div>
 
         {/* Headline */}
