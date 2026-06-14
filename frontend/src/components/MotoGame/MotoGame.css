@@ -35,6 +35,55 @@
 }
 
 /* ── IDLE overlay ─────────────────────────────────── */
+/* ── O overlays & HUD ── */
+.motogame-hud-overlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.motogame-hud-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.motogame-hud-panel.right {
+  align-items: flex-end;
+}
+
+.motogame-hud-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.motogame-hud-value {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+}
+
+.motogame-hud-value.accent {
+  color: #00f0ff;
+  font-size: 20px;
+}
+
 .motogame-idle-overlay {
   position: absolute;
   inset: 0;

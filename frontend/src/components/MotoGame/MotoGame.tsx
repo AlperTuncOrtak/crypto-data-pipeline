@@ -16,6 +16,10 @@ interface LeaderboardEntry {
   time_seconds: number;
 }
 
+interface Particle {
+  x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string; size: number;
+}
+
 const CATMULL_POINTS = 10;
 const SEGMENT_WIDTH = 40;
 
@@ -36,8 +40,14 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
+  // HUD Refs (for high-perf DOM updates without React re-renders)
+  const distHudRef = useRef<HTMLDivElement>(null);
+  const speedHudRef = useRef<HTMLDivElement>(null);
+  const timeHudRef = useRef<HTMLDivElement>(null);
+  
   const [gameState, setGameState] = useState<"idle" | "playing" | "crashed">("idle");
   const stateRef = useRef<"idle" | "playing" | "crashed">("idle");
+  
   const [distance, setDistance] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [bestScore, setBestScore] = useState(0);
@@ -47,18 +57,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [myScoreId, setMyScoreId] = useState<number | null>(null);
-  const [shaking, setShaking] = useState(false);
   const [showFlash, setShowFlash] = useState(false);
 
   // Matter.js Refs
   const engineRef = useRef<Matter.Engine | null>(null);
-  const renderRef = useRef<Matter.Render | null>(null);
   const runnerRef = useRef<Matter.Runner | null>(null);
-  const bikeRef = useRef<{
-    chassis: Matter.Body;
-    wheelA: Matter.Body;
-    wheelB: Matter.Body;
-  } | null>(null);
+  const bikeRef = useRef<{ chassis: Matter.Body; wheelA: Matter.Body; wheelB: Matter.Body; } | null>(null);
   
   const terrainBodiesRef = useRef<Matter.Body[]>([]);
   const isPositiveRef = useRef(true);
@@ -66,9 +70,13 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const chunkIndexRef = useRef(0);
 
   const keys = useRef<{ [key: string]: boolean }>({});
+  const particlesRef = useRef<Particle[]>([]);
   
   // Game loop tracking
   const cameraX = useRef(0);
+  const cameraY = useRef(0);
+  const currentScale = useRef(1.0);
+  const shakeRef = useRef(0);
   const startTime = useRef(0);
   const rafRef = useRef(0);
 
@@ -103,7 +111,6 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const maxP = Math.max(...smoothedData.map(d => d.smoothed));
     const range = (maxP - minP) || 1;
 
-    // Normalizing
     const localPts = smoothedData.map((d, i) => {
       const norm = (d.smoothed - minP) / range;
       const y = BOTTOM - norm * (BOTTOM - TOP);
@@ -114,7 +121,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const startXOffset = chunkIdx * localPts[localPts.length - 1].x;
     const newPoints: {x:number, y:number}[] = [];
 
-    // Cosine interpolation
+    // Cosine interpolation for smooth terrain
     for (let i = 0; i < localPts.length - 1; i++) {
       const p1 = localPts[i];
       const p2 = localPts[i + 1];
@@ -127,13 +134,11 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       }
     }
     
-    // Add the last point
     const lastP = localPts[localPts.length - 1];
     newPoints.push({ x: lastP.x + startXOffset, y: lastP.y });
-
     basePointsRef.current.push(...newPoints);
 
-    // Create Matter.js bodies for this chunk
+    // Matter.js static bodies
     const chunkBodies: Matter.Body[] = [];
     for (let i = 0; i < newPoints.length - 1; i++) {
       const p1 = newPoints[i];
@@ -143,12 +148,11 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       const length = Math.hypot(p2.x - p1.x, p2.y - p1.y);
       const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
       
-      const rect = Matter.Bodies.rectangle(cx, cy, length + 2, 40, {
+      const rect = Matter.Bodies.rectangle(cx, cy, length + 2, 60, {
         isStatic: true,
         angle: angle,
         friction: 0.8,
         restitution: 0.1,
-        render: { visible: false }
       });
       chunkBodies.push(rect);
     }
@@ -161,7 +165,6 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const handleStart = useCallback(() => {
     if (!canvasRef.current || !wrapperRef.current) return;
     
-    // Cleanup old engine if exists
     if (engineRef.current) {
       Matter.Engine.clear(engineRef.current);
       if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
@@ -172,79 +175,74 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     canvasRef.current.width = w;
     canvasRef.current.height = h;
 
-    // Setup Engine
     const engine = Matter.Engine.create();
     engine.world.gravity.y = 1.2;
     engineRef.current = engine;
 
-    // Reset Tracking
     basePointsRef.current = [];
     terrainBodiesRef.current = [];
+    particlesRef.current = [];
     chunkIndexRef.current = 0;
     cameraX.current = 0;
+    cameraY.current = h * 0.5;
+    currentScale.current = 1.0;
+    shakeRef.current = 0;
 
-    // Generate initial terrain chunks
     generateTerrainChunk(0, engine);
     generateTerrainChunk(1, engine);
 
-    // Create Bike
     const startX = 100;
     const startY = basePointsRef.current[0].y - 100;
-
     const group = Matter.Body.nextGroup(true);
     
-    // Chassis
     const chassis = Matter.Bodies.rectangle(startX, startY, 40, 15, {
-      collisionFilter: { group },
-      frictionAir: 0.02,
-      density: 0.002
+      collisionFilter: { group }, frictionAir: 0.02, density: 0.002
     });
 
-    // Wheels
-    const wheelOpts = {
-      collisionFilter: { group },
-      friction: 0.9,
-      restitution: 0.1,
-      density: 0.005
-    };
-    const wheelA = Matter.Bodies.circle(startX - 20, startY + 15, 12, wheelOpts); // Back
-    const wheelB = Matter.Bodies.circle(startX + 20, startY + 15, 12, wheelOpts); // Front
+    const wheelOpts = { collisionFilter: { group }, friction: 0.9, restitution: 0.1, density: 0.005 };
+    const wheelA = Matter.Bodies.circle(startX - 20, startY + 15, 12, wheelOpts);
+    const wheelB = Matter.Bodies.circle(startX + 20, startY + 15, 12, wheelOpts);
 
-    // Suspension
     const axelA = Matter.Constraint.create({
-      bodyA: chassis, bodyB: wheelA,
-      pointA: { x: -20, y: 10 },
-      stiffness: 0.15, damping: 0.3, length: 15
+      bodyA: chassis, bodyB: wheelA, pointA: { x: -20, y: 10 }, stiffness: 0.15, damping: 0.3, length: 15
     });
     const axelB = Matter.Constraint.create({
-      bodyA: chassis, bodyB: wheelB,
-      pointA: { x: 20, y: 10 },
-      stiffness: 0.15, damping: 0.3, length: 15
+      bodyA: chassis, bodyB: wheelB, pointA: { x: 20, y: 10 }, stiffness: 0.15, damping: 0.3, length: 15
     });
 
     Matter.World.add(engine.world, [chassis, wheelA, wheelB, axelA, axelB]);
     bikeRef.current = { chassis, wheelA, wheelB };
 
-    // Crash Detection (Head hit or Upside down)
     Matter.Events.on(engine, "collisionStart", (event) => {
       if (stateRef.current !== "playing") return;
       const { pairs } = event;
       
+      let hardImpact = false;
       for (let i = 0; i < pairs.length; i++) {
         const { bodyA, bodyB } = pairs[i];
-        
-        // If chassis hits terrain directly
         if (bodyA === chassis || bodyB === chassis) {
-          // Check angle to see if it's a dangerous hit
           const angle = Math.abs(chassis.angle % (Math.PI * 2));
-          if (angle > 1.2 && angle < 5.0) { // Upside down or steep angle
+          if (angle > 1.2 && angle < 5.0) {
             triggerCrash();
+          } else {
+            hardImpact = true; // Bottom hit
           }
+        }
+      }
+      
+      if (hardImpact && chassis.velocity.y > 5) {
+        shakeRef.current = Math.min(chassis.velocity.y * 2, 15);
+        // Emits sparks
+        for(let i=0; i<15; i++) {
+          particlesRef.current.push({
+            x: chassis.position.x, y: chassis.position.y + 10,
+            vx: (Math.random()-0.5)*10, vy: -Math.random()*5,
+            life: 20, maxLife: 20, color: "#facc15", size: 2 + Math.random()*2
+          });
         }
       }
     });
 
-    // Start Runner
     const runner = Matter.Runner.create();
     Matter.Runner.run(runner, engine);
     runnerRef.current = runner;
@@ -258,15 +256,11 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     setMyScoreId(null);
     startTime.current = performance.now();
     
-    // Start custom render loop
     rafRef.current = requestAnimationFrame(renderLoop);
   }, [generateTerrainChunk]);
 
-  // Auto-start
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (stateRef.current === "idle") handleStart();
-    }, 100);
+    const t = setTimeout(() => { if (stateRef.current === "idle") handleStart(); }, 100);
     return () => clearTimeout(t);
   }, [handleStart]);
 
@@ -274,12 +268,10 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     if (stateRef.current === "crashed") return;
     stateRef.current = "crashed";
     setGameState("crashed");
-    setShaking(true);
+    shakeRef.current = 20; // Big shake
     setShowFlash(true);
-    setTimeout(() => setShaking(false), 400);
     setTimeout(() => setShowFlash(false), 600);
     
-    // Stop runner
     if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
     
     if (bikeRef.current) {
@@ -295,6 +287,16 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         }
         return prev;
       });
+
+      // Explosion particles
+      const { chassis } = bikeRef.current;
+      for(let i=0; i<50; i++) {
+        particlesRef.current.push({
+          x: chassis.position.x, y: chassis.position.y,
+          vx: (Math.random()-0.5)*20, vy: (Math.random()-0.5)*20,
+          life: 60, maxLife: 60, color: "#e74c3c", size: 3 + Math.random()*4
+        });
+      }
     }
   };
 
@@ -308,43 +310,40 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const engine = engineRef.current;
     const { chassis, wheelA, wheelB } = bikeRef.current;
 
+    const currDist = Math.max(0, Math.floor(chassis.position.x / 10));
+    const speed = Math.abs(wheelA.angularVelocity * 10).toFixed(0);
+    const elapsed = stateRef.current === "crashed" ? elapsedSec : Math.round((time - startTime.current) / 1000);
+
+    // Update HUD React DOM directly for perf
+    if (distHudRef.current) distHudRef.current.innerText = `${currDist}m`;
+    if (speedHudRef.current) speedHudRef.current.innerText = `${speed} KM/H`;
+    if (timeHudRef.current) timeHudRef.current.innerText = `${elapsed}s`;
+
     if (stateRef.current === "playing") {
-      // 1. Controls
       const k = keys.current;
-      
-      // In air vs grounded check (very basic based on angular velocity changes)
       if (k["w"] || k["arrowup"]) {
-        Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity + 0.05); // Gas
+        Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity + 0.05);
+        if (Math.random() > 0.5) {
+          particlesRef.current.push({
+            x: wheelA.position.x, y: wheelA.position.y + 10,
+            vx: -wheelA.velocity.x * 0.5 + (Math.random()-0.5)*2, vy: -1 - Math.random()*2,
+            life: 30, maxLife: 30, color: "rgba(255,255,255,0.2)", size: 3 + Math.random()*4
+          });
+        }
       }
-      if (k["s"] || k["arrowdown"]) {
-        Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity - 0.05); // Brake
-      }
-      if (k["a"] || k["arrowleft"]) {
-        Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity - 0.02); // Lean Back
-      }
-      if (k["d"] || k["arrowright"]) {
-        Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity + 0.02); // Lean Fwd
-      }
+      if (k["s"] || k["arrowdown"]) Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity - 0.05);
+      if (k["a"] || k["arrowleft"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity - 0.02);
+      if (k["d"] || k["arrowright"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity + 0.02);
 
-      // Check fall off map
-      if (chassis.position.y > h + 400) {
-        triggerCrash();
-      }
+      if (chassis.position.y > h + 600) triggerCrash();
 
-      // 2. Generate new terrain if approaching end
       const lastPt = basePointsRef.current[basePointsRef.current.length - 1];
       if (chassis.position.x > lastPt.x - w * 2) {
         chunkIndexRef.current += 1;
         generateTerrainChunk(chunkIndexRef.current, engine);
-        
-        // Remove old chunks to save memory
         const keepThreshold = chassis.position.x - w * 2;
-        // Filter basePoints
         const trimIdx = basePointsRef.current.findIndex(p => p.x > keepThreshold);
-        if (trimIdx > 0) {
-          basePointsRef.current = basePointsRef.current.slice(trimIdx);
-        }
-        // Remove old bodies
+        if (trimIdx > 0) basePointsRef.current = basePointsRef.current.slice(trimIdx);
         const bodiesToRemove = terrainBodiesRef.current.filter(b => b.position.x < keepThreshold);
         if (bodiesToRemove.length > 0) {
           Matter.World.remove(engine.world, bodiesToRemove);
@@ -353,118 +352,155 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       }
     }
 
-    // 3. Camera Tracking
+    // Camera Lerp & Zoom
     const targetCamX = chassis.position.x - w * 0.3;
     cameraX.current += (targetCamX - cameraX.current) * 0.1;
     cameraX.current = Math.max(0, cameraX.current);
+    
+    const targetCamY = chassis.position.y - h * 0.6;
+    cameraY.current += (targetCamY - cameraY.current) * 0.1;
 
-    // 4. Drawing
-    ctx.fillStyle = "var(--bg-base)";
+    // Zoom out based on speed
+    const vSpeed = Math.abs(chassis.velocity.x);
+    const targetScale = 1.0 - Math.min(vSpeed / 40, 0.3); // Min scale 0.7
+    currentScale.current += (targetScale - currentScale.current) * 0.05;
+
+    ctx.save();
+    
+    // Background (Navy Deep)
+    ctx.fillStyle = "#020617";
     ctx.fillRect(0, 0, w, h);
 
-    // Grid
-    ctx.strokeStyle = "rgba(15, 23, 42, 0.04)";
-    ctx.lineWidth = 1;
-    const gridOffset = cameraX.current % 60;
-    for (let x = -gridOffset; x < w; x += 60) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+    // Apply Camera Transform
+    ctx.translate(w/2, h/2);
+    ctx.scale(currentScale.current, currentScale.current);
+    ctx.translate(-w/2, -h/2);
+
+    if (shakeRef.current > 0) {
+      ctx.translate((Math.random()-0.5)*shakeRef.current, (Math.random()-0.5)*shakeRef.current);
+      shakeRef.current *= 0.9;
+      if (shakeRef.current < 0.5) shakeRef.current = 0;
     }
 
-    // Draw Terrain
+    ctx.translate(-cameraX.current, -cameraY.current);
+
+    // Parallax Grid Background
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+    ctx.lineWidth = 1;
+    const gridCell = 100;
+    const startXOffset = Math.floor(cameraX.current / gridCell) * gridCell;
+    const startYOffset = Math.floor(cameraY.current / gridCell) * gridCell;
+    
+    ctx.beginPath();
+    for (let x = startXOffset - w; x < startXOffset + w*2; x += gridCell) {
+      ctx.moveTo(x, startYOffset - h); ctx.lineTo(x, startYOffset + h*2);
+    }
+    for (let y = startYOffset - h; y < startYOffset + h*2; y += gridCell) {
+      ctx.moveTo(startXOffset - w, y); ctx.lineTo(startXOffset + w*2, y);
+    }
+    ctx.stroke();
+
+    // Terrain
     const chartColor = isPositiveRef.current ? "#2ecc71" : "#e74c3c";
     ctx.beginPath();
-    ctx.moveTo(0, h);
+    ctx.moveTo(cameraX.current - w, cameraY.current + h * 2);
     
-    // Draw all active points
+    let first = true;
     for (const p of basePointsRef.current) {
-      const sx = p.x - cameraX.current;
-      if (sx > -100 && sx < w + 100) {
-        ctx.lineTo(sx, p.y);
-      } else if (sx >= w + 100) {
-        ctx.lineTo(sx, p.y);
-        break; // Stop drawing off screen
+      if (p.x > cameraX.current - w && p.x < cameraX.current + w * 2) {
+        if (first) { ctx.lineTo(p.x, p.y); first = false; }
+        else { ctx.lineTo(p.x, p.y); }
       }
     }
-    ctx.lineTo(w, h);
-    ctx.lineTo(0, h);
+    const lastDrawnX = basePointsRef.current[basePointsRef.current.length-1]?.x || cameraX.current + w;
+    ctx.lineTo(lastDrawnX, cameraY.current + h * 2);
+    ctx.closePath();
     
-    const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, chartColor + "33");
+    // Fill Gradient
+    const grad = ctx.createLinearGradient(0, cameraY.current, 0, cameraY.current + h);
+    grad.addColorStop(0, chartColor + "44");
     grad.addColorStop(1, chartColor + "00");
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Terrain Stroke
+    // Terrain Line
     ctx.beginPath();
-    let first = true;
+    first = true;
     for (const p of basePointsRef.current) {
-      const sx = p.x - cameraX.current;
-      if (sx > -100 && sx < w + 100) {
-        if (first) { ctx.moveTo(sx, p.y); first = false; }
-        else { ctx.lineTo(sx, p.y); }
-      } else if (sx >= w + 100) {
-        ctx.lineTo(sx, p.y);
-        break;
+      if (p.x > cameraX.current - w && p.x < cameraX.current + w * 2) {
+        if (first) { ctx.moveTo(p.x, p.y); first = false; }
+        else { ctx.lineTo(p.x, p.y); }
       }
     }
     ctx.strokeStyle = chartColor;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
     ctx.stroke();
 
-    // Draw Bike (Custom Render)
+    // Draw Particles
+    for (let i = particlesRef.current.length - 1; i >= 0; i--) {
+      const p = particlesRef.current[i];
+      p.x += p.vx; p.y += p.vy;
+      p.life--;
+      if (p.life <= 0) {
+        particlesRef.current.splice(i, 1);
+        continue;
+      }
+      ctx.globalAlpha = p.life / p.maxLife;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1.0;
+
+    // Draw Bike (Modern Cyber-Cycle)
     const crashed = stateRef.current === "crashed";
-    const bx = chassis.position.x - cameraX.current;
-    const by = chassis.position.y;
-    const angle = chassis.angle;
+    const primaryColor = crashed ? "#e74c3c" : "#00f0ff";
 
     ctx.save();
-    ctx.translate(bx, by);
-    ctx.rotate(angle);
+    ctx.translate(chassis.position.x, chassis.position.y);
+    ctx.rotate(chassis.angle);
 
-    const riderColor = crashed ? "#e74c3c" : "#00f0ff";
-    const frameColor = crashed ? "#c0392b" : "#95a5a6";
-
-    // Frame
-    ctx.strokeStyle = frameColor;
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    // Chassis Body
+    ctx.fillStyle = "rgba(20, 25, 40, 0.9)";
+    ctx.strokeStyle = primaryColor;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-15, 0);
-    ctx.lineTo(15, 0);
-    ctx.lineTo(5, -10);
-    ctx.lineTo(-5, -10);
+    ctx.moveTo(-18, 0);
+    ctx.lineTo(15, -5);
+    ctx.lineTo(20, 5);
+    ctx.lineTo(-15, 10);
     ctx.closePath();
+    ctx.fill();
     ctx.stroke();
 
-    // Rider
-    ctx.strokeStyle = "rgba(255,255,255,0.8)";
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(-2, -10); ctx.lineTo(2, -20); ctx.stroke(); // Body
-    ctx.beginPath(); ctx.moveTo(2, -20); ctx.lineTo(10, -10); ctx.stroke(); // Arms
-    ctx.beginPath(); ctx.moveTo(-2, -10); ctx.lineTo(5, 0); ctx.stroke(); // Legs
-    ctx.beginPath(); ctx.arc(4, -23, 4, 0, Math.PI*2); ctx.fillStyle = riderColor; ctx.fill(); // Head
+    // Rider Abstract Geometric Shape
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(5, -20); ctx.lineTo(12, -12); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.arc(10, -25, 6, 0, Math.PI*2); ctx.fillStyle = primaryColor; ctx.fill(); // Helmet
 
     ctx.restore();
 
-    // Draw Wheels (Need correct rotation and positions)
+    // Wheels
     const drawWheel = (body: Matter.Body) => {
-      const wx = body.position.x - cameraX.current;
-      const wy = body.position.y;
       ctx.save();
-      ctx.translate(wx, wy);
+      ctx.translate(body.position.x, body.position.y);
       ctx.rotate(body.angle);
       
-      ctx.strokeStyle = crashed ? "#e74c3c" : "#ffffff";
+      // Tire
+      ctx.fillStyle = "#111827";
+      ctx.strokeStyle = primaryColor;
       ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
       
-      // Spokes
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = "rgba(255,255,255,0.4)";
-      for(let i=0; i<4; i++) {
-        ctx.rotate(Math.PI/4);
-        ctx.beginPath(); ctx.moveTo(-10, 0); ctx.lineTo(10, 0); ctx.stroke();
+      // Rim detail
+      ctx.fillStyle = primaryColor;
+      ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI*2); ctx.fill();
+      
+      ctx.lineWidth = 2;
+      for(let i=0; i<3; i++) {
+        ctx.rotate(Math.PI*2/3);
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(10,0); ctx.stroke();
       }
       ctx.restore();
     };
@@ -472,27 +508,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     drawWheel(wheelA);
     drawWheel(wheelB);
 
-    // Draw HUD
-    const elapsed = stateRef.current === "crashed" ? elapsedSec : Math.round((time - startTime.current) / 1000);
-    const currDist = Math.max(0, Math.floor(chassis.position.x / 10));
-    const speed = Math.abs(wheelA.angularVelocity * 10).toFixed(0);
-
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillRect(10, 10, 160, 80);
-    ctx.strokeStyle = "rgba(255,255,255,0.1)";
-    ctx.strokeRect(10, 10, 160, 80);
-
-    ctx.fillStyle = "var(--text-muted)";
-    ctx.font = "12px Inter, sans-serif";
-    ctx.fillText(`COIN: ${symbol}`, 20, 30);
-    ctx.fillText(`DIST: ${currDist}m (Best: ${bestScore}m)`, 20, 50);
-    ctx.fillText(`TIME: ${elapsed}s`, 20, 70);
-    
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillRect(w - 120, 10, 100, 50);
-    ctx.fillStyle = "var(--accent)";
-    ctx.font = "bold 20px Inter, sans-serif";
-    ctx.fillText(`${speed} KM/H`, w - 110, 42);
+    ctx.restore();
 
     if (stateRef.current !== "crashed") {
       rafRef.current = requestAnimationFrame(renderLoop);
@@ -535,14 +551,37 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       >
         <canvas ref={canvasRef} className="motogame-canvas" />
 
+        {/* --- REACT HUD OVERLAY (Glassmorphism) --- */}
+        {gameState !== "idle" && (
+          <div className="motogame-hud-overlay">
+            <div className="motogame-hud-panel">
+              <span className="motogame-hud-label">COIN: {symbol}</span>
+              <div className="flex gap-4">
+                <div>
+                  <span className="motogame-hud-label">Distance</span>
+                  <div className="motogame-hud-value" ref={distHudRef}>0m</div>
+                </div>
+                <div>
+                  <span className="motogame-hud-label">Time</span>
+                  <div className="motogame-hud-value" ref={timeHudRef}>0s</div>
+                </div>
+              </div>
+            </div>
+            <div className="motogame-hud-panel right">
+              <span className="motogame-hud-label">Speed</span>
+              <div className="motogame-hud-value accent" ref={speedHudRef}>0 KM/H</div>
+            </div>
+          </div>
+        )}
+
         {showFlash && <div className="motogame-crash-flash" />}
 
         {gameState === "crashed" && (
           <div className="motogame-idle-overlay crashed-overlay">
-            <div className="motogame-idle-card">
+            <div className="motogame-idle-card z-20">
               <h2 className="motogame-title text-red-500">💥 WIPEOUT!</h2>
               <p className="motogame-subtitle">
-                You rode <strong>{distance}m</strong> in <strong>{elapsedSec}s</strong>.
+                You rode <strong className="text-white">{distance}m</strong> in <strong className="text-white">{elapsedSec}s</strong>.
               </p>
 
               {!submitted ? (
@@ -555,11 +594,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
                     maxLength={15}
                     className="bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:border-accent transition-colors"
                   />
-                  <button 
-                    onClick={handleSubmit} 
-                    disabled={submitting}
-                    className="motogame-start-btn"
-                  >
+                  <button onClick={handleSubmit} disabled={submitting} className="motogame-start-btn">
                     {submitting ? "Submitting..." : "Submit Score"}
                   </button>
                 </div>
@@ -571,12 +606,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
                 <h3 className="text-sm text-slate-400 mb-2 font-semibold">LEADERBOARD ({symbol})</h3>
                 <div className="bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col overflow-hidden max-h-48 overflow-y-auto">
                   {leaderboard.map((entry, idx) => (
-                    <div 
-                      key={entry.id} 
-                      className={`flex justify-between px-3 py-2 text-xs border-b border-slate-800 last:border-0 ${
-                        entry.id === myScoreId ? "bg-accent/20 text-accent font-bold" : "text-slate-300"
-                      }`}
-                    >
+                    <div key={entry.id} className={`flex justify-between px-3 py-2 text-xs border-b border-slate-800 last:border-0 ${entry.id === myScoreId ? "bg-accent/20 text-accent font-bold" : "text-slate-300"}`}>
                       <span>{idx + 1}. {entry.player_name}</span>
                       <span>{entry.distance_meters}m</span>
                     </div>
@@ -597,28 +627,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         {gameState === "playing" && (
           <div className="motogame-mobile-controls">
             <div className="control-group">
-              <button 
-                className="control-btn"
-                onPointerDown={(e)=>{e.preventDefault(); keys.current["a"]=true;}}
-                onPointerUp={(e)=>{e.preventDefault(); keys.current["a"]=false;}}
-              >↶</button>
-              <button 
-                className="control-btn"
-                onPointerDown={(e)=>{e.preventDefault(); keys.current["d"]=true;}}
-                onPointerUp={(e)=>{e.preventDefault(); keys.current["d"]=false;}}
-              >↷</button>
+              <button className="control-btn" onPointerDown={(e)=>{e.preventDefault(); keys.current["a"]=true;}} onPointerUp={(e)=>{e.preventDefault(); keys.current["a"]=false;}}>↶</button>
+              <button className="control-btn" onPointerDown={(e)=>{e.preventDefault(); keys.current["d"]=true;}} onPointerUp={(e)=>{e.preventDefault(); keys.current["d"]=false;}}>↷</button>
             </div>
             <div className="control-group">
-              <button 
-                className="control-btn brake"
-                onPointerDown={(e)=>{e.preventDefault(); keys.current["s"]=true;}}
-                onPointerUp={(e)=>{e.preventDefault(); keys.current["s"]=false;}}
-              >Brake</button>
-              <button 
-                className="control-btn gas"
-                onPointerDown={(e)=>{e.preventDefault(); keys.current["w"]=true;}}
-                onPointerUp={(e)=>{e.preventDefault(); keys.current["w"]=false;}}
-              >Gas</button>
+              <button className="control-btn brake" onPointerDown={(e)=>{e.preventDefault(); keys.current["s"]=true;}} onPointerUp={(e)=>{e.preventDefault(); keys.current["s"]=false;}}>Brake</button>
+              <button className="control-btn gas" onPointerDown={(e)=>{e.preventDefault(); keys.current["w"]=true;}} onPointerUp={(e)=>{e.preventDefault(); keys.current["w"]=false;}}>Gas</button>
             </div>
           </div>
         )}
