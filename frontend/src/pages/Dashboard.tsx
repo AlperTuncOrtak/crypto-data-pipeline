@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMarket, useGainers, useLosers, useVolume, useTrending, useMarketStats } from "../hooks/useMarket";
+import { getCoinColor } from "../utils/colors";
 import CoinListCard from "../components/market/CoinListCard";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
@@ -188,7 +189,7 @@ function CoinCard({ coin, navigate, featured = false }) {
               </div>
             )}
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: T.textPrimary }}>{coin.symbol?.toUpperCase()}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}40` }}>{coin.symbol?.toUpperCase()}</div>
               <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
             </div>
           </div>
@@ -493,7 +494,7 @@ export default function Dashboard() {
                                 </div>
                               )}
                               <div>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary }}>{coin.symbol?.toUpperCase()}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}40` }}>{coin.symbol?.toUpperCase()}</div>
                                 <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
                               </div>
                             </div>

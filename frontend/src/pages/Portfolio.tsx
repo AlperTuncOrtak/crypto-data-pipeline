@@ -2,8 +2,10 @@
 // pages/Portfolio.jsx
 // ============================================================
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { getCoinColor } from "../utils/colors";
 import { supabase } from "../lib/supabase";
 import { useMarket } from "../hooks/useMarket";
 import { apiClient } from "../api/client";
@@ -1293,7 +1295,7 @@ export default function Portfolio() {
                               </div>
                           }
                           <div>
-                            <div className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{h.symbol}</div>
+                            <div className="text-sm font-bold transition-colors" style={{ color: getCoinColor(h.symbol), textShadow: `0 0 10px ${getCoinColor(h.symbol)}40` }}>{h.symbol}</div>
                             <div className="text-xs text-gray-500">{h.name}</div>
                           </div>
                         </div>

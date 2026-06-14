@@ -167,7 +167,7 @@ function WatchlistPanel({
                   padding: "1px 6px",
                   borderRadius: 999,
                   background: "rgba(245,158,11,0.15)",
-                  color: "var(--accent)",
+                  color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
                   fontFamily: "monospace",
                 }}
               >
@@ -370,7 +370,7 @@ function WatchlistPanel({
                           justifyContent: "center",
                           fontSize: 9,
                           fontWeight: 700,
-                          color: "var(--accent)",
+                          color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
                         }}
                       >
                         {coin.symbol?.[0]}
@@ -485,7 +485,7 @@ function WatchlistPanel({
                             justifyContent: "center",
                             fontSize: 10,
                             fontWeight: 700,
-                            color: "var(--accent)",
+                            color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
                           }}
                         >
                           {coin.symbol?.slice(0, 2)}
@@ -514,7 +514,7 @@ function WatchlistPanel({
                           style={{
                             fontSize: 13,
                             fontWeight: 700,
-                            color: "var(--accent)",
+                            color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
                             fontFamily: "monospace",
                           }}
                         >
@@ -845,7 +845,7 @@ function AlertsPanel({ marketData, onClose }) {
                 padding: "1px 6px",
                 borderRadius: 999,
                 background: "rgba(245,158,11,0.15)",
-                color: "var(--accent)",
+                color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
                 fontFamily: "monospace",
               }}
             >
@@ -884,7 +884,7 @@ function AlertsPanel({ marketData, onClose }) {
               borderRadius: 7,
               border: "1px solid rgba(245,166,35,0.3)",
               background: "rgba(245,166,35,0.08)",
-              color: "var(--accent)",
+              color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
               cursor: "pointer",
             }}
           >
