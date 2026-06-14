@@ -386,7 +386,7 @@ function calcHoldings(trades, marketData, walletHoldings = []) {
       change24h: parseFloat(c.price_change_percentage_24h) || 0,
       image_url: c.image_url,
       name: c.name,
-      slug: c.id,
+      slug: c.slug,
     };
   });
 
