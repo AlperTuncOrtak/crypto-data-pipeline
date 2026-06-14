@@ -123,5 +123,50 @@
       "pricing": "Fiyatlandırma",
       "disclaimer": "© 2026 CryptoNeko. Yatırım tavsiyesi değildir."
     }
+  },
+  "dashboard": {
+    "title": "Piyasa Özeti",
+    "live_badge": "◆ Canlı Panel",
+    "subtitle": "Gerçek zamanlı veriler · Gate.io · Bybit · OKX",
+    "updated": "Güncellendi:",
+    "seconds_ago": "sn önce",
+    "minutes_ago": "dk",
+    "total_mcap": "Toplam Piyasa Değeri",
+    "assets_tracked": "{{count}} varlık takipte",
+    "vol_24h": "24s Hacim",
+    "across_pairs": "tüm paritelerde",
+    "btc_dom": "BTC Hakimiyeti",
+    "eth_dom": "ETH Hakimiyeti",
+    "of_total": "toplam değere oranı",
+    "coins_tracked": "Takip Edilen Coin",
+    "live_data": "canlı veri",
+    "featured": "Öne Çıkan Coinler",
+    "top10": "Piyasa Değerine Göre İlk 10",
+    "view_all": "Tümünü gör →",
+    "table": {
+      "rank": "#",
+      "asset": "Varlık",
+      "price": "Fiyat",
+      "change": "24s Değişim",
+      "mcap": "Piyasa Değeri"
+    },
+    "sentiment": "Piyasa Duyarlılığı",
+    "loading_sentiment": "Duyarlılık yükleniyor…",
+    "extreme_fear": "Aşırı Korku",
+    "fear": "Korku",
+    "neutral": "Nötr",
+    "greed": "Açgözlülük",
+    "extreme_greed": "Aşırı Açgözlülük",
+    "gaining": "Yükselen",
+    "losing": "Düşen",
+    "top_gainers": "En Çok Kazandıranlar (24s)",
+    "top_losers": "En Çok Kaybettirenler (24s)",
+    "smart_alerts": "Akıllı Alarmlar",
+    "bottom_nav": {
+      "markets": "Piyasalar",
+      "portfolio": "Portföy",
+      "alerts": "Alarmlar",
+      "settings": "Ayarlar"
+    }
   }
 }

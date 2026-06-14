@@ -123,5 +123,50 @@
       "pricing": "Pricing",
       "disclaimer": "© 2026 CryptoNeko. Not financial advice."
     }
+  },
+  "dashboard": {
+    "title": "Market Overview",
+    "live_badge": "◆ Live Dashboard",
+    "subtitle": "Real-time data · Gate.io · Bybit · OKX",
+    "updated": "Updated",
+    "seconds_ago": "s ago",
+    "minutes_ago": "m",
+    "total_mcap": "Total Market Cap",
+    "assets_tracked": "{{count}} assets tracked",
+    "vol_24h": "24h Volume",
+    "across_pairs": "across all pairs",
+    "btc_dom": "BTC Dominance",
+    "eth_dom": "ETH Dominance",
+    "of_total": "of total market cap",
+    "coins_tracked": "Coins Tracked",
+    "live_data": "live data",
+    "featured": "Featured Coins",
+    "top10": "Top 10 by Market Cap",
+    "view_all": "View all →",
+    "table": {
+      "rank": "#",
+      "asset": "Asset",
+      "price": "Price",
+      "change": "24h Change",
+      "mcap": "Market Cap"
+    },
+    "sentiment": "Market Sentiment",
+    "loading_sentiment": "Loading sentiment…",
+    "extreme_fear": "Extreme Fear",
+    "fear": "Fear",
+    "neutral": "Neutral",
+    "greed": "Greed",
+    "extreme_greed": "Extreme Greed",
+    "gaining": "Gaining",
+    "losing": "Losing",
+    "top_gainers": "Top Gainers (24h)",
+    "top_losers": "Top Losers (24h)",
+    "smart_alerts": "Smart Alerts",
+    "bottom_nav": {
+      "markets": "Markets",
+      "portfolio": "Portfolio",
+      "alerts": "Alerts",
+      "settings": "Settings"
+    }
   }
 }

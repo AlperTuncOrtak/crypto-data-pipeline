@@ -1,19 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  useMarket,
-  useGainers,
-  useLosers,
-  useVolume,
-  useTrending,
-  useMarketStats,
-} from "../hooks/useMarket";
+import { useMarket, useGainers, useLosers, useVolume, useTrending, useMarketStats } from "../hooks/useMarket";
 import CoinListCard from "../components/market/CoinListCard";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
 import HeatmapWidget from "../components/market/HeatmapWidget";
 import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight, BarChart2, Bell, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // ─── THEME TOKENS ────────────────────────────────────────────────
 const T = {
@@ -228,8 +222,9 @@ function CoinCard({ coin, navigate, featured = false }) {
 
 // ─── FEAR & GREED ────────────────────────────────────────────────
 function FearGreedGauge({ coins }) {
+  const { t } = useTranslation();
   const [score, setScore] = useState(50);
-  const [text, setText] = useState("Neutral");
+  const [text, setText] = useState(t('dashboard.neutral'));
   const [color, setColor] = useState(T.purple);
 
   useEffect(() => {
@@ -240,12 +235,12 @@ function FearGreedGauge({ coins }) {
     const btcChange = btc ? Number(btc.price_change_percentage_24h) : 0;
     const val = Math.max(0, Math.min(100, Math.round((up / total) * 100 + btcChange * 4)));
     setScore(val);
-    if (val <= 20) { setText("Extreme Fear"); setColor(T.red); }
-    else if (val <= 40) { setText("Fear"); setColor("#f97316"); }
-    else if (val <= 60) { setText("Neutral"); setColor(T.purple); }
-    else if (val <= 80) { setText("Greed"); setColor(T.green); }
-    else { setText("Extreme Greed"); setColor("#10b981"); }
-  }, [coins]);
+    if (val <= 20) { setText(t('dashboard.extreme_fear')); setColor(T.red); }
+    else if (val <= 40) { setText(t('dashboard.fear')); setColor("#f97316"); }
+    else if (val <= 60) { setText(t('dashboard.neutral')); setColor(T.purple); }
+    else if (val <= 80) { setText(t('dashboard.greed')); setColor(T.green); }
+    else { setText(t('dashboard.extreme_greed')); setColor("#10b981"); }
+  }, [coins, t]);
 
   const up = coins?.filter(c => Number(c.price_change_percentage_24h) > 0).length || 0;
   const down = coins?.filter(c => Number(c.price_change_percentage_24h) < 0).length || 0;
@@ -255,7 +250,7 @@ function FearGreedGauge({ coins }) {
 
   return (
     <Card style={{ padding: "24px" }}>
-      <SectionLabel>Market Sentiment</SectionLabel>
+      <SectionLabel>{t('dashboard.sentiment')}</SectionLabel>
 
       {/* Gauge */}
       <div style={{ position: "relative", width: 180, margin: "0 auto 20px" }}>
@@ -280,11 +275,11 @@ function FearGreedGauge({ coins }) {
       <div style={{ display: "flex", gap: 8 }}>
         <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.greenBg, border: `1px solid ${T.greenBorder}`, textAlign: "center" }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: T.green, fontFamily: "monospace" }}>↑ {up}</div>
-          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>Gaining</div>
+          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>{t('dashboard.gaining')}</div>
         </div>
         <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.redBg, border: `1px solid ${T.redBorder}`, textAlign: "center" }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: T.red, fontFamily: "monospace" }}>↓ {down}</div>
-          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>Losing</div>
+          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>{t('dashboard.losing')}</div>
         </div>
       </div>
     </Card>
@@ -293,18 +288,19 @@ function FearGreedGauge({ coins }) {
 
 // ─── ALERTS WIDGET ───────────────────────────────────────────────
 function AlertsWidget() {
+  const { t } = useTranslation();
   const alerts = [
-    { dot: T.purple, msg: "BTC crossed $100K threshold", time: "2m ago" },
-    { dot: T.green, msg: "ETH whale wallet moved 12,400 ETH", time: "8m ago" },
-    { dot: "#f59e0b", msg: "SOL volume spike detected (+340%)", time: "15m ago" },
-    { dot: T.red, msg: "DOGE dropped below $0.15 support", time: "22m ago" },
-    { dot: T.purple, msg: "New listing: MOG/USDT on Gate.io", time: "1h ago" },
+    { dot: T.purple, msg: "BTC crossed $100K threshold", time: `2${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
+    { dot: T.green, msg: "ETH whale wallet moved 12,400 ETH", time: `8${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
+    { dot: "#f59e0b", msg: "SOL volume spike detected (+340%)", time: `15${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
+    { dot: T.red, msg: "DOGE dropped below $0.15 support", time: `22${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
+    { dot: T.purple, msg: "New listing: MOG/USDT on Gate.io", time: `1h ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
   ];
   return (
     <Card style={{ padding: "24px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <SectionLabel>Smart Alerts</SectionLabel>
-        <span style={{ fontSize: 10, color: T.purple, fontWeight: 700, cursor: "pointer" }}>View all →</span>
+        <SectionLabel>{t('dashboard.smart_alerts')}</SectionLabel>
+        <span style={{ fontSize: 10, color: T.purple, fontWeight: 700, cursor: "pointer" }}>{t('dashboard.view_all')}</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
         {alerts.map((a, i) => (
@@ -328,24 +324,26 @@ function AlertsWidget() {
 
 // ─── LAST UPDATED ────────────────────────────────────────────────
 function LastUpdated({ marketData }) {
+  const { t } = useTranslation();
   const [sec, setSec] = useState(0);
   useEffect(() => {
     setSec(0);
     const iv = setInterval(() => setSec(s => s + 1), 1000);
     return () => clearInterval(iv);
   }, [marketData]);
-  const label = sec < 60 ? `${sec}s ago` : `${Math.floor(sec / 60)}m ${sec % 60}s ago`;
+  const label = sec < 60 ? `${sec}${t('dashboard.seconds_ago')}` : `${Math.floor(sec / 60)}${t('dashboard.minutes_ago')} ${sec % 60}${t('dashboard.seconds_ago')}`;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: T.textMuted }}>
       <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 6px ${T.green}`, animation: "dash-pulse 2s infinite" }} />
       <Clock size={11} />
-      <span>Updated {label}</span>
+      <span>{t('dashboard.updated')} {label}</span>
     </div>
   );
 }
 
 // ─── MAIN ────────────────────────────────────────────────────────
 export default function Dashboard() {
+  const { t } = useTranslation();
   const market = useMarket(500);
   const gainers = useGainers(5);
   const losers = useLosers(5);
@@ -380,13 +378,13 @@ export default function Dashboard() {
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: T.purple, marginBottom: 8 }}>
-            ◆ Live Dashboard
+            {t('dashboard.live_badge')}
           </div>
           <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", color: T.textPrimary, lineHeight: 1.1, margin: 0 }}>
-            Market Overview
+            {t('dashboard.title')}
           </h1>
           <p style={{ fontSize: 13, color: T.textMuted, marginTop: 6 }}>
-            Real-time data · Gate.io · Bybit · OKX
+            {t('dashboard.subtitle')}
           </p>
         </div>
         <LastUpdated marketData={market.data} />
@@ -396,18 +394,18 @@ export default function Dashboard() {
       <Reveal delay={0.05}>
         <Card style={{ marginBottom: 28, padding: 0, overflow: "hidden" }}>
           <div style={{ display: "flex", flexWrap: "wrap" }}>
-            <HeroStat label="Total Market Cap" value={formatLargeNumber(allMCap)} sub={`${coins.length} assets tracked`} />
-            <HeroStat label="24h Volume" value={formatLargeNumber(totalVolume)} sub="across all pairs" />
-            <HeroStat label="BTC Dominance" value={`${btcDom}%`} sub="of total market cap" />
-            <HeroStat label="ETH Dominance" value={`${ethDom}%`} sub="of total market cap" />
+            <HeroStat label={t('dashboard.total_mcap')} value={formatLargeNumber(allMCap)} sub={t('dashboard.assets_tracked', { count: coins.length })} />
+            <HeroStat label={t('dashboard.vol_24h')} value={formatLargeNumber(totalVolume)} sub={t('dashboard.across_pairs')} />
+            <HeroStat label={t('dashboard.btc_dom')} value={`${btcDom}%`} sub={t('dashboard.of_total')} />
+            <HeroStat label={t('dashboard.eth_dom')} value={`${ethDom}%`} sub={t('dashboard.of_total')} />
             <div style={{ flex: 1, padding: "20px 24px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: T.textMuted, marginBottom: 10 }}>
-                Coins Tracked
+                {t('dashboard.coins_tracked')}
               </div>
               <div style={{ fontSize: 28, fontWeight: 800, color: T.purple, letterSpacing: "-0.03em", lineHeight: 1 }}>
                 {stats.data?.coin_count || coins.length || 0}+
               </div>
-              <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>live data</div>
+              <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>{t('dashboard.live_data')}</div>
             </div>
           </div>
         </Card>
@@ -422,7 +420,7 @@ export default function Dashboard() {
           {/* 2×2 Coin Grid */}
           <Reveal delay={0.1}>
             <div>
-              <SectionLabel>Featured Coins</SectionLabel>
+              <SectionLabel>{t('dashboard.featured')}</SectionLabel>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                 {top4.length > 0 ? top4.map((coin, i) => (
                   <CoinCard key={coin.symbol} coin={coin} navigate={navigate} featured={i === 0} />
@@ -437,14 +435,14 @@ export default function Dashboard() {
           <Reveal delay={0.15}>
             <Card style={{ padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-                <SectionLabel>Top 10 by Market Cap</SectionLabel>
+                <SectionLabel>{t('dashboard.top10')}</SectionLabel>
                 <span
                   onClick={() => navigate("/market")}
                   style={{ fontSize: 11, color: T.purple, cursor: "pointer", fontWeight: 700, opacity: 0.8, transition: "opacity 0.15s" }}
                   onMouseEnter={e => e.currentTarget.style.opacity = "1"}
                   onMouseLeave={e => e.currentTarget.style.opacity = "0.8"}
                 >
-                  View all →
+                  {t('dashboard.view_all')}
                 </span>
               </div>
 
@@ -458,7 +456,7 @@ export default function Dashboard() {
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr>
-                      {["#", "Asset", "Price", "24h Change", "Market Cap"].map((h, i) => (
+                      {[t('dashboard.table.rank'), t('dashboard.table.asset'), t('dashboard.table.price'), t('dashboard.table.change'), t('dashboard.table.mcap')].map((h, i) => (
                         <th key={h} style={{
                           paddingBottom: 12, fontSize: 10, fontWeight: 700, color: T.textMuted,
                           textTransform: "uppercase", letterSpacing: "0.08em",
@@ -539,7 +537,7 @@ export default function Dashboard() {
           <Reveal delay={0.1}>
             {coins.length > 0 ? <FearGreedGauge coins={coins} /> : (
               <Card style={{ padding: "24px", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ fontSize: 12, color: T.textMuted }}>Loading sentiment…</div>
+                <div style={{ fontSize: 12, color: T.textMuted }}>{t('dashboard.loading_sentiment')}</div>
               </Card>
             )}
           </Reveal>
@@ -547,7 +545,7 @@ export default function Dashboard() {
           {/* Gainers */}
           <Reveal delay={0.15}>
             <CoinListCard
-              title="Top Gainers (24h)"
+              title={t('dashboard.top_gainers')}
               accent="green"
               data={gainers.data}
               isLoading={gainers.isLoading}
@@ -562,7 +560,7 @@ export default function Dashboard() {
           {/* Losers */}
           <Reveal delay={0.2}>
             <CoinListCard
-              title="Top Losers (24h)"
+              title={t('dashboard.top_losers')}
               accent="red"
               data={losers.data}
               isLoading={losers.isLoading}
@@ -601,10 +599,10 @@ export default function Dashboard() {
         zIndex: 200,
       }} className="bottom-nav">
         {[
-          { icon: BarChart2, label: "Markets", path: "/market" },
-          { icon: DollarSign, label: "Portfolio", path: "/portfolio" },
-          { icon: Bell, label: "Alerts", path: "/alerts" },
-          { icon: Zap, label: "Settings", path: "/settings" },
+          { icon: BarChart2, label: t('dashboard.bottom_nav.markets'), path: "/market" },
+          { icon: DollarSign, label: t('dashboard.bottom_nav.portfolio'), path: "/portfolio" },
+          { icon: Bell, label: t('dashboard.bottom_nav.alerts'), path: "/alerts" },
+          { icon: Zap, label: t('dashboard.bottom_nav.settings'), path: "/settings" },
         ].map(({ icon: Icon, label, path }) => (
           <div
             key={label}
