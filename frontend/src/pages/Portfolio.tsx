@@ -51,6 +51,32 @@ const fmtNum = (n) =>
   Number(n).toLocaleString(undefined, { maximumFractionDigits: 6 });
 
 // ── Colors ───────────────────────────────────────────────────
+const COIN_COLORS = {
+  BTC: "#F7931A",
+  USDT: "#26A17B",
+  ETH: "#627EEA",
+  SOL: "#14F195",
+  BNB: "#F3BA2F",
+  XRP: "#23292F",
+  DOGE: "#C2A633",
+  ADA: "#0033AD",
+  LINK: "#2A5ADA",
+  AVAX: "#E84142",
+  DOT: "#E6007A",
+  MATIC: "#8247E5",
+  SHIB: "#E23D19",
+  TRX: "#FF0013",
+  LTC: "#345D9D",
+  UNI: "#FF007A",
+  ATOM: "#2E3148",
+  XLM: "#14B6E7",
+  BCH: "#8DC351",
+  ALGO: "#000000",
+  VET: "#15BDFF",
+  ICP: "#29ABE2",
+  FIL: "#0090FF"
+};
+
 const CHART_COLORS = [
   "#00f0ff", // Neon Cyan
   "#2dd4bf", // Teal
@@ -1064,7 +1090,7 @@ export default function Portfolio() {
   const isPos      = totalPnl >= 0;
 
   const pieData = useMemo(() =>
-    holdings.slice(0, 8).map((h, i) => ({ name: h.symbol, value: h.value, color: CHART_COLORS[i % CHART_COLORS.length] })),
+    holdings.slice(0, 8).map((h, i) => ({ name: h.symbol, value: h.value, color: COIN_COLORS[h.symbol?.toUpperCase()] || CHART_COLORS[i % CHART_COLORS.length] })),
     [holdings]
   );
 
