@@ -28,9 +28,12 @@ export default function CoinTicker() {
   return (
     <div style={{
       width: '100%',
-      background: 'var(--bg-elevated)',
+      background: 'rgba(12, 12, 22, 0.65)',
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--border)',
       overflow: 'hidden',
+      whiteSpace: 'nowrap',
       height: 38,
       display: 'flex',
       alignItems: 'center',
