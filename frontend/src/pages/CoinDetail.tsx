@@ -408,6 +408,19 @@ export default function CoinDetail() {
     prevRef.current = cur;
   }, [coin?.current_price]);
 
+  const simpleChartData = useMemo(() => {
+    const arr = history || [];
+    if (arr.length === 0 || !coin?.current_price) return arr;
+    const cur = Number(coin.current_price);
+    if (isNaN(cur)) return arr;
+    const cloned = [...arr];
+    cloned[cloned.length - 1] = {
+      ...cloned[cloned.length - 1],
+      price: cur
+    };
+    return cloned;
+  }, [history, coin?.current_price]);
+
   const chartData = history || [];
   const change = Number(coin?.price_change_percentage_24h);
   const isPositive = change >= 0;
@@ -846,7 +859,7 @@ export default function CoinDetail() {
                 {t("coin_detail.no_chart_data")}
               </div>
             ) : (
-              <LightweightCandleChart data={chartData} />
+              <LightweightCandleChart data={chartData} currentPrice={coin?.current_price} />
             )}
           </div>
         )}
@@ -864,7 +877,7 @@ export default function CoinDetail() {
         )}
         {chartType === "simple" && !historyLoading && chartData.length > 0 && (
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={chartData}>
+            <AreaChart data={simpleChartData}>
               <defs>
                 <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={chartColor} stopOpacity={0.25} />

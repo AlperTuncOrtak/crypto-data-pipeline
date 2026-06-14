@@ -159,8 +159,29 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function LightweightCandleChart({ data }: { data: any[] }) {
-  const ohlcData = useMemo(() => aggregateToOHLC(data, 75), [data]);
+export default function LightweightCandleChart({ data, currentPrice }: { data: any[], currentPrice?: number | string }) {
+  const baseOhlcData = useMemo(() => aggregateToOHLC(data, 75), [data]);
+
+  const ohlcData = useMemo(() => {
+    if (!baseOhlcData || baseOhlcData.length === 0) return [];
+    if (!currentPrice) return baseOhlcData;
+    
+    const price = Number(currentPrice);
+    if (isNaN(price)) return baseOhlcData;
+
+    // Clone the array to avoid mutating memoized data
+    const cloned = [...baseOhlcData];
+    const last = { ...cloned[cloned.length - 1] };
+    
+    // Inject the real-time tick into the latest candle!
+    last.close = price;
+    if (price > last.high) last.high = price;
+    if (price < last.low) last.low = price;
+    last.range = [last.open, last.close];
+    
+    cloned[cloned.length - 1] = last;
+    return cloned;
+  }, [baseOhlcData, currentPrice]);
 
   if (!ohlcData || ohlcData.length === 0) {
     return (
