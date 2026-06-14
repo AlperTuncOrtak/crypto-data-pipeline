@@ -40,13 +40,13 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  // HUD Refs (for high-perf DOM updates without React re-renders)
+  // HUD Refs
   const distHudRef = useRef<HTMLDivElement>(null);
   const speedHudRef = useRef<HTMLDivElement>(null);
   const timeHudRef = useRef<HTMLDivElement>(null);
   
-  const [gameState, setGameState] = useState<"idle" | "playing" | "crashed">("idle");
-  const stateRef = useRef<"idle" | "playing" | "crashed">("idle");
+  const [gameState, setGameState] = useState<"loading" | "idle" | "playing" | "crashed">("loading");
+  const stateRef = useRef<"loading" | "idle" | "playing" | "crashed">("loading");
   
   const [distance, setDistance] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
@@ -62,7 +62,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   // Matter.js Refs
   const engineRef = useRef<Matter.Engine | null>(null);
   const runnerRef = useRef<Matter.Runner | null>(null);
-  const bikeRef = useRef<{ chassis: Matter.Body; wheelA: Matter.Body; wheelB: Matter.Body; } | null>(null);
+  const bikeRef = useRef<{ chassis: Matter.Body; wheelA: Matter.Body; wheelB: Matter.Body; head: Matter.Body } | null>(null);
   
   const terrainBodiesRef = useRef<Matter.Body[]>([]);
   const isPositiveRef = useRef(true);
@@ -79,6 +79,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const shakeRef = useRef(0);
   const startTime = useRef(0);
   const rafRef = useRef(0);
+  const isGrounded = useRef(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(`moto_best_${coinId}`);
@@ -121,7 +122,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const startXOffset = chunkIdx * localPts[localPts.length - 1].x;
     const newPoints: {x:number, y:number}[] = [];
 
-    // Cosine interpolation for smooth terrain
+    // Smooth terrain
     for (let i = 0; i < localPts.length - 1; i++) {
       const p1 = localPts[i];
       const p2 = localPts[i + 1];
@@ -153,7 +154,8 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         angle: angle,
         friction: 1.0,
         restitution: 0.0,
-        chamfer: { radius: 10 } // Smooth corners to prevent wheel snagging
+        chamfer: { radius: 10 },
+        label: "terrain"
       });
       chunkBodies.push(rect);
     }
@@ -164,6 +166,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   }, [ohlcData]);
 
   const handleStart = useCallback(() => {
+    if (ohlcData.length < 2) return;
     if (!canvasRef.current || !wrapperRef.current) return;
     
     if (engineRef.current) {
@@ -177,7 +180,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     canvasRef.current.height = h;
 
     const engine = Matter.Engine.create();
-    engine.world.gravity.y = 2.0; // Higher gravity for snappier falls
+    engine.world.gravity.y = 2.0; 
     engineRef.current = engine;
 
     basePointsRef.current = [];
@@ -192,31 +195,34 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     generateTerrainChunk(0, engine);
     generateTerrainChunk(1, engine);
 
-    if (basePointsRef.current.length === 0) {
-      return; // Abort if no terrain was generated (e.g. missing ohlcData)
-    }
+    if (basePointsRef.current.length === 0) return;
 
     const startX = 100;
     const startY = basePointsRef.current[0].y - 100;
     const group = Matter.Body.nextGroup(true);
     
+    // Chassis
     const chassis = Matter.Bodies.rectangle(startX, startY, 40, 15, {
-      collisionFilter: { group }, frictionAir: 0.01, density: 0.005
+      collisionFilter: { group }, frictionAir: 0.01, density: 0.005, label: "chassis"
     });
 
-    const wheelOpts = { collisionFilter: { group }, friction: 1.0, restitution: 0.0, density: 0.002 };
+    // Head Sensor (Only this hitting the ground causes a crash!)
+    const head = Matter.Bodies.circle(startX + 10, startY - 25, 8, {
+      collisionFilter: { group }, isSensor: true, density: 0.0001, label: "head"
+    });
+
+    // Wheels
+    const wheelOpts = { collisionFilter: { group }, friction: 1.0, restitution: 0.0, density: 0.002, label: "wheel" };
     const wheelA = Matter.Bodies.circle(startX - 20, startY + 15, 12, wheelOpts);
     const wheelB = Matter.Bodies.circle(startX + 20, startY + 15, 12, wheelOpts);
 
-    const axelA = Matter.Constraint.create({
-      bodyA: chassis, bodyB: wheelA, pointA: { x: -20, y: 10 }, stiffness: 0.1, damping: 0.5, length: 18
-    });
-    const axelB = Matter.Constraint.create({
-      bodyA: chassis, bodyB: wheelB, pointA: { x: 20, y: 10 }, stiffness: 0.1, damping: 0.5, length: 18
-    });
+    // Constraints
+    const axelA = Matter.Constraint.create({ bodyA: chassis, bodyB: wheelA, pointA: { x: -20, y: 10 }, stiffness: 0.1, damping: 0.5, length: 18 });
+    const axelB = Matter.Constraint.create({ bodyA: chassis, bodyB: wheelB, pointA: { x: 20, y: 10 }, stiffness: 0.1, damping: 0.5, length: 18 });
+    const neck = Matter.Constraint.create({ bodyA: chassis, bodyB: head, pointA: { x: 10, y: -25 }, stiffness: 1.0, length: 0 });
 
-    Matter.World.add(engine.world, [chassis, wheelA, wheelB, axelA, axelB]);
-    bikeRef.current = { chassis, wheelA, wheelB };
+    Matter.World.add(engine.world, [chassis, head, wheelA, wheelB, axelA, axelB, neck]);
+    bikeRef.current = { chassis, wheelA, wheelB, head };
 
     Matter.Events.on(engine, "collisionStart", (event) => {
       if (stateRef.current !== "playing") return;
@@ -225,25 +231,37 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       let hardImpact = false;
       for (let i = 0; i < pairs.length; i++) {
         const { bodyA, bodyB } = pairs[i];
-        if (bodyA === chassis || bodyB === chassis) {
-          const angle = Math.abs(chassis.angle % (Math.PI * 2));
-          if (angle > 1.2 && angle < 5.0) {
-            triggerCrash();
-          } else {
-            hardImpact = true; // Bottom hit
-          }
+        
+        // Fatal Crash: Head hits terrain
+        if ((bodyA.label === "head" && bodyB.label === "terrain") || (bodyB.label === "head" && bodyA.label === "terrain")) {
+          triggerCrash();
+          return;
+        }
+        
+        // Chassis hitting terrain (just sparks, no crash!)
+        if ((bodyA.label === "chassis" && bodyB.label === "terrain") || (bodyB.label === "chassis" && bodyA.label === "terrain")) {
+          hardImpact = true;
         }
       }
       
       if (hardImpact && chassis.velocity.y > 5) {
         shakeRef.current = Math.min(chassis.velocity.y * 2, 15);
-        // Emits sparks
-        for(let i=0; i<15; i++) {
+        for(let i=0; i<10; i++) {
           particlesRef.current.push({
             x: chassis.position.x, y: chassis.position.y + 10,
-            vx: (Math.random()-0.5)*10, vy: -Math.random()*5,
+            vx: (Math.random()-0.5)*15, vy: -Math.random()*8,
             life: 20, maxLife: 20, color: "#facc15", size: 2 + Math.random()*2
           });
+        }
+      }
+    });
+
+    Matter.Events.on(engine, "collisionActive", (event) => {
+      isGrounded.current = false;
+      for (let i = 0; i < event.pairs.length; i++) {
+        const { bodyA, bodyB } = event.pairs[i];
+        if (bodyA.label === "wheel" || bodyB.label === "wheel") {
+          isGrounded.current = true;
         }
       }
     });
@@ -262,11 +280,20 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     startTime.current = performance.now();
     
     rafRef.current = requestAnimationFrame(renderLoop);
-  }, [generateTerrainChunk]);
+  }, [generateTerrainChunk, ohlcData]);
 
+  // Auto-start logic with loading protection
   useEffect(() => {
-    if (ohlcData.length < 2) return;
-    const t = setTimeout(() => { if (stateRef.current === "idle") handleStart(); }, 100);
+    if (ohlcData.length < 2) {
+      setGameState("loading");
+      stateRef.current = "loading";
+      return;
+    }
+    const t = setTimeout(() => {
+      if (stateRef.current === "loading" || stateRef.current === "idle") {
+        handleStart();
+      }
+    }, 100);
     return () => clearTimeout(t);
   }, [handleStart, ohlcData]);
 
@@ -274,7 +301,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     if (stateRef.current === "crashed") return;
     stateRef.current = "crashed";
     setGameState("crashed");
-    shakeRef.current = 20; // Big shake
+    shakeRef.current = 20;
     setShowFlash(true);
     setTimeout(() => setShowFlash(false), 600);
     
@@ -294,13 +321,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         return prev;
       });
 
-      // Explosion particles
       const { chassis } = bikeRef.current;
-      for(let i=0; i<50; i++) {
+      for(let i=0; i<40; i++) {
         particlesRef.current.push({
           x: chassis.position.x, y: chassis.position.y,
-          vx: (Math.random()-0.5)*20, vy: (Math.random()-0.5)*20,
-          life: 60, maxLife: 60, color: "#e74c3c", size: 3 + Math.random()*4
+          vx: (Math.random()-0.5)*25, vy: (Math.random()-0.5)*25,
+          life: 50, maxLife: 50, color: "#e74c3c", size: 3 + Math.random()*5
         });
       }
     }
@@ -320,7 +346,6 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const speed = Math.abs(wheelA.angularVelocity * 10).toFixed(0);
     const elapsed = stateRef.current === "crashed" ? elapsedSec : Math.round((time - startTime.current) / 1000);
 
-    // Update HUD React DOM directly for perf
     if (distHudRef.current) distHudRef.current.innerText = `${currDist}m`;
     if (speedHudRef.current) speedHudRef.current.innerText = `${speed} KM/H`;
     if (timeHudRef.current) timeHudRef.current.innerText = `${elapsed}s`;
@@ -334,26 +359,31 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         if (wheelA.angularVelocity < maxSpeed) {
           Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity + 0.1);
         }
-        if (Math.random() > 0.5) {
+        if (Math.random() > 0.5 && isGrounded.current) {
           particlesRef.current.push({
             x: wheelA.position.x, y: wheelA.position.y + 10,
             vx: -wheelA.velocity.x * 0.5 + (Math.random()-0.5)*2, vy: -1 - Math.random()*2,
             life: 30, maxLife: 30, color: "rgba(255,255,255,0.2)", size: 3 + Math.random()*4
           });
         }
+        // In-air physics: throttle pulls nose up
+        if (!isGrounded.current) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity - 0.005);
       }
       
       // Brake
       if (k["s"] || k["arrowdown"]) {
         Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity - 0.08);
         Matter.Body.setAngularVelocity(wheelB, wheelB.angularVelocity - 0.08);
+        // In-air physics: brake pushes nose down
+        if (!isGrounded.current) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity + 0.005);
       }
       
       // Lean
       if (k["a"] || k["arrowleft"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity - 0.035);
       if (k["d"] || k["arrowright"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity + 0.035);
 
-      if (chassis.position.y > h + 600) triggerCrash();
+      // Fall off map
+      if (chassis.position.y > h + 800) triggerCrash();
 
       const lastPt = basePointsRef.current[basePointsRef.current.length - 1];
       if (chassis.position.x > lastPt.x - w * 2) {
@@ -378,18 +408,16 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const targetCamY = chassis.position.y - h * 0.6;
     cameraY.current += (targetCamY - cameraY.current) * 0.1;
 
-    // Zoom out based on speed
     const vSpeed = Math.abs(chassis.velocity.x);
-    const targetScale = 1.0 - Math.min(vSpeed / 40, 0.3); // Min scale 0.7
+    const targetScale = 1.0 - Math.min(vSpeed / 40, 0.3);
     currentScale.current += (targetScale - currentScale.current) * 0.05;
 
     ctx.save();
     
-    // Background (Navy Deep)
+    // Background
     ctx.fillStyle = "#020617";
     ctx.fillRect(0, 0, w, h);
 
-    // Apply Camera Transform
     ctx.translate(w/2, h/2);
     ctx.scale(currentScale.current, currentScale.current);
     ctx.translate(-w/2, -h/2);
@@ -402,7 +430,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
     ctx.translate(-cameraX.current, -cameraY.current);
 
-    // Parallax Grid Background
+    // Parallax Grid
     ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
     ctx.lineWidth = 1;
     const gridCell = 100;
@@ -434,14 +462,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     ctx.lineTo(lastDrawnX, cameraY.current + h * 2);
     ctx.closePath();
     
-    // Fill Gradient
     const grad = ctx.createLinearGradient(0, cameraY.current, 0, cameraY.current + h);
     grad.addColorStop(0, chartColor + "44");
     grad.addColorStop(1, chartColor + "00");
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Terrain Line
     ctx.beginPath();
     first = true;
     for (const p of basePointsRef.current) {
@@ -456,7 +482,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     ctx.lineCap = "round";
     ctx.stroke();
 
-    // Draw Particles
+    // Particles
     for (let i = particlesRef.current.length - 1; i >= 0; i--) {
       const p = particlesRef.current[i];
       p.x += p.vx; p.y += p.vy;
@@ -471,7 +497,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     }
     ctx.globalAlpha = 1.0;
 
-    // Draw Bike (Modern Cyber-Cycle)
+    // Bike Drawing
     const crashed = stateRef.current === "crashed";
     const primaryColor = crashed ? "#e74c3c" : "#00f0ff";
 
@@ -479,39 +505,31 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     ctx.translate(chassis.position.x, chassis.position.y);
     ctx.rotate(chassis.angle);
 
-    // Chassis Body
     ctx.fillStyle = "rgba(20, 25, 40, 0.9)";
     ctx.strokeStyle = primaryColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-18, 0);
-    ctx.lineTo(15, -5);
-    ctx.lineTo(20, 5);
-    ctx.lineTo(-15, 10);
+    ctx.moveTo(-18, 0); ctx.lineTo(15, -5); ctx.lineTo(20, 5); ctx.lineTo(-15, 10);
     ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    ctx.fill(); ctx.stroke();
 
-    // Rider Abstract Geometric Shape
+    // Rider
     ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(5, -20); ctx.lineTo(12, -12); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.arc(10, -25, 6, 0, Math.PI*2); ctx.fillStyle = primaryColor; ctx.fill(); // Helmet
+    ctx.beginPath(); ctx.arc(10, -25, 6, 0, Math.PI*2); ctx.fillStyle = primaryColor; ctx.fill(); 
 
     ctx.restore();
 
-    // Wheels
     const drawWheel = (body: Matter.Body) => {
       ctx.save();
       ctx.translate(body.position.x, body.position.y);
       ctx.rotate(body.angle);
       
-      // Tire
       ctx.fillStyle = "#111827";
       ctx.strokeStyle = primaryColor;
       ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
       
-      // Rim detail
       ctx.fillStyle = primaryColor;
       ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI*2); ctx.fill();
       
@@ -535,7 +553,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
   const handleRestart = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    handleStart();
+    // Add brief loading delay to ensure proper reset
+    setGameState("loading");
+    stateRef.current = "loading";
+    setTimeout(() => {
+      handleStart();
+    }, 50);
   }, [handleStart]);
 
   const handleSubmit = async () => {
@@ -543,11 +566,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     setSubmitting(true);
     const name = nickname.trim() || "Anonymous";
     await supabase.from("motogame_scores").insert({
-      coin_id: coinId,
-      symbol,
-      player_name: name,
-      distance_meters: distance,
-      time_seconds: elapsedSec,
+      coin_id: coinId, symbol, player_name: name, distance_meters: distance, time_seconds: elapsedSec,
     });
     const { data } = await supabase.from("motogame_scores").select("*").eq("coin_id", coinId).order("distance_meters", { ascending: false }).limit(10);
     if (data) {
@@ -569,20 +588,22 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       >
         <canvas ref={canvasRef} className="motogame-canvas" />
 
-        {/* --- REACT HUD OVERLAY (Glassmorphism) --- */}
-        {gameState !== "idle" && (
+        {gameState === "loading" && (
+          <div className="motogame-idle-overlay">
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-slate-300 font-semibold tracking-wider text-sm">LOADING TRACK...</p>
+            </div>
+          </div>
+        )}
+
+        {(gameState === "playing" || gameState === "crashed") && (
           <div className="motogame-hud-overlay">
             <div className="motogame-hud-panel">
               <span className="motogame-hud-label">COIN: {symbol}</span>
               <div className="flex gap-4">
-                <div>
-                  <span className="motogame-hud-label">Distance</span>
-                  <div className="motogame-hud-value" ref={distHudRef}>0m</div>
-                </div>
-                <div>
-                  <span className="motogame-hud-label">Time</span>
-                  <div className="motogame-hud-value" ref={timeHudRef}>0s</div>
-                </div>
+                <div><span className="motogame-hud-label">Distance</span><div className="motogame-hud-value" ref={distHudRef}>0m</div></div>
+                <div><span className="motogame-hud-label">Time</span><div className="motogame-hud-value" ref={timeHudRef}>0s</div></div>
               </div>
             </div>
             <div className="motogame-hud-panel right">
@@ -604,40 +625,24 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
               {!submitted ? (
                 <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
-                  <input
-                    type="text"
-                    placeholder="Enter nickname..."
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    maxLength={15}
-                    className="bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:border-accent transition-colors"
-                  />
-                  <button onClick={handleSubmit} disabled={submitting} className="motogame-start-btn">
-                    {submitting ? "Submitting..." : "Submit Score"}
-                  </button>
+                  <input type="text" placeholder="Enter nickname..." value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={15} className="bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:border-accent transition-colors" />
+                  <button onClick={handleSubmit} disabled={submitting} className="motogame-start-btn">{submitting ? "Submitting..." : "Submit Score"}</button>
                 </div>
-              ) : (
-                <p className="text-green-400 font-semibold mt-4">Score Submitted!</p>
-              )}
+              ) : (<p className="text-green-400 font-semibold mt-4">Score Submitted!</p>)}
 
               <div className="mt-6 w-full max-w-xs">
                 <h3 className="text-sm text-slate-400 mb-2 font-semibold">LEADERBOARD ({symbol})</h3>
                 <div className="bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col overflow-hidden max-h-48 overflow-y-auto">
                   {leaderboard.map((entry, idx) => (
                     <div key={entry.id} className={`flex justify-between px-3 py-2 text-xs border-b border-slate-800 last:border-0 ${entry.id === myScoreId ? "bg-accent/20 text-accent font-bold" : "text-slate-300"}`}>
-                      <span>{idx + 1}. {entry.player_name}</span>
-                      <span>{entry.distance_meters}m</span>
+                      <span>{idx + 1}. {entry.player_name}</span><span>{entry.distance_meters}m</span>
                     </div>
                   ))}
-                  {leaderboard.length === 0 && (
-                    <div className="px-3 py-4 text-xs text-slate-500 text-center">No scores yet. Be the first!</div>
-                  )}
+                  {leaderboard.length === 0 && <div className="px-3 py-4 text-xs text-slate-500 text-center">No scores yet. Be the first!</div>}
                 </div>
               </div>
 
-              <button className="motogame-start-btn mt-6" onClick={handleRestart}>
-                🔄 Ride Again
-              </button>
+              <button className="motogame-start-btn mt-6" onClick={handleRestart}>🔄 Ride Again</button>
             </div>
           </div>
         )}
