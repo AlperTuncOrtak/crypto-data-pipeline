@@ -2,11 +2,21 @@ import React, { useEffect, useRef, useMemo } from 'react';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 
 function aggregateToOHLC(data: any[], targetBuckets = 60) {
-  if (!data || data.length === 0) return [];
+  if (!data || data.length < 2) return [];
 
-  const sorted = [...data].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-  const startTime = new Date(sorted[0].time).getTime();
-  const endTime = new Date(sorted[sorted.length - 1].time).getTime();
+  // Safely parse timestamps and prices
+  const parsed = data
+    .map(d => ({
+      time: new Date(d.time).getTime(),
+      price: Number(d.price)
+    }))
+    .filter(d => !isNaN(d.time) && !isNaN(d.price));
+
+  if (parsed.length < 2) return [];
+
+  const sorted = parsed.sort((a, b) => a.time - b.time);
+  const startTime = sorted[0].time;
+  const endTime = sorted[sorted.length - 1].time;
   
   if (startTime === endTime) return [];
 
@@ -19,16 +29,17 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
   }));
 
   sorted.forEach(point => {
-    const t = new Date(point.time).getTime();
-    let idx = Math.floor((t - startTime) / interval);
+    let idx = Math.floor((point.time - startTime) / interval);
     if (idx >= actualBuckets) idx = actualBuckets - 1;
+    if (idx < 0) idx = 0;
     buckets[idx].prices.push(point.price);
   });
 
   let lastValidClose = sorted[0].price;
   let lastTime = 0;
 
-  return buckets.map(b => {
+  const result = [];
+  for (const b of buckets) {
     let t = Math.floor(b.time / 1000);
     // LightweightCharts requires strictly ascending, unique times
     if (t <= lastTime) {
@@ -37,29 +48,31 @@ function aggregateToOHLC(data: any[], targetBuckets = 60) {
     lastTime = t;
 
     if (b.prices.length === 0) {
-      return {
+      result.push({
         time: t as any,
         open: lastValidClose,
         high: lastValidClose,
         low: lastValidClose,
         close: lastValidClose,
-      };
+      });
+    } else {
+      const open = b.prices[0];
+      const close = b.prices[b.prices.length - 1];
+      const high = Math.max(...b.prices);
+      const low = Math.min(...b.prices);
+      
+      lastValidClose = close;
+      
+      result.push({
+        time: t as any,
+        open,
+        high,
+        low,
+        close,
+      });
     }
-    const open = b.prices[0];
-    const close = b.prices[b.prices.length - 1];
-    const high = Math.max(...b.prices);
-    const low = Math.min(...b.prices);
-    
-    lastValidClose = close;
-    
-    return {
-      time: t as any,
-      open,
-      high,
-      low,
-      close,
-    };
-  });
+  }
+  return result;
 }
 
 export default function LightweightCandleChart({ data }: { data: any[] }) {
