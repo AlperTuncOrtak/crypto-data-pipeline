@@ -3,6 +3,7 @@ import { useAlerts } from '../hooks/useAlerts'
 import { useMarket } from '../hooks/useMarket'
 import { useNavigate } from 'react-router-dom'
 import { TrendingDown, TrendingUp, Zap, Bell, RefreshCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const TYPE_CONFIG = {
   'Sharp Drop': {
@@ -10,21 +11,21 @@ const TYPE_CONFIG = {
     border: '#e74c3c',
     icon: TrendingDown,
     filter: 'drop',
-    label: 'DROP',
+    labelKey: 'badge_drop',
   },
   'Strong Increase': {
     color: 'var(--positive)',
     border: '#2ecc71',
     icon: TrendingUp,
     filter: 'pump',
-    label: 'PUMP',
+    labelKey: 'badge_pump',
   },
   'Rapid Movement': {
     color: 'var(--accent)',
     border: 'var(--accent)',
     icon: Zap,
     filter: 'rapid',
-    label: 'RAPID',
+    labelKey: 'badge_rapid',
   },
 }
 
@@ -39,6 +40,7 @@ function formatPrice(n) {
 }
 
 export default function Alerts() {
+  const { t } = useTranslation()
   const { data, isLoading, isError, refetch, isFetching } = useAlerts()
   const { data: marketData } = useMarket(500)
   const navigate = useNavigate()
@@ -103,10 +105,10 @@ export default function Alerts() {
   }, [data, filter, sortBy])
 
   const FILTERS = [
-    { key: 'all',   label: 'All Alerts', count: summary.total },
-    { key: 'drop',  label: 'Sharp Drop', count: summary.drop  },
-    { key: 'pump',  label: 'Strong Pump', count: summary.pump  },
-    { key: 'rapid', label: 'Rapid Move', count: summary.rapid },
+    { key: 'all',   label: t('alerts.all_alerts'), count: summary.total },
+    { key: 'drop',  label: t('alerts.sharp_drop'), count: summary.drop  },
+    { key: 'pump',  label: t('alerts.strong_pump'), count: summary.pump  },
+    { key: 'rapid', label: t('alerts.rapid_move'), count: summary.rapid },
   ]
 
   return (
@@ -115,9 +117,9 @@ export default function Alerts() {
       {/* HEADER */}
       <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Alerts</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('alerts.title')}</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
-            {summary.total} active alerts — rule-based, auto-refreshes every 30s
+            {t('alerts.subtitle', { total: summary.total })}
           </p>
         </div>
         <button
@@ -131,7 +133,7 @@ export default function Alerts() {
           }}
         >
           <RefreshCw size={12} style={{ animation: isFetching ? 'spin 1s linear infinite' : 'none' }} />
-          Refresh
+          {t('alerts.refresh')}
         </button>
       </div>
 
@@ -144,12 +146,12 @@ export default function Alerts() {
           {/* SUMMARY */}
           <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
-              Summary
+              {t('alerts.summary')}
             </div>
             {[
-              { label: 'Sharp Drop',  count: summary.drop,  color: 'var(--negative)', Icon: TrendingDown },
-              { label: 'Strong Pump', count: summary.pump,  color: 'var(--positive)', Icon: TrendingUp   },
-              { label: 'Rapid Move',  count: summary.rapid, color: 'var(--accent)',   Icon: Zap          },
+              { label: t('alerts.sharp_drop'),  count: summary.drop,  color: 'var(--negative)', Icon: TrendingDown },
+              { label: t('alerts.strong_pump'), count: summary.pump,  color: 'var(--positive)', Icon: TrendingUp   },
+              { label: t('alerts.rapid_move'),  count: summary.rapid, color: 'var(--accent)',   Icon: Zap          },
             ].map(({ label, count, color, Icon }) => (
               <div key={label} className="flex items-center justify-between py-2.5" style={{ borderBottom: '1px solid var(--border-soft)' }}>
                 <div className="flex items-center gap-2">
@@ -160,7 +162,7 @@ export default function Alerts() {
               </div>
             ))}
             <div className="flex items-center justify-between pt-2.5">
-              <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Total</span>
+              <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>{t('alerts.total')}</span>
               <span className="text-sm font-bold font-mono" style={{ color: 'var(--text-primary)' }}>{summary.total}</span>
             </div>
           </div>
@@ -168,7 +170,7 @@ export default function Alerts() {
           {/* FILTER */}
           <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
-              Filter
+              {t('alerts.filter')}
             </div>
             <div className="flex flex-col gap-1">
               {FILTERS.map(f => (
@@ -204,12 +206,12 @@ export default function Alerts() {
           {/* SORT */}
           <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
-              Sort By
+              {t('alerts.sort_by')}
             </div>
             <div className="flex flex-col gap-1">
               {[
-                { key: 'severity', label: 'Severity' },
-                { key: 'pct',      label: '% Change' },
+                { key: 'severity', label: t('alerts.severity') },
+                { key: 'pct',      label: t('alerts.pct_change') },
               ].map(s => (
                 <button
                   key={s.key}
@@ -245,14 +247,14 @@ export default function Alerts() {
 
           {isError && (
             <div className="p-4 rounded-xl text-sm" style={{ backgroundColor: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.3)', color: 'var(--negative)' }}>
-              Alerts yüklenemedi.
+              {t('alerts.error_loading')}
             </div>
           )}
 
           {data && filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '64px 24px' }}>
               <Bell size={28} style={{ color: 'var(--text-muted)', marginBottom: 12 }} />
-              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Bu kategoride alert yok</div>
+              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('alerts.no_alerts_in_category')}</div>
             </div>
           )}
 
@@ -269,7 +271,7 @@ export default function Alerts() {
                   backgroundColor: 'var(--bg-elevated)',
                 }}
               >
-                {['', 'Coin', 'Price', 'Change', 'Type'].map((h, i) => (
+                {['', t('alerts.col_coin'), t('alerts.col_price'), t('alerts.col_change'), t('alerts.col_type')].map((h, i) => (
                   <div
                     key={i}
                     className="text-xs font-semibold uppercase tracking-wider"
@@ -374,7 +376,7 @@ export default function Alerts() {
                           fontFamily: 'monospace',
                         }}
                       >
-                        {config.label}
+                        {t('alerts.' + config.labelKey)}
                       </span>
                     </div>
                   </div>

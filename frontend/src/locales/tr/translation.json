@@ -277,5 +277,29 @@
     "pct_of_total": "toplamın %'si",
     "current_position": "Mevcut konum",
     "above_atl": "% ATL'nin üzerinde"
+  },
+  "alerts": {
+    "title": "Alarmlar",
+    "subtitle": "{{total}} aktif alarm — kural tabanlı, 30sn'de bir yenilenir",
+    "refresh": "Yenile",
+    "summary": "Özet",
+    "total": "Toplam",
+    "filter": "Filtre",
+    "all_alerts": "Tüm Alarmlar",
+    "sharp_drop": "Sert Düşüş",
+    "strong_pump": "Güçlü Yükseliş",
+    "rapid_move": "Hızlı Hareket",
+    "sort_by": "Sırala",
+    "severity": "Şiddet",
+    "pct_change": "% Değişim",
+    "error_loading": "Alarmlar yüklenemedi.",
+    "no_alerts_in_category": "Bu kategoride alarm yok",
+    "col_coin": "Coin",
+    "col_price": "Fiyat",
+    "col_change": "Değişim",
+    "col_type": "Tip",
+    "badge_drop": "DÜŞÜŞ",
+    "badge_pump": "YÜKSELİŞ",
+    "badge_rapid": "HIZLI"
   }
 }

@@ -288,5 +288,29 @@
     "pct_of_total": "% of total",
     "current_position": "Current position",
     "above_atl": "% above ATL"
+  },
+  "alerts": {
+    "title": "Alerts",
+    "subtitle": "{{total}} active alerts — rule-based, auto-refreshes every 30s",
+    "refresh": "Refresh",
+    "summary": "Summary",
+    "total": "Total",
+    "filter": "Filter",
+    "all_alerts": "All Alerts",
+    "sharp_drop": "Sharp Drop",
+    "strong_pump": "Strong Pump",
+    "rapid_move": "Rapid Move",
+    "sort_by": "Sort By",
+    "severity": "Severity",
+    "pct_change": "% Change",
+    "error_loading": "Failed to load alerts.",
+    "no_alerts_in_category": "No alerts in this category",
+    "col_coin": "Coin",
+    "col_price": "Price",
+    "col_change": "Change",
+    "col_type": "Type",
+    "badge_drop": "DROP",
+    "badge_pump": "PUMP",
+    "badge_rapid": "RAPID"
   }
 }
