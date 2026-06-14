@@ -581,7 +581,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   return (
     <div className="motogame-container">
       <div
-        className={`motogame-wrapper ${shaking ? "shake" : ""}`}
+        className="motogame-wrapper"
         ref={wrapperRef}
         onTouchStart={(e) => { e.preventDefault(); keys.current["w"] = true; }}
         onTouchEnd={(e) => { e.preventDefault(); keys.current["w"] = false; }}
