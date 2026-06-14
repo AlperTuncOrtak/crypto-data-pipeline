@@ -75,6 +75,10 @@ export default function CoinTicker() {
               key={`${c.slug}-${i}`} 
               className="ticker-item"
               onClick={() => navigate(`/coin/${c.slug}`)}
+              style={{
+                borderBottom: `2px solid ${brandColor}40`,
+                background: `linear-gradient(to top, ${brandColor}08, transparent)`
+              }}
             >
               {c.image_url && <img src={c.image_url} alt={c.symbol} style={{ width: 16, height: 16, borderRadius: '50%' }} />}
               <span style={{ 
