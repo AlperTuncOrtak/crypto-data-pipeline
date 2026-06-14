@@ -67,36 +67,41 @@ export default function LightweightCandleChart({ data }: { data: any[] }) {
   
   const ohlcData = useMemo(() => aggregateToOHLC(data, 100), [data]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (!chartContainerRef.current || ohlcData.length === 0) return;
 
     let chart: any;
+    
+    // Fallback neutral colors for both light and dark modes
+    const textColor = '#94a3b8';
+    const gridColor = 'rgba(148, 163, 184, 0.1)';
 
     try {
       chartContainerRef.current.innerHTML = '';
 
+      // Initialize with default or 100% dimensions
       chart = createChart(chartContainerRef.current, {
         layout: {
           background: { type: ColorType.Solid, color: 'transparent' },
-          textColor: 'rgba(255, 255, 255, 0.5)',
+          textColor: textColor,
         },
         grid: {
-          vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
-          horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+          vertLines: { color: gridColor },
+          horzLines: { color: gridColor },
         },
         crosshair: {
           mode: CrosshairMode.Normal,
         },
         rightPriceScale: {
-          borderColor: 'rgba(255, 255, 255, 0.1)',
+          borderColor: gridColor,
         },
         timeScale: {
-          borderColor: 'rgba(255, 255, 255, 0.1)',
+          borderColor: gridColor,
           timeVisible: true,
           secondsVisible: false,
         },
-        width: chartContainerRef.current.clientWidth,
-        height: chartContainerRef.current.clientHeight,
+        width: chartContainerRef.current.clientWidth || 800,
+        height: chartContainerRef.current.clientHeight || 340,
       });
 
       const candlestickSeries = chart.addCandlestickSeries({
@@ -114,16 +119,19 @@ export default function LightweightCandleChart({ data }: { data: any[] }) {
       console.error("LightweightCharts initialization failed:", err);
     }
 
-    const handleResize = () => {
-      if (chart && chartContainerRef.current) {
-        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (chart && entries.length > 0) {
+        const { width, height } = entries[0].contentRect;
+        if (width > 0 && height > 0) {
+          chart.applyOptions({ width, height });
+        }
       }
-    };
+    });
 
-    window.addEventListener('resize', handleResize);
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       if (chart) {
         chart.remove();
       }

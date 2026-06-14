@@ -905,7 +905,7 @@ export default function CoinDetail() {
               />
               <Tooltip content={<ChartTooltip />} />
               <Area
-                type="monotone"
+                type="natural"
                 dataKey="price"
                 stroke={chartColor}
                 strokeWidth={2}
