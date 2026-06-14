@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./MotoGame.css";
 import { createClient } from "@supabase/supabase-js";
 
@@ -24,8 +19,8 @@ export interface OHLCPoint {
 
 interface MotoGameProps {
   ohlcData: OHLCPoint[];
-  symbol: string;   // e.g. "BTC"
-  coinId: string;   // e.g. "bitcoin" (Supabase leaderboard key)
+  symbol: string;
+  coinId: string;
 }
 
 interface LeaderboardEntry {
@@ -35,7 +30,7 @@ interface LeaderboardEntry {
   time_seconds: number;
 }
 
-type GameState = "idle" | "playing" | "crashed" | "finished";
+type GameState = "idle" | "playing" | "crashed";
 
 interface BikeState {
   x: number;
@@ -44,23 +39,38 @@ interface BikeState {
   vy: number;
   angle: number;
   angularVel: number;
-  onGround: boolean;
   crashed: boolean;
-  finished: boolean;
+  wheelieFrames: number;
+  frontWheelY: number;
+  backWheelY: number;
+  frontCompression: number;
+  backCompression: number;
+}
+
+// ─── Input State ─────────────────────────────────────────────
+interface InputState {
+  up: boolean;
+  down: boolean;
+  left: boolean;
+  right: boolean;
 }
 
 // ─── Physics constants ────────────────────────────────────────
-const GRAVITY        = 0.4;
-const THROTTLE_FORCE = 0.30;
-const AUTO_PUSH      = 0.04;
-const MAX_VX         = 14;
-const MIN_VX         = -8;
-const JUMP_VY        = -9;
-const CRASH_ANGLE    = 1.2; // ~70°
-const CRASH_FRAMES   = 20;
-const ANGLE_LERP     = 0.12;
+const GRAVITY        = 0.45;
+const THROTTLE_FORCE = 0.6;
+const BRAKE_FORCE    = 0.4;
+const MAX_SPEED      = 22;
+const MAX_REVERSE    = -5;
+const AIR_TURN_SPEED = 0.08;
+const GROUND_GRIP    = 0.98;
+const AIR_FRICTION   = 0.99;
 
-// ─── Terrain helpers ──────────────────────────────────────────
+const BIKE_WHEELBASE = 16;
+const BIKE_WHEEL_R   = 10;
+const SPRING_K       = 0.3;
+const DAMPING        = 0.8;
+
+// ─── Terrain Engine ───────────────────────────────────────────
 function movingAverage(arr: number[], w: number): number[] {
   return arr.map((_, i) => {
     const start = Math.max(0, i - Math.floor(w / 2));
@@ -70,370 +80,232 @@ function movingAverage(arr: number[], w: number): number[] {
   });
 }
 
-function buildTerrain(
-  ohlcData: OHLCPoint[],
-  canvasW: number,
-  canvasH: number
-): { xs: Float32Array; ys: Float32Array; totalW: number } {
-  // Use last 120 candles max, close prices
+function buildTerrainBase(ohlcData: OHLCPoint[], baseHeight: number): number[] {
   const raw = ohlcData.slice(-120).map(d => d.close);
-  if (raw.length < 2) {
-    // Flat fallback
-    const n = 120;
-    const xs = new Float32Array(n).map((_, i) => (i / (n - 1)) * canvasW * 3);
-    const ys = new Float32Array(n).fill(canvasH * 0.55);
-    return { xs, ys, totalW: canvasW * 3 };
-  }
+  if (raw.length < 2) return Array.from({ length: 120 }, () => baseHeight);
 
   const smoothed = movingAverage(raw, 5);
   const minP = Math.min(...smoothed);
   const maxP = Math.max(...smoothed);
   const range = maxP - minP || 1;
 
-  const TOP    = 80;
-  const BOTTOM = canvasH - 60;
-  const totalW = canvasW * 3;
-  const n      = smoothed.length;
+  const TOP    = baseHeight - 150;
+  const BOTTOM = baseHeight + 150;
 
-  const xs = new Float32Array(n);
-  const ys = new Float32Array(n);
-
-  for (let i = 0; i < n; i++) {
-    xs[i] = (i / (n - 1)) * totalW;
-    // Invert: high price → low Y (top of canvas)
-    const norm = (smoothed[i] - minP) / range; // 0–1
-    ys[i] = BOTTOM - norm * (BOTTOM - TOP);
-  }
-
-  return { xs, ys, totalW };
+  return smoothed.map(val => {
+    const norm = (val - minP) / range;
+    return BOTTOM - norm * (BOTTOM - TOP);
+  });
 }
 
-/** Binary-search interpolated terrain Y at world-X */
-function terrainYAt(
-  worldX: number,
-  xs: Float32Array,
-  ys: Float32Array
-): number {
-  if (worldX <= xs[0]) return ys[0];
-  if (worldX >= xs[xs.length - 1]) return ys[ys.length - 1];
+const SEGMENT_W = 60;
 
-  let lo = 0, hi = xs.length - 1;
-  while (hi - lo > 1) {
-    const mid = (lo + hi) >> 1;
-    if (xs[mid] <= worldX) lo = mid; else hi = mid;
-  }
-  const t = (worldX - xs[lo]) / (xs[hi] - xs[lo]);
-  return ys[lo] + t * (ys[hi] - ys[lo]);
+function getTerrainY(worldX: number, basePoints: number[]): number {
+  if (basePoints.length === 0) return 0;
+  // Make it endless by wrapping
+  const N = basePoints.length;
+  const rawIdx = Math.floor(worldX / SEGMENT_W);
+  const t = (worldX % SEGMENT_W) / SEGMENT_W;
+  
+  // Wrap index properly for negative numbers
+  const i0 = ((rawIdx % N) + N) % N;
+  const i1 = (((rawIdx + 1) % N) + N) % N;
+
+  const y0 = basePoints[i0];
+  const y1 = basePoints[i1];
+
+  // Cosine interpolation for smoothness
+  const ft = t * Math.PI;
+  const f = (1 - Math.cos(ft)) * 0.5;
+  return y0 * (1 - f) + y1 * f;
 }
 
-/** Terrain slope angle at worldX (radians) */
-function terrainAngleAt(
-  worldX: number,
-  xs: Float32Array,
-  ys: Float32Array
-): number {
-  const dx = 4;
-  const y1 = terrainYAt(worldX - dx, xs, ys);
-  const y2 = terrainYAt(worldX + dx, xs, ys);
+function getTerrainAngle(worldX: number, basePoints: number[]): number {
+  const dx = 2;
+  const y1 = getTerrainY(worldX - dx, basePoints);
+  const y2 = getTerrainY(worldX + dx, basePoints);
   return Math.atan2(y2 - y1, dx * 2);
 }
 
-// ─── Canvas drawing ───────────────────────────────────────────
-function drawTerrain(
+// ─── Drawing Helpers ─────────────────────────────────────────
+function drawEndlessTerrain(
   ctx: CanvasRenderingContext2D,
-  xs: Float32Array,
-  ys: Float32Array,
+  basePoints: number[],
+  viewportX: number,
+  canvasW: number,
   canvasH: number,
-  vx: number
-): void {
+  isPositive: boolean
+) {
   ctx.save();
-  ctx.translate(-vx, 0);
+  ctx.translate(-viewportX, 0);
+
+  const startX = Math.floor(viewportX / SEGMENT_W) * SEGMENT_W;
+  const endX = startX + canvasW + SEGMENT_W * 2;
 
   ctx.beginPath();
-  ctx.moveTo(xs[0], ys[0]);
-  for (let i = 1; i < xs.length; i++) {
-    ctx.lineTo(xs[i], ys[i]);
+  ctx.moveTo(startX, getTerrainY(startX, basePoints));
+  for (let x = startX; x <= endX; x += 10) {
+    ctx.lineTo(x, getTerrainY(x, basePoints));
   }
-  ctx.lineTo(xs[xs.length - 1], canvasH + 5);
-  ctx.lineTo(xs[0], canvasH + 5);
+  ctx.lineTo(endX, canvasH + 100);
+  ctx.lineTo(startX, canvasH + 100);
   ctx.closePath();
 
-  ctx.fillStyle   = "rgba(0,240,255,0.06)";
+  const colorStr = isPositive ? "46, 204, 113" : "231, 76, 60";
+  
+  const grad = ctx.createLinearGradient(0, 0, 0, canvasH);
+  grad.addColorStop(0, `rgba(${colorStr}, 0.25)`);
+  grad.addColorStop(1, `rgba(${colorStr}, 0.0)`);
+  ctx.fillStyle = grad;
   ctx.fill();
-  ctx.strokeStyle = "#00f0ff";
-  ctx.lineWidth   = 2;
+
+  // Draw the bright line
+  ctx.beginPath();
+  ctx.moveTo(startX, getTerrainY(startX, basePoints));
+  for (let x = startX; x <= endX; x += 10) {
+    ctx.lineTo(x, getTerrainY(x, basePoints));
+  }
+  ctx.strokeStyle = `rgb(${colorStr})`;
+  ctx.lineWidth = 3;
+  ctx.shadowColor = `rgb(${colorStr})`;
+  ctx.shadowBlur = 10;
   ctx.stroke();
 
   ctx.restore();
 }
 
-function drawBike(
+function drawBikeEx(
   ctx: CanvasRenderingContext2D,
   bx: number,
   by: number,
   angle: number,
-  crashed: boolean
-): void {
+  frontComp: number,
+  backComp: number,
+  crashed: boolean,
+  wheelAngle: number
+) {
   ctx.save();
   ctx.translate(bx, by);
   ctx.rotate(angle);
 
-  const accentColor = crashed ? "#e74c3c" : "#00f0ff";
-  const bodyColor   = crashed ? "#e74c3c" : "rgba(255,255,255,0.9)";
+  const color = crashed ? "#e74c3c" : "#ffffff";
+  const frameColor = crashed ? "#c0392b" : "#95a5a6";
 
-  // ── Rear wheel ─────────────────────────────────────────────
+  // Wheels
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 0;
+
+  // Back wheel
+  const bwX = -BIKE_WHEELBASE;
+  const bwY = BIKE_WHEELBASE - backComp;
+  ctx.save();
+  ctx.translate(bwX, bwY);
+  ctx.rotate(wheelAngle);
   ctx.beginPath();
-  ctx.arc(-18, 8, 12, 0, Math.PI * 2);
-  ctx.strokeStyle = accentColor;
-  ctx.lineWidth   = 2.5;
+  ctx.arc(0, 0, BIKE_WHEEL_R, 0, Math.PI * 2);
   ctx.stroke();
-  // Spokes
-  for (let i = 0; i < 6; i++) {
-    const a = (i / 6) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(-18, 8);
-    ctx.lineTo(-18 + Math.cos(a) * 10, 8 + Math.sin(a) * 10);
-    ctx.strokeStyle = "rgba(0,240,255,0.35)";
-    ctx.lineWidth   = 1;
-    ctx.stroke();
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*BIKE_WHEEL_R, Math.sin(a)*BIKE_WHEEL_R);
+    ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth=2; ctx.stroke();
   }
+  ctx.restore();
 
-  // ── Front wheel ────────────────────────────────────────────
+  // Front wheel
+  const fwX = BIKE_WHEELBASE;
+  const fwY = BIKE_WHEELBASE - frontComp;
+  ctx.save();
+  ctx.translate(fwX, fwY);
+  ctx.rotate(wheelAngle);
   ctx.beginPath();
-  ctx.arc(18, 8, 12, 0, Math.PI * 2);
-  ctx.strokeStyle = accentColor;
-  ctx.lineWidth   = 2.5;
-  ctx.stroke();
-  for (let i = 0; i < 6; i++) {
-    const a = (i / 6) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(18, 8);
-    ctx.lineTo(18 + Math.cos(a) * 10, 8 + Math.sin(a) * 10);
-    ctx.strokeStyle = "rgba(0,240,255,0.35)";
-    ctx.lineWidth   = 1;
-    ctx.stroke();
+  ctx.arc(0, 0, BIKE_WHEEL_R, 0, Math.PI * 2);
+  ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*BIKE_WHEEL_R, Math.sin(a)*BIKE_WHEEL_R);
+    ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth=2; ctx.stroke();
   }
+  ctx.restore();
 
-  // ── Frame ──────────────────────────────────────────────────
-  ctx.strokeStyle = bodyColor;
-  ctx.lineWidth   = 2.5;
-  // Rear axle to seat
+  // Suspension lines
+  ctx.strokeStyle = frameColor;
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(-18, 8);
-  ctx.lineTo(-6, -14);
-  ctx.lineTo(6, -14);
-  ctx.stroke();
-  // Seat to front axle
-  ctx.beginPath();
-  ctx.moveTo(6, -14);
-  ctx.lineTo(18, 8);
-  ctx.stroke();
-  // Down tube
-  ctx.beginPath();
-  ctx.moveTo(-6, -14);
-  ctx.lineTo(14, 5);
+  ctx.moveTo(bwX, bwY);
+  ctx.lineTo(-6, -2);
   ctx.stroke();
 
-  // ── Seat ───────────────────────────────────────────────────
   ctx.beginPath();
-  ctx.roundRect(-10, -18, 20, 5, 3);
-  ctx.fillStyle = bodyColor;
+  ctx.moveTo(fwX, fwY);
+  ctx.lineTo(10, -6);
+  ctx.stroke();
+
+  // Main frame
+  ctx.beginPath();
+  ctx.moveTo(-6, -2);
+  ctx.lineTo(6, 2);
+  ctx.lineTo(10, -6);
+  ctx.lineTo(-6, -2);
+  ctx.fillStyle = frameColor;
   ctx.fill();
-
-  // ── Exhaust ────────────────────────────────────────────────
-  ctx.beginPath();
-  ctx.moveTo(-18, 6);
-  ctx.quadraticCurveTo(-28, 12, -30, 18);
-  ctx.strokeStyle = "rgba(255,150,50,0.7)";
-  ctx.lineWidth   = 2.5;
   ctx.stroke();
 
-  // ── Handlebar ──────────────────────────────────────────────
-  ctx.beginPath();
-  ctx.moveTo(14, -12);
-  ctx.lineTo(20, -17);
-  ctx.strokeStyle = bodyColor;
-  ctx.lineWidth   = 2;
-  ctx.stroke();
-
-  // ── Rider ──────────────────────────────────────────────────
-  const helmetColor = crashed ? "#e74c3c" : "#00f0ff";
-  // Torso
-  ctx.beginPath();
-  ctx.moveTo(-2, -18);
-  ctx.lineTo(4, -30);
-  ctx.strokeStyle = "rgba(255,255,255,0.75)";
-  ctx.lineWidth   = 3;
-  ctx.stroke();
-  // Head (helmet)
-  ctx.beginPath();
-  ctx.arc(5, -33, 7, 0, Math.PI * 2);
-  ctx.fillStyle = helmetColor;
-  ctx.fill();
-  // Visor
-  ctx.beginPath();
-  ctx.arc(5, -33, 7, -0.4, 0.4);
-  ctx.strokeStyle = "rgba(2,6,23,0.7)";
-  ctx.lineWidth   = 3;
-  ctx.stroke();
+  // Rider
+  const riderColor = crashed ? "#e74c3c" : "#00f0ff";
+  ctx.strokeStyle = "rgba(255,255,255,0.8)";
+  ctx.lineWidth = 3;
+  // Body
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(4, -14); ctx.stroke();
+  // Head
+  ctx.beginPath(); ctx.arc(6, -18, 5, 0, Math.PI*2); ctx.fillStyle = riderColor; ctx.fill();
   // Arms
-  ctx.beginPath();
-  ctx.moveTo(3, -27);
-  ctx.lineTo(16, -21);
-  ctx.strokeStyle = "rgba(255,255,255,0.6)";
-  ctx.lineWidth   = 2;
-  ctx.stroke();
-  // Legs
-  ctx.beginPath();
-  ctx.moveTo(-2, -18);
-  ctx.lineTo(-10, -10);
-  ctx.moveTo(-2, -18);
-  ctx.lineTo(6, -10);
-  ctx.strokeStyle = "rgba(255,255,255,0.5)";
-  ctx.lineWidth   = 2;
-  ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(4, -10); ctx.lineTo(10, -6); ctx.stroke();
 
   ctx.restore();
 }
 
-function drawHUD(
+function drawHUDEx(
   ctx: CanvasRenderingContext2D,
   canvasW: number,
   elapsedMs: number,
   distance: number,
   best: number,
-  symbol: string,
-  progress: number // 0–1
-): void {
+  speed: number,
+  symbol: string
+) {
   const secs  = Math.floor(elapsedMs / 1000);
   const mins  = Math.floor(secs / 60);
   const ss    = String(secs % 60).padStart(2, "0");
   const mm    = String(mins).padStart(2, "0");
-  const timeStr = `${mm}:${ss}`;
 
   ctx.save();
-  ctx.font = "bold 13px 'Courier New', monospace";
+  ctx.font = "bold 13px 'Inter', monospace";
   ctx.textBaseline = "top";
 
-  // ── Top-left: timer + distance + best ─────────────────────
-  ctx.fillStyle = "rgba(0,0,0,0.55)";
-  ctx.beginPath();
-  ctx.roundRect(12, 12, 160, 68, 8);
-  ctx.fill();
+  // Top-left Box
+  ctx.fillStyle = "rgba(15,23,42,0.8)";
+  ctx.beginPath(); ctx.roundRect(16, 16, 180, 72, 12); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.lineWidth = 1; ctx.stroke();
 
-  ctx.fillStyle = "rgba(0,240,255,0.7)";
-  ctx.font      = "bold 11px 'Courier New', monospace";
-  ctx.fillText("⏱ " + timeStr, 20, 20);
-  ctx.fillText("📏 " + distance + "m", 20, 38);
-  ctx.fillStyle = "rgba(255,215,0,0.8)";
-  ctx.fillText("🏅 BEST: " + best + "m", 20, 56);
+  ctx.fillStyle = "var(--text-primary)";
+  ctx.fillText("TIME: " + `${mm}:${ss}`, 28, 26);
+  ctx.fillText("DIST: " + distance + "m", 28, 46);
+  
+  ctx.fillStyle = "var(--accent)";
+  ctx.fillText("BEST: " + best + "m", 28, 66);
 
-  // ── Top-center: symbol badge ────────────────────────────────
-  const badgeW = 68;
-  const badgeX = (canvasW - badgeW) / 2;
-  ctx.fillStyle = "rgba(0,0,0,0.55)";
-  ctx.beginPath();
-  ctx.roundRect(badgeX, 12, badgeW, 28, 8);
-  ctx.fill();
-  ctx.fillStyle  = "#00f0ff";
-  ctx.font       = "bold 14px 'Courier New', monospace";
-  ctx.textAlign  = "center";
-  ctx.fillText(symbol, canvasW / 2, 19);
-  ctx.textAlign  = "left";
-
-  // ── Top-right: progress bar ─────────────────────────────────
-  const barW  = 120;
-  const barH  = 8;
-  const barX  = canvasW - barW - 16;
-  const barY  = 16;
-
-  ctx.fillStyle = "rgba(0,0,0,0.55)";
-  ctx.beginPath();
-  ctx.roundRect(barX - 8, barY - 6, barW + 16, 28, 8);
-  ctx.fill();
-
-  ctx.fillStyle = "rgba(255,255,255,0.12)";
-  ctx.beginPath();
-  ctx.roundRect(barX, barY, barW, barH, 4);
-  ctx.fill();
-
-  ctx.fillStyle = "#00f0ff";
-  ctx.beginPath();
-  ctx.roundRect(barX, barY, barW * Math.min(1, progress), barH, 4);
-  ctx.fill();
-
-  ctx.font      = "bold 10px 'Courier New', monospace";
-  ctx.fillStyle = "rgba(255,255,255,0.4)";
+  // Speedometer (Top Right)
+  ctx.fillStyle = "rgba(15,23,42,0.8)";
+  ctx.beginPath(); ctx.roundRect(canvasW - 120, 16, 100, 40, 12); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.stroke();
+  
+  ctx.fillStyle = speed > 15 ? "#e74c3c" : "#2ecc71";
+  ctx.font = "bold 16px 'Inter', monospace";
   ctx.textAlign = "right";
-  ctx.fillText(`${Math.round(progress * 100)}%`, canvasW - 16, barY + barH + 6);
-  ctx.textAlign = "left";
-
+  ctx.fillText(Math.floor(speed * 5) + " KM/H", canvasW - 36, 28);
+  
   ctx.restore();
-}
-
-function drawBackground(
-  ctx: CanvasRenderingContext2D,
-  canvasW: number,
-  canvasH: number,
-  viewportX: number
-): void {
-  // Deep navy gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, canvasH);
-  grad.addColorStop(0, "#020617");
-  grad.addColorStop(1, "#050d20");
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvasW, canvasH);
-
-  // Subtle grid lines
-  ctx.strokeStyle = "rgba(0,240,255,0.04)";
-  ctx.lineWidth   = 1;
-  const gridX     = viewportX % 80;
-  for (let x = -gridX; x < canvasW; x += 80) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvasH);
-    ctx.stroke();
-  }
-  for (let y = 0; y < canvasH; y += 60) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvasW, y);
-    ctx.stroke();
-  }
-}
-
-// ─── Leaderboard fetcher ──────────────────────────────────────
-async function fetchLeaderboard(coinId: string): Promise<LeaderboardEntry[]> {
-  const { data, error } = await supabase
-    .from("motogame_scores")
-    .select("id, player_name, distance_meters, time_seconds")
-    .eq("coin_id", coinId)
-    .order("distance_meters", { ascending: false })
-    .limit(10);
-  if (error) return [];
-  return (data as LeaderboardEntry[]) || [];
-}
-
-async function submitScore(
-  coinId: string,
-  symbol: string,
-  playerName: string,
-  distanceMeters: number,
-  timeSeconds: number
-): Promise<void> {
-  await supabase.from("motogame_scores").insert({
-    coin_id: coinId,
-    symbol,
-    player_name: playerName.trim().slice(0, 20) || "Anonymous",
-    distance_meters: distanceMeters,
-    time_seconds: timeSeconds,
-  });
-}
-
-function fmtTime(secs: number): string {
-  const m = Math.floor(secs / 60);
-  const s = secs % 60;
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 // ─── Main component ───────────────────────────────────────────
@@ -443,117 +315,113 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   const rafRef      = useRef<number>(0);
   const stateRef    = useRef<GameState>("idle");
 
-  // Terrain (rebuilt on resize)
-  const terrainXs   = useRef<Float32Array>(new Float32Array());
-  const terrainYs   = useRef<Float32Array>(new Float32Array());
-  const terrainW    = useRef<number>(0);
+  const basePoints  = useRef<number[]>([]);
+  const isPositive  = useRef<boolean>(true);
+
+  // Input
+  const keys = useRef<InputState>({ up: false, down: false, left: false, right: false });
 
   // Bike
-  const bikeRef     = useRef<BikeState>({
+  const bikeRef = useRef<BikeState>({
     x: 0, y: 0, vx: 0, vy: 0,
-    angle: 0, angularVel: 0,
-    onGround: false, crashed: false, finished: false,
+    angle: 0, angularVel: 0, crashed: false,
+    wheelieFrames: 0, frontWheelY: 0, backWheelY: 0,
+    frontCompression: 0, backCompression: 0
   });
-  const throttleRef = useRef<boolean>(false);
-  const crashFrames = useRef<number>(0);
-  const startTime   = useRef<number>(0);
-  const elapsedRef  = useRef<number>(0);
 
-  // React state (only for overlay redraws)
-  const [gameState,  setGameState]  = useState<GameState>("idle");
-  const [distance,   setDistance]   = useState(0);
+  const wheelAngle = useRef<number>(0);
+  const startTime  = useRef<number>(0);
+  const elapsedRef = useRef<number>(0);
+
+  const [gameState, setGameState] = useState<GameState>("idle");
+  const [distance, setDistance] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
-  const [shaking,    setShaking]    = useState(false);
-  const [showFlash,  setShowFlash]  = useState(false);
-  const [bestScore,  setBestScore]  = useState<number>(() =>
+  const [shaking, setShaking] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
+  const [bestScore, setBestScore] = useState<number>(() =>
     parseInt(localStorage.getItem(`moto_best_${coinId}`) || "0", 10)
   );
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [nickname,    setNickname]    = useState("");
-  const [submitting,  setSubmitting]  = useState(false);
-  const [submitted,   setSubmitted]   = useState(false);
-  const [myScoreId,   setMyScoreId]   = useState<string | null>(null);
+  const [nickname, setNickname] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [myScoreId, setMyScoreId] = useState<string | null>(null);
 
-  // ── Fetch leaderboard on mount ──────────────────────────────
   useEffect(() => {
-    fetchLeaderboard(coinId).then(setLeaderboard);
+    const fetchBoard = async () => {
+      const { data } = await supabase.from("motogame_scores").select("*").eq("coin_id", coinId).order("distance_meters", { ascending: false }).limit(10);
+      if (data) setLeaderboard(data as LeaderboardEntry[]);
+    };
+    fetchBoard();
   }, [coinId]);
 
-  // ── Build terrain ───────────────────────────────────────────
-  const rebuildTerrain = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const w = canvas.width;
-    const h = canvas.height;
-    const { xs, ys, totalW } = buildTerrain(ohlcData, w, h);
-    terrainXs.current = xs;
-    terrainYs.current = ys;
-    terrainW.current  = totalW;
+  const initTerrain = useCallback(() => {
+    const h = window.innerWidth < 640 ? 280 : 360;
+    basePoints.current = buildTerrainBase(ohlcData, h * 0.6);
+    const startY = basePoints.current[0] || 0;
+    const endY = basePoints.current[basePoints.current.length - 1] || 0;
+    isPositive.current = endY <= startY; // canvas Y is inverted
   }, [ohlcData]);
 
-  // ── Spawn bike on terrain ───────────────────────────────────
   const spawnBike = useCallback(() => {
     const startX = 80;
-    const startY = terrainYAt(startX, terrainXs.current, terrainYs.current) - 26;
-    const spawnAngle = terrainAngleAt(startX, terrainXs.current, terrainYs.current);
+    const startY = getTerrainY(startX, basePoints.current) - 40;
+    const spawnAngle = getTerrainAngle(startX, basePoints.current);
     bikeRef.current = {
-      x: startX, y: startY,
-      vx: 0.5, vy: 0,
-      angle: spawnAngle, angularVel: 0,
-      onGround: true, crashed: false, finished: false,
+      x: startX, y: startY, vx: 5, vy: 0,
+      angle: spawnAngle, angularVel: 0, crashed: false,
+      wheelieFrames: 0, frontWheelY: 0, backWheelY: 0,
+      frontCompression: 0, backCompression: 0
     };
-    crashFrames.current = 0;
+    wheelAngle.current = 0;
   }, []);
 
-  // ── ResizeObserver ──────────────────────────────────────────
   useEffect(() => {
-    const canvas  = canvasRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "KeyW" || e.code === "ArrowUp") keys.current.up = true;
+      if (e.code === "KeyS" || e.code === "ArrowDown") keys.current.down = true;
+      if (e.code === "KeyA" || e.code === "ArrowLeft") keys.current.left = true;
+      if (e.code === "KeyD" || e.code === "ArrowRight") keys.current.right = true;
+      if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) e.preventDefault();
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "KeyW" || e.code === "ArrowUp") keys.current.up = false;
+      if (e.code === "KeyS" || e.code === "ArrowDown") keys.current.down = false;
+      if (e.code === "KeyA" || e.code === "ArrowLeft") keys.current.left = false;
+      if (e.code === "KeyD" || e.code === "ArrowRight") keys.current.right = false;
+    };
+    window.addEventListener("keydown", onKeyDown, { passive: false });
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
     const wrapper = wrapperRef.current;
     if (!canvas || !wrapper) return;
-
     const resize = () => {
-      const w = wrapper.clientWidth;
-      const h = window.innerWidth < 640 ? 280 : 360;
-      canvas.width  = w;
-      canvas.height = h;
-      rebuildTerrain();
+      canvas.width = wrapper.clientWidth;
+      canvas.height = window.innerWidth < 640 ? 280 : 360;
+      initTerrain();
     };
-
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(wrapper);
     return () => ro.disconnect();
-  }, [rebuildTerrain]);
+  }, [initTerrain]);
 
-  // ── Input handlers ──────────────────────────────────────────
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        throttleRef.current = true;
-      }
-    };
-    const onKeyUp = (e: KeyboardEvent) => {
-      if (e.code === "Space") throttleRef.current = false;
-    };
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup",   onKeyUp);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup",   onKeyUp);
-    };
-  }, []);
-
-  const handleTouchStart = useCallback(() => { throttleRef.current = true;  }, []);
-  const handleTouchEnd   = useCallback(() => { throttleRef.current = false; }, []);
-
-  // ── Game loop ───────────────────────────────────────────────
+  // ── Physics Engine Loop ─────────────────────────────────────────
   const startLoop = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d")!;
     startTime.current = performance.now();
+
+    let cameraX = bikeRef.current.x - 150;
 
     const loop = (now: number) => {
       if (stateRef.current !== "playing") return;
@@ -561,98 +429,126 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       const elapsed = now - startTime.current;
       elapsedRef.current = elapsed;
 
-      const canvasW = canvas.width;
-      const canvasH = canvas.height;
-      const bike    = bikeRef.current;
-      const xs      = terrainXs.current;
-      const ys      = terrainYs.current;
+      const w = canvas.width;
+      const h = canvas.height;
+      const b = bikeRef.current;
+      const pts = basePoints.current;
 
-      // ── Physics ────────────────────────────────────────────
-      if (!bike.crashed && !bike.finished) {
-        // Gravity
-        bike.vy += GRAVITY;
+      if (!b.crashed) {
+        b.vy += GRAVITY;
 
-        // Auto push + throttle
-        bike.vx += AUTO_PUSH;
-        if (throttleRef.current && bike.onGround) {
-          const slope = terrainAngleAt(bike.x, xs, ys);
-          bike.vx += Math.cos(slope) * THROTTLE_FORCE;
-          // Jump if pressing while on ground
-          if (bike.vy >= -1) {
-            bike.vy    = JUMP_VY;
-            bike.angularVel = -0.05;
-          }
-        }
+        // Calculate wheel positions in world space
+        const cosA = Math.cos(b.angle);
+        const sinA = Math.sin(b.angle);
 
-        // Clamp horizontal velocity
-        bike.vx = Math.max(MIN_VX, Math.min(MAX_VX, bike.vx));
+        const bwX = b.x - BIKE_WHEELBASE * cosA;
+        const bwY = b.y - BIKE_WHEELBASE * sinA;
+        
+        const fwX = b.x + BIKE_WHEELBASE * cosA;
+        const fwY = b.y + BIKE_WHEELBASE * sinA;
 
-        // Move
-        bike.x += bike.vx;
-        bike.y += bike.vy;
+        // Ground collisions
+        const gBwY = getTerrainY(bwX, pts) - BIKE_WHEEL_R;
+        const gFwY = getTerrainY(fwX, pts) - BIKE_WHEEL_R;
 
-        // Ground detection
-        const groundY = terrainYAt(bike.x, xs, ys) - 26;
-        if (bike.y >= groundY) {
-          bike.y       = groundY;
-          bike.vy      = 0;
-          bike.onGround = true;
+        let backContact = false;
+        let frontContact = false;
 
-          const slope  = terrainAngleAt(bike.x, xs, ys);
-          // Lerp angle toward slope
-          bike.angle  += (slope - bike.angle) * ANGLE_LERP;
-          bike.angularVel *= 0.8;
+        // Suspension physics
+        if (bwY > gBwY) {
+          b.backCompression = bwY - gBwY;
+          const springForce = b.backCompression * SPRING_K;
+          b.vy -= springForce * cosA;
+          b.angularVel -= springForce * 0.005;
+          b.vy *= DAMPING;
+          backContact = true;
         } else {
-          bike.onGround = false;
-          // Airborne: apply angular velocity
-          bike.angle     += bike.angularVel;
-          bike.angularVel *= 0.98;
+          b.backCompression *= 0.8; // relax
         }
 
-        // Crash check
-        if (Math.abs(bike.angle) > CRASH_ANGLE) {
-          crashFrames.current++;
-          if (crashFrames.current > CRASH_FRAMES) {
-            bike.crashed = true;
+        if (fwY > gFwY) {
+          b.frontCompression = fwY - gFwY;
+          const springForce = b.frontCompression * SPRING_K;
+          b.vy -= springForce * cosA;
+          b.angularVel += springForce * 0.005;
+          b.vy *= DAMPING;
+          frontContact = true;
+        } else {
+          b.frontCompression *= 0.8;
+        }
+
+        const onGround = backContact || frontContact;
+
+        // Inputs
+        if (onGround) {
+          b.vx *= GROUND_GRIP;
+          if (keys.current.up) b.vx += THROTTLE_FORCE * cosA;
+          if (keys.current.down) b.vx -= BRAKE_FORCE * cosA;
+          
+          if (keys.current.left) {
+            b.angularVel -= 0.04;
+          } else if (keys.current.right) {
+            b.angularVel += 0.04;
           }
         } else {
-          crashFrames.current = 0;
+          b.vx *= AIR_FRICTION;
+          if (keys.current.left) b.angularVel -= AIR_TURN_SPEED;
+          if (keys.current.right) b.angularVel += AIR_TURN_SPEED;
         }
 
-        // Finish check
-        if (bike.x >= terrainW.current - 20) {
-          bike.finished = true;
-        }
+        // Clamp Speed
+        b.vx = Math.max(MAX_REVERSE, Math.min(MAX_SPEED, b.vx));
 
-        // Fall off bottom
-        if (bike.y > canvasH + 60) {
-          bike.crashed = true;
+        // Movement
+        b.x += b.vx;
+        b.y += b.vy;
+        b.angle += b.angularVel;
+        b.angularVel *= 0.95; // Rotational friction
+        
+        wheelAngle.current += b.vx * 0.1;
+
+        // Normalize angle for crash detection
+        let normAngle = b.angle % (Math.PI * 2);
+        if (normAngle > Math.PI) normAngle -= Math.PI * 2;
+        if (normAngle < -Math.PI) normAngle += Math.PI * 2;
+
+        // Crash logic (Head hit ground or upside down collision)
+        const headX = b.x - Math.sin(b.angle) * 15;
+        const headY = b.y - Math.cos(b.angle) * 15;
+        const gHeadY = getTerrainY(headX, pts);
+        
+        if (headY > gHeadY || b.y > h + 200) {
+          b.crashed = true;
         }
       }
 
-      // ── Camera ────────────────────────────────────────────
-      const viewportX = Math.max(
-        0,
-        Math.min(terrainW.current - canvasW, bike.x - canvasW * 0.3)
-      );
+      // Camera Lerp
+      const targetCamX = b.x - w * 0.3;
+      cameraX += (targetCamX - cameraX) * 0.1;
+      cameraX = Math.max(0, cameraX); // Don't scroll left of start
 
-      // ── Render ────────────────────────────────────────────
-      drawBackground(ctx, canvasW, canvasH, viewportX);
-      drawTerrain(ctx, xs, ys, canvasH, viewportX);
+      // Render
+      ctx.fillStyle = "var(--bg-base)";
+      ctx.fillRect(0, 0, w, h);
 
-      const screenBx = bike.x - viewportX;
-      drawBike(ctx, screenBx, bike.y, bike.angle, bike.crashed);
+      // Grid
+      ctx.strokeStyle = "rgba(15, 23, 42, 0.04)";
+      ctx.lineWidth = 1;
+      const gridOffset = cameraX % 60;
+      for (let x = -gridOffset; x < w; x += 60) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
 
-      const dist    = Math.round(bike.x / 8);
-      const prog    = bike.x / terrainW.current;
-      const lsBest  = parseInt(localStorage.getItem(`moto_best_${coinId}`) || "0", 10);
-      drawHUD(ctx, canvasW, elapsed, dist, lsBest, symbol.toUpperCase(), prog);
+      drawEndlessTerrain(ctx, pts, cameraX, w, h, isPositive.current);
+      drawBikeEx(ctx, b.x - cameraX, b.y, b.angle, b.frontCompression, b.backCompression, b.crashed, wheelAngle.current);
+      
+      const currentDist = Math.floor(b.x / 10);
+      drawHUDEx(ctx, w, elapsed, currentDist, bestScore, b.vx, symbol);
 
-      // ── State transitions ─────────────────────────────────
-      if (bike.crashed) {
-        const finalDist = Math.round(bike.x / 8);
-        const finalSec  = Math.round(elapsed / 1000);
-        if (finalDist > lsBest) {
+      if (b.crashed) {
+        const finalDist = currentDist;
+        const finalSec = Math.round(elapsed / 1000);
+        if (finalDist > bestScore) {
           localStorage.setItem(`moto_best_${coinId}`, String(finalDist));
           setBestScore(finalDist);
         }
@@ -662,22 +558,8 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         setGameState("crashed");
         setShaking(true);
         setShowFlash(true);
-        setTimeout(() => setShaking(false), 500);
+        setTimeout(() => setShaking(false), 400);
         setTimeout(() => setShowFlash(false), 600);
-        return;
-      }
-
-      if (bike.finished) {
-        const finalDist = Math.round(bike.x / 8);
-        const finalSec  = Math.round(elapsed / 1000);
-        if (finalDist > lsBest) {
-          localStorage.setItem(`moto_best_${coinId}`, String(finalDist));
-          setBestScore(finalDist);
-        }
-        stateRef.current = "finished";
-        setDistance(finalDist);
-        setElapsedSec(finalSec);
-        setGameState("finished");
         return;
       }
 
@@ -685,16 +567,11 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     };
 
     rafRef.current = requestAnimationFrame(loop);
-  }, [coinId, symbol]);
-
-  // ── Cleanup on unmount ──────────────────────────────────────
-  useEffect(() => {
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+  }, [coinId, symbol, bestScore]);
 
   // ── Actions ─────────────────────────────────────────────────
   const handleStart = useCallback(() => {
-    rebuildTerrain();
+    initTerrain();
     spawnBike();
     setGameState("playing");
     stateRef.current = "playing";
@@ -704,43 +581,42 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     setNickname("");
     setMyScoreId(null);
     startLoop();
-  }, [rebuildTerrain, spawnBike, startLoop]);
+  }, [initTerrain, spawnBike, startLoop]);
 
   const handleRestart = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
     handleStart();
   }, [handleStart]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     if (submitting || submitted) return;
     setSubmitting(true);
     const name = nickname.trim() || "Anonymous";
-    await submitScore(coinId, symbol, name, distance, elapsedSec);
-    const newBoard = await fetchLeaderboard(coinId);
-    // Find our row
-    const myRow = newBoard.find(
-      r => r.player_name === name && r.distance_meters === distance
-    );
-    setMyScoreId(myRow?.id || null);
-    setLeaderboard(newBoard);
+    await supabase.from("motogame_scores").insert({
+      coin_id: coinId,
+      symbol,
+      player_name: name,
+      distance_meters: distance,
+      time_seconds: elapsedSec,
+    });
+    const { data } = await supabase.from("motogame_scores").select("*").eq("coin_id", coinId).order("distance_meters", { ascending: false }).limit(10);
+    if (data) {
+      setLeaderboard(data as LeaderboardEntry[]);
+      const myRow = data.find(r => r.player_name === name && r.distance_meters === distance);
+      if (myRow) setMyScoreId(myRow.id);
+    }
     setSubmitting(false);
     setSubmitted(true);
-  }, [submitting, submitted, nickname, coinId, symbol, distance, elapsedSec]);
+  };
 
-  // ─── Render ──────────────────────────────────────────────────
   return (
     <div className="motogame-container">
       <div
         ref={wrapperRef}
         className={`motogame-canvas-wrapper${shaking ? " shake" : ""}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleTouchStart}
-        onMouseUp={handleTouchEnd}
       >
         <canvas ref={canvasRef} className="motogame-canvas" />
 
-        {/* Crash red flash */}
         {showFlash && <div className="motogame-crash-flash" />}
 
         {/* ── IDLE overlay ─────────────────────────────────── */}
@@ -749,14 +625,14 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
             <div className="motogame-idle-card">
               <h2 className="motogame-title">🏍️ Ride the Chart</h2>
               <p className="motogame-subtitle">
-                Race over {symbol.toUpperCase()}'s real price history
+                Race over {symbol.toUpperCase()}'s real price history. Controls: <strong>WASD / Arrows</strong>
               </p>
               <button className="motogame-btn-start" onClick={handleStart}>
                 ▶ START RIDING
               </button>
 
               {leaderboard.length > 0 && (
-                <div className="motogame-leaderboard">
+                <div className="motogame-leaderboard mt-6">
                   <div className="motogame-leaderboard-title">
                     🏆 Top Riders — {symbol.toUpperCase()}
                   </div>
@@ -771,22 +647,15 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
                     </thead>
                     <tbody>
                       {leaderboard.slice(0, 5).map((row, i) => (
-                        <tr
-                          key={row.id}
-                          className={row.id === myScoreId ? "my-score" : ""}
-                        >
+                        <tr key={row.id} className={row.id === myScoreId ? "my-score" : ""}>
                           <td>
-                            <span
-                              className={`motogame-rank-badge${
-                                i === 0 ? " gold" : i === 1 ? " silver" : i === 2 ? " bronze" : ""
-                              }`}
-                            >
+                            <span className={`motogame-rank-badge${i === 0 ? " gold" : i === 1 ? " silver" : i === 2 ? " bronze" : ""}`}>
                               {i + 1}
                             </span>
                           </td>
                           <td>{row.player_name}</td>
                           <td>{row.distance_meters}m</td>
-                          <td>{fmtTime(row.time_seconds)}</td>
+                          <td>{Math.floor(row.time_seconds/60)}:{(row.time_seconds%60).toString().padStart(2,'0')}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -799,158 +668,60 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
         {/* ── CRASHED overlay ──────────────────────────────── */}
         {gameState === "crashed" && (
-          <div className="motogame-end-overlay">
-            <div className="motogame-end-card crashed">
-              <h2 className="motogame-end-title crashed">💥 CRASHED!</h2>
-              <div className="motogame-stats-row">
-                <div className="motogame-stat">
-                  <div className="motogame-stat-label">Distance</div>
-                  <div className="motogame-stat-value">{distance}m</div>
-                </div>
-                <div className="motogame-stat">
-                  <div className="motogame-stat-label">Time</div>
-                  <div className="motogame-stat-value">{fmtTime(elapsedSec)}</div>
-                </div>
-                <div className="motogame-stat">
-                  <div className="motogame-stat-label">Best</div>
-                  <div className="motogame-stat-value">{bestScore}m</div>
-                </div>
-              </div>
+          <div className="motogame-idle-overlay crashed-overlay">
+            <div className="motogame-idle-card">
+              <h2 className="motogame-title text-red-500">💥 WIPEOUT!</h2>
+              <p className="motogame-subtitle">
+                You rode <strong>{distance}m</strong> in {elapsedSec} seconds.
+              </p>
 
-              {/* Nickname + submit */}
               {!submitted ? (
-                <div className="motogame-nickname-area">
+                <div className="motogame-submit-form mt-4">
                   <input
-                    className="motogame-nickname-input"
-                    placeholder="Your nickname..."
+                    type="text"
+                    maxLength={15}
+                    placeholder="Enter your nickname..."
                     value={nickname}
-                    onChange={e => setNickname(e.target.value)}
-                    maxLength={20}
+                    onChange={(e) => setNickname(e.target.value)}
+                    className="motogame-input"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSubmit();
+                    }}
                   />
                   <button
-                    className="motogame-btn motogame-btn-primary"
+                    className="motogame-btn-submit"
                     onClick={handleSubmit}
                     disabled={submitting}
                   >
-                    {submitting ? "..." : "📤 Submit"}
+                    {submitting ? "..." : "Submit Score"}
                   </button>
                 </div>
               ) : (
-                <div className="motogame-submit-confirm">✅ Score submitted!</div>
+                <div className="text-green-400 font-bold mt-4">Score submitted!</div>
               )}
 
-              <div className="motogame-btn-row" style={{ marginTop: 12 }}>
-                <button
-                  className="motogame-btn motogame-btn-primary"
-                  onClick={handleRestart}
-                >
-                  🔄 Try Again
-                </button>
-                <button
-                  className="motogame-btn motogame-btn-secondary"
-                  onClick={() => {
-                    cancelAnimationFrame(rafRef.current);
-                    stateRef.current = "idle";
-                    setGameState("idle");
-                  }}
-                >
-                  Exit
-                </button>
-              </div>
-
-              {/* Mini leaderboard after crash */}
-              {leaderboard.length > 0 && (
-                <div className="motogame-leaderboard" style={{ marginTop: 16 }}>
-                  <div className="motogame-leaderboard-title">🏆 Leaderboard</div>
-                  <table className="motogame-leaderboard-table">
-                    <thead>
-                      <tr>
-                        <th>#</th><th>Player</th><th>Distance</th><th>Time</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leaderboard.slice(0, 5).map((row, i) => (
-                        <tr key={row.id} className={row.id === myScoreId ? "my-score" : ""}>
-                          <td>
-                            <span className={`motogame-rank-badge${i===0?" gold":i===1?" silver":i===2?" bronze":""}`}>
-                              {i + 1}
-                            </span>
-                          </td>
-                          <td>{row.player_name}</td>
-                          <td>{row.distance_meters}m</td>
-                          <td>{fmtTime(row.time_seconds)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ── FINISHED overlay ─────────────────────────────── */}
-        {gameState === "finished" && (
-          <div className="motogame-end-overlay">
-            <div className="motogame-end-card">
-              <h2 className="motogame-end-title finished">🏁 FINISHED!</h2>
-              <div className="motogame-stats-row">
-                <div className="motogame-stat">
-                  <div className="motogame-stat-label">Distance</div>
-                  <div className="motogame-stat-value">{distance}m</div>
-                </div>
-                <div className="motogame-stat">
-                  <div className="motogame-stat-label">Time</div>
-                  <div className="motogame-stat-value">{fmtTime(elapsedSec)}</div>
-                </div>
-              </div>
-
-              {!submitted ? (
-                <div className="motogame-nickname-area">
-                  <input
-                    className="motogame-nickname-input"
-                    placeholder="Your nickname..."
-                    value={nickname}
-                    onChange={e => setNickname(e.target.value)}
-                    maxLength={20}
-                  />
-                  <button
-                    className="motogame-btn motogame-btn-primary"
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                  >
-                    {submitting ? "..." : "📤 Submit Score"}
-                  </button>
-                </div>
-              ) : (
-                <div className="motogame-submit-confirm">🎉 Score submitted!</div>
-              )}
-
-              <div className="motogame-btn-row" style={{ marginTop: 12 }}>
-                <button className="motogame-btn motogame-btn-primary" onClick={handleRestart}>
-                  🔄 Play Again
-                </button>
-                <button
-                  className="motogame-btn motogame-btn-secondary"
-                  onClick={() => {
-                    cancelAnimationFrame(rafRef.current);
-                    stateRef.current = "idle";
-                    setGameState("idle");
-                  }}
-                >
-                  Exit
+              <div className="mt-6 flex justify-center">
+                <button className="motogame-btn-start" onClick={handleRestart}>
+                  🔄 TRY AGAIN
                 </button>
               </div>
             </div>
           </div>
         )}
-      </div>
 
-      {/* Controls hint */}
-      <div className="motogame-controls-hint">
-        <span><kbd>SPACE</kbd> Throttle / Jump</span>
-        <span>· Tap canvas on mobile</span>
-        <span>· Don't flip over!</span>
+        {/* Mobile controls */}
+        {gameState === "playing" && (
+          <div className="motogame-mobile-controls sm:hidden">
+            <div className="controls-left">
+              <button onTouchStart={() => keys.current.left=true} onTouchEnd={() => keys.current.left=false}>↩️ Lean Back</button>
+              <button onTouchStart={() => keys.current.right=true} onTouchEnd={() => keys.current.right=false}>↪️ Lean Fwd</button>
+            </div>
+            <div className="controls-right">
+              <button onTouchStart={() => keys.current.down=true} onTouchEnd={() => keys.current.down=false}>🛑 Brake</button>
+              <button onTouchStart={() => keys.current.up=true} onTouchEnd={() => keys.current.up=false}>🔥 GAS</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
