@@ -52,16 +52,16 @@ const fmtNum = (n) =>
 
 // ── Colors ───────────────────────────────────────────────────
 const CHART_COLORS = [
-  "var(--accent)",
-  "#2ecc71",
-  "#3498db",
-  "#9b59b6",
-  "#e74c3c",
-  "#1abc9c",
-  "#f39c12",
-  "#e67e22",
-  "#2980b9",
-  "#8e44ad",
+  "#00f0ff", // Neon Cyan
+  "#2dd4bf", // Teal
+  "#3b82f6", // Blue
+  "#a855f7", // Purple
+  "#f43f5e", // Rose
+  "#10b981", // Emerald
+  "#f59e0b", // Amber
+  "#6366f1", // Indigo
+  "#ec4899", // Pink
+  "#14b8a6", // Light Teal
 ];
 
 // ── Exchange rehberleri ───────────────────────────────────────
@@ -386,6 +386,7 @@ function calcHoldings(trades, marketData, walletHoldings = []) {
       change24h: parseFloat(c.price_change_percentage_24h) || 0,
       image_url: c.image_url,
       name: c.name,
+      slug: c.id,
     };
   });
 
@@ -435,6 +436,7 @@ function calcHoldings(trades, marketData, walletHoldings = []) {
     holdings.push({
       symbol: sym,
       name: market.name || sym,
+      slug: market.slug || sym.toLowerCase(),
       image_url: market.image_url,
       quantity: qty,
       avg_cost: avgCost,
@@ -935,7 +937,10 @@ function SoftCard({ children, className = "", noPadding = false }) {
 // ─────────────────────────────────────────────────────────────────
 // MAIN PORTFOLIO PAGE
 // ─────────────────────────────────────────────────────────────────
+import { useTranslation } from "react-i18next";
+
 export default function Portfolio() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: marketData } = useMarket(500);
@@ -1108,7 +1113,7 @@ export default function Portfolio() {
           <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-[#00f0ff]/10" />
         </div>
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
-          Total Portfolio Value
+          {t('portfolio.title')}
         </p>
         <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white drop-shadow-sm break-words max-w-full px-4">
           {fmtUSD(totalValue)}
@@ -1136,12 +1141,12 @@ export default function Portfolio() {
         {/* Data Sources */}
         <SoftCard className="w-full flex flex-col gap-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Data Sources</h3>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('portfolio.data_sources')}</h3>
             <button
               onClick={() => setShowAddSource(v => !v)}
               className="text-xs font-bold px-4 py-2.5 rounded-xl bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
             >
-              {showAddSource ? "✕ Close Options" : "+ Add Source"}
+              {showAddSource ? t('portfolio.close_options') : t('portfolio.add_source')}
             </button>
           </div>
 
@@ -1162,7 +1167,7 @@ export default function Portfolio() {
           )}
 
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">ETH Wallet</p>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">{t('portfolio.eth_wallet')}</p>
             <div className="flex gap-3">
               <input 
                 value={walletInput} 
@@ -1174,7 +1179,7 @@ export default function Portfolio() {
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
                 className="px-6 py-3 rounded-2xl bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
               >
-                {isFetchingWallet ? "Fetching..." : "Add Wallet"}
+                {isFetchingWallet ? t('portfolio.fetching') : t('portfolio.add_wallet')}
               </button>
             </div>
             {wallets.length > 0 && (
@@ -1215,7 +1220,7 @@ export default function Portfolio() {
                 </span>
               )}
               {trades.length === 0 && !binanceKeys.key && wallets.length === 0 && (
-                <span className="text-xs font-medium text-gray-500">No data sources connected yet.</span>
+                <span className="text-xs font-medium text-gray-500">{t('portfolio.no_sources')}</span>
               )}
             </div>
             
@@ -1225,7 +1230,7 @@ export default function Portfolio() {
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] ml-auto"
                 title="Clear all imported CSV data"
               >
-                ✕ Clear CSV Data
+                {t('portfolio.clear_csv')}
               </button>
             )}
           </div>
@@ -1234,12 +1239,12 @@ export default function Portfolio() {
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 && (
         <SoftCard>
-          <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">Your Holdings</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">{t('portfolio.your_holdings')}</h3>
           <div className="overflow-x-auto w-full pb-4">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
                 <tr className="border-b border-white/[0.05] bg-white/[0.02]">
-                  {["Asset", "Price", "Balance", "Value", "Avg Cost", "PnL"].map((h, i) => (
+                  {[t('portfolio.table.asset'), t('portfolio.table.price'), t('portfolio.table.balance'), t('portfolio.table.value'), t('portfolio.table.avg_cost'), t('portfolio.table.pnl')].map((h, i) => (
                     <th key={h} className={`px-5 py-4 text-xs font-bold uppercase tracking-wider text-gray-400 ${i === 0 ? "text-left rounded-tl-2xl" : "text-right"} ${i === 5 ? "rounded-tr-2xl" : ""}`}>
                       {h}
                     </th>
@@ -1250,7 +1255,7 @@ export default function Portfolio() {
                 {holdings.map((h) => {
                   const p = h.pnl >= 0;
                   return (
-                    <tr key={h.symbol} onClick={() => navigate("/coin/" + h.symbol.toLowerCase())}
+                    <tr key={h.symbol} onClick={() => navigate("/coin/" + h.slug)}
                       className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.025]"
                     >
                       <td className="px-5 py-5">
@@ -1298,12 +1303,12 @@ export default function Portfolio() {
         {/* Donut */}
         <SoftCard className="w-full flex flex-col min-h-[380px]">
           <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 shrink-0">
-            Asset Allocation
+            {t('portfolio.asset_allocation')}
           </h3>
           
           <div className="flex-1 w-full relative min-h-[200px]">
             {holdings.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500">No assets yet</div>
+              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500">{t('portfolio.no_assets')}</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -1340,9 +1345,9 @@ export default function Portfolio() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-[#00f0ff] mb-1 flex items-center gap-2">
-                <Brain size={14} /> AI Portfolio Analysis
+                <Brain size={14} /> {t('portfolio.ai_analysis.title')}
               </h3>
-              <p className="text-sm text-gray-400">Get deep insights and personalized recommendations powered by CryptoNeko AI.</p>
+              <p className="text-sm text-gray-400">{t('portfolio.ai_analysis.desc')}</p>
             </div>
             
             <button 
@@ -1351,9 +1356,9 @@ export default function Portfolio() {
               className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f0ff] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isAnalyzingAI ? (
-                <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> Analyzing...</>
+                <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> {t('portfolio.ai_analysis.analyzing')}</>
               ) : (
-                <><Brain size={16} /> Generate Insights</>
+                <><Brain size={16} /> {t('portfolio.ai_analysis.generate')}</>
               )}
             </button>
           </div>
@@ -1364,48 +1369,47 @@ export default function Portfolio() {
             </div>
           )}
 
-          {aiInsights && (
-            <div className="space-y-8 relative z-10 animate-fadeInDown mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Risk Assessment</div>
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
-                      backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.1)' : 'rgba(45,212,191,0.1)',
-                      color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#00f0ff' : '#2DD4BF',
-                      border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.3)' : 'rgba(45,212,191,0.3)'}`
-                    }}>
-                      {aiInsights.risk_score}/10
-                    </div>
-                    <div>
-                      <div className="text-xl font-black text-gray-200">{aiInsights.risk_label} Risk</div>
-                      <div className="text-sm text-gray-400 mt-1">Correlation to BTC: <span className="text-gray-200 font-bold capitalize">{aiInsights.correlation_risk}</span></div>
+            {aiInsights && (
+              <div className="space-y-8 relative z-10 animate-fadeInDown mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                    <div className="text-xs font-bold text-gray-500 uppercase mb-4">{t('portfolio.ai_analysis.risk')}</div>
+                    <div className="flex items-center gap-5">
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
+                        backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.1)' : 'rgba(45,212,191,0.1)',
+                        color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#00f0ff' : '#2DD4BF',
+                        border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.3)' : 'rgba(45,212,191,0.3)'}`
+                      }}>
+                        {aiInsights.risk_score}/10
+                      </div>
+                      <div>
+                        <div className="text-xl font-black text-gray-200">{aiInsights.risk_label}</div>
+                        <div className="text-sm text-gray-400 mt-1">BTC: <span className="text-gray-200 font-bold capitalize">{aiInsights.correlation_risk}</span></div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                  <div className="text-xs font-bold text-gray-500 uppercase mb-4">Diversification & Sector</div>
-                  <div className="flex items-center gap-5">
-                     <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-lg shrink-0">
-                      {aiInsights.diversification_score}/10
-                    </div>
-                    <div>
-                      <div className="text-xl font-black text-gray-200">Dominant Sector</div>
-                      <div className="text-sm text-gray-400 mt-1"><span className="text-gray-200 font-bold">{aiInsights.dominant_sector}</span></div>
+                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                    <div className="text-xs font-bold text-gray-500 uppercase mb-4">{t('portfolio.ai_analysis.diversification')}</div>
+                    <div className="flex items-center gap-5">
+                       <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-lg shrink-0">
+                        {aiInsights.diversification_score}/10
+                      </div>
+                      <div>
+                        <div className="text-xl font-black text-gray-200">{aiInsights.dominant_sector}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
               <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                <div className="text-xs font-bold text-gray-500 uppercase mb-3">Executive Summary</div>
+                <div className="text-xs font-bold text-gray-500 uppercase mb-3">{t('portfolio.ai_analysis.summary')}</div>
                 <p className="text-base text-gray-300 leading-relaxed">{aiInsights.summary}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-4">Strengths</div>
+                  <div className="text-xs font-bold text-emerald-500/70 uppercase mb-4">{t('portfolio.ai_analysis.strengths')}</div>
                   <ul className="space-y-3">
                     {aiInsights.strengths?.map((s, i) => (
                       <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
@@ -1415,7 +1419,7 @@ export default function Portfolio() {
                   </ul>
                 </div>
                 <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
-                  <div className="text-xs font-bold text-red-500/70 uppercase mb-4">Risks / Weaknesses</div>
+                  <div className="text-xs font-bold text-red-500/70 uppercase mb-4">{t('portfolio.ai_analysis.risks')}</div>
                    <ul className="space-y-3">
                     {aiInsights.risks?.map((r, i) => (
                       <li key={i} className="text-sm text-gray-300 flex items-start gap-3">
@@ -1427,7 +1431,7 @@ export default function Portfolio() {
               </div>
 
               <div className="p-6 rounded-2xl bg-[#00f0ff]/5 border border-[#00f0ff]/20">
-                <div className="text-xs font-bold text-[#00f0ff] uppercase mb-4">Actionable Recommendations</div>
+                <div className="text-xs font-bold text-[#00f0ff] uppercase mb-4">{t('portfolio.ai_analysis.recommendations')}</div>
                 <ul className="space-y-4">
                   {aiInsights.recommendations?.map((r, i) => (
                     <li key={i} className="text-sm md:text-base text-[#00f0ff]/90 flex items-start gap-3">
@@ -1447,31 +1451,31 @@ export default function Portfolio() {
         <SoftCard className="mb-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Tax Summary & Estimator</h3>
-              <p className="text-sm text-gray-400">Based on FIFO method. Estimated 30% short-term and 15% long-term tax rates.</p>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">{t('portfolio.tax.title')}</h3>
+              <p className="text-sm text-gray-400">{t('portfolio.tax.desc')}</p>
             </div>
             <button 
               onClick={() => exportTaxCSV(taxData)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)] whitespace-nowrap"
             >
-              <FileDown size={16} /> Export Tax Report (CSV)
+              <FileDown size={16} /> {t('portfolio.tax.export')}
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Short-Term Tax</div>
+              <div className="text-xs font-bold text-gray-500 uppercase mb-2">{t('portfolio.tax.short_term')}</div>
               <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estShortTax)}</div>
-              <div className="text-xs text-gray-500 mt-1">Held &lt; 1 year</div>
+              <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_short')}</div>
             </div>
             <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-              <div className="text-xs font-bold text-gray-500 uppercase mb-2">Est. Long-Term Tax</div>
+              <div className="text-xs font-bold text-gray-500 uppercase mb-2">{t('portfolio.tax.long_term')}</div>
               <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estLongTax)}</div>
-              <div className="text-xs text-gray-500 mt-1">Held ≥ 1 year</div>
+              <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_long')}</div>
             </div>
             <div className="p-5 rounded-2xl bg-[#00f0ff]/5 border border-[#00f0ff]/20 relative overflow-hidden">
               <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-[#00f0ff]/10 rounded-full blur-2xl"></div>
-              <div className="text-xs font-bold text-[#00f0ff]/70 uppercase mb-2 relative z-10">Total Estimated Tax</div>
+              <div className="text-xs font-bold text-[#00f0ff]/70 uppercase mb-2 relative z-10">{t('portfolio.tax.total')}</div>
               <div className="text-3xl font-black font-mono text-[#00f0ff] relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
             </div>
           </div>
@@ -1486,12 +1490,12 @@ export default function Portfolio() {
       {holdings.length === 0 && trades.length === 0 && wallets.length === 0 && !binanceKeys.key && (
         <SoftCard className="text-center py-20">
           <BarChart2 size={36} className="mx-auto mb-4 text-gray-600" />
-          <p className="font-semibold text-base mb-2 text-gray-400">Your portfolio is empty</p>
-          <p className="text-sm mb-6 text-gray-500">Upload a CSV from your exchange to get started.</p>
+          <p className="font-semibold text-base mb-2 text-gray-400">{t('portfolio.empty.title')}</p>
+          <p className="text-sm mb-6 text-gray-500">{t('portfolio.empty.desc')}</p>
           <button onClick={() => setShowAddSource(true)} 
             className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
           >
-            + Add Data Source
+            {t('portfolio.empty.btn')}
           </button>
         </SoftCard>
       )}

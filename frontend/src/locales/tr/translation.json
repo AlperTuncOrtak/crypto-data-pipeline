@@ -168,5 +168,54 @@
       "alerts": "Alarmlar",
       "settings": "Ayarlar"
     }
+  },
+  "portfolio": {
+    "title": "Toplam Portföy Değeri",
+    "data_sources": "Veri Kaynakları",
+    "add_source": "+ Kaynak Ekle",
+    "close_options": "✕ Seçenekleri Kapat",
+    "eth_wallet": "ETH Cüzdanı",
+    "add_wallet": "Cüzdan Ekle",
+    "fetching": "Yükleniyor...",
+    "no_sources": "Henüz veri kaynağı bağlanmadı.",
+    "clear_csv": "✕ CSV Verisini Temizle",
+    "your_holdings": "Varlıklarınız",
+    "table": {
+      "asset": "Varlık",
+      "price": "Fiyat",
+      "balance": "Bakiye",
+      "value": "Değer",
+      "avg_cost": "Ort. Maliyet",
+      "pnl": "Kâr/Zarar"
+    },
+    "asset_allocation": "Varlık Dağılımı",
+    "no_assets": "Henüz varlık yok",
+    "ai_analysis": {
+      "title": "Yapay Zeka Portföy Analizi",
+      "desc": "CryptoNeko Yapay Zekası ile derin içgörüler ve kişiselleştirilmiş öneriler alın.",
+      "generate": "Analiz Üret",
+      "analyzing": "Analiz ediliyor...",
+      "risk": "Risk Değerlendirmesi",
+      "diversification": "Çeşitlendirme ve Sektör",
+      "summary": "Yönetici Özeti",
+      "strengths": "Güçlü Yönler",
+      "risks": "Riskler / Zayıf Yönler",
+      "recommendations": "Uygulanabilir Öneriler"
+    },
+    "tax": {
+      "title": "Vergi Özeti ve Tahminleyici",
+      "desc": "FIFO (İlk Giren İlk Çıkar) yöntemine dayanır. Tahmini %30 kısa vadeli ve %15 uzun vadeli oranlar baz alınmıştır.",
+      "export": "Vergi Raporunu İndir (CSV)",
+      "short_term": "Tahmini Kısa Vadeli",
+      "long_term": "Tahmini Uzun Vadeli",
+      "total": "Toplam Tahmini Vergi",
+      "held_short": "< 1 yıl elde tutulan",
+      "held_long": "≥ 1 yıl elde tutulan"
+    },
+    "empty": {
+      "title": "Portföyünüz boş",
+      "desc": "Başlamak için borsanızdan aldığınız CSV'yi yükleyin.",
+      "btn": "+ Veri Kaynağı Ekle"
+    }
   }
 }

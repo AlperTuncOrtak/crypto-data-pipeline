@@ -168,5 +168,54 @@
       "alerts": "Alerts",
       "settings": "Settings"
     }
+  },
+  "portfolio": {
+    "title": "Total Portfolio Value",
+    "data_sources": "Data Sources",
+    "add_source": "+ Add Source",
+    "close_options": "✕ Close Options",
+    "eth_wallet": "ETH Wallet",
+    "add_wallet": "Add Wallet",
+    "fetching": "Fetching...",
+    "no_sources": "No data sources connected yet.",
+    "clear_csv": "✕ Clear CSV Data",
+    "your_holdings": "Your Holdings",
+    "table": {
+      "asset": "Asset",
+      "price": "Price",
+      "balance": "Balance",
+      "value": "Value",
+      "avg_cost": "Avg Cost",
+      "pnl": "PnL"
+    },
+    "asset_allocation": "Asset Allocation",
+    "no_assets": "No assets yet",
+    "ai_analysis": {
+      "title": "AI Portfolio Analysis",
+      "desc": "Get deep insights and personalized recommendations powered by CryptoNeko AI.",
+      "generate": "Generate Insights",
+      "analyzing": "Analyzing...",
+      "risk": "Risk Assessment",
+      "diversification": "Diversification & Sector",
+      "summary": "Executive Summary",
+      "strengths": "Strengths",
+      "risks": "Risks / Weaknesses",
+      "recommendations": "Actionable Recommendations"
+    },
+    "tax": {
+      "title": "Tax Summary & Estimator",
+      "desc": "Based on FIFO method. Estimated 30% short-term and 15% long-term tax rates.",
+      "export": "Export Tax Report (CSV)",
+      "short_term": "Est. Short-Term Tax",
+      "long_term": "Est. Long-Term Tax",
+      "total": "Total Estimated Tax",
+      "held_short": "Held < 1 year",
+      "held_long": "Held ≥ 1 year"
+    },
+    "empty": {
+      "title": "Your portfolio is empty",
+      "desc": "Upload a CSV from your exchange to get started.",
+      "btn": "+ Add Data Source"
+    }
   }
 }
