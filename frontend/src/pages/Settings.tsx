@@ -3,11 +3,12 @@
 // ============================================================
 import { useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 import { supabase } from "../lib/supabase";
 import {
   User, Mail, Phone, Lock, Bell, Shield,
   CheckCircle, AlertTriangle, Loader, Camera,
-  Eye, EyeOff, ChevronRight, Crown,
+  Eye, EyeOff, ChevronRight, Crown, Sun, Moon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -118,9 +119,10 @@ function SaveButton({ loading, onClick, label = "Save Changes" }) {
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────────────
 export default function Settings() {
   const { user, displayName, email, avatar, plan, isPro, isEnterprise } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // Profile state
@@ -522,6 +524,82 @@ export default function Settings() {
               </button>
             </div>
           ))}
+        </div>
+      </Section>
+
+      {/* ── APPEARANCE ── */}
+      <Section title="Appearance" icon={theme === 'dark' ? Moon : Sun}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>
+            Choose your preferred color theme. Your preference is saved across sessions.
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {/* Dark Mode Card */}
+            <button
+              onClick={() => theme !== 'dark' && toggleTheme()}
+              style={{
+                padding: "16px",
+                borderRadius: 14,
+                border: theme === 'dark' ? "2px solid var(--accent)" : "2px solid var(--border)",
+                background: theme === 'dark' ? "var(--accent-soft)" : "var(--bg-elevated)",
+                cursor: theme === 'dark' ? "default" : "pointer",
+                textAlign: "left",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Moon size={16} style={{ color: theme === 'dark' ? "var(--accent)" : "var(--text-muted)" }} />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'dark' ? "var(--accent)" : "var(--text-secondary)" }}>Dark</span>
+                </div>
+                {theme === 'dark' && (
+                  <CheckCircle size={14} style={{ color: "var(--accent)" }} />
+                )}
+              </div>
+              {/* Dark preview */}
+              <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ background: "#020617", height: 8, borderBottom: "1px solid rgba(0,240,255,0.15)" }} />
+                <div style={{ background: "#0b1227", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
+                  {["#2dd4bf", "#00f0ff", "rgba(255,255,255,0.1)"].map((c, i) => (
+                    <div key={i} style={{ height: 6, borderRadius: 3, background: c, width: i === 2 ? 20 : 12 }} />
+                  ))}
+                </div>
+              </div>
+            </button>
+
+            {/* Light Mode Card */}
+            <button
+              onClick={() => theme !== 'light' && toggleTheme()}
+              style={{
+                padding: "16px",
+                borderRadius: 14,
+                border: theme === 'light' ? "2px solid var(--accent)" : "2px solid var(--border)",
+                background: theme === 'light' ? "var(--accent-soft)" : "var(--bg-elevated)",
+                cursor: theme === 'light' ? "default" : "pointer",
+                textAlign: "left",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Sun size={16} style={{ color: theme === 'light' ? "var(--accent)" : "var(--text-muted)" }} />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'light' ? "var(--accent)" : "var(--text-secondary)" }}>Light</span>
+                </div>
+                {theme === 'light' && (
+                  <CheckCircle size={14} style={{ color: "var(--accent)" }} />
+                )}
+              </div>
+              {/* Light preview */}
+              <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(15,23,42,0.1)" }}>
+                <div style={{ background: "#f1f5f9", height: 8, borderBottom: "1px solid rgba(15,23,42,0.08)" }} />
+                <div style={{ background: "#ffffff", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
+                  {["#047857", "#007a8a", "rgba(15,23,42,0.08)"].map((c, i) => (
+                    <div key={i} style={{ height: 6, borderRadius: 3, background: c, width: i === 2 ? 20 : 12 }} />
+                  ))}
+                </div>
+              </div>
+            </button>
+          </div>
         </div>
       </Section>
 

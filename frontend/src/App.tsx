@@ -33,7 +33,7 @@ import { useWatchlist } from "./hooks/useWatchlist";
 import { useMarket } from "./hooks/useMarket";
 import AIChatWidget from "./components/ai/AIChatWidget";
 import AuthModal from "./components/ui/AuthModal";
-import { ThemeProvider } from "./hooks/useTheme";
+import { ThemeProvider, useTheme } from "./hooks/useTheme";
 
 function AppInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -43,6 +43,8 @@ function AppInner() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(
     () => !!localStorage.getItem("cryptoneko_disclaimer_accepted_v1"),
   );
+
+  const { theme } = useTheme();
 
   const { isPro, isEnterprise, isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -99,7 +101,9 @@ function AppInner() {
           position: "fixed",
           inset: 0,
           backgroundImage:
-            "radial-gradient(rgba(255,255,255,.015) 1px,transparent 1px)",
+            theme === "light"
+              ? "radial-gradient(rgba(15,23,42,0.04) 1px,transparent 1px)"
+              : "radial-gradient(rgba(255,255,255,.015) 1px,transparent 1px)",
           backgroundSize: "48px 48px",
           pointerEvents: "none",
           zIndex: 0,

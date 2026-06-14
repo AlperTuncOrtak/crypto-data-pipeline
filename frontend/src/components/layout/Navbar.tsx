@@ -26,9 +26,12 @@ import {
   ChevronRight,
   Menu,
   Wallet,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
+import { useTheme } from "../../hooks/useTheme";
 import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
 import { useTranslation } from "react-i18next";
@@ -188,7 +191,7 @@ function NavItem({ item, isActive }) {
           userSelect: "none",
           fontSize: 13,
           fontWeight: isActive ? 600 : 500,
-          color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)",
+          color: isActive ? "var(--accent)" : "var(--text-secondary)",
           background: isActive ? "var(--accent-soft)" : "transparent",
           border: isActive
             ? "1px solid var(--accent-border)"
@@ -200,12 +203,12 @@ function NavItem({ item, isActive }) {
         onMouseEnter={(e) => {
           if (!isActive) {
             e.currentTarget.style.color = "var(--accent)";
-            e.currentTarget.style.background = "rgba(0,240,255,0.04)";
+            e.currentTarget.style.background = "var(--accent-soft)";
           }
         }}
         onMouseLeave={(e) => {
           if (!isActive) {
-            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+            e.currentTarget.style.color = "var(--text-secondary)";
             e.currentTarget.style.background = "transparent";
           }
         }}
@@ -387,6 +390,8 @@ export default function Navbar({
     isEnterprise,
   } = useAuth();
 
+  const { theme, toggleTheme } = useTheme();
+
   useEffect(() => {
     function handleClick(e) {
       if (profileRef.current && !profileRef.current.contains(e.target))
@@ -461,10 +466,10 @@ export default function Navbar({
       {/* ── SCROLLING STATS MARQUEE ───────────────────────────────────────── */}
       <div
         style={{
-          backgroundColor: "rgba(12, 12, 22, 0.65)",
+          backgroundColor: theme === 'light' ? "rgba(248,250,252,0.92)" : "rgba(12, 12, 22, 0.65)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: `1px solid var(--border)`,
           overflow: "hidden",
           whiteSpace: "nowrap",
           display: "flex",
@@ -499,14 +504,14 @@ export default function Navbar({
           const content = (
             <div style={{ display: "flex", alignItems: "center" }}>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Coins</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "monospace" }}>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Coins</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {statsData?.coin_count ?? marketData?.length ?? 0}
                 </span>
               </div>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>24h Vol</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "monospace" }}>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>24h Vol</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {formatLarge(totalVolume)}
                 </span>
               </div>
@@ -517,8 +522,8 @@ export default function Navbar({
                 </span>
               </div>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC Dom</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "monospace" }}>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC Dom</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {btcDom}%
                 </span>
               </div>
@@ -528,8 +533,8 @@ export default function Navbar({
               </div>
               {marketData?.slice(0, 10).map((coin) => (
                 <div key={coin.symbol} className="stat-item">
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.6)", fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
-                  <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.9)" }}>
+                  <span style={{ fontSize: 10, color: "var(--text-secondary)", fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
+                  <span style={{ fontSize: 11, fontFamily: "monospace", color: "var(--text-primary)" }}>
                     ${Number(coin.current_price) < 1 ? Number(coin.current_price).toFixed(4) : Number(coin.current_price).toLocaleString()}
                   </span>
                   <span style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 600, color: Number(coin.price_change_percentage_24h) >= 0 ? "#2ecc71" : "#e74c3c" }}>
@@ -557,13 +562,15 @@ export default function Navbar({
           zIndex: 100,
           padding: "10px 20px",
           transition: "all 0.3s ease",
-          background: scrolled ? "rgba(2, 6, 23, 0.85)" : "rgba(2, 6, 23, 0.5)",
+          background: scrolled
+            ? theme === 'light' ? "rgba(248,250,252,0.95)" : "rgba(2, 6, 23, 0.88)"
+            : theme === 'light' ? "rgba(248,250,252,0.75)" : "rgba(2, 6, 23, 0.5)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
           borderBottom: scrolled
             ? "1px solid var(--accent-border)"
-            : "1px solid rgba(255,255,255,0.06)",
-          boxShadow: "none",
+            : "1px solid var(--border)",
+          boxShadow: scrolled && theme === 'light' ? "0 2px 12px rgba(15,23,42,0.08)" : "none",
         }}
       >
         <div
@@ -612,12 +619,12 @@ export default function Navbar({
                 }}
               >
                 <span style={{ color: "var(--accent)" }}>Crypto</span>
-                <span style={{ color: "rgba(255,255,255,0.9)" }}>Neko</span>
+                <span style={{ color: "var(--text-primary)" }}>Neko</span>
               </div>
               <div
                 style={{
                   fontSize: 8,
-                  color: "rgba(255,255,255,0.2)",
+                  color: "var(--text-muted)",
                   letterSpacing: "0.18em",
                   textTransform: "uppercase",
                 }}
@@ -704,6 +711,39 @@ export default function Navbar({
                   {watchlistCount}
                 </span>
               )}
+            </button>
+
+            {/* THEME TOGGLE */}
+            <button
+              id="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                cursor: "pointer",
+                background: "transparent",
+                border: "1px solid var(--border)",
+                color: "var(--text-secondary)",
+                transition: "all 0.18s ease",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--accent-border)";
+                e.currentTarget.style.color = "var(--accent)";
+                e.currentTarget.style.background = "var(--accent-soft)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
             {/* SEARCH */}
