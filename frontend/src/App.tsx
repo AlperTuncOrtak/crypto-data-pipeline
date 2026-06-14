@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { ToastProvider, useAlertMonitor, useToast } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
+import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistSidebar";
 import Footer from "./components/layout/Footer";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
@@ -114,16 +115,19 @@ function AppInner() {
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
 
       {location.pathname !== "/" || isLoggedIn ? (
-        <Navbar
-          onWatchlistOpen={() => openPanel("watchlist")}
-          watchlistCount={watchlist.length}
-          onAuthOpen={(mode = "login") => {
-            setAuthMode(mode);
-            setAuthOpen(true);
-          }}
-          authOpen={authOpen}
-          setAuthOpen={setAuthOpen}
-        />
+        <>
+          <CoinTicker />
+          <Navbar
+            onWatchlistOpen={() => openPanel("watchlist")}
+            watchlistCount={watchlist.length}
+            onAuthOpen={(mode = "login") => {
+              setAuthMode(mode);
+              setAuthOpen(true);
+            }}
+            authOpen={authOpen}
+            setAuthOpen={setAuthOpen}
+          />
+        </>
       ) : null}
       <main
         className={

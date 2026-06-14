@@ -28,6 +28,7 @@ import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import { useTranslation } from "react-i18next";
+import { getCoinColor } from "../utils/colors";
 
 const RANGES = [
   { label: "1H", value: "1h" },
@@ -439,6 +440,8 @@ export default function CoinDetail() {
         ).toFixed(1)
       : null;
 
+  const brandColor = getCoinColor(coin?.symbol);
+
   if (coinLoading)
     return (
       <div
@@ -551,7 +554,7 @@ export default function CoinDetail() {
           )}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <h1 style={{ fontSize: 28, fontWeight: 700 }}>{coin.name}</h1>
+              <h1 style={{ fontSize: 28, fontWeight: 800, color: brandColor, textShadow: `0 0 24px ${brandColor}40, 0 4px 12px rgba(0,0,0,0.5)` }}>{coin.name}</h1>
               {coin.market_cap_rank && (
                 <span
                   style={{
@@ -782,7 +785,7 @@ export default function CoinDetail() {
         <div style={{
           position: "absolute", top: -40, right: -40, width: 220, height: 220,
           borderRadius: "50%",
-          background: `radial-gradient(circle, ${isPositive ? "rgba(46,204,113,0.07)" : "rgba(231,76,60,0.07)"} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${brandColor}15 0%, transparent 70%)`,
           filter: "blur(20px)", pointerEvents: "none",
         }} />
 
