@@ -75,20 +75,20 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
           top: 20,
           right: 20,
           zIndex: 100,
-          background: "rgba(255,255,255,0.07)",
-          border: "1px solid rgba(255,255,255,0.12)",
+          background: "var(--border)",
+          border: "1px solid var(--border)",
           borderRadius: "50%",
           width: 44,
           height: 44,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#fff",
+          color: "var(--text-primary)",
           cursor: "pointer",
           transition: "background 0.2s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
-        onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.07)")}
+        onMouseEnter={e => (e.currentTarget.style.background = "var(--border)")}
+        onMouseLeave={e => (e.currentTarget.style.background = "var(--border)")}
       >
         <X size={20} />
       </button>
@@ -140,7 +140,7 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
 
             {/* Score block */}
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", letterSpacing: "0.1em", marginBottom: 4 }}>
+              <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "monospace", letterSpacing: "0.1em", marginBottom: 4 }}>
                 DISTANCE
               </div>
               <div style={{ fontSize: 48, fontWeight: 900, color: "#00f0ff", fontFamily: "monospace", textShadow: "none" }}>
@@ -192,16 +192,16 @@ export default function MotoGameModal({ onClose, chartData, symbol = "CHART" }: 
                   padding: "14px 24px",
                   borderRadius: 100,
                   background: "transparent",
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--text-secondary)",
                   fontSize: 16,
                   fontWeight: 600,
-                  border: "1px solid rgba(255,255,255,0.15)",
+                  border: "1px solid var(--border)",
                   cursor: "pointer",
                   fontFamily: "monospace",
                   transition: "all 0.2s",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.35)"; e.currentTarget.style.color = "#fff"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--text-muted)"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
               >
                 EXIT
               </button>

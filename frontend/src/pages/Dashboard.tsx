@@ -180,7 +180,7 @@ function CoinCard({ coin, navigate, featured = false }) {
             ) : (
               <div style={{
                 width: 36, height: 36, borderRadius: "50%",
-                background: `${featured ? "rgba(0,240,255,0.15)" : "rgba(255,255,255,0.06)"}`,
+                background: `${featured ? "rgba(0,240,255,0.15)" : "var(--border)"}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 800, color: featured ? T.purple : T.textMuted,
               }}>

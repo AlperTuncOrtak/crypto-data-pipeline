@@ -458,7 +458,7 @@ export default function MotoGame({
       // Timer top center
       ctx.font = "bold 28px 'Courier New', monospace";
       ctx.fillStyle = "#ffffff";
-      ctx.shadowColor = "rgba(255,255,255,0.5)";
+      ctx.shadowColor = "var(--text-secondary)";
       ctx.shadowBlur = 8;
       ctx.textAlign = "center";
       ctx.fillText(timeStr, W / 2, 36);
@@ -480,7 +480,7 @@ export default function MotoGame({
       // Controls hint at bottom
       ctx.textAlign = "center";
       ctx.font = "12px 'Courier New', monospace";
-      ctx.fillStyle = "rgba(255,255,255,0.25)";
+      ctx.fillStyle = "var(--text-muted)";
       ctx.fillText("SPACE / W — Jump  •  A/D — Tilt  •  →/D — Accelerate", W / 2, H - 16);
 
       ctx.shadowBlur = 0;
@@ -523,7 +523,7 @@ export default function MotoGame({
       }
 
       ctx.font = "bold 20px 'Courier New', monospace";
-      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.fillStyle = "var(--text-secondary)";
       ctx.shadowBlur = 0;
       ctx.fillText("Press R or click RESTART", W / 2, H / 2 + 90);
       ctx.restore();

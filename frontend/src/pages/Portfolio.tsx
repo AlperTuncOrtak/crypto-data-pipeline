@@ -1343,8 +1343,8 @@ export default function Portfolio() {
                   </Pie>
                   <RechartTooltip
                     formatter={(v) => fmtUSD(v)}
-                    contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", color: "#fff", fontSize: 13, fontWeight: 600 }}
-                    itemStyle={{ color: "#fff" }}
+                    contentStyle={{ backgroundColor: "#111", border: "1px solid var(--border)", borderRadius: "16px", color: "var(--text-primary)", fontSize: 13, fontWeight: 600 }}
+                    itemStyle={{ color: "var(--text-primary)" }}
                   />
                 </PieChart>
               </ResponsiveContainer>

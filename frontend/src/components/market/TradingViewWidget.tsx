@@ -33,7 +33,7 @@ function TradingViewWidget({ symbol, theme = "dark" }: TradingViewWidgetProps) {
       locale: "en",
       enable_publishing: false,
       backgroundColor: "#020204", // Liquid Cyber Background
-      gridColor: "rgba(255, 255, 255, 0.04)",
+      gridColor: "var(--border-soft)",
       hide_top_toolbar: false,
       hide_legend: false,
       save_image: false,

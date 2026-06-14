@@ -107,7 +107,7 @@ function FeatureRow({ text, included }) {
         alignItems: "center",
         gap: 10,
         padding: "7px 0",
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
+        borderBottom: "1px solid var(--border-soft)",
       }}
     >
       {included ? (
@@ -115,13 +115,13 @@ function FeatureRow({ text, included }) {
       ) : (
         <X
           size={14}
-          style={{ color: "rgba(255,255,255,0.15)", flexShrink: 0 }}
+          style={{ color: "var(--border)", flexShrink: 0 }}
         />
       )}
       <span
         style={{
           fontSize: 13,
-          color: included ? "var(--text-secondary)" : "rgba(255,255,255,0.25)",
+          color: included ? "var(--text-secondary)" : "var(--text-muted)",
         }}
       >
         {text}
@@ -154,7 +154,7 @@ function PlanCard({
     : isPurple
       ? {
           background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
-          color: "#fff",
+          color: "var(--text-primary)",
           border: "none",
           boxShadow: "0 4px 20px rgba(139,92,246,0.3)",
         }
@@ -193,7 +193,7 @@ function PlanCard({
             background: isPrimary
               ? "linear-gradient(135deg, var(--accent), #8B5CF6)"
               : "linear-gradient(135deg, #8b5cf6, #7c3aed)",
-            color: "#fff",
+            color: "var(--text-primary)",
             fontSize: 11,
             fontWeight: 700,
             padding: "4px 14px",
@@ -311,7 +311,7 @@ function PlanCard({
         }}
         onMouseEnter={(e) => {
           if (!isCurrent && !isPrimary)
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+            e.currentTarget.style.borderColor = "var(--text-muted)";
         }}
         onMouseLeave={(e) => {
           if (!isCurrent && !isPrimary)

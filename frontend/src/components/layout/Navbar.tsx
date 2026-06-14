@@ -240,7 +240,7 @@ function NavItem({ item, isActive }) {
             background: "rgba(2,6,23,0.85)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1px solid var(--border)",
             boxShadow: "none",
             opacity: open ? 1 : 0,
             transform: open
@@ -286,7 +286,7 @@ function NavItem({ item, isActive }) {
                   onMouseEnter={(e) => {
                     if (!sub.soon)
                       e.currentTarget.style.background =
-                        "rgba(255,255,255,0.06)";
+                        "var(--border)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "transparent";
@@ -318,7 +318,7 @@ function NavItem({ item, isActive }) {
                         style={{
                           fontSize: 13,
                           fontWeight: 600,
-                          color: "rgba(255,255,255,0.9)",
+                          color: "var(--text-primary)",
                         }}
                       >
                         {sub.label}
@@ -342,7 +342,7 @@ function NavItem({ item, isActive }) {
                     <div
                       style={{
                         fontSize: 11,
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--text-muted)",
                         marginTop: 1,
                       }}
                     >
@@ -496,7 +496,7 @@ export default function Navbar({
             align-items: center;
             gap: 6px;
             padding: 0 24px;
-            border-right: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid var(--border);
           }
         `}</style>
 
@@ -516,7 +516,7 @@ export default function Navbar({
                 </span>
               </div>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", fontFamily: "monospace" }}>
                   {btcPrice ? `$${Number(btcPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "—"}
                 </span>
@@ -665,15 +665,15 @@ export default function Navbar({
                 background:
                   watchlistCount > 0
                     ? "rgba(245,158,11,0.1)"
-                    : "rgba(255,255,255,0.04)",
+                    : "var(--border-soft)",
                 border:
                   watchlistCount > 0
                     ? "1px solid rgba(245,166,35,0.25)"
-                    : "1px solid rgba(255,255,255,0.07)",
+                    : "1px solid var(--border)",
                 color:
                   watchlistCount > 0
                     ? "var(--accent)"
-                    : "rgba(255,255,255,0.4)",
+                    : "var(--text-muted)",
                 transition: "all 0.18s ease",
               }}
               onMouseEnter={(e) => {
@@ -684,11 +684,11 @@ export default function Navbar({
                 e.currentTarget.style.borderColor =
                   watchlistCount > 0
                     ? "rgba(245,166,35,0.25)"
-                    : "rgba(255,255,255,0.07)";
+                    : "var(--border)";
                 e.currentTarget.style.color =
                   watchlistCount > 0
                     ? "var(--accent)"
-                    : "rgba(255,255,255,0.4)";
+                    : "var(--text-muted)";
               }}
             >
               <Star
@@ -755,8 +755,8 @@ export default function Navbar({
                   gap: 8,
                   padding: "6px 12px",
                   borderRadius: 10,
-                  background: searchOpen ? "rgba(245,158,11,0.05)" : "rgba(255,255,255,0.04)",
-                  border: `1px solid ${searchOpen ? "rgba(245,166,35,0.4)" : "rgba(255,255,255,0.08)"}`,
+                  background: searchOpen ? "rgba(245,158,11,0.05)" : "var(--border-soft)",
+                  border: `1px solid ${searchOpen ? "rgba(245,166,35,0.4)" : "var(--border)"}`,
                   boxShadow: searchOpen ? "0 0 16px rgba(245,158,11,0.1)" : "none",
                   width: searchOpen ? 220 : 110,
                   transition: "all 0.25s ease",
@@ -764,7 +764,7 @@ export default function Navbar({
               >
                 <Search
                   size={12}
-                  style={{ color: "rgba(255,255,255,0.25)", flexShrink: 0 }}
+                  style={{ color: "var(--text-muted)", flexShrink: 0 }}
                 />
                 <input
                   type="text"
@@ -784,7 +784,7 @@ export default function Navbar({
                     outline: "none",
                     fontSize: 12,
                     width: "100%",
-                    color: "rgba(255,255,255,0.8)",
+                    color: "var(--text-secondary)",
                     caretColor: "var(--accent)",
                   }}
                 />
@@ -792,7 +792,7 @@ export default function Navbar({
                   <X
                     size={11}
                     style={{
-                      color: "rgba(255,255,255,0.3)",
+                      color: "var(--text-muted)",
                       cursor: "pointer",
                       flexShrink: 0,
                     }}
@@ -809,7 +809,7 @@ export default function Navbar({
                     right: 0,
                     background: "rgba(10,10,12,0.95)",
                     backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: "1px solid var(--border)",
                     borderRadius: 14,
                     boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
                     minWidth: 240,
@@ -831,12 +831,12 @@ export default function Navbar({
                         gap: 10,
                         padding: "10px 14px",
                         cursor: "pointer",
-                        borderBottom: "1px solid rgba(255,255,255,0.04)",
+                        borderBottom: "1px solid var(--border-soft)",
                         transition: "background 0.12s",
                       }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.background =
-                          "rgba(255,255,255,0.05)")
+                          "var(--border)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.background = "transparent")
@@ -871,7 +871,7 @@ export default function Navbar({
                           style={{
                             fontSize: 13,
                             fontWeight: 600,
-                            color: "rgba(255,255,255,0.9)",
+                            color: "var(--text-primary)",
                           }}
                         >
                           {coin.name}
@@ -879,7 +879,7 @@ export default function Navbar({
                         <div
                           style={{
                             fontSize: 10,
-                            color: "rgba(255,255,255,0.3)",
+                            color: "var(--text-muted)",
                           }}
                         >
                           {coin.symbol?.toUpperCase()}
@@ -914,9 +914,9 @@ export default function Navbar({
                   padding: "6px 10px",
                   borderRadius: 10,
                   cursor: "pointer",
-                  background: langOpen ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  color: "rgba(255,255,255,0.8)",
+                  background: langOpen ? "var(--border)" : "var(--border-soft)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-secondary)",
                   fontSize: 12,
                   fontWeight: 600,
                   transition: "all 0.2s ease"
@@ -933,7 +933,7 @@ export default function Navbar({
                     right: 0,
                     background: "rgba(10,10,12,0.95)",
                     backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: "1px solid var(--border)",
                     borderRadius: 12,
                     boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
                     minWidth: 120,
@@ -951,7 +951,7 @@ export default function Navbar({
                       textAlign: "left",
                       background: "transparent",
                       border: "none",
-                      color: "rgba(255,255,255,0.9)",
+                      color: "var(--text-primary)",
                       fontSize: 12,
                       cursor: "pointer",
                       borderRadius: 8,
@@ -959,7 +959,7 @@ export default function Navbar({
                       alignItems: "center",
                       gap: 8
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "var(--border)"}
                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                   >
                     🇬🇧 English
@@ -971,7 +971,7 @@ export default function Navbar({
                       textAlign: "left",
                       background: "transparent",
                       border: "none",
-                      color: "rgba(255,255,255,0.9)",
+                      color: "var(--text-primary)",
                       fontSize: 12,
                       cursor: "pointer",
                       borderRadius: 8,
@@ -979,7 +979,7 @@ export default function Navbar({
                       alignItems: "center",
                       gap: 8
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "var(--border)"}
                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                   >
                     🇹🇷 Türkçe
@@ -1003,10 +1003,10 @@ export default function Navbar({
                 width: 34,
                 height: 34,
                 borderRadius: 10,
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "rgba(255,255,255,0.04)",
+                border: "1px solid var(--border)",
+                background: "var(--border-soft)",
                 cursor: "pointer",
-                color: "rgba(255,255,255,0.6)",
+                color: "var(--text-secondary)",
                 flexShrink: 0,
               }}
               className="show-mobile-flex"
@@ -1020,7 +1020,7 @@ export default function Navbar({
               style={{
                 width: 1,
                 height: 20,
-                background: "rgba(255,255,255,0.08)",
+                background: "var(--border)",
               }}
             />
 
@@ -1038,8 +1038,8 @@ export default function Navbar({
                     cursor: "pointer",
                     background: profileOpen
                       ? "rgba(245,166,35,0.12)"
-                      : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${profileOpen ? "rgba(245,166,35,0.25)" : "rgba(255,255,255,0.07)"}`,
+                      : "var(--border-soft)",
+                    border: `1px solid ${profileOpen ? "rgba(245,166,35,0.25)" : "var(--border)"}`,
                     transition: "all 0.18s ease",
                   }}
                   onMouseEnter={(e) => {
@@ -1049,9 +1049,9 @@ export default function Navbar({
                   onMouseLeave={(e) => {
                     if (!profileOpen) {
                       e.currentTarget.style.background =
-                        "rgba(255,255,255,0.04)";
+                        "var(--border-soft)";
                       e.currentTarget.style.borderColor =
-                        "rgba(255,255,255,0.07)";
+                        "var(--border)";
                     }
                   }}
                 >
@@ -1088,7 +1088,7 @@ export default function Navbar({
                     style={{
                       fontSize: 12,
                       fontWeight: 600,
-                      color: "rgba(255,255,255,0.8)",
+                      color: "var(--text-secondary)",
                     }}
                   >
                     {displayName?.split(" ")[0]}
@@ -1104,7 +1104,7 @@ export default function Navbar({
                   <ChevronDown
                     size={10}
                     style={{
-                      color: "rgba(255,255,255,0.3)",
+                      color: "var(--text-muted)",
                       transform: profileOpen ? "rotate(180deg)" : "rotate(0)",
                       transition: "transform 0.2s",
                     }}
@@ -1121,10 +1121,10 @@ export default function Navbar({
                       zIndex: 2000,
                       background: "rgba(10,10,12,0.96)",
                       backdropFilter: "blur(24px)",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      border: "1px solid var(--border)",
                       borderRadius: 16,
                       boxShadow:
-                        "0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)",
+                        "0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 var(--border)",
                       overflow: "hidden",
                     }}
                   >
@@ -1142,7 +1142,7 @@ export default function Navbar({
                     <div
                       style={{
                         padding: "16px",
-                        borderBottom: "1px solid rgba(255,255,255,0.05)",
+                        borderBottom: "1px solid var(--border)",
                       }}
                     >
                       <div
@@ -1187,7 +1187,7 @@ export default function Navbar({
                             style={{
                               fontSize: 13,
                               fontWeight: 700,
-                              color: "rgba(255,255,255,0.9)",
+                              color: "var(--text-primary)",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                               whiteSpace: "nowrap",
@@ -1198,7 +1198,7 @@ export default function Navbar({
                           <div
                             style={{
                               fontSize: 11,
-                              color: "rgba(255,255,255,0.3)",
+                              color: "var(--text-muted)",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                               whiteSpace: "nowrap",
@@ -1217,8 +1217,8 @@ export default function Navbar({
                             ? "rgba(139,92,246,0.1)"
                             : isPro
                               ? "rgba(245,166,35,0.08)"
-                              : "rgba(255,255,255,0.03)",
-                          border: `1px solid ${isEnterprise ? "rgba(139,92,246,0.2)" : isPro ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.06)"}`,
+                              : "var(--border-soft)",
+                          border: `1px solid ${isEnterprise ? "rgba(139,92,246,0.2)" : isPro ? "rgba(245,158,11,0.15)" : "var(--border)"}`,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
@@ -1241,7 +1241,7 @@ export default function Navbar({
                           ) : (
                             <User
                               size={11}
-                              style={{ color: "rgba(255,255,255,0.3)" }}
+                              style={{ color: "var(--text-muted)" }}
                             />
                           )}
                           <span
@@ -1252,7 +1252,7 @@ export default function Navbar({
                                 ? "#8b5cf6"
                                 : isPro
                                   ? "var(--accent)"
-                                  : "rgba(255,255,255,0.35)",
+                                  : "var(--text-muted)",
                             }}
                           >
                             {isEnterprise
@@ -1269,7 +1269,7 @@ export default function Navbar({
                             color:
                               isPro || isEnterprise
                                 ? "var(--accent)"
-                                : "rgba(255,255,255,0.2)",
+                                : "var(--text-muted)",
                             fontWeight: 600,
                           }}
                         >
@@ -1411,7 +1411,7 @@ export default function Navbar({
                           onMouseEnter={(e) => {
                             if (!soon)
                               e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
+                                "var(--border-soft)";
                           }}
                           onMouseLeave={(e) =>
                             (e.currentTarget.style.background = "transparent")
@@ -1426,12 +1426,12 @@ export default function Navbar({
                           >
                             <Icon
                               size={13}
-                              style={{ color: "rgba(255,255,255,0.3)" }}
+                              style={{ color: "var(--text-muted)" }}
                             />
                             <span
                               style={{
                                 fontSize: 13,
-                                color: "rgba(255,255,255,0.65)",
+                                color: "var(--text-secondary)",
                               }}
                             >
                               {label}
@@ -1459,7 +1459,7 @@ export default function Navbar({
                     <div
                       style={{
                         padding: "4px 8px 10px",
-                        borderTop: "1px solid rgba(255,255,255,0.04)",
+                        borderTop: "1px solid var(--border-soft)",
                       }}
                     >
                       <div
@@ -1508,19 +1508,19 @@ export default function Navbar({
                     borderRadius: 10,
                     cursor: "pointer",
                     background: "transparent",
-                    color: "rgba(255,255,255,0.7)",
+                    color: "var(--text-secondary)",
                     border: "1px solid rgba(255,255,255,0.1)",
                     fontSize: 13,
                     fontWeight: 600,
                     transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                    e.currentTarget.style.borderColor = "var(--text-muted)";
                     e.currentTarget.style.color = "white";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+                    e.currentTarget.style.color = "var(--text-secondary)";
                   }}
                 >
                   {t('nav.login')}
@@ -1641,7 +1641,7 @@ export default function Navbar({
                         marginBottom: 2,
                         transition: "all 0.15s",
                       }}
-                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "var(--border-soft)"; }}
                       onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                     >
                       <Icon size={16} />
@@ -1665,7 +1665,7 @@ export default function Navbar({
                               color: "var(--text-muted)",
                               transition: "all 0.15s",
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.background = "var(--border-soft)"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; }}
                           >
                             <sub.Icon size={13} />

@@ -43,7 +43,7 @@ export default function WalletConnectButton() {
                       alignItems: "center",
                       gap: 8,
                       padding: "8px 16px",
-                      background: "rgba(255, 255, 255, 0.05)",
+                      background: "var(--border)",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
                       borderRadius: 20,
                       color: "var(--text-primary)",
@@ -57,7 +57,7 @@ export default function WalletConnectButton() {
                       e.currentTarget.style.transform = "scale(1.02)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                      e.currentTarget.style.background = "var(--border)";
                       e.currentTarget.style.transform = "scale(1)";
                     }}
                   >
@@ -96,7 +96,7 @@ export default function WalletConnectButton() {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      background: "rgba(255, 255, 255, 0.05)",
+                      background: "var(--border)",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
                       borderRadius: 20,
                       padding: "6px 12px",
@@ -143,7 +143,7 @@ export default function WalletConnectButton() {
                       borderRadius: 20,
                       cursor: "pointer",
                       transition: "all 0.2s ease",
-                      color: "#fff",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       fontWeight: 600,
                     }}

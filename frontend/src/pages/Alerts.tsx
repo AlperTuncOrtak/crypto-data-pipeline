@@ -144,7 +144,7 @@ export default function Alerts() {
         <div className="flex flex-col gap-4">
 
           {/* SUMMARY */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
+          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, var(--border-soft), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.summary')}
             </div>
@@ -168,7 +168,7 @@ export default function Alerts() {
           </div>
 
           {/* FILTER */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
+          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, var(--border-soft), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.filter')}
             </div>
@@ -204,7 +204,7 @@ export default function Alerts() {
           </div>
 
           {/* SORT */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)' }}>
+          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, var(--border-soft), transparent)' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.sort_by')}
             </div>
@@ -259,7 +259,7 @@ export default function Alerts() {
           )}
 
           {filtered.length > 0 && (
-            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 12px 48px rgba(0,0,0,0.5)' }}>
+            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 12px 48px rgba(0,0,0,0.5)' }}>
 
               {/* HEADER */}
               <div

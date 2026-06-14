@@ -5,8 +5,8 @@ import { Book, Compass, LayoutDashboard, Brain, GitCompare, Zap, Shield, Search,
 const FeatureCard = ({ icon: Icon, title, description }) => (
   <div className="flex flex-col p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 group" 
        style={{ 
-         backgroundColor: 'rgba(255,255,255,0.02)', 
-         border: '1px solid rgba(255,255,255,0.05)',
+         backgroundColor: 'var(--border-soft)', 
+         border: '1px solid var(--border)',
        }}>
     <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
          style={{ backgroundColor: 'rgba(245,158,11,0.1)', color: 'var(--accent)' }}>

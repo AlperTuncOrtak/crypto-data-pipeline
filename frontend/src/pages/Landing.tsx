@@ -28,7 +28,7 @@ const T = {
   textPrimary: "#ffffff",
   textSecondary: "#94a3b8",
   textMuted: "#64748b",
-  border: "rgba(255,255,255,0.06)",
+  border: "var(--border)",
   borderFeat: "rgba(0,240,255,0.25)",
 };
 
@@ -150,7 +150,7 @@ function DashboardMockup({ coinsStr, t }: { coinsStr: string, t: any }) {
       {/* Browser bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
         {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
-        <div style={{ flex: 1, marginLeft: 8, height: 22, borderRadius: 6, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ flex: 1, marginLeft: 8, height: 22, borderRadius: 6, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <span style={{ fontSize: 10, color: T.textMuted }}>cryptoneko.app/dashboard</span>
         </div>
       </div>
@@ -555,7 +555,7 @@ export default function Landing({ onAuthOpen }) {
                   borderRadius: 36,
                   background: `rgba(15,15,26,0.98)`,
                   border: `1px solid ${T.border}`,
-                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
+                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 var(--border-soft)",
                   overflow: "hidden",
                   transition: "transform 0.3s ease, opacity 0.3s ease",
                   transformOrigin: "top center",
@@ -587,7 +587,7 @@ export default function Landing({ onAuthOpen }) {
                 <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1, background: "rgba(10,10,15,0.8)", border: `1px solid ${T.border}`, borderRadius: 20, padding: "20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
                     {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
-                    <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <span style={{ fontSize: 9, color: T.textMuted }}>cryptoneko.app</span>
                     </div>
                   </div>

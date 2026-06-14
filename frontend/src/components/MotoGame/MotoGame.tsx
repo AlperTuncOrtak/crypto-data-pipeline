@@ -363,7 +363,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
           particlesRef.current.push({
             x: wheelA.position.x, y: wheelA.position.y + 10,
             vx: -wheelA.velocity.x * 0.5 + (Math.random()-0.5)*2, vy: -1 - Math.random()*2,
-            life: 30, maxLife: 30, color: "rgba(255,255,255,0.2)", size: 3 + Math.random()*4
+            life: 30, maxLife: 30, color: "var(--text-muted)", size: 3 + Math.random()*4
           });
         }
         // In-air physics: throttle pulls nose up
@@ -431,7 +431,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     ctx.translate(-cameraX.current, -cameraY.current);
 
     // Parallax Grid
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+    ctx.strokeStyle = "var(--border-soft)";
     ctx.lineWidth = 1;
     const gridCell = 100;
     const startXOffset = Math.floor(cameraX.current / gridCell) * gridCell;
@@ -514,7 +514,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     ctx.fill(); ctx.stroke();
 
     // Rider
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fillStyle = "var(--text-primary)";
     ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(5, -20); ctx.lineTo(12, -12); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.arc(10, -25, 6, 0, Math.PI*2); ctx.fillStyle = primaryColor; ctx.fill(); 
 

@@ -40,7 +40,7 @@ function Section({ title, icon: Icon, children }) {
       <div style={{
         display: "flex", alignItems: "center", gap: 10,
         padding: "16px 20px", borderBottom: "1px solid var(--border)",
-        background: "rgba(255,255,255,0.02)",
+        background: "var(--border-soft)",
       }}>
         <Icon size={15} style={{ color: "var(--accent)" }} />
         <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
@@ -79,7 +79,7 @@ function Input({ value, onChange, placeholder, type = "text", disabled, readOnly
         style={{
           width: "100%", padding: "10px 14px",
           paddingRight: isPassword || suffix ? 44 : 14,
-          background: readOnly || disabled ? "rgba(255,255,255,0.02)" : "var(--bg-elevated)",
+          background: readOnly || disabled ? "var(--border-soft)" : "var(--bg-elevated)",
           border: "1px solid var(--border)", borderRadius: 10,
           color: readOnly || disabled ? "var(--text-muted)" : "var(--text-primary)",
           fontSize: 13, outline: "none",
@@ -339,7 +339,7 @@ export default function Settings() {
           <div>
             <div style={{ fontSize: 15, fontWeight: 700 }}>{displayName}</div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{email}</div>
-            <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, padding: "3px 8px", borderRadius: 6, background: isPro || isEnterprise ? "rgba(245,166,35,0.08)" : "rgba(255,255,255,0.04)", border: `1px solid ${isPro || isEnterprise ? "rgba(245,166,35,0.2)" : "rgba(255,255,255,0.06)"}`, width: "fit-content" }}>
+            <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, padding: "3px 8px", borderRadius: 6, background: isPro || isEnterprise ? "rgba(245,166,35,0.08)" : "var(--border-soft)", border: `1px solid ${isPro || isEnterprise ? "rgba(245,166,35,0.2)" : "var(--border)"}`, width: "fit-content" }}>
               <Crown size={10} style={{ color: isPro || isEnterprise ? "var(--accent)" : "var(--text-muted)" }} />
               <span style={{ fontSize: 11, color: isPro || isEnterprise ? "var(--accent)" : "var(--text-muted)", fontWeight: 600 }}>
                 {isEnterprise ? "Enterprise" : isPro ? "Pro" : "Free"} Plan
@@ -418,7 +418,7 @@ export default function Settings() {
         </Field>
 
         {/* 2FA info */}
-        <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ padding: "12px 14px", borderRadius: 10, background: "var(--border-soft)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Two-Factor Authentication</div>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>Add an extra layer of security to your account</div>
@@ -557,7 +557,7 @@ export default function Settings() {
                 )}
               </div>
               {/* Dark preview */}
-              <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
                 <div style={{ background: "#020617", height: 8, borderBottom: "1px solid rgba(0,240,255,0.15)" }} />
                 <div style={{ background: "#0b1227", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
                   {["#2dd4bf", "#00f0ff", "rgba(255,255,255,0.1)"].map((c, i) => (

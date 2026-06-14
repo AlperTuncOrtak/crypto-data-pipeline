@@ -27,7 +27,7 @@ export default function CryptoNews({ symbol }: { symbol?: string }) {
 
   if (loading) {
     return (
-      <div style={{ padding: 16, color: "var(--text-muted)", fontSize: 13, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12, background: "rgba(255,255,255,0.01)" }}>
+      <div style={{ padding: 16, color: "var(--text-muted)", fontSize: 13, textAlign: "center", border: "1px solid var(--border)", borderRadius: 12, background: "var(--border-soft)" }}>
         Loading latest news...
       </div>
     );
@@ -35,7 +35,7 @@ export default function CryptoNews({ symbol }: { symbol?: string }) {
 
   if (news.length === 0) {
     return (
-      <div style={{ padding: 16, color: "var(--text-muted)", fontSize: 13, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12, background: "rgba(255,255,255,0.01)" }}>
+      <div style={{ padding: 16, color: "var(--text-muted)", fontSize: 13, textAlign: "center", border: "1px solid var(--border)", borderRadius: 12, background: "var(--border-soft)" }}>
         No recent news found{symbol ? ` for ${symbol.toUpperCase()}` : ''}.
       </div>
     );
@@ -60,7 +60,7 @@ export default function CryptoNews({ symbol }: { symbol?: string }) {
             transition: "all 0.2s"
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+            e.currentTarget.style.background = "var(--border)";
             e.currentTarget.style.borderColor = "var(--accent-soft)";
           }}
           onMouseLeave={e => {

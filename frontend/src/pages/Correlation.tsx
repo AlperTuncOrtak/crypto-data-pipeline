@@ -22,13 +22,13 @@ function formatPrice(n) {
 }
 
 function getCorrelationColor(corr) {
-  if (corr === 1) return 'rgba(255,255,255,0.05)'
+  if (corr === 1) return 'var(--border)'
   if (corr > 0) {
     return `rgba(46, 204, 113, ${Math.min(corr * 0.8 + 0.2, 1)})`
   } else if (corr < 0) {
     return `rgba(231, 76, 60, ${Math.min(Math.abs(corr) * 0.8 + 0.2, 1)})`
   }
-  return 'rgba(255,255,255,0.02)'
+  return 'var(--border-soft)'
 }
 
 function CoinSearchDropdown({ allCoins, selected, onAdd }) {
@@ -245,11 +245,11 @@ export default function Correlation() {
                                 fontSize: 15,
                                 fontFamily: 'monospace',
                                 fontWeight: 700,
-                                color: isSelf ? 'rgba(255,255,255,0.4)' : '#fff',
+                                color: isSelf ? 'var(--text-muted)' : '#fff',
                                 cursor: 'help',
                                 transition: 'transform 0.15s, box-shadow 0.15s',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                border: isSelf ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                                border: isSelf ? '1px solid var(--border)' : 'none',
                                 position: 'relative'
                               }}
                               onMouseEnter={e => { if (!isSelf) { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.zIndex = 10; } }}

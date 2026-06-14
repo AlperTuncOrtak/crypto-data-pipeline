@@ -524,8 +524,8 @@ export default function Heatmap() {
           position: "relative",
           width: "100%",
           paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%`,
-          backgroundColor: "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.05)",
+          backgroundColor: "var(--border-soft)",
+          border: "1px solid var(--border)",
           borderRadius: 24,
           overflow: "hidden",
         }}

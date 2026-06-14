@@ -65,7 +65,7 @@ function PasswordStrength({ password }) {
               flex: 1,
               height: 3,
               borderRadius: 2,
-              background: i <= score ? color : "rgba(255,255,255,0.08)",
+              background: i <= score ? color : "var(--border)",
               transition: "background 0.25s",
             }}
           />
@@ -87,7 +87,7 @@ function AuthInput({ icon: Icon, rightEl, ...props }) {
           left: 15,
           top: "50%",
           transform: "translateY(-50%)",
-          color: focused ? "rgba(245,166,35,0.6)" : "rgba(255,255,255,0.2)",
+          color: focused ? "rgba(245,166,35,0.6)" : "var(--text-muted)",
           pointerEvents: "none",
           transition: "color 0.2s",
         }}
@@ -107,10 +107,10 @@ function AuthInput({ icon: Icon, rightEl, ...props }) {
           padding: rightEl ? "13px 44px 13px 40px" : "13px 15px 13px 40px",
           background: focused
             ? "var(--accent-soft)"
-            : "rgba(255,255,255,0.04)",
-          border: `1px solid ${focused ? "var(--accent-border)" : "rgba(255,255,255,0.06)"}`,
+            : "var(--border-soft)",
+          border: `1px solid ${focused ? "var(--accent-border)" : "var(--border)"}`,
           borderRadius: 16,
-          color: "#fff",
+          color: "var(--text-primary)",
           fontSize: 13,
           outline: "none",
           transition: "all 0.3s ease-out",
@@ -371,7 +371,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
             background: "rgba(2, 6, 23, 0.95)",
             backdropFilter: "blur(24px)",
             borderRadius: 24,
-            border: "1px solid rgba(255,255,255,0.05)",
+            border: "1px solid var(--border)",
             boxShadow: "0 24px 80px rgba(0,0,0,0.8)",
             overflow: "hidden",
           }}
@@ -399,37 +399,37 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                   style={{
                     fontSize: 22,
                     fontWeight: 700,
-                    color: "#fff",
+                    color: "var(--text-primary)",
                     letterSpacing: "-0.03em",
                     marginBottom: 6,
                   }}
                 >
                   {title}
                 </div>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>
+                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                   {sub}
                 </div>
               </div>
               <button
                 onClick={onClose}
                 style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "var(--border)",
+                  border: "1px solid var(--border)",
                   borderRadius: 10,
                   padding: 7,
                   cursor: "pointer",
-                  color: "rgba(255,255,255,0.3)",
+                  color: "var(--text-muted)",
                   display: "flex",
                   flexShrink: 0,
                   marginTop: 2,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.09)";
+                  e.currentTarget.style.background = "var(--border)";
                   e.currentTarget.style.color = "#fff";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.3)";
+                  e.currentTarget.style.background = "var(--border)";
+                  e.currentTarget.style.color = "var(--text-muted)";
                 }}
               >
                 <X size={14} />
@@ -449,7 +449,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                 <p
                   style={{
                     fontSize: 13,
-                    color: "rgba(255,255,255,0.4)",
+                    color: "var(--text-muted)",
                     lineHeight: 1.7,
                     marginBottom: 24,
                   }}
@@ -465,7 +465,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                     border: "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 10,
                     padding: "10px 20px",
-                    color: "rgba(255,255,255,0.5)",
+                    color: "var(--text-secondary)",
                     cursor: "pointer",
                     fontSize: 13,
                   }}
@@ -485,15 +485,15 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       style={{
                         width: "100%",
                         padding: "13px 18px",
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.06)",
+                        background: "var(--border-soft)",
+                        border: "1px solid var(--border)",
                         borderRadius: 16,
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 10,
-                        color: "rgba(255,255,255,0.75)",
+                        color: "var(--text-secondary)",
                         fontSize: 14,
                         fontWeight: 500,
                         marginBottom: 20,
@@ -502,13 +502,13 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background =
-                          "rgba(255,255,255,0.07)";
+                          "var(--border)";
                         e.currentTarget.style.color = "#fff";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background =
-                          "rgba(255,255,255,0.04)";
-                        e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+                          "var(--border-soft)";
+                        e.currentTarget.style.color = "var(--text-secondary)";
                       }}
                     >
                       <GoogleIcon /> Continue with Google
@@ -525,13 +525,13 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                         style={{
                           flex: 1,
                           height: 1,
-                          background: "rgba(255,255,255,0.06)",
+                          background: "var(--border)",
                         }}
                       />
                       <span
                         style={{
                           fontSize: 11,
-                          color: "rgba(255,255,255,0.2)",
+                          color: "var(--text-muted)",
                           letterSpacing: "0.1em",
                         }}
                       >
@@ -541,7 +541,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                         style={{
                           flex: 1,
                           height: 1,
-                          background: "rgba(255,255,255,0.06)",
+                          background: "var(--border)",
                         }}
                       />
                     </div>
@@ -593,18 +593,18 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                               background: "none",
                               border: "none",
                               cursor: "pointer",
-                              color: "rgba(255,255,255,0.25)",
+                              color: "var(--text-muted)",
                               display: "flex",
                               padding: 2,
                               transition: "color 0.15s",
                             }}
                             onMouseEnter={(e) =>
                               (e.currentTarget.style.color =
-                                "rgba(255,255,255,0.6)")
+                                "var(--text-secondary)")
                             }
                             onMouseLeave={(e) =>
                               (e.currentTarget.style.color =
-                                "rgba(255,255,255,0.25)")
+                                "var(--text-muted)")
                             }
                           >
                             {showPass ? (
@@ -651,7 +651,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                         <span
                           style={{
                             fontSize: 12,
-                            color: "rgba(255,255,255,0.3)",
+                            color: "var(--text-muted)",
                           }}
                         >
                           Remember me
@@ -813,7 +813,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                         border: "none",
                         cursor: "pointer",
                         fontSize: 13,
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--text-muted)",
                       }}
                     >
                       ← Back to Sign In
@@ -823,7 +823,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       <span
                         style={{
                           fontSize: 13,
-                          color: "rgba(255,255,255,0.28)",
+                          color: "var(--text-muted)",
                         }}
                       >
                         {mode === "login"
@@ -868,10 +868,10 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                 >
                   <ShieldCheck
                     size={11}
-                    style={{ color: "rgba(255,255,255,0.15)" }}
+                    style={{ color: "var(--border)" }}
                   />
                   <span
-                    style={{ fontSize: 11, color: "rgba(255,255,255,0.15)" }}
+                    style={{ fontSize: 11, color: "var(--border)" }}
                   >
                     Protected by hCaptcha · 256-bit encryption
                   </span>
@@ -886,7 +886,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         @keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
         @keyframes slideUp { from { opacity: 0; transform: translate(-50%,-48%) } to { opacity: 1; transform: translate(-50%,-50%) } }
         @keyframes spin    { to { transform: rotate(360deg) } }
-        input::placeholder { color: rgba(255,255,255,0.2); }
+        input::placeholder { color: var(--text-muted); }
         input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px #0d0d0d inset !important; -webkit-text-fill-color: #fff !important; }
       `}</style>
     </>

@@ -163,12 +163,12 @@ export default function AIChatWidget() {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes fabPulse {
-          0%, 100% { box-shadow: 0 8px 32px rgba(245,166,35,0.4), inset 0 2px 0 rgba(255,255,255,0.2); }
-          50%       { box-shadow: 0 8px 48px rgba(245,166,35,0.65), inset 0 2px 0 rgba(255,255,255,0.2); }
+          0%, 100% { box-shadow: 0 8px 32px rgba(245,166,35,0.4), inset 0 2px 0 var(--text-muted); }
+          50%       { box-shadow: 0 8px 48px rgba(245,166,35,0.65), inset 0 2px 0 var(--text-muted); }
         }
         .ai-fab { animation: fabPulse 3s ease-in-out infinite; }
         .ai-fab:hover { transform: scale(1.1) !important; animation: none !important;
-          box-shadow: 0 12px 40px rgba(245,166,35,0.6), inset 0 2px 0 rgba(255,255,255,0.25) !important; }
+          box-shadow: 0 12px 40px rgba(245,166,35,0.6), inset 0 2px 0 var(--text-muted) !important; }
         .ai-input::placeholder { color: var(--text-muted); }
         .ai-send:hover { background: var(--accent-hover) !important; }
         .ai-quick:hover { color: var(--accent) !important; border-color: rgba(245,166,35,0.35) !important; background: rgba(245,166,35,0.06) !important; }
@@ -205,7 +205,7 @@ export default function AIChatWidget() {
           WebkitBackdropFilter: 'blur(24px)',
           border: '1px solid rgba(245,166,35,0.22)',
           borderRadius: 20,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04) inset',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px var(--border-soft) inset',
           display: 'flex', flexDirection: 'column',
           zIndex: 10000, overflow: 'hidden',
           animation: 'widgetSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -214,7 +214,7 @@ export default function AIChatWidget() {
           {/* Header */}
           <div style={{
             padding: '14px 18px',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: 'linear-gradient(180deg, rgba(245,166,35,0.08) 0%, transparent 100%)',
             flexShrink: 0,
@@ -244,7 +244,7 @@ export default function AIChatWidget() {
                 className="ai-clear"
                 title="Clear conversation"
                 style={{
-                  background: 'var(--bg-elevated)', border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'var(--bg-elevated)', border: '1px solid var(--border)',
                   width: 28, height: 28, borderRadius: 8,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--text-muted)', cursor: 'pointer', transition: 'all 0.2s',
@@ -255,13 +255,13 @@ export default function AIChatWidget() {
               <button
                 onClick={() => setIsOpen(false)}
                 style={{
-                  background: 'var(--bg-elevated)', border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'var(--bg-elevated)', border: '1px solid var(--border)',
                   width: 28, height: 28, borderRadius: 8,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--text-muted)', cursor: 'pointer', transition: 'all 0.2s',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
                 <X size={13} />
               </button>
@@ -292,7 +292,7 @@ export default function AIChatWidget() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 5,
                     padding: '5px 10px', borderRadius: 8,
-                    background: 'var(--bg-elevated)', border: '1px solid rgba(255,255,255,0.07)',
+                    background: 'var(--bg-elevated)', border: '1px solid var(--border)',
                     color: 'var(--text-muted)', fontSize: 11, fontWeight: 600,
                     cursor: 'pointer', transition: 'all 0.2s',
                   }}
@@ -307,13 +307,13 @@ export default function AIChatWidget() {
           {/* Input */}
           <div style={{
             padding: '12px 16px 16px',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderTop: '1px solid var(--border)',
             background: 'rgba(0,0,0,0.2)',
             flexShrink: 0,
           }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              background: 'rgba(255,255,255,0.04)',
+              background: 'var(--border-soft)',
               border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 12, padding: '6px 6px 6px 14px',
               transition: 'border-color 0.2s',
@@ -342,7 +342,7 @@ export default function AIChatWidget() {
                 className="ai-send"
                 style={{
                   width: 34, height: 34, borderRadius: 9, flexShrink: 0,
-                  background: inputValue.trim() && !isLoading ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                  background: inputValue.trim() && !isLoading ? 'var(--accent)' : 'var(--border)',
                   border: 'none',
                   cursor: inputValue.trim() && !isLoading ? 'pointer' : 'default',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -337,7 +337,7 @@ export default function Analysis() {
             {chartData.length > 0 && (
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-soft)" />
                   <XAxis
                     dataKey="time"
                     tickFormatter={t => formatTimeAxis(t, hours)}
@@ -351,7 +351,7 @@ export default function Analysis() {
                     tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
                     width={65}
                   />
-                  <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" strokeDasharray="4 4" />
+                  <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="4 4" />
                   <Tooltip
                     cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '3 3' }}
                     content={<CustomTooltip />}

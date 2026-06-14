@@ -802,15 +802,15 @@ export default function CoinDetail() {
           </div>
 
           {/* Chart type toggle — pushed right */}
-          <div style={{ marginLeft: "auto", display: "flex", gap: 4, background: "rgba(255,255,255,0.05)", borderRadius: 10, padding: 3 }}>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 4, background: "var(--border-soft)", borderRadius: 10, padding: 3 }}>
             <button
               onClick={() => setChartType("simple")}
               style={{
                 display: "flex", alignItems: "center", gap: 5,
                 padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                background: chartType === "simple" ? "rgba(255,255,255,0.08)" : "transparent",
-                border: chartType === "simple" ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
-                color: chartType === "simple" ? "#fff" : "rgba(255,255,255,0.35)",
+                background: chartType === "simple" ? "var(--bg-elevated)" : "transparent",
+                border: chartType === "simple" ? "1px solid var(--border)" : "1px solid transparent",
+                color: chartType === "simple" ? "var(--text-primary)" : "var(--text-muted)",
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
@@ -838,11 +838,11 @@ export default function CoinDetail() {
         {chartType === "pro" && (
           <div style={{ width: "100%", height: 340, marginTop: 16 }}>
             {historyLoading ? (
-              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
                 {t("coin_detail.loading_chart")}
               </div>
             ) : chartData.length === 0 ? (
-              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
                 {t("coin_detail.no_chart_data")}
               </div>
             ) : (
@@ -853,12 +853,12 @@ export default function CoinDetail() {
 
         {/* Simple chart */}
         {chartType === "simple" && historyLoading && (
-          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
             {t("coin_detail.loading_chart")}
           </div>
         )}
         {chartType === "simple" && !historyLoading && chartData.length === 0 && (
-          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
             {t("coin_detail.no_chart_data")}
           </div>
         )}

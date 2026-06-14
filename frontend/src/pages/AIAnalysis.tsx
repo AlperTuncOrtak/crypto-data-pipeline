@@ -706,7 +706,7 @@ function BullishnessGauge({ score }) {
               x={cx}
               y={cy + 16}
               textAnchor="middle"
-              fill="rgba(255,255,255,0.3)"
+              fill="var(--text-muted)"
               style={{ fontSize: 9 }}
             >
               / 100
@@ -1124,11 +1124,11 @@ export default function AIAnalysis() {
             <div
               style={{
                 background: "rgba(12,12,14,0.98)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                border: "1px solid var(--border)",
                 borderRadius: 20,
                 overflow: "hidden",
                 boxShadow:
-                  "0 32px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05)",
+                  "0 32px 80px rgba(0,0,0,0.9), inset 0 1px 0 var(--border)",
               }}
             >
               <div
@@ -1167,7 +1167,7 @@ export default function AIAnalysis() {
                         style={{
                           fontSize: 15,
                           fontWeight: 700,
-                          color: "rgba(255,255,255,0.9)",
+                          color: "var(--text-primary)",
                         }}
                       >
                         {selected?.name}
@@ -1175,7 +1175,7 @@ export default function AIAnalysis() {
                       <div
                         style={{
                           fontSize: 11,
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--text-muted)",
                           marginTop: 1,
                         }}
                       >
@@ -1189,10 +1189,10 @@ export default function AIAnalysis() {
                       width: 28,
                       height: 28,
                       borderRadius: 8,
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "var(--border)",
+                      border: "1px solid var(--border)",
                       cursor: "pointer",
-                      color: "rgba(255,255,255,0.4)",
+                      color: "var(--text-muted)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1229,7 +1229,7 @@ export default function AIAnalysis() {
                         style={{
                           fontSize: 10,
                           fontWeight: 600,
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--text-muted)",
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
                           marginBottom: 6,
@@ -1250,10 +1250,10 @@ export default function AIAnalysis() {
                         style={{
                           width: "100%",
                           padding: "9px 12px",
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "var(--border-soft)",
+                          border: "1px solid var(--border)",
                           borderRadius: 10,
-                          color: "rgba(255,255,255,0.85)",
+                          color: "var(--text-secondary)",
                           fontSize: 13,
                           outline: "none",
                           caretColor: "var(--accent)",
@@ -1265,7 +1265,7 @@ export default function AIAnalysis() {
                         }
                         onBlur={(e) =>
                           (e.target.style.borderColor =
-                            "rgba(255,255,255,0.08)")
+                            "var(--border)")
                         }
                       />
                     </div>
@@ -1278,7 +1278,7 @@ export default function AIAnalysis() {
                     style={{
                       fontSize: 10,
                       fontWeight: 600,
-                      color: "rgba(255,255,255,0.3)",
+                      color: "var(--text-muted)",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
                       marginBottom: 8,
@@ -1328,13 +1328,13 @@ export default function AIAnalysis() {
                             border: "none",
                             background: active
                               ? `${opt.color}15`
-                              : "rgba(255,255,255,0.04)",
+                              : "var(--border-soft)",
                             color: active
                               ? opt.color
-                              : "rgba(255,255,255,0.35)",
+                              : "var(--text-muted)",
                             outline: active
                               ? `1px solid ${opt.color}35`
-                              : "1px solid rgba(255,255,255,0.07)",
+                              : "1px solid var(--border)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -1364,7 +1364,7 @@ export default function AIAnalysis() {
                       style={{
                         fontSize: 10,
                         fontWeight: 600,
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--text-muted)",
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
                         marginBottom: 8,
@@ -1403,13 +1403,13 @@ export default function AIAnalysis() {
                               border: "none",
                               background: active
                                 ? "rgba(245,166,35,0.12)"
-                                : "rgba(255,255,255,0.03)",
+                                : "var(--border-soft)",
                               color: active
                                 ? "var(--accent)"
-                                : "rgba(255,255,255,0.4)",
+                                : "var(--text-muted)",
                               outline: active
                                 ? "1px solid rgba(245,166,35,0.3)"
-                                : "1px solid rgba(255,255,255,0.06)",
+                                : "1px solid var(--border)",
                               textAlign: "left",
                               transition: "all 0.15s",
                             }}
@@ -1425,7 +1425,7 @@ export default function AIAnalysis() {
                       style={{
                         fontSize: 10,
                         fontWeight: 600,
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--text-muted)",
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
                         marginBottom: 8,
@@ -1464,13 +1464,13 @@ export default function AIAnalysis() {
                               border: "none",
                               background: active
                                 ? "rgba(245,166,35,0.12)"
-                                : "rgba(255,255,255,0.03)",
+                                : "var(--border-soft)",
                               color: active
                                 ? "var(--accent)"
-                                : "rgba(255,255,255,0.4)",
+                                : "var(--text-muted)",
                               outline: active
                                 ? "1px solid rgba(245,166,35,0.3)"
-                                : "1px solid rgba(255,255,255,0.06)",
+                                : "1px solid var(--border)",
                               textAlign: "left",
                               transition: "all 0.15s",
                             }}
@@ -1522,9 +1522,9 @@ export default function AIAnalysis() {
                     }}
                     style={{
                       padding: "11px 16px",
-                      background: "rgba(255,255,255,0.04)",
-                      color: "rgba(255,255,255,0.4)",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "var(--border-soft)",
+                      color: "var(--text-muted)",
+                      border: "1px solid var(--border)",
                       borderRadius: 12,
                       fontSize: 12,
                       fontWeight: 600,
@@ -1539,7 +1539,7 @@ export default function AIAnalysis() {
                     textAlign: "center",
                     marginTop: 10,
                     fontSize: 10,
-                    color: "rgba(255,255,255,0.2)",
+                    color: "var(--text-muted)",
                   }}
                 >
                   All fields optional · Data stays local
@@ -1632,8 +1632,8 @@ export default function AIAnalysis() {
             alignItems: "center",
             gap: 10,
             padding: "6px 6px 6px 16px",
-            background: "rgba(255,255,255,0.03)",
-            border: `1px solid ${showDropdown ? "rgba(245,166,35,0.3)" : "rgba(255,255,255,0.07)"}`,
+            background: "var(--border-soft)",
+            border: `1px solid ${showDropdown ? "rgba(245,166,35,0.3)" : "var(--border)"}`,
             borderRadius: 16,
             transition: "border-color 0.2s, box-shadow 0.2s",
             boxShadow: "none",
@@ -1682,7 +1682,7 @@ export default function AIAnalysis() {
                   style={{
                     fontSize: 14,
                     fontWeight: 700,
-                    color: "rgba(255,255,255,0.9)",
+                    color: "var(--text-primary)",
                     lineHeight: 1.2,
                   }}
                 >
@@ -1691,7 +1691,7 @@ export default function AIAnalysis() {
                 <div
                   style={{
                     fontSize: 11,
-                    color: "rgba(255,255,255,0.3)",
+                    color: "var(--text-muted)",
                     fontFamily: "monospace",
                   }}
                 >
@@ -1720,7 +1720,7 @@ export default function AIAnalysis() {
           ) : (
             <Search
               size={16}
-              style={{ color: "rgba(255,255,255,0.2)", flexShrink: 0 }}
+              style={{ color: "var(--text-muted)", flexShrink: 0 }}
             />
           )}
 
@@ -1746,7 +1746,7 @@ export default function AIAnalysis() {
               border: "none",
               outline: "none",
               fontSize: 14,
-              color: "rgba(255,255,255,0.8)",
+              color: "var(--text-secondary)",
               caretColor: "var(--accent)",
               padding: "10px 0",
             }}
@@ -1763,10 +1763,10 @@ export default function AIAnalysis() {
                 width: 28,
                 height: 28,
                 borderRadius: 8,
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                background: "var(--border)",
+                border: "1px solid var(--border)",
                 cursor: "pointer",
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--text-muted)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1794,8 +1794,8 @@ export default function AIAnalysis() {
               background:
                 selected && !loading
                   ? "linear-gradient(135deg, var(--accent), #8B5CF6)"
-                  : "rgba(255,255,255,0.04)",
-              color: selected && !loading ? "#111" : "rgba(255,255,255,0.2)",
+                  : "var(--border-soft)",
+              color: selected && !loading ? "#111" : "var(--text-muted)",
               border: "none",
               cursor: selected && !loading ? "pointer" : "not-allowed",
               fontSize: 13,
@@ -1843,7 +1843,7 @@ export default function AIAnalysis() {
               right: 0,
               background: "rgba(10,10,14,0.97)",
               backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              border: "1px solid var(--border)",
               borderRadius: 14,
               boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
               overflow: "hidden",
@@ -1870,7 +1870,7 @@ export default function AIAnalysis() {
                   }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.background =
-                      "rgba(255,255,255,0.05)")
+                      "var(--border)")
                   }
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.background = "transparent")
@@ -1904,7 +1904,7 @@ export default function AIAnalysis() {
                       style={{
                         fontSize: 13,
                         fontWeight: 600,
-                        color: "rgba(255,255,255,0.9)",
+                        color: "var(--text-primary)",
                       }}
                     >
                       {coin.name}
@@ -1912,7 +1912,7 @@ export default function AIAnalysis() {
                     <div
                       style={{
                         fontSize: 11,
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--text-muted)",
                         fontFamily: "monospace",
                       }}
                     >
@@ -1925,7 +1925,7 @@ export default function AIAnalysis() {
                         fontSize: 13,
                         fontFamily: "monospace",
                         fontWeight: 600,
-                        color: "rgba(255,255,255,0.7)",
+                        color: "var(--text-secondary)",
                       }}
                     >
                       {formatPrice(coin.current_price)}
