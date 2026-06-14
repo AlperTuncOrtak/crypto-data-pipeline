@@ -27,6 +27,7 @@ import { useAuth } from "../hooks/useAuth";
 import MotoGame from "../components/MotoGame/MotoGame";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
+import { useTranslation } from "react-i18next";
 
 const RANGES = [
   { label: "1H", value: "1h" },
@@ -248,7 +249,7 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 // ─── Supply bar ──────────────────────────────────────────────
-function SupplyBar({ circulating, total, max }) {
+function SupplyBar({ circulating, total, max, t }) {
   const cap = max || total;
   if (!circulating || !cap) return null;
   const pct = Math.min(100, (circulating / cap) * 100).toFixed(1);
@@ -263,9 +264,9 @@ function SupplyBar({ circulating, total, max }) {
           marginBottom: 5,
         }}
       >
-        <span>Circulating</span>
+        <span>{t("coin_detail.circulating")}</span>
         <span>
-          {pct}% of {max ? "max" : "total"}
+          {pct} {max ? t("coin_detail.pct_of_max") : t("coin_detail.pct_of_total")}
         </span>
       </div>
       <div
@@ -291,7 +292,7 @@ function SupplyBar({ circulating, total, max }) {
 }
 
 // ─── ATH/ATL bar ─────────────────────────────────────────────
-function PriceRangeBar({ current, ath, atl }) {
+function PriceRangeBar({ current, ath, atl, t }) {
   const lo = Number(atl),
     hi = Number(ath),
     cur = Number(current);
@@ -321,7 +322,7 @@ function PriceRangeBar({ current, ath, atl }) {
       >
         <span>ATL {fmtPrice(atl)}</span>
         <span style={{ color: "var(--text-secondary)", fontWeight: 600 }}>
-          Current position
+          {t("coin_detail.current_position")}
         </span>
         <span>ATH {fmtPrice(ath)}</span>
       </div>
@@ -366,7 +367,7 @@ function PriceRangeBar({ current, ath, atl }) {
           color: "var(--text-muted)",
         }}
       >
-        {pct}% above ATL
+        {pct}{t("coin_detail.above_atl")}
       </div>
     </div>
   );
@@ -374,6 +375,7 @@ function PriceRangeBar({ current, ath, atl }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function CoinDetail() {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
   const [range, setRange] = useState("24h");
@@ -435,7 +437,7 @@ export default function CoinDetail() {
           color: "var(--text-muted)",
         }}
       >
-        Loading...
+        {t("coin_detail.loading")}
       </div>
     );
 
@@ -452,9 +454,9 @@ export default function CoinDetail() {
         }}
       >
         <div style={{ fontSize: 48 }}>🔍</div>
-        <div style={{ fontSize: 20, fontWeight: 600 }}>Coin not found</div>
+        <div style={{ fontSize: 20, fontWeight: 600 }}>{t("coin_detail.not_found")}</div>
         <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-          "{slug}" could not be found.
+          {t("coin_detail.not_found_desc", { slug })}
         </div>
         <button
           onClick={() => navigate("/market")}
@@ -468,7 +470,7 @@ export default function CoinDetail() {
             fontSize: 13,
           }}
         >
-          ← Back to Market
+          {t("coin_detail.back_to_market")}
         </button>
       </div>
     );
@@ -494,7 +496,7 @@ export default function CoinDetail() {
           (e.currentTarget.style.color = "var(--text-muted)")
         }
       >
-        <ArrowLeft size={14} /> Back
+        <ArrowLeft size={14} /> {t("coin_detail.back")}
       </button>
 
       {/* HERO */}
@@ -556,7 +558,7 @@ export default function CoinDetail() {
             <div
               style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 3 }}
             >
-              {coin.symbol?.toUpperCase()} · CoinGecko ID: {coin.slug}
+              {coin.symbol?.toUpperCase()} · {t("coin_detail.coingecko_id")} {coin.slug}
             </div>
           </div>
         </div>
@@ -612,9 +614,9 @@ export default function CoinDetail() {
               style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}
             >
               {Number(athPct) < 0 ? (
-                <span style={{ color: "#e74c3c" }}>{athPct}% from ATH</span>
+                <span style={{ color: "#e74c3c" }}>{athPct}% {t("coin_detail.from_ath")}</span>
               ) : (
-                <span style={{ color: "#2ecc71" }}>+{athPct}% above ATH</span>
+                <span style={{ color: "#2ecc71" }}>+{athPct}% {t("coin_detail.above_ath")}</span>
               )}
             </div>
           )}
@@ -629,12 +631,13 @@ export default function CoinDetail() {
           current={coin.current_price}
           ath={coin.ath}
           atl={coin.atl}
+          t={t}
         />
       )}
 
       {/* MARKET STATS */}
       <div style={{ marginTop: 20, marginBottom: 8 }}>
-        <SectionTitle>Market Stats</SectionTitle>
+        <SectionTitle>{t("coin_detail.market_stats")}</SectionTitle>
       </div>
       <div
         style={{
@@ -645,22 +648,22 @@ export default function CoinDetail() {
         }}
       >
         <StatCard
-          label="Market Cap"
+          label={t("coin_detail.market_cap")}
           value={fmtLarge(coin.market_cap)}
           icon={BarChart2}
         />
         <StatCard
-          label="Volume (24h)"
+          label={t("coin_detail.volume")}
           value={fmtLarge(coin.total_volume)}
           icon={BarChart2}
         />
         <StatCard
-          label="24h High"
+          label={t("coin_detail.high_24h")}
           value={fmtPrice(stats?.high_24h)}
           icon={TrendingUp}
         />
         <StatCard
-          label="24h Low"
+          label={t("coin_detail.low_24h")}
           value={fmtPrice(stats?.low_24h)}
           icon={TrendingDown}
         />
@@ -668,7 +671,7 @@ export default function CoinDetail() {
 
       {/* ATH / ATL */}
       <div style={{ marginBottom: 8 }}>
-        <SectionTitle>All-Time Records</SectionTitle>
+        <SectionTitle>{t("coin_detail.all_time_records")}</SectionTitle>
       </div>
       <div
         style={{
@@ -679,27 +682,27 @@ export default function CoinDetail() {
         }}
       >
         <StatCard
-          label="All-Time High"
+          label={t("coin_detail.ath")}
           value={fmtPrice(coin.ath)}
           sub={coin.ath_date ? fmtDate(coin.ath_date) : undefined}
           icon={Award}
         />
         <StatCard
-          label="All-Time Low"
+          label={t("coin_detail.atl")}
           value={fmtPrice(coin.atl)}
           sub={coin.atl_date ? fmtDate(coin.atl_date) : undefined}
           icon={AlertCircle}
         />
         <StatCard
-          label="ATH Change"
+          label={t("coin_detail.ath_change")}
           value={athPct !== null ? `${athPct}%` : "—"}
           sub={
-            Number(athPct) < 0 ? "below all-time high" : "above all-time high"
+            Number(athPct) < 0 ? t("coin_detail.below_ath") : t("coin_detail.above_ath_long")
           }
           icon={TrendingDown}
         />
         <StatCard
-          label="Rank"
+          label={t("coin_detail.rank")}
           value={coin.market_cap_rank ? `#${coin.market_cap_rank}` : "—"}
           icon={Award}
           highlight
@@ -708,7 +711,7 @@ export default function CoinDetail() {
 
       {/* SUPPLY */}
       <div style={{ marginBottom: 8 }}>
-        <SectionTitle>Supply</SectionTitle>
+        <SectionTitle>{t("coin_detail.supply_title")}</SectionTitle>
       </div>
       <div
         style={{
@@ -719,22 +722,22 @@ export default function CoinDetail() {
         }}
       >
         <StatCard
-          label="Circulating"
+          label={t("coin_detail.circulating")}
           value={fmtSupply(coin.circulating_supply)}
           sub={coin.symbol?.toUpperCase()}
           icon={Coins}
         />
         <StatCard
-          label="Total Supply"
+          label={t("coin_detail.total_supply")}
           value={fmtSupply(coin.total_supply)}
           sub={coin.symbol?.toUpperCase()}
           icon={Coins}
         />
         <StatCard
-          label="Max Supply"
+          label={t("coin_detail.max_supply")}
           value={
             fmtSupply(coin.max_supply) === "—"
-              ? "∞ Unlimited"
+              ? t("coin_detail.unlimited")
               : fmtSupply(coin.max_supply)
           }
           sub={coin.symbol?.toUpperCase()}
@@ -746,6 +749,7 @@ export default function CoinDetail() {
           circulating={coin.circulating_supply}
           total={coin.total_supply}
           max={coin.max_supply}
+          t={t}
         />
       )}
 
@@ -772,7 +776,7 @@ export default function CoinDetail() {
         <div style={{ position: "relative", zIndex: 1 }}>
         {/* Header row */}
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
-          <SectionTitle>Price Chart</SectionTitle>
+          <SectionTitle>{t("coin_detail.price_chart")}</SectionTitle>
 
           {/* Time range pills */}
           <div style={{ display: "flex", gap: 4, background: "var(--bg-elevated)", borderRadius: 10, padding: 3 }}>
@@ -810,7 +814,7 @@ export default function CoinDetail() {
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
-              <LineChart size={13} /> Simple
+              <LineChart size={13} /> {t("coin_detail.simple")}
             </button>
             <button
               onClick={() => setChartType("pro")}
@@ -823,7 +827,7 @@ export default function CoinDetail() {
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
-              <CandlestickChart size={13} /> Pro 🕯️
+              <CandlestickChart size={13} /> {t("coin_detail.pro")} 🕯️
             </button>
             <button
               onClick={() => setChartType("moto")}
@@ -836,7 +840,7 @@ export default function CoinDetail() {
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
-              🏍️ Ride the Chart
+              🏍️ {t("coin_detail.ride_chart")}
             </button>
 
           </div>
@@ -847,11 +851,11 @@ export default function CoinDetail() {
           <div style={{ width: "100%", height: 340, marginTop: 16 }}>
             {historyLoading ? (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
-                Loading chart...
+                {t("coin_detail.loading_chart")}
               </div>
             ) : chartData.length === 0 ? (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
-                No data for this time range.
+                {t("coin_detail.no_chart_data")}
               </div>
             ) : (
               <LightweightCandleChart data={chartData} />
@@ -862,12 +866,12 @@ export default function CoinDetail() {
         {/* Simple chart */}
         {chartType === "simple" && historyLoading && (
           <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
-            Loading chart...
+            {t("coin_detail.loading_chart")}
           </div>
         )}
         {chartType === "simple" && !historyLoading && chartData.length === 0 && (
           <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)" }}>
-            No data for this time range.
+            {t("coin_detail.no_chart_data")}
           </div>
         )}
         {chartType === "simple" && !historyLoading && chartData.length > 0 && (
@@ -923,7 +927,7 @@ export default function CoinDetail() {
         )}
         {stats && (
           <div style={{ textAlign: "right", marginTop: 10, fontSize: 11, color: "var(--text-muted)" }}>
-            {stats.data_points} data points in last 24h
+            {stats.data_points} {t("coin_detail.data_points")}
           </div>
         )}
         </div>{/* end position:relative inner */}
@@ -955,7 +959,7 @@ export default function CoinDetail() {
 
       {/* LATEST NEWS */}
       <div style={{ marginTop: 32 }}>
-        <SectionTitle>Latest News</SectionTitle>
+        <SectionTitle>{t("coin_detail.latest_news")}</SectionTitle>
         <CryptoNews symbol={coin.symbol} />
       </div>
     </div>
