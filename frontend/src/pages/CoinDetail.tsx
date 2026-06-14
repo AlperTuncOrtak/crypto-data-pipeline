@@ -819,11 +819,24 @@ export default function CoinDetail() {
                 padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
                 background: chartType === "pro" ? "rgba(46,204,113,0.12)" : "transparent",
                 border: chartType === "pro" ? "1px solid rgba(46,204,113,0.25)" : "1px solid transparent",
-                color: chartType === "pro" ? "#2ecc71" : "rgba(255,255,255,0.35)",
+                color: chartType === "pro" ? "#2ecc71" : "var(--text-muted)",
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
               <CandlestickChart size={13} /> Pro 🕯️
+            </button>
+            <button
+              onClick={() => setChartType("moto")}
+              style={{
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
+                background: chartType === "moto" ? "rgba(245,158,11,0.15)" : "transparent",
+                border: chartType === "moto" ? "1px solid rgba(245,166,35,0.25)" : "1px solid transparent",
+                color: chartType === "moto" ? "var(--accent)" : "var(--text-muted)",
+                cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              🏍️ Ride the Chart
             </button>
 
           </div>
@@ -917,7 +930,7 @@ export default function CoinDetail() {
       </div>
 
       {/* RIDE THE CHART — MotoGame */}
-      {chartData.length > 1 && (() => {
+      {chartType === "moto" && chartData.length > 1 && (() => {
         // Build OHLC from history data (each point has time + price)
         // We synthesize OHLC by treating each point as a candle
         const ohlcForGame = chartData.map((d, i, arr) => {
