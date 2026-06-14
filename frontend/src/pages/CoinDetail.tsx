@@ -24,7 +24,7 @@ import {
 import { AnimatedPrice } from "../components/ui/AnimatedPrice";
 import LightweightCandleChart from "../components/market/LightweightCandleChart";
 import { useAuth } from "../hooks/useAuth";
-import MotoGame from "../components/MotoGame/MotoGame";
+
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import { useTranslation } from "react-i18next";
@@ -829,19 +829,7 @@ export default function CoinDetail() {
             >
               <CandlestickChart size={13} /> {t("coin_detail.pro")} 🕯️
             </button>
-            <button
-              onClick={() => setChartType("moto")}
-              style={{
-                display: "flex", alignItems: "center", gap: 5,
-                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                background: chartType === "moto" ? "rgba(245,158,11,0.15)" : "transparent",
-                border: chartType === "moto" ? "1px solid rgba(245,166,35,0.25)" : "1px solid transparent",
-                color: chartType === "moto" ? "var(--accent)" : "var(--text-muted)",
-                cursor: "pointer", transition: "all 0.15s",
-              }}
-            >
-              🏍️ {t("coin_detail.ride_chart")}
-            </button>
+
 
           </div>
         </div>
@@ -933,29 +921,7 @@ export default function CoinDetail() {
         </div>{/* end position:relative inner */}
       </div>
 
-      {/* RIDE THE CHART — MotoGame */}
-      {chartType === "moto" && chartData.length > 1 && (() => {
-        // Build OHLC from history data (each point has time + price)
-        // We synthesize OHLC by treating each point as a candle
-        const ohlcForGame = chartData.map((d, i, arr) => {
-          const p = Number(d.price);
-          const prev = i > 0 ? Number(arr[i - 1].price) : p;
-          return {
-            time: new Date(d.time).getTime() / 1000,
-            open:  prev,
-            high:  Math.max(p, prev),
-            low:   Math.min(p, prev),
-            close: p,
-          };
-        });
-        return (
-          <MotoGame
-            ohlcData={ohlcForGame}
-            symbol={coin.symbol?.toUpperCase() ?? ""}
-            coinId={slug ?? ""}
-          />
-        );
-      })()}
+
 
       {/* LATEST NEWS */}
       <div style={{ marginTop: 32 }}>
