@@ -5,28 +5,123 @@
     "alerts": "Alerts",
     "portfolio": "Portfolio",
     "ai_analysis": "AI Analysis",
-    "logout": "Log Out",
-    "login": "Login",
+    "logout": "Sign Out",
+    "login": "Sign In",
     "signup": "Sign Up",
     "admin": "Admin"
   },
   "landing": {
     "live_tracking": "Live · {{count}} coins tracked",
-    "hero_title_1": "Next-Gen",
-    "hero_title_2": "Crypto Intelligence",
+    "hero_title_1": "The smartest way to",
+    "hero_title_2": "analyze crypto markets.",
     "hero_subtitle": "Real-time data, AI-driven technical analysis, and portfolio tracking — all in one blazing fast platform.",
-    "cta_primary": "Get Started",
+    "cta_primary": "Get Started Free",
     "cta_secondary": "View Dashboard",
     "no_credit_card": "No credit card required · Free plan available forever",
-    "features": {
-      "title_1": "Everything you need.",
-      "title_2": "Nothing you don't.",
-      "live_markets": "Live Markets",
-      "live_markets_desc": "Streaming prices, heatmaps, and trend tracking across thousands of assets.",
-      "ai_copilot": "AI Copilot",
-      "ai_copilot_desc": "Real-time technical analysis and market sentiment powered by Llama 3.3.",
-      "portfolio": "Portfolio",
-      "portfolio_desc": "Import trades, track P&L instantly, and generate seamless tax reports."
+    
+    "stats": {
+      "coins": "Coins Tracked",
+      "ai": "AI Indicators",
+      "uptime": "Uptime",
+      "start": "To Get Started"
+    },
+
+    "features_header": {
+      "badge": "◆ Features",
+      "title": "Professional tools.",
+      "subtitle": "Zero complexity."
+    },
+
+    "feat1": {
+      "badge": "LIVE DATA",
+      "title": "Real-Time Market Tracking",
+      "desc": "Track {{count}} cryptocurrencies with instant updates. Interactive heatmap, whale alerts, and volume spike detection — all in one place.",
+      "p1": "Live WebSocket price feeds",
+      "p2": "Interactive market heatmap",
+      "p3": "Volume anomaly detection"
+    },
+
+    "feat2": {
+      "badge": "NEKO AI",
+      "title": "AI Portfolio Manager",
+      "desc": "Powered by Groq Llama 3.3. Neko AI analyzes your full portfolio, detects correlation risks, and gives actionable rebalancing suggestions.",
+      "p1": "150+ technical indicators analyzed",
+      "p2": "MACD, RSI, Bollinger, EMA signals",
+      "p3": "Natural language insights",
+      "mockup": "Your BTC is up +18.4%. Consider taking 15% profits to rebalance ETH allocation.",
+      "m_score": "Portfolio Score",
+      "m_risk": "Risk Level",
+      "m_corr": "Correlation",
+      "m_sharpe": "Sharpe Ratio",
+      "m_risk_val": "Medium"
+    },
+
+    "feat3": {
+      "badge": "TAX & REPORTS",
+      "title": "Automated Tax Calculation",
+      "desc": "Import from Binance, Bybit, OKX, Coinbase or Kraken. FIFO P&L calculated instantly in your browser. Export ready tax reports in seconds.",
+      "p1": "Browser-only — data never leaves device",
+      "p2": "FIFO P&L calculation",
+      "p3": "CSV export for tax filing",
+      "m_title": "Transaction History",
+      "m_total": "Total Realized P&L"
+    },
+
+    "pricing": {
+      "badge": "◆ Pricing",
+      "title": "Start free.",
+      "subtitle": "Upgrade when ready.",
+      "most_popular": "MOST POPULAR",
+      "free": "Free",
+      "free_sub": "forever",
+      "free_cta": "Get Started",
+      "f1": "Live prices for {{count}} coins",
+      "f2": "Market heatmap",
+      "f3": "Watchlist (up to 10 coins)",
+      "f4": "Basic price alerts",
+      "f5": "Coin comparison tool",
+      "f6": "Correlation matrix",
+
+      "pro_sub": "/ month",
+      "pro_cta": "Start Pro",
+      "p1": "Everything in Free",
+      "p2": "AI Technical Analysis",
+      "p3": "Portfolio tracker & P&L",
+      "p4": "Automated tax reports (CSV)",
+      "p5": "Unlimited price alerts",
+      "p6": "Volume spike radar",
+      "p7": "Priority data access"
+    },
+
+    "faq": {
+      "badge": "◆ FAQ",
+      "title": "Common questions",
+      "q1": "How does AI analysis work?",
+      "a1": "We combine Altfins pre-computed signals (150+ technical indicators across {{count}} coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA — and produces bullish/bearish/neutral signals with confidence scores.",
+      "q2": "Is CryptoNeko really free?",
+      "a2": "Yes. The free plan includes live data for {{count}} coins, heatmap, coin comparison, watchlist (up to 10), and basic alerts — forever. No credit card needed. Pro ($10/mo) unlocks AI analysis, portfolio tracker, tax reports, and unlimited alerts.",
+      "q3": "Is my data safe?",
+      "a3": "Completely. Your portfolio and trade data never leaves your browser — CSV files are parsed locally in JavaScript. We never store, sell or transmit your financial data. Only your email is stored via Supabase for authentication.",
+      "q4": "Which exchanges are supported?",
+      "a4": "CSV imports from Binance, Bybit, OKX, Coinbase and Kraken. Export your trade history and drag & drop into Portfolio Tracker. P&L and tax calculations happen instantly in your browser.",
+      "q5": "Can I cancel anytime?",
+      "a5": "Yes. Your Pro access continues until end of billing period, then reverts to free — no questions asked."
+    },
+
+    "cta": {
+      "badge": "◆ Get Started",
+      "title": "Ready to analyze smarter?",
+      "desc": "Join thousands of traders using CryptoNeko to stay ahead of the market.",
+      "btn1": "Create Free Account",
+      "btn2": "Explore Markets"
+    },
+
+    "footer": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "docs": "Docs",
+      "pricing": "Pricing",
+      "disclaimer": "© 2026 CryptoNeko. Not financial advice."
     }
   }
 }

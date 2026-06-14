@@ -12,21 +12,116 @@
   },
   "landing": {
     "live_tracking": "Canlı · {{count}} coin takip ediliyor",
-    "hero_title_1": "Yeni Nesil",
-    "hero_title_2": "Kripto Zekası",
-    "hero_subtitle": "Eşzamanlı piyasa verileri, yapay zeka destekli teknik analiz ve portföy takibi — hepsi tek bir ışık hızında platformda.",
-    "cta_primary": "Hemen Başla",
+    "hero_title_1": "Kripto piyasalarını",
+    "hero_title_2": "analiz etmenin en akıllı yolu.",
+    "hero_subtitle": "Anlık piyasa verileri, yapay zeka destekli teknik analizler ve profesyonel portföy takibi — hepsi ışık hızında, tek bir platformda.",
+    "cta_primary": "Ücretsiz Başlayın",
     "cta_secondary": "Panele Git",
-    "no_credit_card": "Kredi kartı gerekmez · Ücretsiz paket ömür boyu geçerlidir",
-    "features": {
-      "title_1": "İhtiyacınız olan her şey.",
-      "title_2": "Gereksiz hiçbir şey yok.",
-      "live_markets": "Canlı Piyasalar",
-      "live_markets_desc": "Binlerce varlık üzerinde eşzamanlı fiyatlar, ısı haritaları ve trend takibi.",
-      "ai_copilot": "Yapay Zeka Asistanı",
-      "ai_copilot_desc": "Llama 3.3 destekli gerçek zamanlı teknik analiz ve piyasa duyarlılığı.",
-      "portfolio": "Portföy",
-      "portfolio_desc": "İşlemlerinizi içe aktarın, kar/zarar durumunuzu anında takip edin ve vergi raporları oluşturun."
+    "no_credit_card": "Kredi kartı gerekmez · Ücretsiz paket ömür boyu sizindir",
+    
+    "stats": {
+      "coins": "Takip Edilen Coin",
+      "ai": "Yapay Zeka İndikatörü",
+      "uptime": "Kesintisizlik",
+      "start": "Başlangıç Ücreti"
+    },
+
+    "features_header": {
+      "badge": "◆ Özellikler",
+      "title": "Profesyonel araçlar.",
+      "subtitle": "Sıfır karmaşa."
+    },
+
+    "feat1": {
+      "badge": "CANLI VERİ",
+      "title": "Eşzamanlı Piyasa Takibi",
+      "desc": "{{count}} kripto parayı anlık olarak takip edin. İnteraktif ısı haritası, balina alarmları ve hacim patlaması tespiti — hepsi tek bir yerde.",
+      "p1": "Canlı WebSocket fiyat akışları",
+      "p2": "İnteraktif piyasa ısı haritası",
+      "p3": "Hacim anormalliği tespiti"
+    },
+
+    "feat2": {
+      "badge": "NEKO AI",
+      "title": "Yapay Zeka Portföy Yöneticisi",
+      "desc": "Groq Llama 3.3 altyapısı ile çalışır. Neko AI tüm portföyünüzü analiz eder, korelasyon risklerini tespit eder ve uygulanabilir portföy dengeleme önerileri sunar.",
+      "p1": "150'den fazla teknik indikatör analizi",
+      "p2": "MACD, RSI, Bollinger, EMA sinyalleri",
+      "p3": "Doğal dilde analiz raporları",
+      "mockup": "BTC yatırımınız %18.4 kârda. ETH dağılımınızı dengelemek için %15 oranında kâr almayı düşünebilirsiniz.",
+      "m_score": "Portföy Skoru",
+      "m_risk": "Risk Seviyesi",
+      "m_corr": "Korelasyon",
+      "m_sharpe": "Sharpe Oranı",
+      "m_risk_val": "Orta"
+    },
+
+    "feat3": {
+      "badge": "VERGİ VE RAPORLAR",
+      "title": "Otomatik Vergi Hesaplama",
+      "desc": "Binance, Bybit, OKX, Coinbase veya Kraken'den işlemlerinizi içe aktarın. FIFO tabanlı kâr/zarar durumunuz tarayıcınızda anında hesaplanır. Saniyeler içinde vergi raporları oluşturun.",
+      "p1": "Sadece tarayıcıda çalışır — veriler cihazınızda kalır",
+      "p2": "FIFO tabanlı kâr/zarar hesabı",
+      "p3": "Vergi beyanı için CSV dışa aktarımı",
+      "m_title": "İşlem Geçmişi",
+      "m_total": "Toplam Realize Kâr/Zarar"
+    },
+
+    "pricing": {
+      "badge": "◆ Fiyatlandırma",
+      "title": "Ücretsiz başlayın.",
+      "subtitle": "Hazır olduğunuzda yükseltin.",
+      "most_popular": "EN POPÜLER",
+      "free": "Ücretsiz",
+      "free_sub": "ömür boyu",
+      "free_cta": "Hemen Başla",
+      "f1": "{{count}} coin için canlı fiyatlar",
+      "f2": "Piyasa ısı haritası",
+      "f3": "İzleme listesi (10 coine kadar)",
+      "f4": "Temel fiyat alarmları",
+      "f5": "Coin karşılaştırma aracı",
+      "f6": "Korelasyon matrisi",
+
+      "pro_sub": "/ ay",
+      "pro_cta": "Pro'ya Geç",
+      "p1": "Ücretsiz plandaki her şey",
+      "p2": "Yapay Zeka Teknik Analiz",
+      "p3": "Portföy takibi ve Kâr/Zarar",
+      "p4": "Otomatik vergi raporları (CSV)",
+      "p5": "Sınırsız fiyat alarmı",
+      "p6": "Hacim patlaması radarı",
+      "p7": "Öncelikli veri erişimi"
+    },
+
+    "faq": {
+      "badge": "◆ SSS",
+      "title": "Sıkça sorulan sorular",
+      "q1": "Yapay zeka analizi nasıl çalışır?",
+      "a1": "Altfins'in önceden hesaplanmış sinyallerini ({{count}} coin üzerinde 150+ teknik indikatör) Groq Llama 3.3 ile birleştirerek piyasa değerlendirmeleri oluşturuyoruz. Yapay zeka RSI, MACD, Bollinger Bantları, Stokastik ve EMA verilerini işleyerek güven skorlarıyla birlikte boğa/ayı/nötr sinyaller üretir.",
+      "q2": "CryptoNeko gerçekten ücretsiz mi?",
+      "a2": "Evet. Ücretsiz plan {{count}} coin için canlı veriler, ısı haritası, karşılaştırma, izleme listesi ve temel alarmları sonsuza kadar içerir. Kredi kartı gerekmez. Pro ($10/ay) yapay zeka analizini, portföy takibini, vergi raporlarını ve sınırsız alarmı açar.",
+      "q3": "Verilerim güvende mi?",
+      "a3": "Tamamen. Portföyünüz ve işlem verileriniz tarayıcınızdan asla çıkmaz — CSV dosyaları cihazınızda JavaScript ile işlenir. Finansal verilerinizi asla saklamayız, satmayız veya iletmeyiz. Sadece kimlik doğrulama için e-postanız Supabase üzerinde tutulur.",
+      "q4": "Hangi borsalar destekleniyor?",
+      "a4": "Binance, Bybit, OKX, Coinbase ve Kraken'den CSV aktarımı yapabilirsiniz. İşlem geçmişinizi dışa aktarın ve Portföy Takipçisine sürükleyip bırakın. Kâr/Zarar ve vergi hesaplamaları anında tarayıcınızda gerçekleşir.",
+      "q5": "İstediğim zaman iptal edebilir miyim?",
+      "a5": "Evet. Pro erişiminiz fatura döneminin sonuna kadar devam eder, ardından hiçbir soru sorulmadan ücretsiz plana geri dönersiniz."
+    },
+
+    "cta": {
+      "badge": "◆ Hemen Başlayın",
+      "title": "Daha akıllı analiz yapmaya hazır mısınız?",
+      "desc": "Piyasanın bir adım önünde olmak için CryptoNeko kullanan binlerce yatırımcıya katılın.",
+      "btn1": "Ücretsiz Hesap Oluştur",
+      "btn2": "Piyasaları Keşfet"
+    },
+
+    "footer": {
+      "terms": "Şartlar",
+      "privacy": "Gizlilik",
+      "docs": "Dökümanlar",
+      "pricing": "Fiyatlandırma",
+      "disclaimer": "© 2026 CryptoNeko. Yatırım tavsiyesi değildir."
     }
   }
 }

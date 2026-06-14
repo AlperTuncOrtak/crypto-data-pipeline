@@ -138,7 +138,7 @@ function Faq({ q, a }) {
 }
 
 // ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
-function DashboardMockup({ coinsStr }: { coinsStr: string }) {
+function DashboardMockup({ coinsStr, t }: { coinsStr: string, t: any }) {
   const coins = [
     { sym: "BTC", price: "$107,412", change: "+2.4%", up: true },
     { sym: "ETH", price: "$3,891", change: "+1.8%", up: true },
@@ -266,12 +266,12 @@ export default function Landing({ onAuthOpen }) {
 
   const features = [
     {
-      badge: "LIVE DATA",
+      badge: t('landing.feat1.badge'),
       badgeColor: "#00c6ff",
       icon: BarChart2,
-      title: "Real-Time Market Tracking",
-      desc: `Track ${coinsStr} cryptocurrencies with instant updates. Interactive heatmap, whale alerts, and volume spike detection — all in one place.`,
-      points: ["Live WebSocket price feeds", "Interactive market heatmap", "Volume anomaly detection"],
+      title: t('landing.feat1.title'),
+      desc: t('landing.feat1.desc', { count: coinsStr }),
+      points: [t('landing.feat1.p1'), t('landing.feat1.p2'), t('landing.feat1.p3')],
       mockupSide: "right",
       mockup: (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -300,25 +300,25 @@ export default function Landing({ onAuthOpen }) {
       ),
     },
     {
-      badge: "NEKO AI",
+      badge: t('landing.feat2.badge'),
       badgeColor: T.purple,
       icon: Brain,
-      title: "AI Portfolio Manager",
-      desc: "Powered by Groq Llama 3.3. Neko AI analyzes your full portfolio, detects correlation risks, and gives actionable rebalancing suggestions.",
-      points: ["150+ technical indicators analyzed", "MACD, RSI, Bollinger, EMA signals", "Natural language insights"],
+      title: t('landing.feat2.title'),
+      desc: t('landing.feat2.desc'),
+      points: [t('landing.feat2.p1'), t('landing.feat2.p2'), t('landing.feat2.p3')],
       mockupSide: "left",
       mockup: (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,240,255,0.06)", border: `1px solid ${T.borderFeat}` }}>
             <div style={{ fontSize: 9, color: T.purple, fontWeight: 800, letterSpacing: ".15em", marginBottom: 8 }}>🤖 NEKO AI</div>
-            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }}>Your BTC is up <span style={{ color: "#00c6ff", fontWeight: 700 }}>+18.4%</span>. Consider taking <span style={{ color: T.purple, fontWeight: 700 }}>15% profits</span> to rebalance ETH allocation.</div>
+            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: t('landing.feat2.mockup').replace('+18.4%', '<span style="color: #00c6ff; font-weight: 700">+18.4%</span>').replace('15%', '<span style="color: #00f0ff; font-weight: 700">15%</span>').replace('%18.4', '<span style="color: #00c6ff; font-weight: 700">%18.4</span>').replace('%15', '<span style="color: #00f0ff; font-weight: 700">%15</span>') }} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             {[
-              { l: "Portfolio Score", v: "87/100", c: T.green },
-              { l: "Risk Level", v: "Medium", c: "#f59e0b" },
-              { l: "Correlation", v: "0.72", c: T.purple },
-              { l: "Sharpe Ratio", v: "1.84", c: "#00c6ff" },
+              { l: t('landing.feat2.m_score'), v: "87/100", c: T.green },
+              { l: t('landing.feat2.m_risk'), v: t('landing.feat2.m_risk_val'), c: "#f59e0b" },
+              { l: t('landing.feat2.m_corr'), v: "0.72", c: T.purple },
+              { l: t('landing.feat2.m_sharpe'), v: "1.84", c: "#00c6ff" },
             ].map((s, i) => (
               <div key={i} style={{ padding: "12px 14px", borderRadius: 10, background: T.bg, border: `1px solid ${T.border}` }}>
                 <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 4 }}>{s.l}</div>
@@ -330,17 +330,17 @@ export default function Landing({ onAuthOpen }) {
       ),
     },
     {
-      badge: "TAX & REPORTS",
+      badge: t('landing.feat3.badge'),
       badgeColor: T.green,
       icon: Wallet,
-      title: "Automated Tax Calculation",
-      desc: "Import from Binance, Bybit, OKX, Coinbase or Kraken. FIFO P&L calculated instantly in your browser. Export ready tax reports in seconds.",
-      points: ["Browser-only — data never leaves device", "FIFO P&L calculation", "CSV export for tax filing"],
+      title: t('landing.feat3.title'),
+      desc: t('landing.feat3.desc'),
+      points: [t('landing.feat3.p1'), t('landing.feat3.p2'), t('landing.feat3.p3')],
       mockupSide: "right",
       mockup: (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <span style={{ fontSize: 10, color: T.textMuted, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>Transaction History</span>
+            <span style={{ fontSize: 10, color: T.textMuted, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>{t('landing.feat3.m_title')}</span>
             <span style={{ fontSize: 10, color: T.green, fontWeight: 700, background: T.greenBg, padding: "2px 10px", borderRadius: 100, border: `1px solid ${T.greenBorder}` }}>FY 2024</span>
           </div>
           {[
@@ -359,7 +359,7 @@ export default function Landing({ onAuthOpen }) {
             </div>
           ))}
           <div style={{ padding: "12px 16px", borderRadius: 12, background: T.greenBg, border: `1px solid ${T.greenBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 12, color: T.textMuted }}>Total Realized P&L</span>
+            <span style={{ fontSize: 12, color: T.textMuted }}>{t('landing.feat3.m_total')}</span>
             <span style={{ fontSize: 20, fontWeight: 900, color: T.green, fontFamily: "monospace" }}>+$4,340</span>
           </div>
         </div>
@@ -369,44 +369,44 @@ export default function Landing({ onAuthOpen }) {
 
   const plans = [
     {
-      name: "Free",
+      name: t('landing.pricing.free'),
       price: "$0",
-      sub: "forever",
+      sub: t('landing.pricing.free_sub'),
       featured: false,
-      cta: "Get Started",
+      cta: t('landing.pricing.free_cta'),
       perks: [
-        `Live prices for ${coinsStr} coins`,
-        "Market heatmap",
-        "Watchlist (up to 10 coins)",
-        "Basic price alerts",
-        "Coin comparison tool",
-        "Correlation matrix",
+        t('landing.pricing.f1', { count: coinsStr }),
+        t('landing.pricing.f2'),
+        t('landing.pricing.f3'),
+        t('landing.pricing.f4'),
+        t('landing.pricing.f5'),
+        t('landing.pricing.f6'),
       ],
     },
     {
       name: "Pro",
       price: "$10",
-      sub: "/ month",
+      sub: t('landing.pricing.pro_sub'),
       featured: true,
-      cta: "Start Pro",
+      cta: t('landing.pricing.pro_cta'),
       perks: [
-        "Everything in Free",
-        "AI Technical Analysis",
-        "Portfolio tracker & P&L",
-        "Automated tax reports (CSV)",
-        "Unlimited price alerts",
-        "Volume spike radar",
-        "Priority data access",
+        t('landing.pricing.p1'),
+        t('landing.pricing.p2'),
+        t('landing.pricing.p3'),
+        t('landing.pricing.p4'),
+        t('landing.pricing.p5'),
+        t('landing.pricing.p6'),
+        t('landing.pricing.p7'),
       ],
     },
   ];
 
   const faqs = [
-    { q: "How does AI analysis work?", a: `We combine Altfins pre-computed signals (150+ technical indicators across ${coinsStr} coins) with Groq Llama 3.3 to generate market assessments. The AI processes RSI, MACD, Bollinger Bands, Stochastic, EMA — and produces bullish/bearish/neutral signals with confidence scores.` },
-    { q: "Is CryptoNeko really free?", a: `Yes. The free plan includes live data for ${coinsStr} coins, heatmap, coin comparison, watchlist (up to 10), and basic alerts — forever. No credit card needed. Pro ($10/mo) unlocks AI analysis, portfolio tracker, tax reports, and unlimited alerts.` },
-    { q: "Is my data safe?", a: "Completely. Your portfolio and trade data never leaves your browser — CSV files are parsed locally in JavaScript. We never store, sell or transmit your financial data. Only your email is stored via Supabase for authentication." },
-    { q: "Which exchanges are supported?", a: "CSV imports from Binance, Bybit, OKX, Coinbase and Kraken. Export your trade history and drag & drop into Portfolio Tracker. P&L and tax calculations happen instantly in your browser." },
-    { q: "Can I cancel anytime?", a: "Yes. Your Pro access continues until end of billing period, then reverts to free — no questions asked." },
+    { q: t('landing.faq.q1'), a: t('landing.faq.a1', { count: coinsStr }) },
+    { q: t('landing.faq.q2'), a: t('landing.faq.a2', { count: coinsStr }) },
+    { q: t('landing.faq.q3'), a: t('landing.faq.a3') },
+    { q: t('landing.faq.q4'), a: t('landing.faq.a4') },
+    { q: t('landing.faq.q5'), a: t('landing.faq.a5') },
   ];
 
   return (
@@ -495,10 +495,10 @@ export default function Landing({ onAuthOpen }) {
         {/* Stat row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
           {[
-            { v: coinsTracked, s: "+", p: "", l: "Coins Tracked" },
-            { v: 5, s: "+", p: "", l: "AI Indicators" },
-            { v: 99, s: "%", p: "", l: "Uptime" },
-            { v: 0, s: "", p: "$", l: "To Get Started" },
+            { v: coinsTracked, s: "+", p: "", l: t('landing.stats.coins') },
+            { v: 5, s: "+", p: "", l: t('landing.stats.ai') },
+            { v: 99, s: "%", p: "", l: t('landing.stats.uptime') },
+            { v: 0, s: "", p: "$", l: t('landing.stats.start') },
           ].map((st, i) => (
             <div key={i} style={{ padding: "0 clamp(20px,4vw,48px)", borderRight: i < 3 ? `1px solid ${T.border}` : "none", textAlign: "center" }}>
               <div style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 900, color: T.purple, fontFamily: "monospace", letterSpacing: "-0.02em", lineHeight: 1 }}>
@@ -515,7 +515,7 @@ export default function Landing({ onAuthOpen }) {
         <Reveal>
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(0,240,255,0.12) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
-            <DashboardMockup coinsStr={coinsStr} />
+            <DashboardMockup coinsStr={coinsStr} t={t} />
           </div>
         </Reveal>
       </section>
@@ -526,10 +526,10 @@ export default function Landing({ onAuthOpen }) {
       <section style={{ padding: "0 clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto 160px" }}>
         <div style={{ textAlign: "center", marginBottom: 80 }}>
           <Reveal>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>◆ Features</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>{t('landing.features_header.badge')}</div>
             <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0, lineHeight: 1.1 }}>
-              Professional tools.<br />
-              <span style={{ color: T.textMuted }}>Zero complexity.</span>
+              {t('landing.features_header.title')}<br />
+              <span style={{ color: T.textMuted }}>{t('landing.features_header.subtitle')}</span>
             </h2>
           </Reveal>
         </div>
@@ -603,8 +603,8 @@ export default function Landing({ onAuthOpen }) {
       <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
         <Reveal>
           <div style={{ textAlign: "center", marginBottom: 60 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>◆ Pricing</div>
-            <h2 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>Start free.<br /><span style={{ color: T.textMuted }}>Upgrade when ready.</span></h2>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>{t('landing.pricing.badge')}</div>
+            <h2 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>{t('landing.pricing.title')}<br /><span style={{ color: T.textMuted }}>{t('landing.pricing.subtitle')}</span></h2>
           </div>
         </Reveal>
 
@@ -614,7 +614,7 @@ export default function Landing({ onAuthOpen }) {
               <Card key={plan.name} featured={plan.featured} style={{ padding: "40px 36px" }}>
                 {plan.featured && (
                   <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)" }}>
-                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", padding: "4px 16px", borderRadius: 100, background: T.purple, color: "white" }}>MOST POPULAR</div>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", padding: "4px 16px", borderRadius: 100, background: T.purple, color: "white" }}>{t('landing.pricing.most_popular')}</div>
                   </div>
                 )}
                 {/* Corner glow */}
@@ -666,8 +666,8 @@ export default function Landing({ onAuthOpen }) {
       <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 740, margin: "0 auto" }}>
         <Reveal>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>◆ FAQ</div>
-            <h2 style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>Common questions</h2>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>{t('landing.faq.badge')}</div>
+            <h2 style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>{t('landing.faq.title')}</h2>
           </div>
         </Reveal>
         <Reveal delay={0.1}>
@@ -683,10 +683,10 @@ export default function Landing({ onAuthOpen }) {
           <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "rgba(0,240,255,0.05)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, rgba(0,240,255,0.15) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
             <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 20 }}>◆ Get Started</div>
-              <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 16px" }}>Ready to analyze smarter?</h2>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 20 }}>{t('landing.cta.badge')}</div>
+              <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 16px" }}>{t('landing.cta.title')}</h2>
               <p style={{ fontSize: 18, color: T.textSecondary, margin: "0 0 48px", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
-                Join thousands of traders using CryptoNeko to stay ahead of the market.
+                {t('landing.cta.desc')}
               </p>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
                 {!isLoggedIn ? (
@@ -696,7 +696,7 @@ export default function Landing({ onAuthOpen }) {
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
                   >
-                    Create Free Account
+                    {t('landing.cta.btn1')}
                   </button>
                 ) : (
                   <button
@@ -705,7 +705,7 @@ export default function Landing({ onAuthOpen }) {
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
                   >
-                    Go to Dashboard <ArrowRight size={16} />
+                    {t('nav.dashboard')} <ArrowRight size={16} />
                   </button>
                 )}
                 <button
@@ -714,7 +714,7 @@ export default function Landing({ onAuthOpen }) {
                   onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderFeat; e.currentTarget.style.color = T.textPrimary; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSecondary; }}
                 >
-                  Explore Markets
+                  {t('landing.cta.btn2')}
                 </button>
               </div>
             </div>
@@ -733,10 +733,10 @@ export default function Landing({ onAuthOpen }) {
           </div>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
             {[
-              { l: "Terms", p: "/terms" },
-              { l: "Privacy", p: "/privacy" },
-              { l: "Docs", p: "/docs" },
-              { l: "Pricing", p: "/pricing" },
+              { l: t('landing.footer.terms'), p: "/terms" },
+              { l: t('landing.footer.privacy'), p: "/privacy" },
+              { l: t('landing.footer.docs'), p: "/docs" },
+              { l: t('landing.footer.pricing'), p: "/pricing" },
             ].map(link => (
               <span key={link.l} onClick={() => navigate(link.p)} style={{ fontSize: 13, color: T.textMuted, cursor: "pointer", transition: "color 150ms" }}
                 onMouseEnter={e => e.currentTarget.style.color = T.textPrimary}
@@ -749,7 +749,7 @@ export default function Landing({ onAuthOpen }) {
             style={{ fontSize: 12, color: T.textMuted, cursor: "pointer", userSelect: "none" }}
             onClick={handleSecretClick}
           >
-            © 2025 CryptoNeko. Not financial advice.
+            {t('landing.footer.disclaimer')}
           </div>
         </div>
       </footer>
