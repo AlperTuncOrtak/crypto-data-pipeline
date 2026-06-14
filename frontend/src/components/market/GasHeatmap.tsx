@@ -5,7 +5,7 @@ const NETWORKS = [
   {
     id: 'ethereum',
     name: 'Ethereum',
-    rpc: 'https://cloudflare-eth.com',
+    rpc: 'https://ethereum-rpc.publicnode.com',
     icon: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
     highThreshold: 30, // gwei
     mediumThreshold: 15,
@@ -37,7 +37,7 @@ const NETWORKS = [
   {
     id: 'polygon',
     name: 'Polygon',
-    rpc: 'https://polygon.llamarpc.com',
+    rpc: 'https://polygon.drpc.org',
     icon: 'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
     highThreshold: 150,
     mediumThreshold: 50,
