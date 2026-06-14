@@ -148,11 +148,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
       const length = Math.hypot(p2.x - p1.x, p2.y - p1.y);
       const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
       
-      const rect = Matter.Bodies.rectangle(cx, cy, length + 2, 60, {
+      const rect = Matter.Bodies.rectangle(cx, cy, length + 10, 60, {
         isStatic: true,
         angle: angle,
-        friction: 0.8,
-        restitution: 0.1,
+        friction: 1.0,
+        restitution: 0.0,
+        chamfer: { radius: 10 } // Smooth corners to prevent wheel snagging
       });
       chunkBodies.push(rect);
     }
@@ -176,7 +177,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     canvasRef.current.height = h;
 
     const engine = Matter.Engine.create();
-    engine.world.gravity.y = 1.2;
+    engine.world.gravity.y = 2.0; // Higher gravity for snappier falls
     engineRef.current = engine;
 
     basePointsRef.current = [];
@@ -196,18 +197,18 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     const group = Matter.Body.nextGroup(true);
     
     const chassis = Matter.Bodies.rectangle(startX, startY, 40, 15, {
-      collisionFilter: { group }, frictionAir: 0.02, density: 0.002
+      collisionFilter: { group }, frictionAir: 0.01, density: 0.005
     });
 
-    const wheelOpts = { collisionFilter: { group }, friction: 0.9, restitution: 0.1, density: 0.005 };
+    const wheelOpts = { collisionFilter: { group }, friction: 1.0, restitution: 0.0, density: 0.002 };
     const wheelA = Matter.Bodies.circle(startX - 20, startY + 15, 12, wheelOpts);
     const wheelB = Matter.Bodies.circle(startX + 20, startY + 15, 12, wheelOpts);
 
     const axelA = Matter.Constraint.create({
-      bodyA: chassis, bodyB: wheelA, pointA: { x: -20, y: 10 }, stiffness: 0.15, damping: 0.3, length: 15
+      bodyA: chassis, bodyB: wheelA, pointA: { x: -20, y: 10 }, stiffness: 0.1, damping: 0.5, length: 18
     });
     const axelB = Matter.Constraint.create({
-      bodyA: chassis, bodyB: wheelB, pointA: { x: 20, y: 10 }, stiffness: 0.15, damping: 0.3, length: 15
+      bodyA: chassis, bodyB: wheelB, pointA: { x: 20, y: 10 }, stiffness: 0.1, damping: 0.5, length: 18
     });
 
     Matter.World.add(engine.world, [chassis, wheelA, wheelB, axelA, axelB]);
@@ -321,8 +322,13 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
     if (stateRef.current === "playing") {
       const k = keys.current;
+      
+      // Gas
       if (k["w"] || k["arrowup"]) {
-        Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity + 0.05);
+        const maxSpeed = 0.8;
+        if (wheelA.angularVelocity < maxSpeed) {
+          Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity + 0.1);
+        }
         if (Math.random() > 0.5) {
           particlesRef.current.push({
             x: wheelA.position.x, y: wheelA.position.y + 10,
@@ -331,9 +337,16 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
           });
         }
       }
-      if (k["s"] || k["arrowdown"]) Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity - 0.05);
-      if (k["a"] || k["arrowleft"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity - 0.02);
-      if (k["d"] || k["arrowright"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity + 0.02);
+      
+      // Brake
+      if (k["s"] || k["arrowdown"]) {
+        Matter.Body.setAngularVelocity(wheelA, wheelA.angularVelocity - 0.08);
+        Matter.Body.setAngularVelocity(wheelB, wheelB.angularVelocity - 0.08);
+      }
+      
+      // Lean
+      if (k["a"] || k["arrowleft"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity - 0.035);
+      if (k["d"] || k["arrowright"]) Matter.Body.setAngularVelocity(chassis, chassis.angularVelocity + 0.035);
 
       if (chassis.position.y > h + 600) triggerCrash();
 
