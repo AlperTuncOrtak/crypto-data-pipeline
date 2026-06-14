@@ -512,12 +512,13 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
         if (normAngle > Math.PI) normAngle -= Math.PI * 2;
         if (normAngle < -Math.PI) normAngle += Math.PI * 2;
 
-        // Crash logic (Head hit ground or upside down collision)
+        // Crash logic (Only crash if upside down and head hits ground)
+        const isUpsideDown = Math.abs(normAngle) > 1.6; // ~90 degrees
         const headX = b.x - Math.sin(b.angle) * 15;
         const headY = b.y - Math.cos(b.angle) * 15;
         const gHeadY = getTerrainY(headX, pts);
         
-        if (headY > gHeadY || b.y > h + 200) {
+        if ((isUpsideDown && headY > gHeadY - 10) || b.y > h + 400) {
           b.crashed = true;
         }
       }
@@ -608,6 +609,14 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     setSubmitting(false);
     setSubmitted(true);
   };
+
+  // Auto-start on mount
+  useEffect(() => {
+    const t = setTimeout(() => {
+      handleStart();
+    }, 100);
+    return () => clearTimeout(t);
+  }, [handleStart]);
 
   return (
     <div className="motogame-container">
