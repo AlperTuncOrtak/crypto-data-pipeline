@@ -31,6 +31,7 @@ import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
 import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
+import { useTranslation } from "react-i18next";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
@@ -154,6 +155,7 @@ function NavItem({ item, isActive }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const timerRef = useRef(null);
+  const { t } = useTranslation();
 
   function onEnter() {
     clearTimeout(timerRef.current);
@@ -164,6 +166,9 @@ function NavItem({ item, isActive }) {
   }
 
   const Icon = item.Icon;
+
+  // We map the english label to the translation key
+  const translationKey = item.label.toLowerCase().replace(" ", "_");
 
   return (
     <div
@@ -206,7 +211,7 @@ function NavItem({ item, isActive }) {
         }}
       >
         <Icon size={14} />
-        {item.label}
+        {t(`nav.${translationKey}`, item.label)}
         {item.dropdown && (
           <ChevronDown
             size={11}
@@ -366,9 +371,12 @@ export default function Navbar({
   const [searchResults, setSearchResults] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const profileRef = useRef(null);
+  const langRef = useRef(null);
+  const { t, i18n } = useTranslation();
   const {
     isLoggedIn,
     signOut,
@@ -383,6 +391,8 @@ export default function Navbar({
     function handleClick(e) {
       if (profileRef.current && !profileRef.current.contains(e.target))
         setProfileOpen(false);
+      if (langRef.current && !langRef.current.contains(e.target))
+        setLangOpen(false);
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
@@ -849,6 +859,91 @@ export default function Navbar({
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+
+            {/* LANGUAGE SWITCHER */}
+            <div className="hide-mobile" style={{ position: "relative" }} ref={langRef}>
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "6px 10px",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  background: langOpen ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  transition: "all 0.2s ease"
+                }}
+              >
+                {i18n.language.toUpperCase().slice(0, 2) === 'TR' ? '🇹🇷 TR' : '🇬🇧 EN'}
+              </button>
+
+              {langOpen && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    right: 0,
+                    background: "rgba(10,10,12,0.95)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 12,
+                    boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
+                    minWidth: 120,
+                    overflow: "hidden",
+                    zIndex: 200,
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: 4
+                  }}
+                >
+                  <button
+                    onClick={() => { i18n.changeLanguage('en'); setLangOpen(false); }}
+                    style={{
+                      padding: "8px 12px",
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "rgba(255,255,255,0.9)",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      borderRadius: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    🇬🇧 English
+                  </button>
+                  <button
+                    onClick={() => { i18n.changeLanguage('tr'); setLangOpen(false); }}
+                    style={{
+                      padding: "8px 12px",
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "rgba(255,255,255,0.9)",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      borderRadius: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    🇹🇷 Türkçe
+                  </button>
                 </div>
               )}
             </div>
@@ -1351,7 +1446,7 @@ export default function Navbar({
                       >
                         <LogOut size={13} style={{ color: "#e74c3c" }} />
                         <span style={{ fontSize: 13, color: "#e74c3c" }}>
-                          Sign Out
+                          {t('nav.logout')}
                         </span>
                       </div>
                     </div>
@@ -1388,7 +1483,7 @@ export default function Navbar({
                     e.currentTarget.style.color = "rgba(255,255,255,0.7)";
                   }}
                 >
-                  Sign In
+                  {t('nav.login')}
                 </button>
                 <button
                   onClick={() => {
@@ -1419,7 +1514,7 @@ export default function Navbar({
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
-                  Get Started
+                  {t('nav.signup')}
                 </button>
               </div>
             )}
@@ -1559,7 +1654,7 @@ export default function Navbar({
                     cursor: "pointer",
                   }}
                 >
-                  Sign In →
+                  {t('nav.login')} →
                 </button>
               )}
             </div>

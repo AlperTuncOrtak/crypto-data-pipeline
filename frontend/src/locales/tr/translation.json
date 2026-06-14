@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "market": "Piyasa",
+    "alerts": "Alarmlar",
+    "portfolio": "Portföy",
+    "ai_analysis": "Yapay Zeka Analizi",
+    "logout": "Çıkış Yap",
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol",
+    "admin": "Yönetici"
+  },
+  "landing": {
+    "live_tracking": "Canlı · {{count}} coin takip ediliyor",
+    "hero_title_1": "Yeni Nesil",
+    "hero_title_2": "Kripto Zekası",
+    "hero_subtitle": "Eşzamanlı piyasa verileri, yapay zeka destekli teknik analiz ve portföy takibi — hepsi tek bir ışık hızında platformda.",
+    "cta_primary": "Hemen Başla",
+    "cta_secondary": "Panele Git",
+    "no_credit_card": "Kredi kartı gerekmez · Ücretsiz paket ömür boyu geçerlidir",
+    "features": {
+      "title_1": "İhtiyacınız olan her şey.",
+      "title_2": "Gereksiz hiçbir şey yok.",
+      "live_markets": "Canlı Piyasalar",
+      "live_markets_desc": "Binlerce varlık üzerinde eşzamanlı fiyatlar, ısı haritaları ve trend takibi.",
+      "ai_copilot": "Yapay Zeka Asistanı",
+      "ai_copilot_desc": "Llama 3.3 destekli gerçek zamanlı teknik analiz ve piyasa duyarlılığı.",
+      "portfolio": "Portföy",
+      "portfolio_desc": "İşlemlerinizi içe aktarın, kar/zarar durumunuzu anında takip edin ve vergi raporları oluşturun."
+    }
+  }
+}

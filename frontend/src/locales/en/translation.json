@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "market": "Market",
+    "alerts": "Alerts",
+    "portfolio": "Portfolio",
+    "ai_analysis": "AI Analysis",
+    "logout": "Log Out",
+    "login": "Login",
+    "signup": "Sign Up",
+    "admin": "Admin"
+  },
+  "landing": {
+    "live_tracking": "Live · {{count}} coins tracked",
+    "hero_title_1": "Next-Gen",
+    "hero_title_2": "Crypto Intelligence",
+    "hero_subtitle": "Real-time data, AI-driven technical analysis, and portfolio tracking — all in one blazing fast platform.",
+    "cta_primary": "Get Started",
+    "cta_secondary": "View Dashboard",
+    "no_credit_card": "No credit card required · Free plan available forever",
+    "features": {
+      "title_1": "Everything you need.",
+      "title_2": "Nothing you don't.",
+      "live_markets": "Live Markets",
+      "live_markets_desc": "Streaming prices, heatmaps, and trend tracking across thousands of assets.",
+      "ai_copilot": "AI Copilot",
+      "ai_copilot_desc": "Real-time technical analysis and market sentiment powered by Llama 3.3.",
+      "portfolio": "Portfolio",
+      "portfolio_desc": "Import trades, track P&L instantly, and generate seamless tax reports."
+    }
+  }
+}

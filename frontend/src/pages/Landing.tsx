@@ -9,6 +9,7 @@ import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
   Check, ChevronDown, TrendingUp, Zap, Globe, Star,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import MotoGameModal from "../components/game/MotoGameModal";
 
 // ─── THEME ───────────────────────────────────────────────────────
@@ -203,6 +204,7 @@ export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { data: stats } = useMarketStats();
+  const { t } = useTranslation();
   
   let coinsTracked = 2500;
   let coinsStr = "2,500+";
@@ -430,12 +432,12 @@ export default function Landing({ onAuthOpen }) {
         {/* Live badge */}
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>Live · {coinsStr} coins tracked</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>{t('landing.live_tracking', { count: coinsStr })}</span>
         </div>
 
         {/* Headline */}
         <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
-          <span style={{ color: T.textPrimary }}>The smartest way to<br />analyze </span>
+          <span style={{ color: T.textPrimary }}>{t('landing.hero_title_1')}<br /></span>
           <span style={{
             background: `linear-gradient(135deg, #00f0ff 0%, #00ffff 40%, #38bdf8 100%)`,
             backgroundSize: "200% auto",
@@ -443,12 +445,12 @@ export default function Landing({ onAuthOpen }) {
             WebkitTextFillColor: "transparent",
             animation: "lp-grad 6s linear infinite",
           }}>
-            crypto markets.
+            {t('landing.hero_title_2')}
           </span>
         </h1>
 
         <p style={{ fontSize: "clamp(16px, 2.2vw, 20px)", color: T.textSecondary, maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7 }}>
-          Real-time data, AI-driven technical analysis, and portfolio tracking — all in one blazing fast platform.
+          {t('landing.hero_subtitle')}
         </p>
 
         {/* CTAs */}
@@ -467,7 +469,7 @@ export default function Landing({ onAuthOpen }) {
               onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
             >
-              Get Started Free <ArrowRight size={16} />
+              {t('landing.cta_primary')} <ArrowRight size={16} />
             </button>
           )}
           <button
@@ -485,10 +487,10 @@ export default function Landing({ onAuthOpen }) {
             onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
             onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
           >
-            {isLoggedIn ? "Go to Dashboard" : "View Dashboard →"} {isLoggedIn && <ArrowRight size={16} />}
+            {isLoggedIn ? t('nav.dashboard') : t('landing.cta_secondary')} {isLoggedIn && <ArrowRight size={16} />}
           </button>
         </div>
-        {!isLoggedIn && <div style={{ fontSize: 12, color: T.textMuted }}>No credit card required · Free plan available forever</div>}
+        {!isLoggedIn && <div style={{ fontSize: 12, color: T.textMuted }}>{t('landing.no_credit_card')}</div>}
 
         {/* Stat row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
