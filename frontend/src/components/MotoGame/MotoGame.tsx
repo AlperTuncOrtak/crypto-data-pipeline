@@ -192,6 +192,10 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
     generateTerrainChunk(0, engine);
     generateTerrainChunk(1, engine);
 
+    if (basePointsRef.current.length === 0) {
+      return; // Abort if no terrain was generated (e.g. missing ohlcData)
+    }
+
     const startX = 100;
     const startY = basePointsRef.current[0].y - 100;
     const group = Matter.Body.nextGroup(true);
@@ -261,9 +265,10 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
   }, [generateTerrainChunk]);
 
   useEffect(() => {
+    if (ohlcData.length < 2) return;
     const t = setTimeout(() => { if (stateRef.current === "idle") handleStart(); }, 100);
     return () => clearTimeout(t);
-  }, [handleStart]);
+  }, [handleStart, ohlcData]);
 
   const triggerCrash = () => {
     if (stateRef.current === "crashed") return;
