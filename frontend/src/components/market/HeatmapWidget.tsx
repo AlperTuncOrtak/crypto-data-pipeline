@@ -106,8 +106,8 @@ export default function HeatmapWidget({ limit = 50 }) {
     <div
       className="group"
       style={{
-        backgroundColor: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.05)',
+        backgroundColor: 'var(--bg-card)',
+        border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '24px',
         position: 'relative',
@@ -117,15 +117,15 @@ export default function HeatmapWidget({ limit = 50 }) {
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "scale(1.01)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "var(--accent-border)";
+        e.currentTarget.style.backgroundColor = "var(--bg-elevated)";
         const glow = e.currentTarget.querySelector('.feat-bg-glow');
         if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "scale(1)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)";
+        e.currentTarget.style.borderColor = "var(--border)";
+        e.currentTarget.style.backgroundColor = "var(--bg-card)";
         const glow = e.currentTarget.querySelector('.feat-bg-glow');
         if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0"; }
       }}
@@ -142,7 +142,7 @@ export default function HeatmapWidget({ limit = 50 }) {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-elevated)", border: "1px solid var(--border)" }}>
               <LayoutGrid size={13} style={{ color: "var(--text-muted)" }} />
             </div>
             <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -166,8 +166,8 @@ export default function HeatmapWidget({ limit = 50 }) {
           paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%`,
           borderRadius: 12,
           overflow: "hidden",
-          background: "rgba(0,0,0,0.2)",
-          border: "1px solid rgba(255,255,255,0.05)"
+          background: "var(--bg-elevated)",
+          border: "1px solid var(--border)"
         }}>
           {market.isLoading ? (
              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: 12 }}>Loading...</div>

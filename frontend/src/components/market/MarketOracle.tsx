@@ -148,8 +148,8 @@ export default function MarketOracle() {
     <div
       className="group"
       style={{
-        backgroundColor: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.05)',
+        backgroundColor: 'var(--bg-card)',
+        border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '24px',
         position: 'relative',
@@ -159,15 +159,15 @@ export default function MarketOracle() {
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "scale(1.01)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "var(--accent-border)";
+        e.currentTarget.style.backgroundColor = "var(--bg-elevated)";
         const glow = e.currentTarget.querySelector('.feat-bg-glow');
         if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "scale(1)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
-        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)";
+        e.currentTarget.style.borderColor = "var(--border)";
+        e.currentTarget.style.backgroundColor = "var(--bg-card)";
         const glow = e.currentTarget.querySelector('.feat-bg-glow');
         if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0"; }
       }}

@@ -366,7 +366,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
               <tr
                 style={{
                   borderBottom: "1px solid var(--border)",
-                  backgroundColor: "rgba(0,0,0,0.2)",
+                  backgroundColor: "var(--bg-elevated)",
                 }}
               >
                 <th style={{ padding: "16px 4px 16px 20px", width: 40 }}></th>
@@ -443,9 +443,9 @@ export default function Market({ isWatched, toggleWatchlist }) {
                       transition: "var(--transition-smooth)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.03)";
+                      e.currentTarget.style.backgroundColor = "var(--accent-soft)";
                       e.currentTarget.style.transform = "translateY(-1px) scale(1.002)";
-                      e.currentTarget.style.boxShadow = "0 10px 30px -10px rgba(0,0,0,0.3)";
+                      e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.06)";
                       e.currentTarget.style.position = "relative";
                       e.currentTarget.style.zIndex = "10";
                     }}

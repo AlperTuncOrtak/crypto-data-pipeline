@@ -11,22 +11,22 @@ import { useTranslation } from "react-i18next";
 
 // ─── THEME TOKENS ────────────────────────────────────────────────
 const T = {
-  bg: "#020617",
-  card: "#0b1227",
-  cardHov: "#0f172a",
-  purple: "#00f0ff",
-  purpleLight: "#00ffff",
-  green: "#2dd4bf",
-  greenBg: "rgba(45,212,191,0.1)",
-  greenBorder: "rgba(45,212,191,0.2)",
-  red: "#f43f5e",
-  redBg: "rgba(244,63,94,0.1)",
-  redBorder: "rgba(244,63,94,0.2)",
-  textPrimary: "#ffffff",
-  textSecondary: "#94a3b8",
-  textMuted: "#64748b",
-  border: "rgba(255,255,255,0.06)",
-  borderFeat: "rgba(0,240,255,0.25)",
+  bg:           "var(--bg-base)",
+  card:         "var(--bg-card)",
+  cardHov:      "var(--bg-elevated)",
+  purple:       "var(--accent)",
+  purpleLight:  "var(--accent-hover)",
+  green:        "#2dd4bf",
+  greenBg:      "rgba(45,212,191,0.1)",
+  greenBorder:  "rgba(45,212,191,0.2)",
+  red:          "#f43f5e",
+  redBg:        "rgba(244,63,94,0.1)",
+  redBorder:    "rgba(244,63,94,0.2)",
+  textPrimary:  "var(--text-primary)",
+  textSecondary:"var(--text-secondary)",
+  textMuted:    "var(--text-muted)",
+  border:       "var(--border)",
+  borderFeat:   "var(--accent-border)",
 };
 
 function formatLargeNumber(n) {

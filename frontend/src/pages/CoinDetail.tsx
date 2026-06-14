@@ -752,8 +752,8 @@ export default function CoinDetail() {
       {/* CHART */}
       <div
         style={{
-          backgroundColor: "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.05)",
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border)",
           borderRadius: 24,
           padding: 24,
           marginTop: 24,
@@ -775,7 +775,7 @@ export default function CoinDetail() {
           <SectionTitle>Price Chart</SectionTitle>
 
           {/* Time range pills */}
-          <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.05)", borderRadius: 10, padding: 3 }}>
+          <div style={{ display: "flex", gap: 4, background: "var(--bg-elevated)", borderRadius: 10, padding: 3 }}>
             {RANGES.map((r) => (
               <button
                 key={r.value}
@@ -787,7 +787,7 @@ export default function CoinDetail() {
                   fontWeight: 600,
                   background: range === r.value ? "rgba(245,158,11,0.15)" : "transparent",
                   border: range === r.value ? "1px solid rgba(245,166,35,0.25)" : "1px solid transparent",
-                  color: range === r.value ? "var(--accent)" : "rgba(255,255,255,0.35)",
+                  color: range === r.value ? "var(--accent)" : "var(--text-muted)",
                   cursor: "pointer",
                   transition: "all 0.15s",
                 }}
