@@ -217,5 +217,26 @@
       "desc": "Başlamak için borsanızdan aldığınız CSV'yi yükleyin.",
       "btn": "+ Veri Kaynağı Ekle"
     }
+  },
+  "market": {
+    "title": "Piyasa Gezgini",
+    "subtitle": "{{count}} coin — sayfa {{page}}/{{totalPages}}",
+    "search_placeholder": "Sembol veya isme göre ara...",
+    "error_loading": "Piyasa verisi yüklenemedi: {{error}}",
+    "table": {
+      "name": "İsim",
+      "price": "Fiyat",
+      "change": "24s %",
+      "volume": "Hacim",
+      "mcap": "Piyasa Değeri",
+      "sparkline": "Son 24s",
+      "updated": "Güncellendi"
+    },
+    "no_results": "\"{{search}}\" için sonuç bulunamadı",
+    "prev": "Önceki",
+    "next": "Sonraki",
+    "live": "Canlı",
+    "m_ago": "dk önce",
+    "h_ago": "sa önce"
   }
 }

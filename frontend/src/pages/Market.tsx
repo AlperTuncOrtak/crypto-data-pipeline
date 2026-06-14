@@ -5,6 +5,7 @@ import { useSparklines } from "../hooks/useSparklines";
 import Sparkline from "../components/market/Sparkline";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import { ChevronLeft, ChevronRight, Search, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const PAGE_SIZE = 100;
 
@@ -99,7 +100,7 @@ function CoinLogo({ imageUrl, symbol }) {
   );
 }
 
-function DataFreshness({ lastUpdated, dataSource }) {
+function DataFreshness({ lastUpdated, dataSource, t }) {
   if (!lastUpdated)
     return <span style={{ fontSize: 10, color: "var(--text-muted)" }}>—</span>;
 
@@ -114,17 +115,17 @@ function DataFreshness({ lastUpdated, dataSource }) {
     live = false;
 
   if (dataSource === "binance" && seconds < 120) {
-    label = "Live";
+    label = t("market.live");
     color = "#2ecc71";
     live = true;
   } else if (minutes < 10) {
-    label = `${minutes}m ago`;
+    label = `${minutes}${t("market.m_ago")}`;
     color = "var(--accent)";
   } else if (hours < 1) {
-    label = `${minutes}m ago`;
+    label = `${minutes}${t("market.m_ago")}`;
     color = "#e67e22";
   } else {
-    label = `${hours}h ago`;
+    label = `${hours}${t("market.h_ago")}`;
     color = "#888";
   }
 
@@ -152,9 +153,10 @@ function DataFreshness({ lastUpdated, dataSource }) {
 import GasHeatmap from "../components/market/GasHeatmap";
 
 export default function Market({ isWatched, toggleWatchlist }) {
+  const { t } = useTranslation();
   const { data: marketData, isLoading, isError, error } = useMarket(10000);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: "total_volume", direction: "desc" });
+  const [sort, setSort] = useState({ key: "market_cap", direction: "desc" });
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -237,7 +239,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
             opacity: page === 1 ? 0.5 : 1,
           }}
         >
-          <ChevronLeft size={14} /> Prev
+          <ChevronLeft size={14} /> {t("market.prev")}
         </button>
         {getVisiblePages().map((p, idx) => (
           p === '...' ? (
@@ -272,7 +274,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
             opacity: page === totalPages ? 0.5 : 1,
           }}
         >
-          Next <ChevronRight size={14} />
+          {t("market.next")} <ChevronRight size={14} />
         </button>
       </div>
     );
@@ -283,9 +285,9 @@ export default function Market({ isWatched, toggleWatchlist }) {
       {/* HEADER */}
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Market Explorer</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("market.title")}</h1>
           <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-            {filteredAndSorted.length} coins — page {page}/{totalPages || 1}
+            {t("market.subtitle", { count: filteredAndSorted.length, page: page, totalPages: totalPages || 1 })}
           </p>
         </div>
       </div>
@@ -313,7 +315,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
           <Search size={14} style={{ color: "var(--text-muted)" }} />
           <input
             type="text"
-            placeholder="Search by symbol or name..."
+            placeholder={t("market.search_placeholder")}
             value={search}
             onChange={handleSearch}
             className="bg-transparent outline-none text-sm w-full"
@@ -351,7 +353,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
             color: "var(--negative)",
           }}
         >
-          Failed to load market data: {error?.message}
+          {t("market.error_loading", { error: error?.message })}
         </div>
       )}
 
@@ -384,28 +386,28 @@ export default function Market({ isWatched, toggleWatchlist }) {
                   className="text-xs font-semibold uppercase tracking-wider text-left"
                   style={{ padding: "16px", color: "var(--text-muted)" }}
                 >
-                  Name
+                  {t("market.table.name")}
                 </th>
                 <SortableHeader
-                  label="Price"
+                  label={t("market.table.price")}
                   sortKey="current_price"
                   currentSort={sort}
                   onSort={handleSort}
                 />
                 <SortableHeader
-                  label="24h %"
+                  label={t("market.table.change")}
                   sortKey="price_change_percentage_24h"
                   currentSort={sort}
                   onSort={handleSort}
                 />
                 <SortableHeader
-                  label="Volume"
+                  label={t("market.table.volume")}
                   sortKey="total_volume"
                   currentSort={sort}
                   onSort={handleSort}
                 />
                 <SortableHeader
-                  label="Market Cap"
+                  label={t("market.table.mcap")}
                   sortKey="market_cap"
                   currentSort={sort}
                   onSort={handleSort}
@@ -414,13 +416,13 @@ export default function Market({ isWatched, toggleWatchlist }) {
                   className="text-xs font-semibold uppercase tracking-wider text-right"
                   style={{ padding: "16px", color: "var(--text-muted)" }}
                 >
-                  Last 24h
+                  {t("market.table.sparkline")}
                 </th>
                 <th
                   className="text-xs font-semibold uppercase tracking-wider text-right"
                   style={{ padding: "16px 20px 16px 16px", color: "var(--text-muted)" }}
                 >
-                  Updated
+                  {t("market.table.updated")}
                 </th>
               </tr>
             </thead>
@@ -587,6 +589,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                       <DataFreshness
                         lastUpdated={coin.last_updated}
                         dataSource={coin.data_source}
+                        t={t}
                       />
                     </td>
                   </tr>
@@ -607,7 +610,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
             color: "var(--text-muted)",
           }}
         >
-          No coins found matching "{search}"
+          {t("market.no_results", { search })}
         </div>
       )}
 

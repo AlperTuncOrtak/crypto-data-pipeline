@@ -202,6 +202,17 @@
       "risks": "Risks / Weaknesses",
       "recommendations": "Actionable Recommendations"
     },
+    "tax_summary": {
+      "title": "Tax Summary & Optimizer",
+      "desc": "Automated FIFO P&L calculation and tax estimations.",
+      "total_realized": "Total Realized P&L",
+      "short_term": "Short-Term P&L",
+      "short_term_desc": "Held < 1 year",
+      "long_term": "Long-Term P&L",
+      "long_term_desc": "Held > 1 year",
+      "est_tax": "Est. Total Tax",
+      "export_csv": "Export Tax CSV"
+    },
     "tax": {
       "title": "Tax Summary & Estimator",
       "desc": "Based on FIFO method. Estimated 30% short-term and 15% long-term tax rates.",
@@ -217,5 +228,26 @@
       "desc": "Upload a CSV from your exchange to get started.",
       "btn": "+ Add Data Source"
     }
+  },
+  "market": {
+    "title": "Market Explorer",
+    "subtitle": "{{count}} coins — page {{page}}/{{totalPages}}",
+    "search_placeholder": "Search by symbol or name...",
+    "error_loading": "Failed to load market data: {{error}}",
+    "table": {
+      "name": "Name",
+      "price": "Price",
+      "change": "24h %",
+      "volume": "Volume",
+      "mcap": "Market Cap",
+      "sparkline": "Last 24h",
+      "updated": "Updated"
+    },
+    "no_results": "No coins found matching \"{{search}}\"",
+    "prev": "Prev",
+    "next": "Next",
+    "live": "Live",
+    "m_ago": "m ago",
+    "h_ago": "h ago"
   }
 }
