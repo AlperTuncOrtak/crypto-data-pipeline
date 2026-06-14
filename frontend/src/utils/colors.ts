@@ -1,5 +1,5 @@
 export function getCoinColor(symbol: string): string {
-  if (!symbol) return "var(--accent)";
+  if (!symbol || typeof symbol !== 'string') return "var(--accent)";
   
   const colors: Record<string, string> = {
     btc: "#F7931A",
@@ -36,7 +36,7 @@ export function getCoinColor(symbol: string): string {
     rndr: "#000000",
   };
 
-  const s = symbol.toLowerCase();
+  const s = symbol.trim().toLowerCase();
   
   // Return the specific color, or a generic blue/teal neon if not found
   return colors[s] || "var(--accent)";
