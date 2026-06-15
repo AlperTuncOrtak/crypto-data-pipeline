@@ -233,7 +233,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm transition-all"
           style={{
             backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
+            border: "1px solid rgba(255, 255, 255, 0.02)",
             color: page === 1 ? "var(--text-muted)" : "var(--text-primary)",
             cursor: page === 1 ? "not-allowed" : "pointer",
             opacity: page === 1 ? 0.5 : 1,
@@ -251,7 +251,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
               className="w-8 h-8 rounded-lg text-sm font-mono transition-all"
               style={{
                 backgroundColor: p === page ? "var(--accent)" : "var(--bg-surface)",
-                border: "1px solid var(--border)",
+                border: "1px solid rgba(255, 255, 255, 0.02)",
                 color: p === page ? "#111" : "var(--text-muted)",
                 fontWeight: p === page ? 700 : 400,
                 cursor: "pointer",
@@ -267,7 +267,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm transition-all"
           style={{
             backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
+            border: "1px solid rgba(255, 255, 255, 0.02)",
             color:
               page === totalPages ? "var(--text-muted)" : "var(--text-primary)",
             cursor: page === totalPages ? "not-allowed" : "pointer",
@@ -367,7 +367,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
             <thead>
               <tr
                 style={{
-                  borderBottom: "1px solid var(--border)",
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.02)",
                   backgroundColor: "var(--bg-elevated)",
                 }}
               >
@@ -606,7 +606,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
           className="p-8 text-center rounded-xl"
           style={{
             backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
+            border: "1px solid rgba(255, 255, 255, 0.02)",
             color: "var(--text-muted)",
           }}
         >

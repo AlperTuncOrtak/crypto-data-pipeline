@@ -91,7 +91,7 @@ function Card({ children, style = {}, featured = false, onClick }) {
       onClick={onClick}
       style={{
         background: T.card,
-        border: `1px solid ${hov ? (featured ? "rgba(0,240,255,0.35)" : "rgba(0,240,255,0.15)") : (featured ? T.borderFeat : T.border)}`,
+        border: `1px solid ${hov ? (featured ? "rgba(0,240,255,0.3)" : "rgba(255,255,255,0.08)") : (featured ? "rgba(0,240,255,0.15)" : "transparent")}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
@@ -274,11 +274,11 @@ function FearGreedGauge({ coins }) {
 
       {/* Up / Down pills */}
       <div style={{ display: "flex", gap: 8 }}>
-        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.greenBg, border: `1px solid ${T.greenBorder}`, textAlign: "center" }}>
+        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.greenBg, textAlign: "center" }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: T.green, fontFamily: "monospace" }}>↑ {up}</div>
           <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>{t('dashboard.gaining')}</div>
         </div>
-        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.redBg, border: `1px solid ${T.redBorder}`, textAlign: "center" }}>
+        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.redBg, textAlign: "center" }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: T.red, fontFamily: "monospace" }}>↓ {down}</div>
           <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>{t('dashboard.losing')}</div>
         </div>
@@ -462,7 +462,7 @@ export default function Dashboard() {
                           paddingBottom: 12, fontSize: 10, fontWeight: 700, color: T.textMuted,
                           textTransform: "uppercase", letterSpacing: "0.08em",
                           textAlign: i <= 1 ? "left" : "right",
-                          borderBottom: `1px solid ${T.border}`,
+                          borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
                         }}>
                           {h}
                         </th>
@@ -477,14 +477,14 @@ export default function Dashboard() {
                         <tr
                           key={coin.symbol}
                           onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                          style={{ cursor: "pointer", transition: "all 180ms ease", borderBottom: `1px solid ${T.border}` }}
+                          style={{ cursor: "pointer", transition: "all 180ms ease", borderBottom: "1px solid rgba(255, 255, 255, 0.03)" }}
                           onMouseEnter={e => { e.currentTarget.style.background = T.cardHov; }}
                           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                         >
-                          <td style={{ padding: "12px 12px 12px 0", width: 28 }}>
+                          <td style={{ padding: "16px 12px 16px 0", width: 28 }}>
                             <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, fontFamily: "monospace" }}>{idx + 1}</span>
                           </td>
-                          <td style={{ padding: "12px 0" }}>
+                          <td style={{ padding: "16px 0" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                               {coin.image_url ? (
                                 <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%" }} />
@@ -502,12 +502,11 @@ export default function Dashboard() {
                           <td style={{ padding: "12px 0", textAlign: "right", fontFamily: "monospace", fontSize: 13, color: T.textPrimary, fontWeight: 600 }}>
                             {formatPrice(coin.current_price)}
                           </td>
-                          <td style={{ padding: "12px 0", textAlign: "right" }}>
+                          <td style={{ padding: "16px 0", textAlign: "right" }}>
                             <span style={{
                               fontSize: 12, fontWeight: 700, fontFamily: "monospace",
                               color: isPos ? T.green : T.red,
-                              background: isPos ? T.greenBg : T.redBg,
-                              border: `1px solid ${isPos ? T.greenBorder : T.redBorder}`,
+                              background: isPos ? "rgba(52, 211, 153, 0.08)" : "rgba(239, 68, 68, 0.08)",
                               padding: "3px 8px", borderRadius: 8,
                             }}>
                               {isPos ? "+" : ""}{change.toFixed(2)}%
