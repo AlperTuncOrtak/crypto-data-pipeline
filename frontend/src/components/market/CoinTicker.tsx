@@ -63,14 +63,19 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
         height: '38px',
       }}
     >
-      <span style={{ 
-        fontWeight: 800, 
-        fontSize: 13, 
-        color: brandColor,
-        textShadow: `0 0 8px ${brandColor}`
-      }}>
-        {baseAsset}
-      </span>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
+        <span style={{ 
+          fontWeight: 800, 
+          fontSize: 13, 
+          color: brandColor,
+          textShadow: `0 0 8px ${brandColor}`
+        }}>
+          {baseAsset}
+        </span>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)' }}>
+          USDT
+        </span>
+      </div>
       <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>
         ${Number(data.c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
       </span>
