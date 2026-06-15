@@ -28,6 +28,7 @@ import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import AIAnalysisBox from "../components/market/AIAnalysisBox";
+import AttackMomentum from "../components/market/AttackMomentum";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
 
@@ -640,8 +641,13 @@ export default function CoinDetail() {
         </div>
       </div>
 
-      {/* AI ANALYSIS BOX */}
-      <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
+          {/* AI ANALYSIS BOX */}
+          <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
+
+          {/* ATTACK MOMENTUM */}
+          <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
+        </div>
 
 
       <AIPulse slug={slug} />

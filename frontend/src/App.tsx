@@ -112,11 +112,14 @@ function AppInner() {
       />
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Disclaimer — ilk girişte gösterilir, onaylanınca kaybolur */}
+      {/* Disclaimer Modal */}
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
+
+      {/* Global Ticker */}
+      <CoinTicker />
 
       {location.pathname !== "/" || isLoggedIn ? (
         <>
-          <CoinTicker />
           <Navbar
             onWatchlistOpen={() => openPanel("watchlist")}
             watchlistCount={watchlist.length}
