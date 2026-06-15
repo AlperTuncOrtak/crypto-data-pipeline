@@ -27,6 +27,7 @@ import { useAuth } from "../hooks/useAuth";
 
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
+import AIAnalysisBox from "../components/market/AIAnalysisBox";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
 
@@ -638,6 +639,10 @@ export default function CoinDetail() {
           )}
         </div>
       </div>
+
+      {/* AI ANALYSIS BOX */}
+      <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
+
 
       <AIPulse slug={slug} />
 
