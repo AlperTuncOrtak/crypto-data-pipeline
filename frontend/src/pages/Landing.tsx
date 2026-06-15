@@ -190,7 +190,7 @@ function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any
       <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
         {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
         <div style={{ flex: 1, marginLeft: 8, height: 22, borderRadius: 6, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 10, color: T.textMuted }}>cryptoneko.app/dashboard</span>
+          <span style={{ fontSize: 10, color: T.textMuted }}>www.cryptoneko.online/dashboard</span>
         </div>
       </div>
 
@@ -637,7 +637,7 @@ export default function Landing({ onAuthOpen }) {
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
                     {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
                     <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 9, color: T.textMuted }}>cryptoneko.app</span>
+                      <span style={{ fontSize: 9, color: T.textMuted }}>www.cryptoneko.online</span>
                     </div>
                   </div>
                   {f.mockup}
