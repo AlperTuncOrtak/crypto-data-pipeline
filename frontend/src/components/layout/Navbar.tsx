@@ -321,7 +321,7 @@ function NavItem({ item, isActive }) {
                           color: "var(--text-primary)",
                         }}
                       >
-                        {sub.label}
+                        {t(`nav.${sub.label.toLowerCase().replace(/ /g, "_")}`, sub.label)}
                       </span>
                       {sub.soon && (
                         <span
@@ -346,7 +346,7 @@ function NavItem({ item, isActive }) {
                         marginTop: 1,
                       }}
                     >
-                      {sub.desc}
+                      {t(`nav.${sub.label.toLowerCase().replace(/ /g, "_")}_desc`, sub.desc)}
                     </div>
                   </div>
                 </div>
@@ -504,13 +504,13 @@ export default function Navbar({
           const content = (
             <div style={{ display: "flex", alignItems: "center" }}>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Coins</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("nav.coins_marquee")}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {statsData?.coin_count ?? marketData?.length ?? 0}
                 </span>
               </div>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>24h Vol</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("nav.vol_24h_marquee")}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {formatLarge(totalVolume)}
                 </span>
@@ -522,7 +522,7 @@ export default function Navbar({
                 </span>
               </div>
               <div className="stat-item">
-                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC Dom</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("nav.btc_dom_marquee")}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {btcDom}%
                 </span>
@@ -695,7 +695,7 @@ export default function Navbar({
                 size={12}
                 fill={watchlistCount > 0 ? "var(--accent)" : "none"}
               />
-              <span>Watchlist</span>
+              <span>{t("nav.watchlist")}</span>
               {watchlistCount > 0 && (
                 <span
                   style={{
@@ -768,7 +768,7 @@ export default function Navbar({
                 />
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder={t("nav.search")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onFocus={() => setSearchOpen(true)}
@@ -1329,7 +1329,7 @@ export default function Navbar({
                                 color: "var(--accent)",
                               }}
                             >
-                              Upgrade to Pro
+                              {t("nav.upgrade_to_pro")}
                             </span>
                           </div>
                           <ChevronRight
@@ -1344,7 +1344,7 @@ export default function Navbar({
                             marginTop: 3,
                           }}
                         >
-                          AI analysis, alerts, priority data
+                          {t("nav.upgrade_desc")}
                         </div>
                       </div>
                     )}
@@ -1354,7 +1354,7 @@ export default function Navbar({
                       {[
                         {
                           icon: LayoutGrid,
-                          label: "View Landing (Preview)",
+                          label: t("nav.view_landing"),
                           soon: false,
                           action: () => {
                             setProfileOpen(false);
@@ -1363,13 +1363,13 @@ export default function Navbar({
                         },
                         {
                           icon: User,
-                          label: "Profile",
+                          label: t("nav.profile"),
                           soon: false,
                           action: null,
                         },
                         {
                           icon: Star,
-                          label: "Watchlist",
+                          label: t("nav.watchlist"),
                           soon: false,
                           action: () => {
                             setProfileOpen(false);
@@ -1378,7 +1378,7 @@ export default function Navbar({
                         },
                         {
                           icon: Settings,
-                          label: "Settings",
+                          label: t("nav.settings"),
                           soon: false,
                           action: () => {
                             setProfileOpen(false);
@@ -1387,7 +1387,7 @@ export default function Navbar({
                         },
                         {
                           icon: Crown,
-                          label: "Plans & Billing",
+                          label: t("nav.plans_billing"),
                           soon: false,
                           action: () => {
                             setProfileOpen(false);
@@ -1645,7 +1645,7 @@ export default function Navbar({
                       onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                     >
                       <Icon size={16} />
-                      {item.label}
+                      {t(`nav.${item.label.toLowerCase().replace(/ /g, "_")}`, item.label)}
                     </div>
                     {/* Sub-items */}
                     {item.dropdown && (
@@ -1669,7 +1669,7 @@ export default function Navbar({
                             onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; }}
                           >
                             <sub.Icon size={13} />
-                            {sub.label}
+                            {t(`nav.${sub.label.toLowerCase().replace(/ /g, "_")}`, sub.label)}
                           </div>
                         ))}
                       </div>
