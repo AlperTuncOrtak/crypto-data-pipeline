@@ -1846,7 +1846,8 @@ export default function AIAnalysis() {
               border: "1px solid var(--border)",
               borderRadius: 14,
               boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
-              overflow: "hidden",
+              overflowY: "auto",
+              maxHeight: "300px",
               zIndex: 50,
             }}
           >

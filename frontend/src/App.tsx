@@ -135,6 +135,7 @@ function AppInner() {
             ? ""
             : "main-content"
         }
+        style={{ position: "relative", zIndex: 20 }}
       >
         <Routes>
           {/* Public */}
