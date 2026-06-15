@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useMarket, useMarketStats } from "../hooks/useMarket";
+import { motion } from "framer-motion";
 import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
   Check, ChevronDown, TrendingUp, Zap, Globe, Star,
@@ -314,7 +315,13 @@ export default function Landing({ onAuthOpen }) {
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
                 <div style={{ height: 3, width: 50, borderRadius: 2, background: T.border, marginTop: 4 }}>
-                  <div style={{ width: `${c.bar}%`, height: "100%", borderRadius: 2, background: c.up ? T.green : T.red }} />
+                  <motion.div 
+                    initial={{ width: 0 }} 
+                    whileInView={{ width: `${c.bar}%` }} 
+                    viewport={{ once: true }} 
+                    transition={{ duration: 1, delay: 0.2 + i * 0.1, ease: "easeOut" }}
+                    style={{ height: "100%", borderRadius: 2, background: c.up ? T.green : T.red }} 
+                  />
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
