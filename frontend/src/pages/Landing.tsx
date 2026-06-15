@@ -152,10 +152,10 @@ function Faq({ q, a }) {
 // ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
 function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any, marketData?: any[] }) {
   let coins = [
-    { sym: "BTC", price: "$107,412", change: "+2.4%", up: true },
-    { sym: "ETH", price: "$3,891", change: "+1.8%", up: true },
-    { sym: "SOL", price: "$182", change: "-0.9%", up: false },
-    { sym: "BNB", price: "$724", change: "+3.2%", up: true },
+    { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, image_url: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
+    { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, image_url: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
+    { sym: "SOL", price: "$182", change: "-0.9%", up: false, image_url: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
+    { sym: "BNB", price: "$724", change: "+3.2%", up: true, image_url: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
   ];
   
   let mcapStr = "$3.42T";
@@ -170,10 +170,10 @@ function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any
     const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
     
     coins = [
-      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h > 0 ? "+" : "") + Number(btc.price_change_percentage_24h).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0 },
-      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h > 0 ? "+" : "") + Number(eth.price_change_percentage_24h).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0 },
-      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h > 0 ? "+" : "") + Number(sol.price_change_percentage_24h).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0 },
-      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h > 0 ? "+" : "") + Number(bnb.price_change_percentage_24h).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0 },
+      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h > 0 ? "+" : "") + Number(btc.price_change_percentage_24h).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0, image_url: btc.image },
+      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h > 0 ? "+" : "") + Number(eth.price_change_percentage_24h).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0, image_url: eth.image },
+      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h > 0 ? "+" : "") + Number(sol.price_change_percentage_24h).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0, image_url: sol.image },
+      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h > 0 ? "+" : "") + Number(bnb.price_change_percentage_24h).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0, image_url: bnb.image },
     ];
 
     const totalMcap = marketData.reduce((sum, c) => sum + (Number(c.market_cap) || 0), 0);
@@ -217,9 +217,12 @@ function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any
               border: `1px solid ${i === 0 ? T.borderFeat : T.border}`,
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
-                  <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{c.price}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {c.image_url && <img src={c.image_url} alt={c.sym} style={{ width: 24, height: 24, borderRadius: "50%" }} />}
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
+                    <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{c.price}</div>
+                  </div>
                 </div>
                 <span style={{
                   fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 8,
