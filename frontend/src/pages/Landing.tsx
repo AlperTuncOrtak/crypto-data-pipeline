@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useMarketStats } from "../hooks/useMarket";
+import { useMarket, useMarketStats } from "../hooks/useMarket";
 import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
   Check, ChevronDown, TrendingUp, Zap, Globe, Star,
@@ -138,13 +138,39 @@ function Faq({ q, a }) {
 }
 
 // ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
-function DashboardMockup({ coinsStr, t }: { coinsStr: string, t: any }) {
-  const coins = [
+function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any, marketData?: any[] }) {
+  let coins = [
     { sym: "BTC", price: "$107,412", change: "+2.4%", up: true },
     { sym: "ETH", price: "$3,891", change: "+1.8%", up: true },
     { sym: "SOL", price: "$182", change: "-0.9%", up: false },
     { sym: "BNB", price: "$724", change: "+3.2%", up: true },
   ];
+  
+  let mcapStr = "$3.42T";
+  let btcDomStr = "54.2%";
+  
+  if (marketData && marketData.length >= 4) {
+    const btc = marketData.find(c => c.symbol?.toLowerCase() === 'btc') || marketData[0];
+    const eth = marketData.find(c => c.symbol?.toLowerCase() === 'eth') || marketData[1];
+    const sol = marketData.find(c => c.symbol?.toLowerCase() === 'sol') || marketData[2];
+    const bnb = marketData.find(c => c.symbol?.toLowerCase() === 'bnb') || marketData[3];
+    
+    const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
+    
+    coins = [
+      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h > 0 ? "+" : "") + Number(btc.price_change_percentage_24h).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0 },
+      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h > 0 ? "+" : "") + Number(eth.price_change_percentage_24h).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0 },
+      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h > 0 ? "+" : "") + Number(sol.price_change_percentage_24h).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0 },
+      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h > 0 ? "+" : "") + Number(bnb.price_change_percentage_24h).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0 },
+    ];
+
+    const totalMcap = marketData.reduce((sum, c) => sum + (Number(c.market_cap) || 0), 0);
+    if (totalMcap > 0) {
+      mcapStr = "$" + (totalMcap / 1e12).toFixed(2) + "T";
+      const btcDom = ((Number(btc.market_cap) || 0) / totalMcap) * 100;
+      btcDomStr = btcDom.toFixed(1) + "%";
+    }
+  }
   return (
     <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "none" }}>
       {/* Browser bar */}
@@ -159,8 +185,8 @@ function DashboardMockup({ coinsStr, t }: { coinsStr: string, t: any }) {
         {/* Stat strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 16 }}>
           {[
-            { l: "Market Cap", v: "$3.42T" },
-            { l: "BTC Dom", v: "54.2%" },
+            { l: "Market Cap", v: mcapStr },
+            { l: "BTC Dom", v: btcDomStr },
             { l: "Coins", v: coinsStr },
           ].map((s, i) => (
             <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
@@ -204,6 +230,7 @@ export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { data: stats } = useMarketStats();
+  const { data: marketData } = useMarket(200);
   const { t } = useTranslation();
   
   let coinsTracked = 2500;
@@ -515,7 +542,7 @@ export default function Landing({ onAuthOpen }) {
         <Reveal>
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(0,240,255,0.12) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
-            <DashboardMockup coinsStr={coinsStr} t={t} />
+            <DashboardMockup coinsStr={coinsStr} t={t} marketData={marketData} />
           </div>
         </Reveal>
       </section>
