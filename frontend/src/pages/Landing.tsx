@@ -107,7 +107,18 @@ function Sparkline({ up = true }) {
   const color = up ? T.green : T.red;
   return (
     <svg width={80} height={36} style={{ overflow: "visible" }}>
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+      <motion.polyline 
+        points={pts} 
+        fill="none" 
+        stroke={color} 
+        strokeWidth="1.5" 
+        strokeLinejoin="round" 
+        strokeLinecap="round" 
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+      />
     </svg>
   );
 }
