@@ -12,9 +12,9 @@ const TOP_COINS = [
 ];
 
 // Helper to get the base asset symbol (e.g., BTCUSDT -> BTC)
-const getBaseAsset = (symbol: string) => symbol.replace('USDT', '');
+const getBaseAsset = (symbol: string) => symbol.toUpperCase().replace('USDT', '').replace('BUSD', '').replace('FDUSD', '');
 
-interface TickerData {
+export interface TickerData {
   s: string;  // Symbol
   c: string;  // Current price
   P: string;  // Price change percent
@@ -63,21 +63,16 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
         height: '38px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        {/* A small dot of the brand color to ensure it's visible even if text fails */}
+        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
         <span style={{ 
           fontWeight: 800, 
-          fontSize: 14, 
+          fontSize: 13, 
           color: brandColor,
-          textShadow: `0 0 8px ${brandColor}`
+          textShadow: `0 0 8px ${brandColor}40`
         }}>
           {baseAsset}
-        </span>
-        <span style={{ 
-          fontWeight: 600, 
-          fontSize: 11, 
-          color: 'var(--text-muted)' 
-        }}>
-          /USDT
         </span>
       </div>
       <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>
