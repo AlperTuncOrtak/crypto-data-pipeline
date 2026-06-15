@@ -110,7 +110,7 @@ function AppInner() {
           zIndex: 0,
         }}
       />
-      <div style={{ position: "relative", zIndex: 1 }}>
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Disclaimer — ilk girişte gösterilir, onaylanınca kaybolur */}
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
 
@@ -135,7 +135,7 @@ function AppInner() {
             ? ""
             : "main-content"
         }
-        style={{ position: "relative", zIndex: 20 }}
+        style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
         <Routes>
           {/* Public */}
