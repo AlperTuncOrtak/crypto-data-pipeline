@@ -88,7 +88,7 @@ export default function CoinTicker() {
                 fontWeight: 800, 
                 fontSize: 13, 
                 color: brandColor,
-                textShadow: `0 0 12px ${brandColor}50`
+                textShadow: `0 0 8px ${brandColor}`
               }}>
                 {c.symbol?.toUpperCase()}
               </span>
