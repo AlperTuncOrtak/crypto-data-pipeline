@@ -319,16 +319,20 @@ export default function Landing({ onAuthOpen }) {
       mockup: (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {[
-            { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, bar: 82 },
-            { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, bar: 71 },
-            { sym: "SOL", price: "$182", change: "-0.9%", up: false, bar: 44 },
-            { sym: "BNB", price: "$724", change: "+3.2%", up: true, bar: 60 },
-            { sym: "AVAX", price: "$38", change: "-1.5%", up: false, bar: 35 },
+            { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, bar: 82, image_url: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
+            { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, bar: 71, image_url: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
+            { sym: "SOL", price: "$182", change: "-0.9%", up: false, bar: 44, image_url: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
+            { sym: "BNB", price: "$724", change: "+3.2%", up: true, bar: 60, image_url: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
+            { sym: "AVAX", price: "$38", change: "-1.5%", up: false, bar: 35, image_url: "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png" },
           ].map((c, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(0,198,255,0.1)", border: "1px solid rgba(0,198,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#00c6ff" }}>{c.sym.slice(0,1)}</div>
+              {c.image_url ? (
+                <img src={c.image_url} alt={c.sym} style={{ width: 32, height: 32, borderRadius: "50%" }} />
+              ) : (
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(0,198,255,0.1)", border: "1px solid rgba(0,198,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#00c6ff" }}>{c.sym.slice(0,1)}</div>
+              )}
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: getCoinColor(c.sym) }}>{c.sym}</div>
                 <div style={{ height: 3, width: 50, borderRadius: 2, background: T.border, marginTop: 4 }}>
                   <motion.div 
                     initial={{ width: 0 }} 
