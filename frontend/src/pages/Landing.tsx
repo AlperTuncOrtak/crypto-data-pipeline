@@ -11,6 +11,7 @@ import {
   Check, ChevronDown, TrendingUp, Zap, Globe, Star,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getCoinColor } from "../utils/colors";
 import MotoGameModal from "../components/game/MotoGameModal";
 
 // ─── THEME ───────────────────────────────────────────────────────
@@ -220,7 +221,7 @@ function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   {c.image_url && <img src={c.image_url} alt={c.sym} style={{ width: 24, height: 24, borderRadius: "50%" }} />}
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary }}>{c.sym}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(c.sym) }}>{c.sym}</div>
                     <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{c.price}</div>
                   </div>
                 </div>
