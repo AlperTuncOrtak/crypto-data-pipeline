@@ -9,17 +9,6 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
   // We'll generate a fake stream of momentum data for the visual
   // In a real app, this would come from a websocket providing orderbook or volume pressure
   const [dataPoints, setDataPoints] = useState<number[]>([]);
-  const [commentaryIndex, setCommentaryIndex] = useState(0);
-
-  // Simulated AI commentary (could be dynamically generated from ChatGPT in real app)
-  const commentaries = useMemo(() => [
-    { type: 'bull', text: `Bulls are dominating ${symbol} order flow! High buying pressure detected.`, icon: <TrendingUp size={14} color="#28c840" /> },
-    { type: 'neutral', text: `Midfield battle: Price consolidating with low volume.`, icon: <Activity size={14} color="#888" /> },
-    { type: 'bear', text: `Heavy selling pressure! Bears are attacking the support level.`, icon: <TrendingDown size={14} color="#ff5f57" /> },
-    { type: 'bull', text: `Sudden volume spike! Bulls are breaking through resistance.`, icon: <Zap size={14} color="#febc2e" /> },
-    { type: 'neutral', text: `Market algorithms detecting a tightening range.`, icon: <Target size={14} color="#00c6ff" /> },
-    { type: 'bear', text: `Whale transfer detected: Possible incoming dump by bears.`, icon: <ShieldAlert size={14} color="#ff5f57" /> },
-  ], [symbol]);
 
   useEffect(() => {
     // Generate initial history (50 bars)
@@ -37,11 +26,6 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
         const clamped = Math.max(-100, Math.min(100, nextVal));
         return [...prev.slice(1), clamped];
       });
-      
-      // Randomly change commentary every ~5-10 seconds
-      if (Math.random() > 0.7) {
-        setCommentaryIndex(Math.floor(Math.random() * 6));
-      }
     }, 2000);
 
     return () => clearInterval(interval);
@@ -134,33 +118,26 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
         </div>
       </div>
 
-      {/* AI Commentary Feed */}
+      {/* Clean Metrics Feed */}
       <div style={{ 
         marginTop: 16, 
-        padding: 12, 
+        padding: "12px 16px", 
         background: 'var(--bg-surface)', 
         borderRadius: 8, 
         border: '1px solid var(--border-soft)',
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        justifyContent: 'space-between'
       }}>
-        <div style={{ padding: 6, background: 'var(--card-bg)', borderRadius: '50%' }}>
-          {commentaries[commentaryIndex].icon}
-        </div>
-        <motion.div 
-          key={commentaryIndex}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ flex: 1 }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isBullish ? '#28c840' : '#ff5f57', boxShadow: `0 0 8px ${isBullish ? '#28c840' : '#ff5f57'}` }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
-            {commentaries[commentaryIndex].text}
+            {isBullish ? "Buying Pressure Dominant" : "Selling Pressure Dominant"}
           </span>
-        </motion.div>
+        </div>
         
-        <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-          LIVE
+        <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color: isBullish ? '#28c840' : '#ff5f57' }}>
+          {isBullish ? '+' : ''}{currentMomentum}%
         </div>
       </div>
     </div>
