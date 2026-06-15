@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useMarket, useGainers, useLosers, useVolume, useTrending, useMarketStats } from "../hooks/useMarket";
 import { getCoinColor } from "../utils/colors";
 import CoinListCard from "../components/market/CoinListCard";
@@ -87,7 +88,9 @@ function Sparkline({ data, color, width = 80, height = 32 }) {
 function Card({ children, style = {}, featured = false, onClick }) {
   const [hov, setHov] = useState(false);
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
       style={{
         background: T.card,
@@ -108,7 +111,7 @@ function Card({ children, style = {}, featured = false, onClick }) {
       onMouseLeave={() => setHov(false)}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 

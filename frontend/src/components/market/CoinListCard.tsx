@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
 const ACCENT_COLORS = {
   orange:  'var(--accent)',
@@ -87,10 +88,14 @@ export default function CoinListCard({
       )}
 
       {data && data.length > 0 && (
-        <ul className="space-y-3">
-          {data.map((coin) => (
-            <li
+        <ul className="flex flex-col gap-4 relative z-10" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          {data.map((coin, i) => (
+            <motion.li
               key={coin.symbol}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+              whileHover={{ x: 4 }}
               onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
               className="flex items-center justify-between text-sm cursor-pointer transition-all group"
               style={{ padding: '4px 0' }}
@@ -129,7 +134,7 @@ export default function CoinListCard({
               <span className="font-mono whitespace-nowrap ml-2 font-semibold">
                 {renderValue(coin)}
               </span>
-            </li>
+            </motion.li>
           ))}
         </ul>
       )}
