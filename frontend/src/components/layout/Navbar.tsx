@@ -35,6 +35,7 @@ import { useTheme } from "../../hooks/useTheme";
 import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
 import { useTranslation } from "react-i18next";
+import { getCoinColor } from "../../utils/colors";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
@@ -533,7 +534,7 @@ export default function Navbar({
               </div>
               {marketData?.slice(0, 10).map((coin) => (
                 <div key={coin.symbol} className="stat-item">
-                  <span style={{ fontSize: 10, color: "var(--text-secondary)", fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
+                  <span style={{ fontSize: 10, color: getCoinColor(coin.symbol), fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
                   <span style={{ fontSize: 11, fontFamily: "monospace", color: "var(--text-primary)" }}>
                     ${Number(coin.current_price) < 1 ? Number(coin.current_price).toFixed(4) : Number(coin.current_price).toLocaleString()}
                   </span>
