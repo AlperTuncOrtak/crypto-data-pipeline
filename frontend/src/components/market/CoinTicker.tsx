@@ -66,14 +66,18 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
         <span style={{ 
           fontWeight: 800, 
-          fontSize: 13, 
+          fontSize: 14, 
           color: brandColor,
           textShadow: `0 0 8px ${brandColor}`
         }}>
           {baseAsset}
         </span>
-        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)' }}>
-          USDT
+        <span style={{ 
+          fontWeight: 600, 
+          fontSize: 11, 
+          color: 'var(--text-muted)' 
+        }}>
+          /USDT
         </span>
       </div>
       <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>
