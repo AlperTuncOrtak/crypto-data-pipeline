@@ -16,6 +16,8 @@
 // ============================================================
 
 
+import { motion } from "framer-motion"
+
 export default function Sparkline({ prices, width = 120, height = 40, trendOverride }) {
   // Veri yoksa veya tek nokta varsa bos render et
   if (!prices || prices.length < 2) {
@@ -77,16 +79,25 @@ export default function Sparkline({ prices, width = 120, height = 40, trendOverr
       className="overflow-visible"
     >
       {/* Hafif arka plan dolgusu */}
-      <path d={areaPath} fill={fill} />
+      <motion.path 
+        d={areaPath} 
+        fill={fill} 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.2 }}
+      />
 
       {/* Asil cizgi */}
-      <path
+      <motion.path
         d={linePath}
         fill="none"
         stroke={stroke}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
       />
     </svg>
   )
