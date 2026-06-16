@@ -544,5 +544,84 @@
     "delete_account_desc": "Hesabınızı ve tüm verilerinizi kalıcı olarak silin. Bu işlem geri alınamaz.",
     "delete_confirm": "Emin misiniz? Bu işlem geri alınamaz.",
     "delete_support": "Hesabınızı silmek için lütfen destek ile iletişime geçin."
+  },
+  "pricing": {
+    "badge": {
+      "most_popular": "En Popüler"
+    },
+    "free": {
+      "name": "Ücretsiz",
+      "desc": "Kripto analizine başlamak için mükemmel.",
+      "cta": "Ücretsiz Başla"
+    },
+    "pro": {
+      "name": "Pro",
+      "desc": "Piyasada avantaj elde etmek isteyen ciddi yatırımcılar için.",
+      "cta": "Pro'ya Yükselt"
+    },
+    "features": {
+      "live_data": "Canlı piyasa verisi (Gate.io, Bybit, OKX)",
+      "top10": "Piyasa değerine göre ilk 10 + Isı Haritası",
+      "coin_detail": "Coin detay sayfaları",
+      "watchlist_10": "İzleme listesi (10 coine kadar)",
+      "fg_index": "Korku ve Açgözlülük endeksi",
+      "portfolio_50": "Portföy takibi (50 işleme kadar)",
+      "tax_csv": "Vergi raporlaması (CSV dışa aktarma)",
+      "ai_ta": "Yapay Zeka Teknik Analiz (Altfins)",
+      "alerts": "Özel fiyat ve hacim alarmları",
+      "notifs": "Telegram / webhook bildirimleri",
+      "api": "API erişimi",
+      "all_free": "Ücretsiz plandaki her şey",
+      "portfolio_unlimited": "Portföy takibi (sınırsız işlem)",
+      "multi_csv": "Çoklu borsa CSV içe aktarma (Binance, Bybit, OKX, Coinbase, Kraken)",
+      "tax_pro": "Vergi raporu — FIFO Kar/Zarar, kısa/uzun vadeli",
+      "ai_portfolio": "Yapay Zeka portföy analizi (risk skoru, yeniden dengeleme)",
+      "ai_signals": "Altfins yapay zeka sinyalleri (150+ indikatör)",
+      "ai_market": "Gemini yapay zeka piyasa analizi",
+      "watchlist_unlimited": "Sınırsız izleme listesi",
+      "vol_anomaly": "Hacim anormalliği tespiti",
+      "priority_data": "Öncelikli veri güncellemeleri"
+    },
+    "current_plan": "MEVCUT PLAN",
+    "free_text": "Ücretsiz",
+    "mo": "/ay",
+    "save_year": "Yılda ${{amount}} tasarruf et",
+    "redirecting": "Yönlendiriliyor...",
+    "hero_badge": "Basit, şeffaf fiyatlandırma",
+    "hero_title1": "Daha akıllıca yatırım yapın.",
+    "hero_title2": "Günde bir kahveden daha az ödeyin.",
+    "hero_desc": "Dünya çapında binlerce trader tarafından kullanılan profesyonel kripto analitiği. Ücretsiz başlayın, hazır olduğunuzda yükseltin.",
+    "monthly": "Aylık",
+    "yearly": "Yıllık",
+    "trust": {
+      "ssl": "SSL şifrelemeli",
+      "uptime": "%99.9 çalışma süresi",
+      "alerts": "Gerçek zamanlı alarmlar",
+      "ai": "YZ destekli sinyaller",
+      "cancel": "İstediğin zaman iptal et"
+    },
+    "faq_title": "Sıkça sorulan sorular",
+    "faq": [
+      {
+        "q": "İstediğim zaman iptal edebilir miyim?",
+        "a": "Evet. Hesap ayarlarınızdan istediğiniz zaman iptal edebilirsiniz. Fatura döneminizin sonuna kadar erişiminiz devam eder."
+      },
+      {
+        "q": "Ücretsiz deneme süresi var mı?",
+        "a": "Ücretsiz plan size temel özelliklere kalıcı erişim sağlar. Pro özellikleri, ilk yükseltmenizde 7 gün boyunca ücretsiz olarak denenebilir."
+      },
+      {
+        "q": "Yapay zeka analizi nasıl çalışıyor?",
+        "a": "Anlaşılır piyasa değerlendirmeleri ve kişiselleştirilmiş alım satım tavsiyeleri oluşturmak için Altfins önceden hesaplanmış sinyallerini (2.200'den fazla coinde 150+ teknik gösterge) Gemini yapay zekası ile birleştiriyoruz."
+      },
+      {
+        "q": "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
+        "a": "Stripe aracılığıyla tüm önemli kredi ve banka kartlarını kabul ediyoruz. Kripto ödemeleri (USDT/USDC) istek üzerine mevcuttur."
+      }
+    ],
+    "still_not_sure": "Hala emin değil misiniz?",
+    "start_free_desc": "Ücretsiz planla başlayın — kredi kartı gerekmez.",
+    "get_started_free": "Ücretsiz başla →",
+    "payment_error": "Ödeme hatası. Lütfen tekrar deneyin veya hello@cryptoanalytics.com ile iletişime geçin"
   }
 }

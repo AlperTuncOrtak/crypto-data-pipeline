@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { apiClient } from "../api/client";
 import {
+import {
   Check,
   X,
   Crown,
@@ -20,81 +21,54 @@ import {
   Shield,
   ArrowRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // ── Plan verileri ─────────────────────────────────────────────
 const PLANS = [
   {
     id: "free",
-    name: "Free",
     icon: BarChart2,
     price: { monthly: 0, yearly: 0 },
     color: "rgba(255,255,255,0.1)",
     accent: "#888",
-    badge: null,
-    desc: "Perfect for getting started with crypto analytics.",
+    badge_key: null,
     features: [
-      { text: "Live market data (Gate.io, Bybit, OKX)", included: true },
-      { text: "Top 10 by market cap + Heatmap", included: true },
-      { text: "Coin detail pages", included: true },
-      { text: "Watchlist (up to 10 coins)", included: true },
-      { text: "Fear & Greed index", included: true },
-      { text: "Portfolio tracker (up to 50 trades)", included: false },
-      { text: "Tax reporting (CSV export)", included: false },
-      { text: "AI Technical Analysis (Altfins)", included: false },
-      { text: "Custom price & volume alerts", included: false },
-      { text: "Telegram / webhook notifications", included: false },
-      { text: "API access", included: false },
+      { key: "live_data", included: true },
+      { key: "top10", included: true },
+      { key: "coin_detail", included: true },
+      { key: "watchlist_10", included: true },
+      { key: "fg_index", included: true },
+      { key: "portfolio_50", included: false },
+      { key: "tax_csv", included: false },
+      { key: "ai_ta", included: false },
+      { key: "alerts", included: false },
+      { key: "notifs", included: false },
+      { key: "api", included: false },
     ],
-    cta: "Get Started Free",
     ctaVariant: "outline",
   },
   {
     id: "pro",
-    name: "Pro",
     icon: Crown,
     price: { monthly: 10, yearly: 7 },
     color: "rgba(245,166,35,0.12)",
     accent: "var(--accent)",
-    badge: "Most Popular",
-    desc: "For serious traders who want an edge.",
+    badge_key: "most_popular",
     features: [
-      { text: "Everything in Free", included: true },
-      { text: "Portfolio tracker (unlimited trades)", included: true },
-      {
-        text: "Multi-exchange CSV import (Binance, Bybit, OKX, Coinbase, Kraken)",
-        included: true,
-      },
-      { text: "Tax report — FIFO P&L, short/long term", included: true },
-      { text: "AI portfolio analysis (risk score, rebalance)", included: true },
-      { text: "Altfins AI signals (150+ indicators)", included: true },
-      { text: "Gemini AI market analysis", included: true },
-      { text: "Unlimited watchlist", included: true },
-      { text: "Custom price & volume alerts", included: true },
-      { text: "Volume anomaly detection", included: true },
-      { text: "Priority data updates", included: true },
-      { text: "API access", included: false },
+      { key: "all_free", included: true },
+      { key: "portfolio_unlimited", included: true },
+      { key: "multi_csv", included: true },
+      { key: "tax_pro", included: true },
+      { key: "ai_portfolio", included: true },
+      { key: "ai_signals", included: true },
+      { key: "ai_market", included: true },
+      { key: "watchlist_unlimited", included: true },
+      { key: "alerts", included: true },
+      { key: "vol_anomaly", included: true },
+      { key: "priority_data", included: true },
+      { key: "api", included: false },
     ],
-    cta: "Upgrade to Pro",
     ctaVariant: "primary",
-  },
-];
-
-const FAQS = [
-  {
-    q: "Can I cancel anytime?",
-    a: "Yes. Cancel anytime from your account settings. You keep access until the end of your billing period.",
-  },
-  {
-    q: "Is there a free trial?",
-    a: "The Free plan gives you permanent access to core features. Pro features can be tried for 7 days free when you first upgrade.",
-  },
-  {
-    q: "How does the AI analysis work?",
-    a: "We combine Altfins pre-computed signals (150+ technical indicators across 2,200+ coins) with Gemini AI to generate plain-English market assessments and personalized trade advice.",
-  },
-  {
-    q: "What payment methods do you accept?",
-    a: "We accept all major credit cards and debit cards via Stripe. Crypto payments (USDT/USDC) are also available on request.",
   },
 ];
 
@@ -138,6 +112,7 @@ function PlanCard({
   isLoggedIn,
   checkoutLoading,
 }) {
+  const { t } = useTranslation();
   const Icon = plan.icon;
   const price = billing === "yearly" ? plan.price.yearly : plan.price.monthly;
   const isCurrent = currentPlan === plan.id;
@@ -183,7 +158,7 @@ function PlanCard({
       onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
     >
       {/* Badge */}
-      {plan.badge && (
+      {plan.badge_key && (
         <div
           style={{
             position: "absolute",
@@ -202,7 +177,7 @@ function PlanCard({
             whiteSpace: "nowrap",
           }}
         >
-          {plan.badge}
+          {t(`pricing.badge.${plan.badge_key}`)}
         </div>
       )}
 
@@ -230,10 +205,10 @@ function PlanCard({
           <Icon size={18} style={{ color: plan.accent }} />
         </div>
         <div>
-          <div style={{ fontSize: 17, fontWeight: 700 }}>{plan.name}</div>
+          <div style={{ fontSize: 17, fontWeight: 700 }}>{t(`pricing.${plan.id}.name`)}</div>
           {isCurrent && (
             <div style={{ fontSize: 10, color: plan.accent, fontWeight: 600 }}>
-              CURRENT PLAN
+              {t("pricing.current_plan")}
             </div>
           )}
         </div>
@@ -242,7 +217,7 @@ function PlanCard({
       {/* Price */}
       <div style={{ marginBottom: 8 }}>
         {price === 0 ? (
-          <div style={{ fontSize: 40, fontWeight: 900 }}>Free</div>
+          <div style={{ fontSize: 40, fontWeight: 900 }}>{t("pricing.free_text")}</div>
         ) : (
           <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
             <span
@@ -260,7 +235,7 @@ function PlanCard({
               {price}
             </span>
             <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
-              /mo
+              {t("pricing.mo")}
             </span>
           </div>
         )}
@@ -273,7 +248,7 @@ function PlanCard({
               marginTop: 2,
             }}
           >
-            Save ${(plan.price.monthly - price) * 12}/year
+            {t("pricing.save_year", { amount: (plan.price.monthly - price) * 12 })}
           </div>
         )}
       </div>
@@ -286,7 +261,7 @@ function PlanCard({
           lineHeight: 1.5,
         }}
       >
-        {plan.desc}
+        {t(`pricing.${plan.id}.desc`)}
       </p>
 
       {/* CTA */}
@@ -319,17 +294,17 @@ function PlanCard({
         }}
       >
         {isCurrent
-          ? "Current Plan"
+          ? t("pricing.current_plan")
           : checkoutLoading && plan.id === "pro"
-            ? "Redirecting..."
-            : plan.cta}
+            ? t("pricing.redirecting")
+            : t(`pricing.${plan.id}.cta`)}
         {!isCurrent && !checkoutLoading && <ArrowRight size={14} />}
       </button>
 
       {/* Features */}
       <div>
         {plan.features.map((f, i) => (
-          <FeatureRow key={i} {...f} />
+          <FeatureRow key={i} text={t(`pricing.features.${f.key}`)} included={f.included} />
         ))}
       </div>
     </div>
@@ -338,11 +313,14 @@ function PlanCard({
 
 // ── Main ──────────────────────────────────────────────────────
 export default function Pricing({ onAuthOpen }) {
+  const { t } = useTranslation();
   const { isLoggedIn, isPro, plan: currentPlan } = useAuth();
   const navigate = useNavigate();
   const [billing, setBilling] = useState("monthly");
   const [openFaq, setOpenFaq] = useState(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  const faqs = t("pricing.faq", { returnObjects: true });
 
   async function handleSelect(plan) {
     if (plan.id === "free") {
@@ -364,7 +342,7 @@ export default function Pricing({ onAuthOpen }) {
       window.location.href = resp.data.url;
     } catch (e) {
       alert(
-        "Payment error. Please try again or contact hello@cryptoanalytics.com",
+        t("pricing.payment_error"),
       );
     } finally {
       setCheckoutLoading(false);
@@ -393,7 +371,7 @@ export default function Pricing({ onAuthOpen }) {
           <span
             style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)" }}
           >
-            Simple, transparent pricing
+            {t("pricing.hero_badge")}
           </span>
         </div>
         <h1
@@ -404,7 +382,7 @@ export default function Pricing({ onAuthOpen }) {
             marginBottom: 12,
           }}
         >
-          Invest smarter.
+          {t("pricing.hero_title1")}
           <br />
           <span
             style={{
@@ -413,7 +391,7 @@ export default function Pricing({ onAuthOpen }) {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Pay less than a coffee a day.
+            {t("pricing.hero_title2")}
           </span>
         </h1>
         <p
@@ -424,8 +402,7 @@ export default function Pricing({ onAuthOpen }) {
             margin: "0 auto 28px",
           }}
         >
-          Professional crypto analytics used by thousands of traders worldwide.
-          Start free, upgrade when ready.
+          {t("pricing.hero_desc")}
         </p>
 
         {/* Billing toggle */}
@@ -457,7 +434,7 @@ export default function Pricing({ onAuthOpen }) {
                 transition: "all 0.2s",
               }}
             >
-              {b === "monthly" ? "Monthly" : "Yearly"}
+              {b === "monthly" ? t("pricing.monthly") : t("pricing.yearly")}
               {b === "yearly" && (
                 <span
                   style={{
@@ -508,19 +485,19 @@ export default function Pricing({ onAuthOpen }) {
         }}
       >
         {[
-          { icon: Shield, text: "SSL encrypted" },
-          { icon: TrendingUp, text: "99.9% uptime" },
-          { icon: Bell, text: "Real-time alerts" },
-          { icon: Brain, text: "AI-powered signals" },
-          { icon: FileText, text: "Cancel anytime" },
-        ].map(({ icon: Icon, text }) => (
+          { icon: Shield, key: "ssl" },
+          { icon: TrendingUp, key: "uptime" },
+          { icon: Bell, key: "alerts" },
+          { icon: Brain, key: "ai" },
+          { icon: FileText, key: "cancel" },
+        ].map(({ icon: Icon, key }) => (
           <div
-            key={text}
+            key={key}
             style={{ display: "flex", alignItems: "center", gap: 8 }}
           >
             <Icon size={14} style={{ color: "var(--text-muted)" }} />
             <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
-              {text}
+              {t(`pricing.trust.${key}`)}
             </span>
           </div>
         ))}
@@ -536,10 +513,10 @@ export default function Pricing({ onAuthOpen }) {
             marginBottom: 24,
           }}
         >
-          Frequently asked questions
+          {t("pricing.faq_title")}
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {FAQS.map((faq, i) => (
+          {Array.isArray(faqs) && faqs.map((faq, i) => (
             <div
               key={i}
               style={{
@@ -614,12 +591,12 @@ export default function Pricing({ onAuthOpen }) {
         }}
       >
         <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-          Still not sure?
+          {t("pricing.still_not_sure")}
         </h3>
         <p
           style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}
         >
-          Start with the free plan — no credit card required.
+          {t("pricing.start_free_desc")}
         </p>
         <button
           onClick={() => (isLoggedIn ? navigate("/") : onAuthOpen?.())}
@@ -635,7 +612,7 @@ export default function Pricing({ onAuthOpen }) {
             boxShadow: "none",
           }}
         >
-          Get started for free →
+          {t("pricing.get_started_free")}
         </button>
       </div>
     </div>

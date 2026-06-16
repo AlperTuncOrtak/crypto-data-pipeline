@@ -555,5 +555,84 @@
     "delete_account_desc": "Permanently delete your account and all data. This cannot be undone.",
     "delete_confirm": "Are you sure? This cannot be undone.",
     "delete_support": "Please contact support to delete your account."
+  },
+  "pricing": {
+    "badge": {
+      "most_popular": "Most Popular"
+    },
+    "free": {
+      "name": "Free",
+      "desc": "Perfect for getting started with crypto analytics.",
+      "cta": "Get Started Free"
+    },
+    "pro": {
+      "name": "Pro",
+      "desc": "For serious traders who want an edge.",
+      "cta": "Upgrade to Pro"
+    },
+    "features": {
+      "live_data": "Live market data (Gate.io, Bybit, OKX)",
+      "top10": "Top 10 by market cap + Heatmap",
+      "coin_detail": "Coin detail pages",
+      "watchlist_10": "Watchlist (up to 10 coins)",
+      "fg_index": "Fear & Greed index",
+      "portfolio_50": "Portfolio tracker (up to 50 trades)",
+      "tax_csv": "Tax reporting (CSV export)",
+      "ai_ta": "AI Technical Analysis (Altfins)",
+      "alerts": "Custom price & volume alerts",
+      "notifs": "Telegram / webhook notifications",
+      "api": "API access",
+      "all_free": "Everything in Free",
+      "portfolio_unlimited": "Portfolio tracker (unlimited trades)",
+      "multi_csv": "Multi-exchange CSV import (Binance, Bybit, OKX, Coinbase, Kraken)",
+      "tax_pro": "Tax report — FIFO P&L, short/long term",
+      "ai_portfolio": "AI portfolio analysis (risk score, rebalance)",
+      "ai_signals": "Altfins AI signals (150+ indicators)",
+      "ai_market": "Gemini AI market analysis",
+      "watchlist_unlimited": "Unlimited watchlist",
+      "vol_anomaly": "Volume anomaly detection",
+      "priority_data": "Priority data updates"
+    },
+    "current_plan": "CURRENT PLAN",
+    "free_text": "Free",
+    "mo": "/mo",
+    "save_year": "Save ${{amount}}/year",
+    "redirecting": "Redirecting...",
+    "hero_badge": "Simple, transparent pricing",
+    "hero_title1": "Invest smarter.",
+    "hero_title2": "Pay less than a coffee a day.",
+    "hero_desc": "Professional crypto analytics used by thousands of traders worldwide. Start free, upgrade when ready.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "trust": {
+      "ssl": "SSL encrypted",
+      "uptime": "99.9% uptime",
+      "alerts": "Real-time alerts",
+      "ai": "AI-powered signals",
+      "cancel": "Cancel anytime"
+    },
+    "faq_title": "Frequently asked questions",
+    "faq": [
+      {
+        "q": "Can I cancel anytime?",
+        "a": "Yes. Cancel anytime from your account settings. You keep access until the end of your billing period."
+      },
+      {
+        "q": "Is there a free trial?",
+        "a": "The Free plan gives you permanent access to core features. Pro features can be tried for 7 days free when you first upgrade."
+      },
+      {
+        "q": "How does the AI analysis work?",
+        "a": "We combine Altfins pre-computed signals (150+ technical indicators across 2,200+ coins) with Gemini AI to generate plain-English market assessments and personalized trade advice."
+      },
+      {
+        "q": "What payment methods do you accept?",
+        "a": "We accept all major credit cards and debit cards via Stripe. Crypto payments (USDT/USDC) are also available on request."
+      }
+    ],
+    "still_not_sure": "Still not sure?",
+    "start_free_desc": "Start with the free plan — no credit card required.",
+    "get_started_free": "Get started for free →",
+    "payment_error": "Payment error. Please try again or contact hello@cryptoanalytics.com"
   }
 }
