@@ -107,7 +107,7 @@ export default function SentimentSpeedometer() {
       </div>
 
       <div style={{ position: 'relative', width, height, zIndex: 1 }}>
-        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
           <defs>
             <linearGradient id="speedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ff3333" />
@@ -124,100 +124,98 @@ export default function SentimentSpeedometer() {
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
+
+            <mask id="gaugeMask">
+              <motion.path
+                d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="24"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                initial={{ strokeDashoffset: circumference }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+              />
+            </mask>
           </defs>
 
-          {/* Background Track */}
+          {/* Tick Labels */}
+          <text x={cx - r - 16} y={cy + 4} fill="var(--text-muted)" fontSize="10" fontWeight="700" textAnchor="end">0</text>
+          <text x={cx + r + 16} y={cy + 4} fill="var(--text-muted)" fontSize="10" fontWeight="700" textAnchor="start">100</text>
+          <text x={cx} y={cy - r - 16} fill="var(--text-muted)" fontSize="10" fontWeight="700" textAnchor="middle">50</text>
+
+          {/* Background Segmented Track */}
           <path
             d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
             fill="none"
             stroke="var(--border)"
-            strokeWidth="14"
-            strokeLinecap="round"
+            strokeWidth="16"
+            strokeDasharray="4 6"
           />
 
-          {/* Colored Track with Animation */}
-          <motion.path
+          {/* Colored Segmented Track */}
+          <path
             d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
             fill="none"
             stroke="url(#speedGradient)"
-            strokeWidth="14"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            strokeWidth="16"
+            strokeDasharray="4 6"
+            mask="url(#gaugeMask)"
             filter="url(#glow)"
           />
+
+          {/* Sleek SVG Needle */}
+          <motion.g
+            initial={{ rotate: -90 }}
+            animate={{ rotate: needleRotation }}
+            transition={{ duration: 1.5, ease: "easeOut", type: 'spring', damping: 15 }}
+            style={{ transformOrigin: `${cx}px ${cy}px` }}
+          >
+            {/* Needle Body */}
+            <polygon 
+              points={`${cx - 5},${cy} ${cx + 5},${cy} ${cx},${cy - r + 10}`} 
+              fill="var(--text-primary)" 
+              style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.2))' }}
+            />
+            {/* Glowing Tip */}
+            <circle cx={cx} cy={cy - r + 10} r="3" fill="#fff" style={{ filter: `drop-shadow(0 0 8px ${currentColor})` }} />
+          </motion.g>
+
+          {/* Center Pin */}
+          <circle cx={cx} cy={cy} r="10" fill="var(--bg-surface)" stroke="var(--text-primary)" strokeWidth="4" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' }} />
         </svg>
-
-        {/* Needle Indicator */}
-        <motion.div
-          initial={{ rotate: -90 }}
-          animate={{ rotate: needleRotation }}
-          transition={{ duration: 1.5, ease: "easeOut", type: 'spring', damping: 15 }}
-          style={{
-            position: 'absolute',
-            bottom: height - cy,
-            left: cx - 2, // center width of needle
-            width: 4,
-            height: r - 10,
-            background: 'var(--text-primary)',
-            transformOrigin: 'bottom center',
-            borderRadius: '4px 4px 0 0',
-            boxShadow: '0 0 10px rgba(255,255,255,0.5)'
-          }}
-        >
-          {/* Needle glowing tip */}
-          <div style={{
-            position: 'absolute',
-            top: -2,
-            left: -2,
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            background: '#fff',
-            boxShadow: `0 0 12px 2px ${currentColor}`
-          }} />
-        </motion.div>
-
-        {/* Center Base / Pin */}
-        <div style={{
-          position: 'absolute',
-          bottom: height - cy - 8,
-          left: cx - 8,
-          width: 16,
-          height: 16,
-          borderRadius: '50%',
-          background: 'var(--bg-surface)',
-          border: '4px solid var(--text-primary)',
-          boxShadow: '0 0 10px rgba(0,0,0,0.5)'
-        }} />
 
         {/* Score Readout */}
         <div style={{
           position: 'absolute',
-          bottom: height - cy + 20, // push down below the pin
+          bottom: height - cy + 24, // push down slightly below the pin
           left: '50%',
           transform: 'translateX(-50%)',
           textAlign: 'center'
         }}>
           <div style={{ 
-            fontSize: 42, 
+            fontSize: 48, 
             fontWeight: 900, 
             fontFamily: 'monospace',
             color: currentColor,
-            textShadow: `0 0 20px ${currentColor}60`,
-            lineHeight: 1
+            textShadow: `0 0 24px ${currentColor}88`,
+            lineHeight: 1,
+            letterSpacing: '-0.05em'
           }}>
             {score}
           </div>
           <div style={{ 
             fontSize: 12, 
             fontWeight: 800, 
-            letterSpacing: '0.1em',
+            letterSpacing: '0.15em',
             color: currentColor,
             textTransform: 'uppercase',
-            marginTop: 4
+            marginTop: 6,
+            background: 'rgba(0,0,0,0.4)',
+            padding: '4px 12px',
+            borderRadius: 12,
+            border: `1px solid ${currentColor}44`
           }}>
             {classification}
           </div>
