@@ -312,7 +312,11 @@
     "pct_of_max": "% of max",
     "pct_of_total": "% of total",
     "current_position": "Current position",
-    "above_atl": "% above ATL"
+    "above_atl": "% above ATL",
+    "attack_momentum": "Live Attack Momentum",
+    "real_time_pressure": "Real-Time Pressure",
+    "buying_pressure": "Buying Pressure Dominant",
+    "selling_pressure": "Selling Pressure Dominant"
   },
   "alerts": {
     "title": "Alerts",

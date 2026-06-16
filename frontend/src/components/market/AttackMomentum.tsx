@@ -1,37 +1,91 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Activity, ShieldAlert, TrendingUp, TrendingDown, Target, Zap } from 'lucide-react';
 
 export default function AttackMomentum({ symbol, brandColor }: { symbol: string, brandColor: string }) {
   const { t } = useTranslation();
   
-  // We'll generate a fake stream of momentum data for the visual
-  // In a real app, this would come from a websocket providing orderbook or volume pressure
-  const [dataPoints, setDataPoints] = useState<number[]>([]);
+  // Real-time momentum data
+  const [dataPoints, setDataPoints] = useState<number[]>(Array(50).fill(0));
+  const [currentMomentum, setCurrentMomentum] = useState<number>(0);
+  
+  const buyVolumeRef = useRef<number>(0);
+  const sellVolumeRef = useRef<number>(0);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Generate initial history (50 bars)
-    const history = Array.from({ length: 50 }, () => {
-      // Return a value between -100 (Bear max) and 100 (Bull max)
-      return Math.floor(Math.random() * 200) - 100;
-    });
-    setDataPoints(history);
+    // Reset data when symbol changes
+    setDataPoints(Array(50).fill(0));
+    setCurrentMomentum(0);
+    buyVolumeRef.current = 0;
+    sellVolumeRef.current = 0;
 
-    // Simulate live ticking
+    if (!symbol) return;
+
+    const streamName = `${symbol.toLowerCase()}usdt@aggTrade`;
+    const wsUrl = `wss://stream.binance.com:9443/ws/${streamName}`;
+
+    const connectWs = () => {
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.e === "aggTrade") {
+            const price = parseFloat(data.p);
+            const quantity = parseFloat(data.q);
+            const isBuyerMaker = data.m; // true means seller was taker (sell pressure), false means buyer was taker (buy pressure)
+            const volume = price * quantity;
+
+            if (isBuyerMaker) {
+              sellVolumeRef.current += volume;
+            } else {
+              buyVolumeRef.current += volume;
+            }
+          }
+        } catch (err) {
+          console.error("Error parsing aggTrade", err);
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error("Binance WS error", err);
+      };
+    };
+
+    connectWs();
+
+    // Ticker to calculate momentum every 2 seconds
     const interval = setInterval(() => {
+      const buyVol = buyVolumeRef.current;
+      const sellVol = sellVolumeRef.current;
+      const totalVol = buyVol + sellVol;
+
+      // Calculate momentum as a percentage (-100 to 100)
+      let momentum = 0;
+      if (totalVol > 0) {
+        momentum = ((buyVol - sellVol) / totalVol) * 100;
+      }
+
+      setCurrentMomentum(momentum);
       setDataPoints(prev => {
-        const nextVal = prev[prev.length - 1] + (Math.floor(Math.random() * 60) - 30);
-        // clamp to -100 / 100
-        const clamped = Math.max(-100, Math.min(100, nextVal));
-        return [...prev.slice(1), clamped];
+        return [...prev.slice(1), momentum];
       });
+
+      // Reset accumulators
+      buyVolumeRef.current = 0;
+      sellVolumeRef.current = 0;
     }, 2000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(interval);
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [symbol]);
 
-  const currentMomentum = dataPoints[dataPoints.length - 1] || 0;
   const isBullish = currentMomentum >= 0;
 
   return (
@@ -51,10 +105,10 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
             background: isBullish ? '#28c840' : '#ff5f57',
             boxShadow: `0 0 10px ${isBullish ? '#28c840' : '#ff5f57'}`
           }} />
-          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>Live Attack Momentum</h3>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>{t("coin_detail.attack_momentum", "Live Attack Momentum")}</h3>
         </div>
         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Real-Time Pressure
+          {t("coin_detail.real_time_pressure", "Real-Time Pressure")}
         </div>
       </div>
 
@@ -132,12 +186,12 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: isBullish ? '#28c840' : '#ff5f57', boxShadow: `0 0 8px ${isBullish ? '#28c840' : '#ff5f57'}` }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
-            {isBullish ? "Buying Pressure Dominant" : "Selling Pressure Dominant"}
+            {isBullish ? t("coin_detail.buying_pressure", "Buying Pressure Dominant") : t("coin_detail.selling_pressure", "Selling Pressure Dominant")}
           </span>
         </div>
         
         <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color: isBullish ? '#28c840' : '#ff5f57' }}>
-          {isBullish ? '+' : ''}{currentMomentum}%
+          {isBullish ? '+' : ''}{currentMomentum.toFixed(1)}%
         </div>
       </div>
     </div>

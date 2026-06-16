@@ -301,7 +301,11 @@
     "pct_of_max": "maksimumun %'si",
     "pct_of_total": "toplamın %'si",
     "current_position": "Mevcut konum",
-    "above_atl": "% ATL'nin üzerinde"
+    "above_atl": "% ATL'nin üzerinde",
+    "attack_momentum": "Canlı Atak Momentumu",
+    "real_time_pressure": "Gerçek Zamanlı Baskı",
+    "buying_pressure": "Alıcı Baskısı Hakim",
+    "selling_pressure": "Satıcı Baskısı Hakim"
   },
   "alerts": {
     "title": "Alarmlar",
