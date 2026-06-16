@@ -2,6 +2,7 @@
 // pages/CreateAlert.jsx
 // ============================================================
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useMarket } from "../hooks/useMarket";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -65,6 +66,7 @@ function fmtPrice(n) {
 }
 
 export default function CreateAlert() {
+  const { t } = useTranslation();
   const { data: marketData } = useMarket(500);
   const { isLoggedIn } = useAuth();
 
@@ -158,11 +160,10 @@ export default function CreateAlert() {
             gap: 10,
           }}
         >
-          <Bell size={24} style={{ color: "var(--accent)" }} /> Create Alert
+          <Bell size={24} style={{ color: "var(--accent)" }} /> {t("create_alert.title")}
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
-          Set price and volume alerts for your coins. Alerts are checked every
-          30 seconds.
+          {t("create_alert.subtitle")}
         </p>
       </div>
 
@@ -189,7 +190,7 @@ export default function CreateAlert() {
               marginBottom: 8,
             }}
           >
-            Coin
+            {t("create_alert.coin")}
           </label>
           <div style={{ position: "relative" }}>
             <div
@@ -212,8 +213,8 @@ export default function CreateAlert() {
                 type="text"
                 placeholder={
                   selectedCoin
-                    ? `${selectedCoin.name} selected`
-                    : "Search coin (BTC, ETH...)"
+                    ? t("create_alert.search_placeholder_selected", { name: selectedCoin.name })
+                    : t("create_alert.search_placeholder")
                 }
                 value={search}
                 onChange={(e) => {
@@ -368,7 +369,7 @@ export default function CreateAlert() {
               marginBottom: 8,
             }}
           >
-            Alert Type
+            {t("create_alert.alert_type")}
           </label>
           <div
             style={{
@@ -377,20 +378,20 @@ export default function CreateAlert() {
               gap: 8,
             }}
           >
-            {ALERT_TYPES.map((t) => {
-              const Icon = t.icon;
-              const selected = alertType === t.id;
+            {ALERT_TYPES.map((typeObj) => {
+              const Icon = typeObj.icon;
+              const selected = alertType === typeObj.id;
               return (
                 <button
-                  key={t.id}
-                  onClick={() => setAlertType(t.id)}
+                  key={typeObj.id}
+                  onClick={() => setAlertType(typeObj.id)}
                   style={{
                     padding: "10px 12px",
                     borderRadius: 10,
                     cursor: "pointer",
-                    border: `1px solid ${selected ? t.color + "44" : "var(--border)"}`,
+                    border: `1px solid ${selected ? typeObj.color + "44" : "var(--border)"}`,
                     background: selected
-                      ? `${t.color}10`
+                      ? `${typeObj.color}10`
                       : "var(--bg-elevated)",
                     display: "flex",
                     alignItems: "center",
@@ -401,7 +402,7 @@ export default function CreateAlert() {
                   <Icon
                     size={14}
                     style={{
-                      color: selected ? t.color : "var(--text-muted)",
+                      color: selected ? typeObj.color : "var(--text-muted)",
                       flexShrink: 0,
                     }}
                   />
@@ -409,10 +410,10 @@ export default function CreateAlert() {
                     style={{
                       fontSize: 12,
                       fontWeight: selected ? 600 : 400,
-                      color: selected ? t.color : "var(--text-muted)",
+                      color: selected ? typeObj.color : "var(--text-muted)",
                     }}
                   >
-                    {t.label}
+                    {t(`create_alert.types.${typeObj.id}`)}
                   </span>
                 </button>
               );
@@ -430,7 +431,7 @@ export default function CreateAlert() {
               }}
             >
               <Zap size={11} style={{ color: "var(--accent)" }} />
-              {selectedType.desc}
+              {t(`create_alert.types.${selectedType.id}_desc`)}
             </div>
           )}
         </div>
@@ -449,10 +450,10 @@ export default function CreateAlert() {
             }}
           >
             {isPercent
-              ? "Threshold (%)"
+              ? t("create_alert.target_label_percent")
               : isVolume
-                ? "Volume Multiplier"
-                : "Target Price (USD)"}
+                ? t("create_alert.target_label_volume")
+                : t("create_alert.target_label_price")}
           </label>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ position: "relative", flex: 1 }}>
@@ -472,9 +473,9 @@ export default function CreateAlert() {
                 type="number"
                 placeholder={
                   isPercent
-                    ? "e.g. 5"
+                    ? t("create_alert.target_placeholder_percent")
                     : isVolume
-                      ? "e.g. 2"
+                      ? t("create_alert.target_placeholder_volume")
                       : selectedCoin
                         ? selectedCoin.current_price?.toFixed(2)
                         : "0.00"
@@ -507,7 +508,7 @@ export default function CreateAlert() {
                   whiteSpace: "nowrap",
                 }}
               >
-                Current:{" "}
+                {t("create_alert.current")}{" "}
                 <span
                   style={{
                     color: "var(--text-primary)",
@@ -535,11 +536,11 @@ export default function CreateAlert() {
               marginBottom: 8,
             }}
           >
-            Note (optional)
+            {t("create_alert.note")}
           </label>
           <input
             type="text"
-            placeholder="e.g. Support level break"
+            placeholder={t("create_alert.note_placeholder")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             style={{
@@ -588,11 +589,11 @@ export default function CreateAlert() {
         >
           {saved ? (
             <>
-              <Check size={16} /> Alert Saved!
+              <Check size={16} /> {t("create_alert.alert_saved")}
             </>
           ) : (
             <>
-              <Bell size={15} /> Create Alert
+              <Bell size={15} /> {t("create_alert.btn_create")}
             </>
           )}
         </button>
@@ -602,12 +603,12 @@ export default function CreateAlert() {
       {alerts.length > 0 && (
         <div>
           <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 14 }}>
-            Your Alerts ({alerts.length})
+            {t("create_alert.your_alerts", { count: alerts.length })}
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {alerts.map((a) => {
-              const t = ALERT_TYPES.find((x) => x.id === a.type);
-              const Icon = t?.icon || Bell;
+              const typeObj = ALERT_TYPES.find((x) => x.id === a.type);
+              const Icon = typeObj?.icon || Bell;
               return (
                 <div
                   key={a.id}
@@ -639,12 +640,12 @@ export default function CreateAlert() {
                           fontSize: 11,
                           padding: "2px 7px",
                           borderRadius: 5,
-                          background: `${t?.color || "#888"}18`,
-                          color: t?.color || "#888",
+                          background: `${typeObj?.color || "#888"}18`,
+                          color: typeObj?.color || "#888",
                           fontWeight: 600,
                         }}
                       >
-                        {a.typeLabel}
+                        {typeObj ? t(`create_alert.types.${typeObj.id}`) : a.typeLabel}
                       </span>
                       {a.note && (
                         <span
@@ -661,10 +662,10 @@ export default function CreateAlert() {
                         marginTop: 2,
                       }}
                     >
-                      Target:{" "}
+                      {t("create_alert.target")}{" "}
                       <span
                         style={{
-                          color: t?.color,
+                          color: typeObj?.color,
                           fontFamily: "monospace",
                           fontWeight: 600,
                         }}
@@ -676,7 +677,7 @@ export default function CreateAlert() {
                             : fmtPrice(a.target)}
                       </span>
                       <span style={{ marginLeft: 8 }}>
-                        · Created {new Date(a.created_at).toLocaleDateString()}
+                        · {t("create_alert.created")} {new Date(a.created_at).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMarket } from "../hooks/useMarket";
 import {
   Brain,
@@ -343,6 +344,7 @@ function EMAIndicator({ trend }) {
 
 // ── YENİ: Market Context Kartı ──────────────────────────────
 function MarketContextCard({ marketContext }) {
+  const { t } = useTranslation();
   if (!marketContext) return null;
   const fg = marketContext.fear_greed || {};
   const trend = marketContext.price_trend || {};
@@ -367,7 +369,7 @@ function MarketContextCard({ marketContext }) {
           className="text-xs font-bold uppercase tracking-wider"
           style={{ color: "var(--text-muted)", letterSpacing: "0.08em" }}
         >
-          Market Context
+          {t("ai_analysis.market_context")}
         </span>
       </div>
 
@@ -384,7 +386,7 @@ function MarketContextCard({ marketContext }) {
             className="text-xs font-medium"
             style={{ color: "var(--text-muted)" }}
           >
-            Fear & Greed
+            {t("ai_analysis.fear_greed")}
           </span>
           <span className="text-xs font-bold" style={{ color: fgCfg.color }}>
             {fgCfg.label}
@@ -420,13 +422,13 @@ function MarketContextCard({ marketContext }) {
               />
             </div>
             <div className="flex justify-between">
-              <span style={{ fontSize: 9, color: "#e74c3c" }}>Fear</span>
+              <span style={{ fontSize: 9, color: "#e74c3c" }}>{t("ai_analysis.fear")}</span>
               <span
                 style={{ fontSize: 11, fontWeight: 900, color: fgCfg.color }}
               >
                 {fg.value}
               </span>
-              <span style={{ fontSize: 9, color: "#2ecc71" }}>Greed</span>
+              <span style={{ fontSize: 9, color: "#2ecc71" }}>{t("ai_analysis.greed")}</span>
             </div>
           </>
         )}
@@ -445,7 +447,7 @@ function MarketContextCard({ marketContext }) {
             className="text-xs font-medium"
             style={{ color: "var(--text-muted)" }}
           >
-            7-Day Trend
+            {t("ai_analysis.seven_day_trend")}
           </span>
           <span className="text-xs font-bold" style={{ color: trendCfg.color }}>
             {trendCfg.icon}{" "}
@@ -498,7 +500,7 @@ function MarketContextCard({ marketContext }) {
             className="text-xs font-medium"
             style={{ color: "var(--text-muted)" }}
           >
-            Volume
+            {t("ai_analysis.volume")}
           </span>
           <span
             className="text-xs font-bold"
@@ -536,7 +538,7 @@ function MarketContextCard({ marketContext }) {
           >
             <AlertTriangle size={10} style={{ color: "#e74c3c" }} />
             <span style={{ fontSize: 10, color: "#e74c3c", fontWeight: 600 }}>
-              Volume anomaly detected
+              {t("ai_analysis.volume_anomaly")}
             </span>
           </div>
         )}
@@ -550,7 +552,7 @@ function MarketContextCard({ marketContext }) {
               className="text-xs font-medium"
               style={{ color: "var(--text-muted)" }}
             >
-              News Sentiment
+              {t("ai_analysis.news_sentiment")}
             </span>
             <span
               className="text-xs font-bold"
@@ -614,6 +616,7 @@ function MarketContextCard({ marketContext }) {
 // ── YENİ: Indicator Breakdown (AI açıklamaları) ─────────────
 // ── Bullishness Score Gauge ─────────────────────────────────
 function BullishnessGauge({ score }) {
+  const { t } = useTranslation();
   if (score === null || score === undefined) return null;
   const s = Math.min(Math.max(score, 0), 100);
   const color =
@@ -665,7 +668,7 @@ function BullishnessGauge({ score }) {
           className="text-xs font-bold uppercase tracking-wider"
           style={{ color: "var(--text-muted)", letterSpacing: "0.08em" }}
         >
-          Bullishness Score
+          {t("ai_analysis.bullishness_score")}
         </span>
       </div>
       <div className="flex items-center gap-8">
@@ -719,7 +722,7 @@ function BullishnessGauge({ score }) {
               fill="#e74c3c"
               style={{ fontSize: 8, fontWeight: 700 }}
             >
-              Bear
+              {t("ai_analysis.bear")}
             </text>
             <text
               x={cx + radius - 2}
@@ -728,7 +731,7 @@ function BullishnessGauge({ score }) {
               fill="#2ecc71"
               style={{ fontSize: 8, fontWeight: 700 }}
             >
-              Bull
+              {t("ai_analysis.bull")}
             </text>
           </svg>
         </div>
@@ -766,14 +769,14 @@ function BullishnessGauge({ score }) {
           </div>
           <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
             {s >= 75
-              ? "Strong bullish momentum across indicators"
+              ? t("ai_analysis.momentum_strong_bull")
               : s >= 60
-                ? "More bullish signals than bearish"
+                ? t("ai_analysis.momentum_bull")
                 : s >= 41
-                  ? "Mixed signals — no clear direction"
+                  ? t("ai_analysis.momentum_neutral")
                   : s >= 21
-                    ? "Bearish pressure dominates"
-                    : "Strong bearish momentum"}
+                    ? t("ai_analysis.momentum_bear")
+                    : t("ai_analysis.momentum_strong_bear")}
           </div>
         </div>
       </div>
@@ -831,6 +834,7 @@ const ACTION_TAG_CONFIG = {
 };
 
 function ActionTagsCard({ tags }) {
+  const { t } = useTranslation();
   if (!tags || tags.length === 0) return null;
   return (
     <div
@@ -847,7 +851,7 @@ function ActionTagsCard({ tags }) {
           className="text-xs font-bold uppercase tracking-wider"
           style={{ color: "var(--text-muted)", letterSpacing: "0.08em" }}
         >
-          Recommended Actions
+          {t("ai_analysis.recommended_actions")}
         </span>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -890,6 +894,7 @@ function ActionTagsCard({ tags }) {
 }
 
 function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
+  const { t } = useTranslation();
   const items = [
     { key: "rsi", label: "RSI", fallback: technicalData?.rsi_detail },
     { key: "macd", label: "MACD", fallback: technicalData?.macd_detail },
@@ -940,7 +945,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
             className="text-xs font-bold uppercase tracking-wider"
             style={{ color: "var(--text-muted)", letterSpacing: "0.08em" }}
           >
-            Indicator Analysis
+            {t("ai_analysis.indicator_analysis")}
           </span>
         </div>
         {conf.dominant && (
@@ -1025,7 +1030,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
           <div className="flex items-center gap-2">
             <AlertTriangle size={11} style={{ color: "var(--accent)" }} />
             <span style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600 }}>
-              Mixed signals — indicators conflict. Exercise extra caution.
+              {t("ai_analysis.mixed_signals_warning")}
             </span>
           </div>
         </div>
@@ -1035,6 +1040,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
 }
 
 export default function AIAnalysis() {
+  const { t } = useTranslation();
   const { data: marketData } = useMarket(500);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
@@ -1215,12 +1221,12 @@ export default function AIAnalysis() {
                   {[
                     {
                       key: "entryPrice",
-                      label: "Entry Price",
+                      label: t("ai_analysis.entry_price"),
                       placeholder: selected?.current_price?.toFixed(2),
                     },
                     {
                       key: "quantity",
-                      label: "Quantity",
+                      label: t("ai_analysis.quantity"),
                       placeholder: `0.5 ${selected?.symbol?.toUpperCase()}`,
                     },
                   ].map((field) => (
@@ -1284,25 +1290,25 @@ export default function AIAnalysis() {
                       marginBottom: 8,
                     }}
                   >
-                    Position
+                    {t("ai_analysis.position")}
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
                     {[
                       {
                         key: "long",
-                        label: "Long",
+                        label: t("ai_analysis.long"),
                         color: "#2ecc71",
                         icon: TrendingUp,
                       },
                       {
                         key: "short",
-                        label: "Short",
+                        label: t("ai_analysis.short"),
                         color: "#e74c3c",
                         icon: TrendingDown,
                       },
                       {
                         key: "watching",
-                        label: "Watching",
+                        label: t("ai_analysis.watching"),
                         color: "var(--accent)",
                         icon: Minus,
                       },
@@ -1370,7 +1376,7 @@ export default function AIAnalysis() {
                         marginBottom: 8,
                       }}
                     >
-                      Risk
+                      {t("ai_analysis.risk")}
                     </div>
                     <div
                       style={{
@@ -1380,9 +1386,9 @@ export default function AIAnalysis() {
                       }}
                     >
                       {[
-                        { key: "conservative", label: "Conservative" },
-                        { key: "balanced", label: "Balanced" },
-                        { key: "aggressive", label: "Aggressive" },
+                        { key: "conservative", label: t("ai_analysis.conservative") },
+                        { key: "balanced", label: t("ai_analysis.balanced") },
+                        { key: "aggressive", label: t("ai_analysis.aggressive") },
                       ].map((opt) => {
                         const active = userInput.riskTolerance === opt.key;
                         return (
@@ -1431,7 +1437,7 @@ export default function AIAnalysis() {
                         marginBottom: 8,
                       }}
                     >
-                      Timeframe
+                      {t("ai_analysis.timeframe")}
                     </div>
                     <div
                       style={{
@@ -1441,9 +1447,9 @@ export default function AIAnalysis() {
                       }}
                     >
                       {[
-                        { key: "short", label: "1–7 days" },
-                        { key: "medium", label: "1–4 weeks" },
-                        { key: "long", label: "1–6 months" },
+                        { key: "short", label: t("ai_analysis.time_short") },
+                        { key: "medium", label: t("ai_analysis.time_medium") },
+                        { key: "long", label: t("ai_analysis.time_long") },
                       ].map((opt) => {
                         const active = userInput.timeframe === opt.key;
                         return (
@@ -1507,7 +1513,7 @@ export default function AIAnalysis() {
                       gap: 8,
                     }}
                   >
-                    <Brain size={15} /> Run Analysis
+                    <Brain size={15} /> {t("ai_analysis.run_analysis")}
                   </button>
                   <button
                     onClick={() => {
@@ -1531,7 +1537,7 @@ export default function AIAnalysis() {
                       cursor: "pointer",
                     }}
                   >
-                    Skip
+                    {t("ai_analysis.skip")}
                   </button>
                 </div>
                 <div
@@ -1542,7 +1548,7 @@ export default function AIAnalysis() {
                     color: "var(--text-muted)",
                   }}
                 >
-                  All fields optional · Data stays local
+                  {t("ai_analysis.optional_fields")}
                 </div>
               </div>
             </div>
@@ -1572,14 +1578,13 @@ export default function AIAnalysis() {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                AI Technical Analysis
+                {t("ai_analysis.title")}
               </h1>
               <p
                 className="text-xs mt-0.5"
                 style={{ color: "var(--text-muted)" }}
               >
-                Altfins Signals · Groq Llama 3.3 · RSI · MACD · BB · Stochastic
-                · EMA · Fear&Greed
+                {t("ai_analysis.subtitle")}
               </p>
             </div>
           </div>
@@ -1600,8 +1605,8 @@ export default function AIAnalysis() {
               }}
             >
               <AlertTriangle size={12} style={{ color: "#e74c3c" }} />
-              <span style={{ fontWeight: 700 }}>Not financial advice.</span>
-              <span style={{ opacity: 0.8 }}>Technical analysis only.</span>
+              <span style={{ fontWeight: 700 }}>{t("ai_analysis.not_financial_advice")}</span>
+              <span style={{ opacity: 0.8 }}>{t("ai_analysis.technical_only")}</span>
             </div>
             <button
               onClick={() =>
@@ -1618,14 +1623,14 @@ export default function AIAnalysis() {
                 textDecoration: "underline",
               }}
             >
-              Review disclaimer
+              {t("ai_analysis.review_disclaimer")}
             </button>
           </div>
         </div>
       </div>
 
       {/* COİN SEÇİCİ */}
-      <div style={{ marginBottom: 24, position: "relative" }}>
+      <div style={{ marginBottom: 24, position: "relative", zIndex: 100 }}>
         <div
           style={{
             display: "flex",
@@ -1728,7 +1733,7 @@ export default function AIAnalysis() {
           <input
             type="text"
             placeholder={
-              selected && !search ? "" : "Search coin — BTC, ETH, SOL..."
+              selected && !search ? "" : t("ai_analysis.search_placeholder")
             }
             value={search}
             onChange={(e) => {
@@ -1823,11 +1828,11 @@ export default function AIAnalysis() {
                   size={13}
                   style={{ animation: "spin 1s linear infinite" }}
                 />{" "}
-                Analyzing...
+                {t("ai_analysis.analyzing")}
               </>
             ) : (
               <>
-                <Brain size={13} /> Analyze
+                <Brain size={13} /> {t("ai_analysis.analyze_btn")}
               </>
             )}
           </button>
@@ -1995,7 +2000,7 @@ export default function AIAnalysis() {
             Analyzing {selected?.name}...
           </div>
           <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
-            Fetching signals · Fear & Greed · 7-day trend · Volume
+            {t("ai_analysis.fetching")}
           </div>
         </div>
       )}
@@ -2052,7 +2057,7 @@ export default function AIAnalysis() {
                       marginBottom: 4,
                     }}
                   >
-                    TECHNICAL OUTLOOK
+                    {t("ai_analysis.technical_outlook")}
                   </div>
                   <div
                     style={{
@@ -2135,7 +2140,7 @@ export default function AIAnalysis() {
                       marginBottom: 6,
                     }}
                   >
-                    CONFIDENCE
+                    {t("ai_analysis.confidence")}
                   </div>
                   <div
                     style={{
@@ -2186,7 +2191,7 @@ export default function AIAnalysis() {
                       marginBottom: 10,
                     }}
                   >
-                    SENTIMENT
+                    {t("ai_analysis.sentiment")}
                   </div>
                   <span
                     style={{
@@ -2224,7 +2229,7 @@ export default function AIAnalysis() {
                   className="text-xs font-bold uppercase tracking-wider"
                   style={{ color: "var(--accent)", letterSpacing: "0.08em" }}
                 >
-                  Personalized Advice
+                  {t("ai_analysis.personalized_advice")}
                 </span>
               </div>
               <p
@@ -2244,7 +2249,7 @@ export default function AIAnalysis() {
                         className="text-xs mb-1"
                         style={{ color: "var(--text-muted)" }}
                       >
-                        Stop Loss
+                        {t("ai_analysis.stop_loss")}
                       </div>
                       <div
                         className="text-sm font-bold font-mono"
@@ -2260,7 +2265,7 @@ export default function AIAnalysis() {
                         className="text-xs mb-1"
                         style={{ color: "var(--text-muted)" }}
                       >
-                        Take Profit
+                        {t("ai_analysis.take_profit")}
                       </div>
                       <div
                         className="text-sm font-bold font-mono"
@@ -2276,7 +2281,7 @@ export default function AIAnalysis() {
           )}
 
           {/* SATIR 1: Technical + AI Summary + Risk/Levels */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
             {/* Technical Indicators */}
             <div
               className="rounded-2xl"
@@ -2295,18 +2300,18 @@ export default function AIAnalysis() {
                     letterSpacing: "0.08em",
                   }}
                 >
-                  Technical Indicators
+                  {t("ai_analysis.technical_indicators")}
                 </span>
               </div>
               {[
                 {
-                  label: "RSI",
+                  label: t("ai_analysis.rsi"),
                   signal: result.technical_data?.rsi_signal,
                   detail: result.technical_data?.rsi_detail,
                   extra: <RSIGauge value={result.technical_data?.rsi} />,
                 },
                 {
-                  label: "MACD",
+                  label: t("ai_analysis.macd"),
                   signal: result.technical_data?.macd_trend,
                   detail: result.technical_data?.macd_detail,
                   extra: (
@@ -2314,7 +2319,7 @@ export default function AIAnalysis() {
                   ),
                 },
                 {
-                  label: "Bollinger Bands",
+                  label: t("ai_analysis.bb"),
                   signal: result.technical_data?.bb_signal,
                   detail: result.technical_data?.bb_detail,
                   extra: (
@@ -2322,7 +2327,7 @@ export default function AIAnalysis() {
                   ),
                 },
                 {
-                  label: "Stochastic",
+                  label: t("ai_analysis.stoch"),
                   signal: result.technical_data?.stoch_signal,
                   detail: result.technical_data?.stoch_detail,
                   extra: null,
@@ -2367,7 +2372,7 @@ export default function AIAnalysis() {
                     className="text-xs font-medium"
                     style={{ color: "var(--text-muted)" }}
                   >
-                    EMA Trend
+                    {t("ai_analysis.ema_trend")}
                   </span>
                 </div>
                 <EMAIndicator trend={result.technical_data?.ema_trend} />
@@ -2380,7 +2385,7 @@ export default function AIAnalysis() {
                   opacity: 0.6,
                 }}
               >
-                {result.technical_data?.data_points} data points
+                {result.technical_data?.data_points} {t("ai_analysis.data_points")}
               </div>
             </div>
 
@@ -2402,7 +2407,7 @@ export default function AIAnalysis() {
                     letterSpacing: "0.08em",
                   }}
                 >
-                  AI Summary
+                  {t("ai_analysis.ai_summary")}
                 </span>
               </div>
               <p
@@ -2425,7 +2430,7 @@ export default function AIAnalysis() {
                     letterSpacing: "0.08em",
                   }}
                 >
-                  Key Factors
+                  {t("ai_analysis.key_factors")}
                 </div>
                 <div className="flex flex-col gap-2.5">
                   {result.key_factors?.map((factor, i) => (
@@ -2470,7 +2475,7 @@ export default function AIAnalysis() {
                       letterSpacing: "0.08em",
                     }}
                   >
-                    Risk Level
+                    {t("ai_analysis.risk_level")}
                   </span>
                 </div>
                 <div
@@ -2526,24 +2531,24 @@ export default function AIAnalysis() {
                       letterSpacing: "0.08em",
                     }}
                   >
-                    Key Levels
+                    {t("ai_analysis.key_levels")}
                   </span>
                 </div>
                 <div className="flex flex-col gap-3">
                   {[
                     {
-                      label: "Resistance",
+                      label: t("ai_analysis.resistance"),
                       value: result.resistance_level,
                       color: "#e74c3c",
                     },
                     {
-                      label: "Current",
+                      label: t("ai_analysis.current"),
                       value: result.coin?.current_price,
                       color: "var(--text-primary)",
                       bold: true,
                     },
                     {
-                      label: "Support",
+                      label: t("ai_analysis.support"),
                       value: result.support_level,
                       color: "#2ecc71",
                     },
@@ -2591,7 +2596,7 @@ export default function AIAnalysis() {
           {/* SATIR 2: Bullishness + Action Tags */}
           {(result.bullishness_score !== undefined ||
             result.action_tags?.length > 0) && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
               <BullishnessGauge score={result.bullishness_score} />
               <ActionTagsCard tags={result.action_tags} />
             </div>
@@ -2599,7 +2604,7 @@ export default function AIAnalysis() {
 
           {/* SATIR 3: Market Context + Indicator Breakdown */}
           {(result.market_context || result.indicator_breakdown) && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
               <MarketContextCard marketContext={result.market_context} />
               <IndicatorBreakdownCard
                 breakdown={result.indicator_breakdown}
