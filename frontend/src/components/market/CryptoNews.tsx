@@ -6,25 +6,24 @@ export default function CryptoNews({ symbol }: { symbol?: string }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // We use Google News RSS via rss2json for robust, free news
-    const query = symbol ? `${symbol}+crypto` : 'crypto+market';
-    const rssUrl = encodeURIComponent(`https://news.google.com/rss/search?q=${query}&hl=en-US&gl=US&ceid=US:en`);
-    const url = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
+    // We use CryptoCompare News API for reliable crypto news
+    const url = symbol 
+      ? `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&categories=${symbol.toUpperCase()}`
+      : 'https://min-api.cryptocompare.com/data/v2/news/?lang=EN';
 
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        if (data && data.items && data.items.length > 0) {
-          // Limit to top 5 news items and format to match old structure
-          const formattedNews = data.items.slice(0, 5).map((item: any) => ({
-            id: item.guid,
-            url: item.link,
-            imageurl: item.thumbnail || null,
-            source: "Google News",
-            published_on: new Date(item.pubDate).getTime() / 1000,
+        if (data && data.Data && data.Data.length > 0) {
+          // Limit to top 5 news items
+          const formattedNews = data.Data.slice(0, 5).map((item: any) => ({
+            id: item.id || item.guid,
+            url: item.url || item.guid,
+            imageurl: item.imageurl || null,
+            source: item.source_info?.name || item.source,
+            published_on: item.published_on,
             title: item.title,
-            // strip HTML tags from description
-            body: item.description ? item.description.replace(/<[^>]*>?/gm, '') : ''
+            body: item.body
           }));
           setNews(formattedNews);
         } else {

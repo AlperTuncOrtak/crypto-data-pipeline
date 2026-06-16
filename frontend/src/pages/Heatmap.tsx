@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useMarket } from "../hooks/useMarket";
 import { LayoutGrid, RefreshCw } from "lucide-react";
 
@@ -121,6 +122,7 @@ function squarify(items, x, y, w, h) {
 
 // ─── Tooltip ─────────────────────────────────────────────────
 function Tooltip({ coin, pos }) {
+  const { t } = useTranslation();
   if (!coin || !pos) return null;
   const colors = changeColor(coin.price_change_percentage_24h);
   const pct = Number(coin.price_change_percentage_24h) || 0;
@@ -228,10 +230,10 @@ function Tooltip({ coin, pos }) {
       {/* Veri satırları */}
       <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
         {[
-          { label: "Price", value: fmt(coin.current_price), mono: true },
-          { label: "Market Cap", value: fmtCap(coin.market_cap), mono: true },
+          { label: t("heatmap.price"), value: fmt(coin.current_price), mono: true },
+          { label: t("heatmap.market_cap"), value: fmtCap(coin.market_cap), mono: true },
           {
-            label: "Volume (24h)",
+            label: t("heatmap.volume_24h"),
             value: fmtCap(coin.total_volume),
             mono: true,
           },
@@ -366,6 +368,7 @@ function HeatCell({ cell, onHover, onClick }) {
 const LIMITS = [50, 100, 200];
 
 export default function Heatmap() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const market = useMarket(200);
   const [limit, setLimit] = useState(100);
@@ -432,10 +435,10 @@ export default function Heatmap() {
             }}
           >
             <LayoutGrid size={24} style={{ color: "var(--accent)" }} />
-            Market Heatmap
+            {t("heatmap.title")}
           </h1>
           <p style={{ marginTop: 4, fontSize: 13, color: "var(--text-muted)" }}>
-            Box size = market cap · Color = 24h change
+            {t("heatmap.subtitle")}
           </p>
         </div>
 
@@ -459,7 +462,7 @@ export default function Heatmap() {
                   transition: "all 0.15s",
                 }}
               >
-                Top {l}
+                {t("heatmap.top", { count: l })}
               </button>
             ))}
           </div>
@@ -488,7 +491,7 @@ export default function Heatmap() {
                   : "none",
               }}
             />
-            Refresh
+            {t("heatmap.refresh")}
           </button>
         </div>
       </div>
@@ -548,7 +551,7 @@ export default function Heatmap() {
                 fontSize: 14,
               }}
             >
-              Loading...
+              {t("heatmap.loading")}
             </div>
           )}
           {!market.isLoading && coins.length === 0 && (
@@ -563,7 +566,7 @@ export default function Heatmap() {
                 fontSize: 14,
               }}
             >
-              No data available
+              {t("heatmap.no_data")}
             </div>
           )}
 
@@ -723,12 +726,12 @@ export default function Heatmap() {
               : 0;
             return (
               <>
-                <span>Top {coins.length} coins shown</span>
-                <span style={{ color: "#2ecc71" }}>▲ {gainers} up</span>
-                <span style={{ color: "#e74c3c" }}>▼ {losers} down</span>
-                {neutral > 0 && <span>— {neutral} unchanged</span>}
+                <span>{t("heatmap.shown", { count: coins.length })}</span>
+                <span style={{ color: "#2ecc71" }}>▲ {gainers} {t("heatmap.up")}</span>
+                <span style={{ color: "#e74c3c" }}>▼ {losers} {t("heatmap.down")}</span>
+                {neutral > 0 && <span>— {neutral} {t("heatmap.unchanged")}</span>}
                 <span>
-                  Avg change:{" "}
+                  {t("heatmap.avg_change")}{" "}
                   <strong
                     style={{
                       color: Number(avgChange) >= 0 ? "#2ecc71" : "#e74c3c",

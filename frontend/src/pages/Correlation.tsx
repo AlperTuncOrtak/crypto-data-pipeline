@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useMarket } from '../hooks/useMarket'
 import { useMultiCoinCorrelation } from '../hooks/useAnalysis'
 import { Network, X, Search } from 'lucide-react'
@@ -32,6 +33,7 @@ function getCorrelationColor(corr) {
 }
 
 function CoinSearchDropdown({ allCoins, selected, onAdd }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
   const filtered = search.trim()
@@ -51,7 +53,7 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
         <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
         <input
           type="text"
-          placeholder="Add coin to compare..."
+          placeholder={t("correlation.search_placeholder")}
           value={search}
           onChange={e => { setSearch(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
@@ -95,6 +97,7 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
 }
 
 export default function Correlation() {
+  const { t } = useTranslation()
   const { data: allCoins } = useMarket(2000)
   const [selected, setSelected] = useState([])
   const [activeRange, setActiveRange] = useState(1)  // index into TIME_RANGES
@@ -129,9 +132,9 @@ export default function Correlation() {
             <Network size={22} style={{ color: 'var(--accent)' }} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Correlation Matrix</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t("correlation.title")}</h1>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              Pearson correlation coefficient for up to 5 coins
+              {t("correlation.subtitle")}
             </p>
           </div>
         </div>
@@ -159,8 +162,8 @@ export default function Correlation() {
               </div>
             )
           })}
-          {selected.length === 0 && <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Select 2-5 coins to correlate</span>}
-          {selected.length === 5 && <span className="text-xs" style={{ color: 'var(--accent)' }}>Maximum 5 coins</span>}
+          {selected.length === 0 && <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t("correlation.select_prompt")}</span>}
+          {selected.length === 5 && <span className="text-xs" style={{ color: 'var(--accent)' }}>{t("correlation.max_coins")}</span>}
         </div>
       </div>
 
@@ -172,9 +175,9 @@ export default function Correlation() {
         }}>
           <Network size={40} style={{ color: 'var(--text-muted)', opacity: 0.3, marginBottom: 16 }} />
           <div className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-            {selected.length === 0 ? 'Select at least 2 coins to correlate' : 'Add one more coin to see correlation'}
+            {selected.length === 0 ? t("correlation.empty_state_1") : t("correlation.empty_state_2")}
           </div>
-          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Values from -1.0 (opposite) to +1.0 (identical)</div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{t("correlation.empty_state_desc")}</div>
         </div>
       )}
 
@@ -185,8 +188,8 @@ export default function Correlation() {
           <div className="rounded-2xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '24px' }}>
             <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
               <div>
-                <div className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>Correlation Heatmap</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6, marginTop: 2 }}>Pearson correlation coefficient</div>
+                <div className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{t("correlation.heatmap_title")}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6, marginTop: 2 }}>{t("correlation.heatmap_subtitle")}</div>
               </div>
               
               <div className="flex items-center gap-1 rounded-xl p-1" style={{ backgroundColor: 'var(--bg-elevated)' }}>
@@ -210,7 +213,7 @@ export default function Correlation() {
 
             {correlation.isLoading ? (
               <div className="flex items-center justify-center" style={{ height: 200 }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Calculating matrix...</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{t("correlation.calculating")}</div>
               </div>
             ) : correlation.data && correlation.data.length > 0 ? (
               <div style={{ overflowX: 'auto', display: 'flex', paddingBottom: 16 }}>
@@ -266,7 +269,7 @@ export default function Correlation() {
               </div>
             ) : (
               <div className="flex items-center justify-center" style={{ height: 200 }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Not enough data for correlation</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{t("correlation.not_enough_data")}</div>
               </div>
             )}
           </div>

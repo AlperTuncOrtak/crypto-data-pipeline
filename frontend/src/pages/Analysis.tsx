@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
   CartesianGrid, ResponsiveContainer, ReferenceLine,
@@ -80,6 +81,7 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 function CoinSearchDropdown({ allCoins, selected, onAdd }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
   const filtered = search.trim()
@@ -99,7 +101,7 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
         <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
         <input
           type="text"
-          placeholder="Add coin to compare..."
+          placeholder={t("analysis.search_placeholder")}
           value={search}
           onChange={e => { setSearch(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
@@ -143,6 +145,7 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
 }
 
 export default function Analysis() {
+  const { t } = useTranslation()
   const { data: allCoins } = useMarket(2000)
   const [selected, setSelected] = useState([])
   const [activeRange, setActiveRange] = useState(1)  // index into TIME_RANGES
@@ -180,9 +183,9 @@ export default function Analysis() {
             <GitCompare size={22} style={{ color: 'var(--accent)' }} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Compare Coins</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t("analysis.title")}</h1>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              Normalized performance comparison · Up to 5 coins
+              {t("analysis.subtitle")}
             </p>
           </div>
         </div>
@@ -210,8 +213,8 @@ export default function Analysis() {
               </div>
             )
           })}
-          {selected.length === 0 && <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Select 2-5 coins to compare</span>}
-          {selected.length === 5 && <span className="text-xs" style={{ color: 'var(--accent)' }}>Maximum 5 coins</span>}
+          {selected.length === 0 && <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t("analysis.select_prompt")}</span>}
+          {selected.length === 5 && <span className="text-xs" style={{ color: 'var(--accent)' }}>{t("analysis.max_coins")}</span>}
         </div>
       </div>
 
@@ -223,9 +226,9 @@ export default function Analysis() {
         }}>
           <GitCompare size={40} style={{ color: 'var(--text-muted)', opacity: 0.3, marginBottom: 16 }} />
           <div className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-            {selected.length === 0 ? 'Select at least 2 coins to compare' : 'Add one more coin to start comparing'}
+            {selected.length === 0 ? t("analysis.empty_state_1") : t("analysis.empty_state_2")}
           </div>
-          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Performance normalized to start = 0% for fair comparison</div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{t("analysis.empty_state_desc")}</div>
         </div>
       )}
 
@@ -261,7 +264,7 @@ export default function Analysis() {
                     </div>
 
                     <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      {TIME_RANGES[activeRange].label} Return
+                      {TIME_RANGES[activeRange].label} {t("analysis.return")}
                     </div>
                     <div className="flex items-center gap-1.5">
                       {isUp ? <TrendingUp size={16} style={{ color: '#2ecc71' }} /> : <TrendingDown size={16} style={{ color: '#e74c3c' }} />}
@@ -274,11 +277,11 @@ export default function Analysis() {
 
                     <div className="flex justify-between">
                       <div>
-                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Start</div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t("analysis.start")}</div>
                         <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{formatPrice(row.start_price)}</div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Current</div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t("analysis.current")}</div>
                         <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-primary)', fontWeight: 700 }}>{formatPrice(row.latest_price)}</div>
                       </div>
                     </div>
@@ -293,8 +296,8 @@ export default function Analysis() {
             {/* Chart header */}
             <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
               <div>
-                <div className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>Price Comparison</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6, marginTop: 2 }}>Normalized to start = 0%</div>
+                <div className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{t("analysis.chart_title")}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6, marginTop: 2 }}>{t("analysis.chart_subtitle")}</div>
               </div>
               <div className="flex items-center gap-3">
                 {/* Coin legend */}
@@ -330,7 +333,7 @@ export default function Analysis() {
 
             {history.isLoading && (
               <div className="flex items-center justify-center" style={{ height: 400 }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading chart data...</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{t("analysis.loading")}</div>
               </div>
             )}
 
@@ -374,7 +377,7 @@ export default function Analysis() {
 
             {chartData.length === 0 && !history.isLoading && (
               <div className="flex items-center justify-center" style={{ height: 400 }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>No history data available for this time range</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{t("analysis.no_data")}</div>
               </div>
             )}
           </div>
