@@ -5,13 +5,15 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useMarket, useMarketStats } from "../hooks/useMarket";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
   Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
-  Check, ChevronDown, TrendingUp, Zap, Globe, Star,
+  Check, ChevronDown, TrendingUp, Zap, Globe, Star, Activity, ShieldAlert, Target, ChevronRight, ShieldCheck, ZapIcon
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
+import SentimentSpeedometer from "../components/market/SentimentSpeedometer";
 import MotoGameModal from "../components/game/MotoGameModal";
 
 // ─── THEME ───────────────────────────────────────────────────────
@@ -415,6 +417,20 @@ export default function Landing({ onAuthOpen }) {
             <span style={{ fontSize: 12, color: T.textMuted }}>{t('landing.feat3.m_total')}</span>
             <span style={{ fontSize: 20, fontWeight: 900, color: T.green, fontFamily: "monospace" }}>+$4,340</span>
           </div>
+        </div>
+      ),
+    },
+    {
+      badge: "PSYCHOLOGY",
+      badgeColor: "#f59e0b",
+      icon: Activity,
+      title: "AI Sentiment Speedometer",
+      desc: "Read the market's psychological state instantly. Our AI models analyze social velocity, volume pressure, and volatility to output a real-time Fear & Greed index.",
+      points: ["Real-time Fear/Greed tracking", "Social sentiment analysis", "Predictive market reversals"],
+      mockupSide: "left",
+      mockup: (
+        <div style={{ pointerEvents: "none", transform: "scale(0.9)", transformOrigin: "center right", width: "100%", maxWidth: 360 }}>
+          <SentimentSpeedometer mockValue={23} mockClassification="Extreme Fear" />
         </div>
       ),
     },

@@ -7,6 +7,7 @@ import CoinListCard from "../components/market/CoinListCard";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
 import MarketOracle from "../components/market/MarketOracle";
 import HeatmapWidget from "../components/market/HeatmapWidget";
+import SentimentSpeedometer from "../components/market/SentimentSpeedometer";
 import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight, BarChart2, Bell, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -218,72 +219,6 @@ function CoinCard({ coin, navigate, featured = false }) {
             </div>
           </div>
           <Sparkline data={fakeSparkline} color={color} width={80} height={36} />
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-// ─── FEAR & GREED ────────────────────────────────────────────────
-function FearGreedGauge({ coins }) {
-  const { t } = useTranslation();
-  const [score, setScore] = useState(50);
-  const [text, setText] = useState(t('dashboard.neutral'));
-  const [color, setColor] = useState(T.purple);
-
-  useEffect(() => {
-    if (!coins || coins.length === 0) return;
-    const up = coins.filter(c => Number(c.price_change_percentage_24h) > 0).length;
-    const total = coins.length || 1;
-    const btc = coins.find(c => c.symbol.toLowerCase() === "btc");
-    const btcChange = btc ? Number(btc.price_change_percentage_24h) : 0;
-    const val = Math.max(0, Math.min(100, Math.round((up / total) * 100 + btcChange * 4)));
-    setScore(val);
-    if (val <= 20) { setText(t('dashboard.extreme_fear')); setColor(T.red); }
-    else if (val <= 40) { setText(t('dashboard.fear')); setColor("#f97316"); }
-    else if (val <= 60) { setText(t('dashboard.neutral')); setColor(T.purple); }
-    else if (val <= 80) { setText(t('dashboard.greed')); setColor(T.green); }
-    else { setText(t('dashboard.extreme_greed')); setColor("#10b981"); }
-  }, [coins, t]);
-
-  const up = coins?.filter(c => Number(c.price_change_percentage_24h) > 0).length || 0;
-  const down = coins?.filter(c => Number(c.price_change_percentage_24h) < 0).length || 0;
-  const radius = 68;
-  const circumference = Math.PI * radius;
-  const dashOffset = circumference - (score / 100) * circumference;
-
-  return (
-    <Card style={{ padding: "24px" }}>
-      <SectionLabel>{t('dashboard.sentiment')}</SectionLabel>
-
-      {/* Gauge */}
-      <div style={{ position: "relative", width: 180, margin: "0 auto 20px" }}>
-        <svg viewBox="0 0 160 95" style={{ width: "100%", overflow: "visible" }}>
-          <path d="M 14 80 A 68 68 0 0 1 146 80" fill="none" stroke={T.border} strokeWidth="10" strokeLinecap="round" />
-          <path
-            d="M 14 80 A 68 68 0 0 1 146 80"
-            fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
-            strokeDasharray={circumference} strokeDashoffset={dashOffset}
-            style={{ transition: "stroke-dashoffset 1.5s cubic-bezier(0.25,1,0.5,1), stroke 0.8s ease", filter: `drop-shadow(0 0 6px ${color}88)` }}
-          />
-        </svg>
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
-          <div style={{ fontSize: 40, fontWeight: 900, color, letterSpacing: "-0.04em", fontFamily: "monospace", textShadow: `0 0 20px ${color}66` }}>
-            {score}
-          </div>
-          <div style={{ fontSize: 11, color: T.textMuted }}>/ 100 · {text}</div>
-        </div>
-      </div>
-
-      {/* Up / Down pills */}
-      <div style={{ display: "flex", gap: 8 }}>
-        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.greenBg, textAlign: "center" }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: T.green, fontFamily: "monospace" }}>↑ {up}</div>
-          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>{t('dashboard.gaining')}</div>
-        </div>
-        <div style={{ flex: 1, padding: "10px", borderRadius: 12, background: T.redBg, textAlign: "center" }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: T.red, fontFamily: "monospace" }}>↓ {down}</div>
-          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>{t('dashboard.losing')}</div>
         </div>
       </div>
     </Card>
@@ -536,13 +471,9 @@ export default function Dashboard() {
         {/* ── RIGHT SIDEBAR ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-          {/* Fear & Greed */}
+          {/* Sentiment Speedometer */}
           <Reveal delay={0.1}>
-            {coins.length > 0 ? <FearGreedGauge coins={coins} /> : (
-              <Card style={{ padding: "24px", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ fontSize: 12, color: T.textMuted }}>{t('dashboard.loading_sentiment')}</div>
-              </Card>
-            )}
+            <SentimentSpeedometer />
           </Reveal>
 
           {/* Gainers */}
