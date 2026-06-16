@@ -13,35 +13,45 @@ export default function CoinRadarChart({ coin }: CoinRadarChartProps) {
   // Base color from coin
   const color = getCoinColor(coin?.symbol);
 
-  // Generate dynamic but stable data based on coin properties to make it look realistic
+  // Generate 100% REAL data based on actual coin metrics
   const data = useMemo(() => {
     if (!coin) return [];
     
-    // Seed from market cap rank or symbol length to keep it consistent per coin
-    const seed = coin.market_cap_rank || (coin.symbol?.length || 5);
-    const mcapRankFactor = Math.max(10, 100 - (coin.market_cap_rank || 100) / 10);
-    
-    // Momentum: high if price changed significantly
+    // 1. Momentum: Based on 24h price change. 
+    // If it changes 10%, it's very high momentum (score 80+).
     const change24h = Math.abs(Number(coin.price_change_percentage_24h) || 0);
-    const momentum = Math.min(100, 40 + change24h * 5);
+    const momentum = Math.min(100, Math.max(10, change24h * 8));
     
-    // Liquidity: high if volume is high
+    // 2. Liquidity: Volume / Market Cap ratio
+    // If volume is 10% of market cap, it's highly liquid (score 80+).
     const volume = Number(coin.total_volume) || 0;
-    const liquidity = Math.min(100, Math.max(20, (Math.log10(volume + 1) / 11) * 100));
+    const mcap = Number(coin.market_cap) || 1;
+    const volToMcapRatio = volume / mcap;
+    const liquidity = Math.min(100, Math.max(10, volToMcapRatio * 800));
     
-    // Volatility
-    const volatility = Math.min(100, 30 + change24h * 3 + (seed % 20));
+    // 3. Volatility: High - Low ratio in 24h
+    const high = Number(coin.high_24h) || 0;
+    const low = Number(coin.low_24h) || 0;
+    const current = Number(coin.current_price) || 1;
+    const spread = high > 0 && low > 0 ? (high - low) / current : 0;
+    const volatility = Math.min(100, Math.max(10, spread * 1000)); // 10% spread = 100 score
     
-    // Community & Dev Activity (mocked but stable)
-    const community = Math.min(100, mcapRankFactor + (seed % 15));
-    const devActivity = Math.min(100, mcapRankFactor + ((seed * 3) % 25));
+    // 4. Resilience (Direnç): How close to ATH? 
+    // If -5% from ATH, score is 95. If -90%, score is 10.
+    const athChange = Number(coin.ath_change_percentage) || -100;
+    const resilience = Math.min(100, Math.max(10, 100 + athChange));
+    
+    // 5. Market Power (Piyasa Gücü): Based on Rank
+    // Rank 1 = 100, Rank 100 = 60, Rank 1000 = 10
+    const rank = Number(coin.market_cap_rank) || 1000;
+    const marketPower = Math.max(10, 100 - Math.log10(rank) * 30);
 
     return [
       { subject: 'Momentum', A: Math.round(momentum), fullMark: 100 },
       { subject: 'Volatility', A: Math.round(volatility), fullMark: 100 },
       { subject: 'Liquidity', A: Math.round(liquidity), fullMark: 100 },
-      { subject: 'Community', A: Math.round(community), fullMark: 100 },
-      { subject: 'Dev Activity', A: Math.round(devActivity), fullMark: 100 },
+      { subject: 'Resilience', A: Math.round(resilience), fullMark: 100 },
+      { subject: 'Market Power', A: Math.round(marketPower), fullMark: 100 },
     ];
   }, [coin]);
 
