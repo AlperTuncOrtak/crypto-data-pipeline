@@ -53,20 +53,17 @@
     "cta_primary": "Ücretsiz Başlayın",
     "cta_secondary": "Panele Git",
     "no_credit_card": "Kredi kartı gerekmez · Ücretsiz paket ömür boyu sizindir",
-    
     "stats": {
       "coins": "Takip Edilen Coin",
       "ai": "Yapay Zeka İndikatörü",
       "uptime": "Kesintisizlik",
       "start": "Başlangıç Ücreti"
     },
-
     "features_header": {
       "badge": "◆ Özellikler",
       "title": "Profesyonel araçlar.",
       "subtitle": "Sıfır karmaşa."
     },
-
     "feat1": {
       "badge": "CANLI VERİ",
       "title": "Eşzamanlı Piyasa Takibi",
@@ -75,7 +72,6 @@
       "p2": "İnteraktif piyasa ısı haritası",
       "p3": "Hacim anormalliği tespiti"
     },
-
     "feat2": {
       "badge": "NEKO AI",
       "title": "Yapay Zeka Portföy Yöneticisi",
@@ -90,7 +86,6 @@
       "m_sharpe": "Sharpe Oranı",
       "m_risk_val": "Orta"
     },
-
     "feat3": {
       "badge": "VERGİ VE RAPORLAR",
       "title": "Otomatik Vergi Hesaplama",
@@ -101,7 +96,6 @@
       "m_title": "İşlem Geçmişi",
       "m_total": "Toplam Realize Kâr/Zarar"
     },
-
     "pricing": {
       "badge": "◆ Fiyatlandırma",
       "title": "Ücretsiz başlayın.",
@@ -116,7 +110,6 @@
       "f4": "Temel fiyat alarmları",
       "f5": "Coin karşılaştırma aracı",
       "f6": "Korelasyon matrisi",
-
       "pro_sub": "/ ay",
       "pro_cta": "Pro'ya Geç",
       "p1": "Ücretsiz plandaki her şey",
@@ -127,7 +120,6 @@
       "p6": "Hacim patlaması radarı",
       "p7": "Öncelikli veri erişimi"
     },
-
     "faq": {
       "badge": "◆ SSS",
       "title": "Sıkça sorulan sorular",
@@ -142,7 +134,6 @@
       "q5": "İstediğim zaman iptal edebilir miyim?",
       "a5": "Evet. Pro erişiminiz fatura döneminin sonuna kadar devam eder, ardından hiçbir soru sorulmadan ücretsiz plana geri dönersiniz."
     },
-
     "cta": {
       "badge": "◆ Hemen Başlayın",
       "title": "Daha akıllı analiz yapmaya hazır mısınız?",
@@ -150,7 +141,6 @@
       "btn1": "Ücretsiz Hesap Oluştur",
       "btn2": "Piyasaları Keşfet"
     },
-
     "footer": {
       "terms": "Şartlar",
       "privacy": "Gizlilik",
@@ -485,5 +475,74 @@
     "resistance": "Direnç",
     "current": "Mevcut",
     "support": "Destek"
+  },
+  "settings": {
+    "title": "Hesap Ayarları",
+    "subtitle": "Profil, güvenlik ve bildirim tercihlerinizi yönetin.",
+    "profile": "Profil",
+    "signin_required": "Giriş yapmanız gerekiyor",
+    "go_to_dashboard": "Panele Git",
+    "profile_updated": "Profil başarıyla güncellendi.",
+    "update_failed": "Güncelleme başarısız oldu.",
+    "pass_reset_sent": "Şifre sıfırlama bağlantısı {{email}} adresine gönderildi. Gelen kutunuzu kontrol edin.",
+    "pass_reset_failed": "Sıfırlama e-postası gönderilemedi.",
+    "phone_enter": "Lütfen bir telefon numarası girin.",
+    "otp_sent": "Doğrulama kodu telefonunuza gönderildi.",
+    "otp_failed": "Kod gönderilemedi.",
+    "phone_verified_success": "Telefon numarası doğrulandı ve kaydedildi!",
+    "invalid_code": "Geçersiz kod.",
+    "phone_removed": "Telefon numarası kaldırıldı.",
+    "phone_remove_failed": "Telefon numarası kaldırılamadı.",
+    "avatar_updated": "Avatar güncellendi! Değişiklikleri görmek için sayfayı yenileyin.",
+    "avatar_failed": "Avatar yüklenemedi.",
+    "cancel_confirm": "Aboneliğinizi iptal etmek istediğinizden emin misiniz? Mevcut fatura döneminizin sonuna kadar Pro özelliklerine erişiminiz devam edecek.",
+    "cancel_failed": "Abonelik iptal edilemedi",
+    "cancel_success": "Aboneliğiniz fatura döngünüzün sonunda iptal edilecektir. O zamana kadar Pro özelliklerini kullanmaya devam edebilirsiniz.",
+    "error_occurred": "Bir hata oluştu",
+    "display_name": "Görüntülenen Ad",
+    "full_name_placeholder": "Adınız ve soyadınız",
+    "email_address": "E-posta Adresi",
+    "email_hint": "E-posta buradan değiştirilemez. Lütfen destek ile iletişime geçin.",
+    "save_changes": "Değişiklikleri Kaydet",
+    "subscription": "Abonelik",
+    "plan_active": "{{plan}} Aktif",
+    "premium_access": "Şu anda tüm premium özelliklere erişiminiz var.",
+    "cancel_subscription": "Aboneliği İptal Et",
+    "security": "Güvenlik",
+    "password": "Şifre",
+    "pass_hint": "E-posta adresinize bir sıfırlama bağlantısı gönderilecektir.",
+    "link_sent": "Bağlantı Gönderildi",
+    "send_reset": "Sıfırlama Bağlantısı Gönder",
+    "2fa": "İki Aşamalı Doğrulama (2FA)",
+    "2fa_desc": "Hesabınıza ekstra bir güvenlik katmanı ekleyin",
+    "phone_number": "Telefon Numarası",
+    "phone_label": "Telefon",
+    "phone_hint": "SMS alarmları ve iki aşamalı doğrulama için kullanılır.",
+    "update": "Güncelle",
+    "add_phone": "Telefon Ekle",
+    "cancel": "İptal",
+    "otp_label": "Doğrulama Kodu",
+    "otp_hint": "Telefonunuza gönderilen 6 haneli kodu girin.",
+    "verify": "Doğrula",
+    "phone_verified": "Telefon doğrulandı:",
+    "remove": "Kaldır",
+    "notifications": "Bildirimler",
+    "price_alerts": "Fiyat Alarmları",
+    "price_alerts_desc": "Fiyat hedefleriniz gerçekleştiğinde bildirim alın",
+    "volume_spikes": "Hacim Patlamaları",
+    "volume_spikes_desc": "Olağandışı hacim hareketleri için alarmlar",
+    "sound": "Ses Efektleri",
+    "sound_desc": "Önemli alarmlar için ses çal",
+    "browser_notif": "Tarayıcı Bildirimleri",
+    "browser_notif_desc": "Sistem düzeyinde bildirimler",
+    "appearance": "Görünüm",
+    "appearance_desc": "Tercih ettiğiniz renk temasını seçin. Tercihiniz kaydedilir.",
+    "dark": "Koyu",
+    "light": "Açık",
+    "danger_zone": "Tehlikeli Bölge",
+    "delete_account": "Hesabı Sil",
+    "delete_account_desc": "Hesabınızı ve tüm verilerinizi kalıcı olarak silin. Bu işlem geri alınamaz.",
+    "delete_confirm": "Emin misiniz? Bu işlem geri alınamaz.",
+    "delete_support": "Hesabınızı silmek için lütfen destek ile iletişime geçin."
   }
 }

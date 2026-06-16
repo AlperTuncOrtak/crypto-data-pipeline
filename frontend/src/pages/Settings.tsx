@@ -11,6 +11,7 @@ import {
   Eye, EyeOff, ChevronRight, Crown, Sun, Moon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // ── Helpers ───────────────────────────────────────────────────
 function Toast({ message, type }) {
@@ -124,6 +125,7 @@ export default function Settings() {
   const { user, displayName, email, avatar, plan, isPro, isEnterprise } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Profile state
   const [fullName, setFullName] = useState(displayName || "");
@@ -160,9 +162,9 @@ export default function Settings() {
     return (
       <div style={{ maxWidth: 600, margin: "60px auto", textAlign: "center", color: "var(--text-muted)" }}>
         <Lock size={32} style={{ marginBottom: 12, opacity: 0.3 }} />
-        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Sign in required</div>
+        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{t("settings.signin_required")}</div>
         <button onClick={() => navigate("/")} style={{ padding: "8px 20px", borderRadius: 10, background: "var(--accent)", color: "#111", fontWeight: 700, fontSize: 13, border: "none", cursor: "pointer" }}>
-          Go to Dashboard
+          {t("settings.go_to_dashboard")}
         </button>
       </div>
     );
@@ -178,9 +180,9 @@ export default function Settings() {
         data: { full_name: fullName.trim() },
       });
       if (error) throw error;
-      setProfileMsg({ text: "Profile updated successfully.", type: "success" });
+      setProfileMsg({ text: t("settings.profile_updated"), type: "success" });
     } catch (e) {
-      setProfileMsg({ text: e.message || "Update failed.", type: "error" });
+      setProfileMsg({ text: e.message || t("settings.update_failed"), type: "error" });
     } finally {
       setProfileLoading(false);
     }
@@ -195,25 +197,25 @@ export default function Settings() {
       });
       if (error) throw error;
       setPassSent(true);
-      setPassMsg({ text: `Password reset link sent to ${email}. Check your inbox.`, type: "success" });
+      setPassMsg({ text: t("settings.pass_reset_sent", { email }), type: "success" });
     } catch (e) {
-      setPassMsg({ text: e.message || "Failed to send reset email.", type: "error" });
+      setPassMsg({ text: e.message || t("settings.pass_reset_failed"), type: "error" });
     } finally {
       setPassLoading(false);
     }
   }
 
   async function handlePhoneSend() {
-    if (!phone.trim()) { setPhoneMsg({ text: "Please enter a phone number.", type: "error" }); return; }
+    if (!phone.trim()) { setPhoneMsg({ text: t("settings.phone_enter"), type: "error" }); return; }
     setPhoneLoading(true);
     setPhoneMsg({ text: "", type: "" });
     try {
       const { error } = await supabase.auth.updateUser({ phone: phone.trim() });
       if (error) throw error;
       setOtpSent(true);
-      setPhoneMsg({ text: "Verification code sent to your phone.", type: "success" });
+      setPhoneMsg({ text: t("settings.otp_sent"), type: "success" });
     } catch (e) {
-      setPhoneMsg({ text: e.message || "Failed to send OTP.", type: "error" });
+      setPhoneMsg({ text: e.message || t("settings.otp_failed"), type: "error" });
     } finally {
       setPhoneLoading(false);
     }
@@ -225,11 +227,11 @@ export default function Settings() {
     try {
       const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "phone_change" });
       if (error) throw error;
-      setPhoneMsg({ text: "Phone number verified and saved!", type: "success" });
+      setPhoneMsg({ text: t("settings.phone_verified_success"), type: "success" });
       setOtpSent(false);
       setOtp("");
     } catch (e) {
-      setPhoneMsg({ text: e.message || "Invalid code.", type: "error" });
+      setPhoneMsg({ text: e.message || t("settings.invalid_code"), type: "error" });
     } finally {
       setPhoneLoading(false);
     }
@@ -241,9 +243,9 @@ export default function Settings() {
       const { error } = await supabase.auth.updateUser({ phone: "" });
       if (error) throw error;
       setPhone("");
-      setPhoneMsg({ text: "Phone number removed.", type: "success" });
+      setPhoneMsg({ text: t("settings.phone_removed"), type: "success" });
     } catch (e) {
-      setPhoneMsg({ text: e.message || "Failed to remove phone.", type: "error" });
+      setPhoneMsg({ text: e.message || t("settings.phone_remove_failed"), type: "error" });
     } finally {
       setPhoneLoading(false);
     }
@@ -260,16 +262,16 @@ export default function Settings() {
       const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
       const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
       if (updateError) throw updateError;
-      setProfileMsg({ text: "Avatar updated! Refresh to see changes.", type: "success" });
+      setProfileMsg({ text: t("settings.avatar_updated"), type: "success" });
     } catch (e) {
-      setProfileMsg({ text: e.message || "Avatar upload failed.", type: "error" });
+      setProfileMsg({ text: e.message || t("settings.avatar_failed"), type: "error" });
     } finally {
       setAvatarLoading(false);
     }
   }
 
   async function handleCancelSubscription() {
-    if (!window.confirm("Are you sure you want to cancel your subscription? You will retain access to Pro features until the end of your current billing period.")) return;
+    if (!window.confirm(t("settings.cancel_confirm"))) return;
     setCancelLoading(true);
     setCancelMsg({ text: "", type: "" });
     try {
@@ -283,12 +285,12 @@ export default function Settings() {
         },
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
+      if (!res.ok) throw new Error(data.detail || t("settings.cancel_failed"));
       
-      setCancelMsg({ text: "Subscription will be cancelled at the end of your billing cycle. You can continue using Pro features until then.", type: "success" });
+      setCancelMsg({ text: t("settings.cancel_success"), type: "success" });
       setTimeout(() => window.location.reload(), 3000);
     } catch (e) {
-      setCancelMsg({ text: e.message || "An error occurred", type: "error" });
+      setCancelMsg({ text: e.message || t("settings.error_occurred"), type: "error" });
     } finally {
       setCancelLoading(false);
     }
@@ -308,15 +310,15 @@ export default function Settings() {
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4 }}>
-          Account Settings
+          {t("settings.title")}
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-          Manage your profile, security, and notification preferences.
+          {t("settings.subtitle")}
         </p>
       </div>
 
       {/* ── PROFILE ── */}
-      <Section title="Profile" icon={User}>
+      <Section title={t("settings.profile")} icon={User}>
         <Toast message={profileMsg.text} type={profileMsg.type} />
 
         {/* Avatar */}
@@ -342,35 +344,35 @@ export default function Settings() {
             <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, padding: "3px 8px", borderRadius: 6, background: isPro || isEnterprise ? "rgba(245,166,35,0.08)" : "var(--border-soft)", border: `1px solid ${isPro || isEnterprise ? "rgba(245,166,35,0.2)" : "var(--border)"}`, width: "fit-content" }}>
               <Crown size={10} style={{ color: isPro || isEnterprise ? "var(--accent)" : "var(--text-muted)" }} />
               <span style={{ fontSize: 11, color: isPro || isEnterprise ? "var(--accent)" : "var(--text-muted)", fontWeight: 600 }}>
-                {isEnterprise ? "Enterprise" : isPro ? "Pro" : "Free"} Plan
+                {t("settings.plan_active", { plan: isEnterprise ? "Enterprise" : isPro ? "Pro" : "Free" })}
               </span>
             </div>
           </div>
         </div>
 
-        <Field label="Display Name">
-          <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Your full name" />
+        <Field label={t("settings.display_name")}>
+          <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={t("settings.full_name_placeholder")} />
         </Field>
 
-        <Field label="Email Address" hint="Email cannot be changed here. Contact support.">
+        <Field label={t("settings.email_address")} hint={t("settings.email_hint")}>
           <Input value={email || ""} readOnly />
         </Field>
 
-        <SaveButton loading={profileLoading} onClick={handleProfileSave} />
+        <SaveButton loading={profileLoading} onClick={handleProfileSave} label={t("settings.save_changes")} />
       </Section>
 
       {/* ── SUBSCRIPTION ── */}
       {(isPro || isEnterprise) && (
-        <Section title="Subscription" icon={Crown}>
+        <Section title={t("settings.subscription")} icon={Crown}>
           <Toast message={cancelMsg.text} type={cancelMsg.type} />
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderRadius: 10, background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Crown size={14} />
-                {isEnterprise ? "Enterprise Plan" : "Pro Plan"} Active
+                {t("settings.plan_active", { plan: isEnterprise ? "Enterprise" : "Pro" })}
               </div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                You currently have access to all premium features.
+                {t("settings.premium_access")}
               </div>
             </div>
             <button
@@ -383,17 +385,17 @@ export default function Settings() {
               }}
             >
               {cancelLoading && <Loader size={12} style={{ animation: "spin 0.8s linear infinite" }} />}
-              Cancel Subscription
+              {t("settings.cancel_subscription")}
             </button>
           </div>
         </Section>
       )}
 
       {/* ── SECURITY ── */}
-      <Section title="Security" icon={Lock}>
+      <Section title={t("settings.security")} icon={Lock}>
         <Toast message={passMsg.text} type={passMsg.type} />
 
-        <Field label="Password" hint="A reset link will be sent to your email address.">
+        <Field label={t("settings.password")} hint={t("settings.pass_hint")}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <Input value="••••••••••••" readOnly type="password" />
             <button
@@ -412,7 +414,7 @@ export default function Settings() {
                 ? <Loader size={12} style={{ animation: "spin 0.8s linear infinite" }} />
                 : passSent ? <CheckCircle size={12} /> : null
               }
-              {passSent ? "Link Sent" : "Send Reset Link"}
+              {passSent ? t("settings.link_sent") : t("settings.send_reset")}
             </button>
           </div>
         </Field>
@@ -420,18 +422,18 @@ export default function Settings() {
         {/* 2FA info */}
         <div style={{ padding: "12px 14px", borderRadius: 10, background: "var(--border-soft)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Two-Factor Authentication</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>Add an extra layer of security to your account</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>{t("settings.2fa")}</div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{t("settings.2fa_desc")}</div>
           </div>
           <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: "rgba(245,158,11,0.1)", color: "var(--accent)" }}>SOON</span>
         </div>
       </Section>
 
       {/* ── PHONE ── */}
-      <Section title="Phone Number" icon={Phone}>
+      <Section title={t("settings.phone_number")} icon={Phone}>
         <Toast message={phoneMsg.text} type={phoneMsg.type} />
 
-        <Field label="Phone" hint="Used for SMS alerts and two-factor authentication.">
+        <Field label={t("settings.phone_label")} hint={t("settings.phone_hint")}>
           <div style={{ display: "flex", gap: 8 }}>
             <Input
               value={phone}
@@ -446,18 +448,18 @@ export default function Settings() {
                 style={{ padding: "10px 16px", borderRadius: 10, whiteSpace: "nowrap", background: "var(--bg-elevated)", border: "1px solid var(--border)", color: "var(--text-secondary)", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0, display: "flex", alignItems: "center", gap: 6 }}
               >
                 {phoneLoading ? <Loader size={12} style={{ animation: "spin 0.8s linear infinite" }} /> : null}
-                {user?.phone ? "Update" : "Add Phone"}
+                {user?.phone ? t("settings.update") : t("settings.add_phone")}
               </button>
             ) : (
               <button onClick={() => setOtpSent(false)} style={{ padding: "10px 14px", borderRadius: 10, background: "transparent", border: "1px solid var(--border)", color: "var(--text-muted)", fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
-                Cancel
+                {t("settings.cancel")}
               </button>
             )}
           </div>
         </Field>
 
         {otpSent && (
-          <Field label="Verification Code" hint="Enter the 6-digit code sent to your phone.">
+          <Field label={t("settings.otp_label")} hint={t("settings.otp_hint")}>
             <div style={{ display: "flex", gap: 8 }}>
               <Input value={otp} onChange={e => setOtp(e.target.value)} placeholder="123456" />
               <button
@@ -465,7 +467,7 @@ export default function Settings() {
                 disabled={phoneLoading || otp.length < 4}
                 style={{ padding: "10px 16px", borderRadius: 10, whiteSpace: "nowrap", background: "linear-gradient(135deg, var(--accent), #8B5CF6)", color: "#111", fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer", flexShrink: 0 }}
               >
-                Verify
+                {t("settings.verify")}
               </button>
             </div>
           </Field>
@@ -475,23 +477,23 @@ export default function Settings() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(46,204,113,0.06)", border: "1px solid rgba(46,204,113,0.15)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <CheckCircle size={13} style={{ color: "#2ecc71" }} />
-              <span style={{ fontSize: 12, color: "#2ecc71", fontWeight: 600 }}>Phone verified: {user.phone}</span>
+              <span style={{ fontSize: 12, color: "#2ecc71", fontWeight: 600 }}>{t("settings.phone_verified")} {user.phone}</span>
             </div>
             <button onClick={handlePhoneRemove} disabled={phoneLoading} style={{ fontSize: 11, color: "#e74c3c", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
-              Remove
+              {t("settings.remove")}
             </button>
           </div>
         )}
       </Section>
 
       {/* ── NOTIFICATIONS ── */}
-      <Section title="Notifications" icon={Bell}>
+      <Section title={t("settings.notifications")} icon={Bell}>
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           {[
-            { key: "price_alerts",   label: "Price Alerts",           desc: "Get notified when your price targets are hit" },
-            { key: "volume_spikes",  label: "Volume Spikes",          desc: "Alerts for unusual volume activity" },
-            { key: "sound",          label: "Sound Effects",          desc: "Play sounds for important alerts" },
-            { key: "browser_notif",  label: "Browser Notifications",  desc: "System-level push notifications" },
+            { key: "price_alerts",   label: t("settings.price_alerts"),           desc: t("settings.price_alerts_desc") },
+            { key: "volume_spikes",  label: t("settings.volume_spikes"),          desc: t("settings.volume_spikes_desc") },
+            { key: "sound",          label: t("settings.sound"),                  desc: t("settings.sound_desc") },
+            { key: "browser_notif",  label: t("settings.browser_notif"),          desc: t("settings.browser_notif_desc") },
           ].map(({ key, label, desc }, i, arr) => (
             <div
               key={key}
@@ -528,10 +530,10 @@ export default function Settings() {
       </Section>
 
       {/* ── APPEARANCE ── */}
-      <Section title="Appearance" icon={theme === 'dark' ? Moon : Sun}>
+      <Section title={t("settings.appearance")} icon={theme === 'dark' ? Moon : Sun}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>
-            Choose your preferred color theme. Your preference is saved across sessions.
+            {t("settings.appearance_desc")}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             {/* Dark Mode Card */}
@@ -550,7 +552,7 @@ export default function Settings() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Moon size={16} style={{ color: theme === 'dark' ? "var(--accent)" : "var(--text-muted)" }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'dark' ? "var(--accent)" : "var(--text-secondary)" }}>Dark</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'dark' ? "var(--accent)" : "var(--text-secondary)" }}>{t("settings.dark")}</span>
                 </div>
                 {theme === 'dark' && (
                   <CheckCircle size={14} style={{ color: "var(--accent)" }} />
@@ -583,7 +585,7 @@ export default function Settings() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Sun size={16} style={{ color: theme === 'light' ? "var(--accent)" : "var(--text-muted)" }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'light' ? "var(--accent)" : "var(--text-secondary)" }}>Light</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'light' ? "var(--accent)" : "var(--text-secondary)" }}>{t("settings.light")}</span>
                 </div>
                 {theme === 'light' && (
                   <CheckCircle size={14} style={{ color: "var(--accent)" }} />
@@ -604,17 +606,17 @@ export default function Settings() {
       </Section>
 
       {/* ── DANGER ZONE ── */}
-      <Section title="Danger Zone" icon={Shield}>
+      <Section title={t("settings.danger_zone")} icon={Shield}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 10, background: "rgba(231,76,60,0.05)", border: "1px solid rgba(231,76,60,0.15)" }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Delete Account</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>Permanently delete your account and all data. This cannot be undone.</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>{t("settings.delete_account")}</div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{t("settings.delete_account_desc")}</div>
           </div>
           <button
-            onClick={() => { if (window.confirm("Are you sure? This cannot be undone.")) { /* supabase.auth.admin.deleteUser(user.id) — requires backend */ alert("Please contact support to delete your account."); } }}
+            onClick={() => { if (window.confirm(t("settings.delete_confirm"))) { /* supabase.auth.admin.deleteUser(user.id) — requires backend */ alert(t("settings.delete_support")); } }}
             style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(231,76,60,0.1)", border: "1px solid rgba(231,76,60,0.25)", color: "#e74c3c", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }}
           >
-            Delete Account
+            {t("settings.delete_account")}
           </button>
         </div>
       </Section>

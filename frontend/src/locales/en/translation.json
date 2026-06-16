@@ -53,20 +53,17 @@
     "cta_primary": "Get Started Free",
     "cta_secondary": "View Dashboard",
     "no_credit_card": "No credit card required · Free plan available forever",
-    
     "stats": {
       "coins": "Coins Tracked",
       "ai": "AI Indicators",
       "uptime": "Uptime",
       "start": "To Get Started"
     },
-
     "features_header": {
       "badge": "◆ Features",
       "title": "Professional tools.",
       "subtitle": "Zero complexity."
     },
-
     "feat1": {
       "badge": "LIVE DATA",
       "title": "Real-Time Market Tracking",
@@ -75,7 +72,6 @@
       "p2": "Interactive market heatmap",
       "p3": "Volume anomaly detection"
     },
-
     "feat2": {
       "badge": "NEKO AI",
       "title": "AI Portfolio Manager",
@@ -90,7 +86,6 @@
       "m_sharpe": "Sharpe Ratio",
       "m_risk_val": "Medium"
     },
-
     "feat3": {
       "badge": "TAX & REPORTS",
       "title": "Automated Tax Calculation",
@@ -101,7 +96,6 @@
       "m_title": "Transaction History",
       "m_total": "Total Realized P&L"
     },
-
     "pricing": {
       "badge": "◆ Pricing",
       "title": "Start free.",
@@ -116,7 +110,6 @@
       "f4": "Basic price alerts",
       "f5": "Coin comparison tool",
       "f6": "Correlation matrix",
-
       "pro_sub": "/ month",
       "pro_cta": "Start Pro",
       "p1": "Everything in Free",
@@ -127,7 +120,6 @@
       "p6": "Volume spike radar",
       "p7": "Priority data access"
     },
-
     "faq": {
       "badge": "◆ FAQ",
       "title": "Common questions",
@@ -142,7 +134,6 @@
       "q5": "Can I cancel anytime?",
       "a5": "Yes. Your Pro access continues until end of billing period, then reverts to free — no questions asked."
     },
-
     "cta": {
       "badge": "◆ Get Started",
       "title": "Ready to analyze smarter?",
@@ -150,7 +141,6 @@
       "btn1": "Create Free Account",
       "btn2": "Explore Markets"
     },
-
     "footer": {
       "terms": "Terms",
       "privacy": "Privacy",
@@ -496,5 +486,74 @@
     "resistance": "Resistance",
     "current": "Current",
     "support": "Support"
+  },
+  "settings": {
+    "title": "Account Settings",
+    "subtitle": "Manage your profile, security, and notification preferences.",
+    "profile": "Profile",
+    "signin_required": "Sign in required",
+    "go_to_dashboard": "Go to Dashboard",
+    "profile_updated": "Profile updated successfully.",
+    "update_failed": "Update failed.",
+    "pass_reset_sent": "Password reset link sent to {{email}}. Check your inbox.",
+    "pass_reset_failed": "Failed to send reset email.",
+    "phone_enter": "Please enter a phone number.",
+    "otp_sent": "Verification code sent to your phone.",
+    "otp_failed": "Failed to send OTP.",
+    "phone_verified_success": "Phone number verified and saved!",
+    "invalid_code": "Invalid code.",
+    "phone_removed": "Phone number removed.",
+    "phone_remove_failed": "Failed to remove phone.",
+    "avatar_updated": "Avatar updated! Refresh to see changes.",
+    "avatar_failed": "Avatar upload failed.",
+    "cancel_confirm": "Are you sure you want to cancel your subscription? You will retain access to Pro features until the end of your current billing period.",
+    "cancel_failed": "Failed to cancel subscription",
+    "cancel_success": "Subscription will be cancelled at the end of your billing cycle. You can continue using Pro features until then.",
+    "error_occurred": "An error occurred",
+    "display_name": "Display Name",
+    "full_name_placeholder": "Your full name",
+    "email_address": "Email Address",
+    "email_hint": "Email cannot be changed here. Contact support.",
+    "save_changes": "Save Changes",
+    "subscription": "Subscription",
+    "plan_active": "{{plan}} Active",
+    "premium_access": "You currently have access to all premium features.",
+    "cancel_subscription": "Cancel Subscription",
+    "security": "Security",
+    "password": "Password",
+    "pass_hint": "A reset link will be sent to your email address.",
+    "link_sent": "Link Sent",
+    "send_reset": "Send Reset Link",
+    "2fa": "Two-Factor Authentication",
+    "2fa_desc": "Add an extra layer of security to your account",
+    "phone_number": "Phone Number",
+    "phone_label": "Phone",
+    "phone_hint": "Used for SMS alerts and two-factor authentication.",
+    "update": "Update",
+    "add_phone": "Add Phone",
+    "cancel": "Cancel",
+    "otp_label": "Verification Code",
+    "otp_hint": "Enter the 6-digit code sent to your phone.",
+    "verify": "Verify",
+    "phone_verified": "Phone verified:",
+    "remove": "Remove",
+    "notifications": "Notifications",
+    "price_alerts": "Price Alerts",
+    "price_alerts_desc": "Get notified when your price targets are hit",
+    "volume_spikes": "Volume Spikes",
+    "volume_spikes_desc": "Alerts for unusual volume activity",
+    "sound": "Sound Effects",
+    "sound_desc": "Play sounds for important alerts",
+    "browser_notif": "Browser Notifications",
+    "browser_notif_desc": "System-level push notifications",
+    "appearance": "Appearance",
+    "appearance_desc": "Choose your preferred color theme. Your preference is saved across sessions.",
+    "dark": "Dark",
+    "light": "Light",
+    "danger_zone": "Danger Zone",
+    "delete_account": "Delete Account",
+    "delete_account_desc": "Permanently delete your account and all data. This cannot be undone.",
+    "delete_confirm": "Are you sure? This cannot be undone.",
+    "delete_support": "Please contact support to delete your account."
   }
 }
