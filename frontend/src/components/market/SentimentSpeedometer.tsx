@@ -1,150 +1,245 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useSentiment } from '../../hooks/useSentiment';
-import { Brain } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useFearAndGreed, getAiAnalysisText } from '../../hooks/useFearAndGreed';
+import { Activity, BrainCircuit } from 'lucide-react';
 
-const T = {
-  bg: "var(--bg-base)",
-  card: "var(--bg-card)",
-  border: "var(--border)",
-  textPrimary: "var(--text-primary)",
-  textSecondary: "var(--text-secondary)",
-};
+export default function SentimentSpeedometer() {
+  const { t } = useTranslation();
+  const { data, loading, error } = useFearAndGreed();
 
-export default function SentimentSpeedometer({ mockValue, mockClassification }: { mockValue?: number, mockClassification?: string }) {
-  const { data, loading } = useSentiment();
+  const score = data ? parseInt(data.value, 10) : 50;
+  const classification = data ? data.value_classification : 'Neutral';
   
-  const score = mockValue ?? (data?.value ?? 50);
-  const classification = mockClassification ?? (data?.classification ?? "Neutral");
+  // Math for SVG half-circle
+  const width = 300;
+  const height = 160;
+  const cx = width / 2;
+  const cy = height - 20;
+  const r = 120;
+  
+  const circumference = Math.PI * r;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+  
+  // Calculate needle rotation: -90 (0 score) to 90 (100 score)
+  const needleRotation = -90 + (score / 100) * 180;
 
-  // Map 0-100 to angle: -90 to 90 degrees
-  const angle = (score / 100) * 180 - 90;
+  // AI text
+  const aiText = useMemo(() => getAiAnalysisText(score), [score]);
 
-  // Determine color based on score
-  let color = "#f59e0b"; // Neutral
-  if (score <= 25) color = "#ef4444"; // Extreme Fear
-  else if (score <= 45) color = "#f97316"; // Fear
-  else if (score <= 55) color = "#f59e0b"; // Neutral
-  else if (score <= 75) color = "#84cc16"; // Greed
-  else color = "#22c55e"; // Extreme Greed
+  // Color logic based on score
+  const getScoreColor = (s: number) => {
+    if (s <= 25) return '#ff3333'; // Red
+    if (s <= 45) return '#ff9933'; // Orange
+    if (s <= 55) return '#f5d300'; // Yellow
+    if (s <= 75) return '#99ff33'; // Light Green
+    return '#00ff66'; // Neon Green
+  };
 
-  const aiCommentary = score <= 25 ? "Maximum Fear detected. Often precedes major accumulation phases." :
-                       score <= 45 ? "Fearful Market. Cautious buying and scaling in recommended." :
-                       score <= 55 ? "Neutral Market. Awaiting directional breakout and volume confirmation." :
-                       score <= 75 ? "Greedy Market. Momentum is strong but taking partial profits is advised." :
-                                     "Extreme Greed. High risk of immediate correction. Protect capital.";
+  const currentColor = getScoreColor(score);
+
+  if (loading) {
+    return (
+      <div style={{
+        background: 'var(--card-bg)',
+        border: '1px solid var(--border)',
+        borderRadius: 16,
+        padding: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 300
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <Activity size={24} color="var(--text-muted)" style={{ animation: 'spin 2s linear infinite' }} />
+          <span style={{ color: 'var(--text-muted)' }}>Loading AI Sentiment...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return null; // Don't show if API fails
+  }
 
   return (
     <div style={{
-      background: T.card,
-      border: `1px solid ${T.border}`,
-      borderRadius: 24,
-      padding: 32,
+      background: 'var(--card-bg)',
+      border: '1px solid var(--border)',
+      borderRadius: 16,
+      padding: '24px 24px 32px 24px',
+      position: 'relative',
+      overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden'
+      alignItems: 'center'
     }}>
-      {/* Background glow based on sentiment color */}
+      {/* Background glow effect based on current score color */}
       <div style={{
         position: 'absolute',
         top: '50%',
         left: '50%',
+        transform: 'translate(-50%, -50%)',
         width: 200,
         height: 200,
-        background: color,
+        background: currentColor,
         filter: 'blur(100px)',
         opacity: 0.15,
-        transform: 'translate(-50%, -50%)',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        zIndex: 0
       }} />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, zIndex: 1 }}>
-        <Brain size={20} color={color} />
-        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: T.textPrimary, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-          AI Market Psychology
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', marginBottom: 20, zIndex: 1 }}>
+        <BrainCircuit size={18} color="var(--accent)" />
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
+          AI Market Sentiment
         </h3>
+        <div style={{
+          marginLeft: 8,
+          fontSize: 10,
+          fontWeight: 800,
+          background: 'rgba(0, 240, 255, 0.1)',
+          color: 'var(--accent)',
+          padding: '2px 8px',
+          borderRadius: 12,
+          letterSpacing: '0.1em'
+        }}>LIVE</div>
       </div>
 
-      <div style={{ position: 'relative', width: 280, height: 160, zIndex: 1 }}>
-        {/* SVG Gauge Background */}
-        <svg viewBox="0 0 200 100" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+      <div style={{ position: 'relative', width, height, zIndex: 1 }}>
+        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
           <defs>
-            <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ef4444" />
-              <stop offset="25%" stopColor="#f97316" />
-              <stop offset="50%" stopColor="#f59e0b" />
-              <stop offset="75%" stopColor="#84cc16" />
-              <stop offset="100%" stopColor="#22c55e" />
+            <linearGradient id="speedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ff3333" />
+              <stop offset="25%" stopColor="#ff9933" />
+              <stop offset="50%" stopColor="#f5d300" />
+              <stop offset="75%" stopColor="#99ff33" />
+              <stop offset="100%" stopColor="#00ff66" />
             </linearGradient>
+            
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
           </defs>
+
           {/* Background Track */}
-          <path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="16" strokeLinecap="round" />
-          {/* Colored Track */}
-          <path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="url(#gauge-gradient)" strokeWidth="16" strokeLinecap="round" opacity="0.8" />
+          <path
+            d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+            fill="none"
+            stroke="var(--border)"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+
+          {/* Colored Track with Animation */}
+          <motion.path
+            d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+            fill="none"
+            stroke="url(#speedGradient)"
+            strokeWidth="14"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            filter="url(#glow)"
+          />
         </svg>
 
-        {/* Animated Needle */}
+        {/* Needle Indicator */}
         <motion.div
           initial={{ rotate: -90 }}
-          animate={{ rotate: angle }}
-          transition={{ type: "spring", damping: 20, stiffness: 60, delay: 0.2 }}
+          animate={{ rotate: needleRotation }}
+          transition={{ duration: 1.5, ease: "easeOut", type: 'spring', damping: 15 }}
           style={{
             position: 'absolute',
-            bottom: -6,
-            left: '50%',
+            bottom: height - cy,
+            left: cx - 2, // center width of needle
             width: 4,
-            height: 110,
+            height: r - 10,
             background: 'var(--text-primary)',
             transformOrigin: 'bottom center',
-            borderRadius: 4,
-            marginLeft: -2,
-            boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+            borderRadius: '4px 4px 0 0',
+            boxShadow: '0 0 10px rgba(255,255,255,0.5)'
           }}
         >
-          {/* Needle Base Dot */}
+          {/* Needle glowing tip */}
           <div style={{
             position: 'absolute',
-            bottom: -4,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 16,
-            height: 16,
+            top: -2,
+            left: -2,
+            width: 8,
+            height: 8,
             borderRadius: '50%',
-            background: 'var(--text-primary)',
-            border: `4px solid ${T.card}`
+            background: '#fff',
+            boxShadow: `0 0 12px 2px ${currentColor}`
           }} />
         </motion.div>
 
-        {/* Score Display inside Gauge */}
-        <div style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', width: '100%' }}>
-          <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'monospace', color: color, lineHeight: 1 }}>
-            {loading && !mockValue ? "--" : score}
+        {/* Center Base / Pin */}
+        <div style={{
+          position: 'absolute',
+          bottom: height - cy - 8,
+          left: cx - 8,
+          width: 16,
+          height: 16,
+          borderRadius: '50%',
+          background: 'var(--bg-surface)',
+          border: '4px solid var(--text-primary)',
+          boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+        }} />
+
+        {/* Score Readout */}
+        <div style={{
+          position: 'absolute',
+          bottom: height - cy + 20, // push down below the pin
+          left: '50%',
+          transform: 'translateX(-50%)',
+          textAlign: 'center'
+        }}>
+          <div style={{ 
+            fontSize: 42, 
+            fontWeight: 900, 
+            fontFamily: 'monospace',
+            color: currentColor,
+            textShadow: `0 0 20px ${currentColor}60`,
+            lineHeight: 1
+          }}>
+            {score}
           </div>
-          <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 4 }}>
-            {loading && !mockValue ? "Calculating..." : classification}
+          <div style={{ 
+            fontSize: 12, 
+            fontWeight: 800, 
+            letterSpacing: '0.1em',
+            color: currentColor,
+            textTransform: 'uppercase',
+            marginTop: 4
+          }}>
+            {classification}
           </div>
         </div>
       </div>
 
-      {/* AI Commentary Box */}
+      {/* AI Analysis Text Box */}
       <div style={{
-        marginTop: 36,
+        marginTop: 40,
         padding: '16px 20px',
-        background: 'rgba(0,0,0,0.2)',
-        borderRadius: 16,
-        border: `1px solid ${T.border}`,
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid var(--border-soft)',
+        borderRadius: 12,
         width: '100%',
-        textAlign: 'center',
+        position: 'relative',
         zIndex: 1
       }}>
-        <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.15em', marginBottom: 8 }}>
-          NEKO AI VERDICT
+        <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
+          AI Assessment
         </div>
-        <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.5, fontWeight: 500 }}>
-          {loading && !mockValue ? "Analyzing global market sentiment vectors..." : aiCommentary}
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, fontWeight: 500 }}>
+          {aiText}
         </div>
       </div>
     </div>

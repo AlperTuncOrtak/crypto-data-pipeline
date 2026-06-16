@@ -471,7 +471,7 @@ export default function Dashboard() {
         {/* ── RIGHT SIDEBAR ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-          {/* Sentiment Speedometer */}
+          {/* AI Sentiment Speedometer */}
           <Reveal delay={0.1}>
             <SentimentSpeedometer />
           </Reveal>
