@@ -587,7 +587,7 @@ export default function Landing({ onAuthOpen }) {
           </Reveal>
         </div>
 
-        <div ref={featuresRef} style={{ position: "relative" }}>
+        <div ref={featuresRef} style={{ position: "relative", userSelect: "none", WebkitUserSelect: "none" }}>
           {features.map((f, i) => {
             const Icon = f.icon;
             const isRight = f.mockupSide === "right";
