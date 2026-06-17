@@ -29,7 +29,6 @@ import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import AIAnalysisBox from "../components/market/AIAnalysisBox";
 import AttackMomentum from "../components/market/AttackMomentum";
-import CoinRadarChart from "../components/market/CoinRadarChart";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
 
@@ -673,16 +672,6 @@ export default function CoinDetail() {
           <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
 
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {/* COIN DNA RADAR */}
-            <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 16, padding: "20px 20px 0 20px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: brandColor, boxShadow: `0 0 10px ${brandColor}` }} />
-                <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", letterSpacing: "0.02em" }}>Coin DNA Profile</div>
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 16 }}>Attribute Overview</div>
-              <CoinRadarChart coin={coin} />
-            </div>
-
             {/* ATTACK MOMENTUM */}
             <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
           </div>

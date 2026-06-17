@@ -105,7 +105,7 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
             background: isBullish ? '#28c840' : '#ff5f57',
             boxShadow: `0 0 10px ${isBullish ? '#28c840' : '#ff5f57'}`
           }} />
-          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>{t("coin_detail.attack_momentum", "Live Attack Momentum")}</h3>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>{t("coin_detail.live_order_flow", "Live Order Flow")}</h3>
         </div>
         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {t("coin_detail.real_time_pressure", "Real-Time Pressure")}
