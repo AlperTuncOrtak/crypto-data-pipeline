@@ -620,12 +620,12 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
             <div className="motogame-idle-card z-20">
               <h2 className="motogame-title text-red-500">💥 WIPEOUT!</h2>
               <p className="motogame-subtitle">
-                You rode <strong className="text-white">{distance}m</strong> in <strong className="text-white">{elapsedSec}s</strong>.
+                You rode <strong className="text-[var(--text-primary)]">{distance}m</strong> in <strong className="text-[var(--text-primary)]">{elapsedSec}s</strong>.
               </p>
 
               {!submitted ? (
                 <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
-                  <input type="text" placeholder="Enter nickname..." value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={15} className="bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:border-accent transition-colors" />
+                  <input type="text" placeholder="Enter nickname..." value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={15} className="bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-[var(--text-primary)] outline-none focus:border-accent transition-colors" />
                   <button onClick={handleSubmit} disabled={submitting} className="motogame-start-btn">{submitting ? "Submitting..." : "Submit Score"}</button>
                 </div>
               ) : (<p className="text-green-400 font-semibold mt-4">Score Submitted!</p>)}

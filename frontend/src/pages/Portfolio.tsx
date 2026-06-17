@@ -1143,7 +1143,7 @@ export default function Portfolio() {
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           {t('portfolio.title')}
         </p>
-        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white drop-shadow-sm break-words max-w-full px-4">
+        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-[var(--text-primary)] drop-shadow-sm break-words max-w-full px-4">
           {fmtUSD(totalValue)}
         </h1>
         <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-red-500/5"}`}>
@@ -1381,7 +1381,7 @@ export default function Portfolio() {
             <button 
               onClick={handleGetAIInsights}
               disabled={isAnalyzingAI}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f0ff] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f0ff] to-[#00f0ff] text-[var(--text-primary)] shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isAnalyzingAI ? (
                 <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> {t('portfolio.ai_analysis.analyzing')}</>

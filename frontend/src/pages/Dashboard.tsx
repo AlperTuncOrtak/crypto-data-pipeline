@@ -5,8 +5,6 @@ import { useMarket, useGainers, useLosers, useVolume, useTrending, useMarketStat
 import { getCoinColor } from "../utils/colors";
 import CoinListCard from "../components/market/CoinListCard";
 import VolumeSpikeRadar from "../components/market/VolumeSpikeRadar";
-import MarketOracle from "../components/market/MarketOracle";
-import HeatmapWidget from "../components/market/HeatmapWidget";
 import SentimentSpeedometer from "../components/market/SentimentSpeedometer";
 import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight, BarChart2, Bell, Zap } from "lucide-react";
@@ -225,41 +223,7 @@ function CoinCard({ coin, navigate, featured = false }) {
   );
 }
 
-// ─── ALERTS WIDGET ───────────────────────────────────────────────
-function AlertsWidget() {
-  const { t } = useTranslation();
-  const alerts = [
-    { dot: T.purple, msg: "BTC crossed $100K threshold", time: `2${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
-    { dot: T.green, msg: "ETH whale wallet moved 12,400 ETH", time: `8${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
-    { dot: "#f59e0b", msg: "SOL volume spike detected (+340%)", time: `15${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
-    { dot: T.red, msg: "DOGE dropped below $0.15 support", time: `22${t('dashboard.minutes_ago')} ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
-    { dot: T.purple, msg: "New listing: MOG/USDT on Gate.io", time: `1h ${t('dashboard.seconds_ago')}`.replace('s ago', 'ago') },
-  ];
-  return (
-    <Card style={{ padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <SectionLabel>{t('dashboard.smart_alerts')}</SectionLabel>
-        <span style={{ fontSize: 10, color: T.purple, fontWeight: 700, cursor: "pointer" }}>{t('dashboard.view_all')}</span>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        {alerts.map((a, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex", alignItems: "center", gap: 12,
-              padding: "12px 0",
-              borderBottom: i < alerts.length - 1 ? `1px solid ${T.border}` : "none",
-            }}
-          >
-            <div style={{ width: 7, height: 7, borderRadius: "50%", background: a.dot, boxShadow: `0 0 6px ${a.dot}`, flexShrink: 0 }} />
-            <div style={{ flex: 1, fontSize: 13, color: T.textSecondary, lineHeight: 1.4 }}>{a.msg}</div>
-            <div style={{ fontSize: 11, color: T.textMuted, flexShrink: 0, fontFamily: "monospace" }}>{a.time}</div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
+// AlertsWidget removed
 
 // ─── LAST UPDATED ────────────────────────────────────────────────
 function LastUpdated({ marketData }) {
@@ -461,11 +425,6 @@ export default function Dashboard() {
               )}
             </Card>
           </Reveal>
-
-          {/* Heatmap */}
-          <Reveal delay={0.2}>
-            <HeatmapWidget limit={50} />
-          </Reveal>
         </div>
 
         {/* ── RIGHT SIDEBAR ── */}
@@ -506,19 +465,9 @@ export default function Dashboard() {
             />
           </Reveal>
 
-          {/* Smart Alerts */}
-          <Reveal delay={0.25}>
-            <AlertsWidget />
-          </Reveal>
-
           {/* Volume Spike */}
-          <Reveal delay={0.3}>
+          <Reveal delay={0.25}>
             <VolumeSpikeRadar />
-          </Reveal>
-
-          {/* Market Oracle */}
-          <Reveal delay={0.35}>
-            <MarketOracle />
           </Reveal>
         </div>
       </div>
@@ -557,3 +506,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
