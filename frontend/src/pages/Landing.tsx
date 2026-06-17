@@ -16,22 +16,22 @@ import MotoGameModal from "../components/game/MotoGameModal";
 
 // ─── THEME ───────────────────────────────────────────────────────
 const T = {
-  bg: "#000000",
-  card: "#09090b",
-  cardHov: "#18181b",
-  purple: "#ffffff",
-  purpleLight: "#e4e4e7",
-  purpleDim: "rgba(255,255,255,0.1)",
-  green: "#22c55e",
-  greenBg: "rgba(34,197,94,0.1)",
-  greenBorder: "rgba(34,197,94,0.2)",
-  red: "#ef4444",
-  redBg: "rgba(239,68,68,0.1)",
+  bg: "#020617",
+  card: "#0b1227",
+  cardHov: "#0f172a",
+  purple: "#00f0ff",        // accent = cyan, T.purple kullanılan yerlerde artık cyan
+  purpleLight: "#00ffff",
+  purpleDim: "rgba(0,240,255,0.12)",
+  green: "#2dd4bf",
+  greenBg: "rgba(45,212,191,0.1)",
+  greenBorder: "rgba(45,212,191,0.2)",
+  red: "#f43f5e",
+  redBg: "rgba(244,63,94,0.1)",
   textPrimary: "#ffffff",
-  textSecondary: "#a1a1aa",
-  textMuted: "#71717a",
+  textSecondary: "#94a3b8",
+  textMuted: "#64748b",
   border: "var(--border)",
-  borderFeat: "rgba(255,255,255,0.25)",
+  borderFeat: "rgba(0,240,255,0.25)",
 };
 
 // ─── COUNTER ─────────────────────────────────────────────────────
