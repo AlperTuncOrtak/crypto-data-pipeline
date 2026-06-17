@@ -42,7 +42,7 @@ function fmtCap(n) {
 function fmtPct(n) {
   const v = Number(n);
   if (isNaN(v)) return "—";
-  return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+  return `${v >= 0 ? "▲" : "▼"} ${Math.abs(v).toFixed(2)}%`;
 }
 
 // ─── Treemap layout: squarified algorithm ────────────────────

@@ -202,7 +202,7 @@ function CoinCard({ coin, navigate, featured = false }) {
             border: `1px solid ${border}`,
             fontFamily: "monospace",
           }}>
-            {isPos ? "+" : ""}{change.toFixed(2)}%
+            {isPos ? "▲" : "▼"} {Math.abs(change).toFixed(2)}%
           </div>
         </div>
 
@@ -411,7 +411,7 @@ export default function Dashboard() {
                               background: isPos ? "rgba(52, 211, 153, 0.08)" : "rgba(239, 68, 68, 0.08)",
                               padding: "3px 8px", borderRadius: 8,
                             }}>
-                              {isPos ? "+" : ""}{change.toFixed(2)}%
+                              {isPos ? "▲" : "▼"} {Math.abs(change).toFixed(2)}%
                             </span>
                           </td>
                           <td style={{ padding: "12px 0 12px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: T.textMuted }}>
@@ -445,7 +445,7 @@ export default function Dashboard() {
               isError={gainers.isError}
               renderValue={(coin) => {
                 const pct = Number(coin.price_change_percentage_24h);
-                return <span style={{ color: T.green }}>+{pct.toFixed(2)}%</span>;
+                return <span style={{ color: T.green }}>▲ {pct.toFixed(2)}%</span>;
               }}
             />
           </Reveal>
@@ -460,7 +460,7 @@ export default function Dashboard() {
               isError={losers.isError}
               renderValue={(coin) => {
                 const pct = Number(coin.price_change_percentage_24h);
-                return <span style={{ color: T.red }}>{pct.toFixed(2)}%</span>;
+                return <span style={{ color: T.red }}>▼ {Math.abs(pct).toFixed(2)}%</span>;
               }}
             />
           </Reveal>

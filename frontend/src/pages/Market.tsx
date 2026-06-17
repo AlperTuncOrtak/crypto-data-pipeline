@@ -546,8 +546,8 @@ export default function Market({ isWatched, toggleWatchlist }) {
                       className="text-right font-mono text-sm font-semibold"
                       style={{ padding: "16px", color: changeColor }}
                     >
-                      {change >= 0 ? "+" : ""}
-                      {change.toFixed(2)}%
+                      {change >= 0 ? "▲" : "▼"}
+                      {" "}{Math.abs(change).toFixed(2)}%
                     </td>
 
                     {/* VOLUME */}

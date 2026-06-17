@@ -48,7 +48,7 @@ const fmtUSD = (n) => {
   if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(2)}K`;
   return `$${v.toFixed(2)}`;
 };
-const fmtPct = (n) => `${Number(n) >= 0 ? "+" : ""}${Number(n).toFixed(2)}%`;
+const fmtPct = (n) => `${Number(n) >= 0 ? "▲" : "▼"} ${Math.abs(Number(n)).toFixed(2)}%`;
 const fmtNum = (n) =>
   Number(n).toLocaleString(undefined, { maximumFractionDigits: 6 });
 
@@ -1310,7 +1310,7 @@ export default function Portfolio() {
                             {p ? "+" : ""}{fmtUSD(h.pnl)}
                           </span>
                           <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg ${p ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
-                            {p ? "+" : ""}{h.pnl_pct.toFixed(2)}%
+                            {p ? "▲" : "▼"} {Math.abs(h.pnl_pct).toFixed(2)}%
                           </span>
                         </div>
                       </td>

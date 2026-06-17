@@ -291,10 +291,10 @@ function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any
     const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
     
     coins = [
-      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h > 0 ? "+" : "") + Number(btc.price_change_percentage_24h).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0, image_url: btc.image },
-      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h > 0 ? "+" : "") + Number(eth.price_change_percentage_24h).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0, image_url: eth.image },
-      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h > 0 ? "+" : "") + Number(sol.price_change_percentage_24h).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0, image_url: sol.image },
-      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h > 0 ? "+" : "") + Number(bnb.price_change_percentage_24h).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0, image_url: bnb.image },
+      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(btc.price_change_percentage_24h)).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0, image_url: btc.image },
+      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(eth.price_change_percentage_24h)).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0, image_url: eth.image },
+      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(sol.price_change_percentage_24h)).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0, image_url: sol.image },
+      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(bnb.price_change_percentage_24h)).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0, image_url: bnb.image },
     ];
 
     const totalMcap = marketData.reduce((sum, c) => sum + (Number(c.market_cap) || 0), 0);
