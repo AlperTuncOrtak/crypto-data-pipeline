@@ -16,22 +16,22 @@ import MotoGameModal from "../components/game/MotoGameModal";
 
 // ─── THEME ───────────────────────────────────────────────────────
 const T = {
-  bg: "#020617",
-  card: "#0b1227",
-  cardHov: "#0f172a",
-  purple: "#00f0ff",        // accent = cyan, T.purple kullanılan yerlerde artık cyan
-  purpleLight: "#00ffff",
-  purpleDim: "rgba(0,240,255,0.12)",
-  green: "#2dd4bf",
-  greenBg: "rgba(45,212,191,0.1)",
-  greenBorder: "rgba(45,212,191,0.2)",
-  red: "#f43f5e",
-  redBg: "rgba(244,63,94,0.1)",
+  bg: "#000000",
+  card: "#09090b",
+  cardHov: "#18181b",
+  purple: "#ffffff",
+  purpleLight: "#e4e4e7",
+  purpleDim: "rgba(255,255,255,0.1)",
+  green: "#22c55e",
+  greenBg: "rgba(34,197,94,0.1)",
+  greenBorder: "rgba(34,197,94,0.2)",
+  red: "#ef4444",
+  redBg: "rgba(239,68,68,0.1)",
   textPrimary: "#ffffff",
-  textSecondary: "#94a3b8",
-  textMuted: "#64748b",
+  textSecondary: "#a1a1aa",
+  textMuted: "#71717a",
   border: "var(--border)",
-  borderFeat: "rgba(0,240,255,0.25)",
+  borderFeat: "rgba(255,255,255,0.25)",
 };
 
 // ─── COUNTER ─────────────────────────────────────────────────────
@@ -263,23 +263,6 @@ export default function Landing({ onAuthOpen }) {
 
   const [scrolled, setScrolled] = useState(false);
   const featuresRef = useRef<HTMLDivElement>(null);
-  
-  // MotoGame Easter Egg
-  const [isGameOpen, setIsGameOpen] = useState(false);
-  const clickCount = useRef(0);
-  const clickTimer = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSecretClick = () => {
-    clickCount.current += 1;
-    if (clickCount.current >= 3) {
-      setIsGameOpen(true);
-      clickCount.current = 0;
-    }
-    if (clickTimer.current) clearTimeout(clickTimer.current);
-    clickTimer.current = setTimeout(() => {
-      clickCount.current = 0;
-    }, 1000); // Need 3 clicks within 1 second
-  };
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -811,3 +794,4 @@ export default function Landing({ onAuthOpen }) {
     </div>
   );
 }
+
