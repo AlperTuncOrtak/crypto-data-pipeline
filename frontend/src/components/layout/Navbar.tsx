@@ -467,9 +467,7 @@ export default function Navbar({
       {/* ── SCROLLING STATS MARQUEE ───────────────────────────────────────── */}
       <div
         style={{
-          backgroundColor: theme === 'light' ? "rgba(248,250,252,0.92)" : "rgba(12, 12, 22, 0.65)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          backgroundColor: theme === 'light' ? "#fafafa" : "#141416",
           borderBottom: `1px solid var(--border)`,
           overflow: "hidden",
           whiteSpace: "nowrap",
@@ -529,8 +527,8 @@ export default function Navbar({
                 </span>
               </div>
               <div className="stat-item" style={{ gap: 12 }}>
-                <span style={{ fontSize: 11, color: "#2ecc71", fontFamily: "monospace", fontWeight: 600 }}>↑ {gainers}</span>
-                <span style={{ fontSize: 11, color: "#e74c3c", fontFamily: "monospace", fontWeight: 600 }}>↓ {losers}</span>
+                <span style={{ fontSize: 11, color: "var(--positive)", fontFamily: "monospace", fontWeight: 600 }}>▲ {gainers}</span>
+                <span style={{ fontSize: 11, color: "var(--negative)", fontFamily: "monospace", fontWeight: 600 }}>▼ {losers}</span>
               </div>
               {marketData?.slice(0, 10).map((coin) => (
                 <div key={coin.symbol} className="stat-item">
@@ -538,8 +536,8 @@ export default function Navbar({
                   <span style={{ fontSize: 11, fontFamily: "monospace", color: "var(--text-primary)" }}>
                     ${Number(coin.current_price) < 1 ? Number(coin.current_price).toFixed(4) : Number(coin.current_price).toLocaleString()}
                   </span>
-                  <span style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 600, color: Number(coin.price_change_percentage_24h) >= 0 ? "#2ecc71" : "#e74c3c" }}>
-                    {Number(coin.price_change_percentage_24h) >= 0 ? "+" : ""}{Number(coin.price_change_percentage_24h).toFixed(1)}%
+                  <span style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 600, color: Number(coin.price_change_percentage_24h) >= 0 ? "var(--positive)" : "var(--negative)" }}>
+                    {Number(coin.price_change_percentage_24h) >= 0 ? "▲" : "▼"} {Math.abs(Number(coin.price_change_percentage_24h)).toFixed(1)}%
                   </span>
                 </div>
               ))}
@@ -563,14 +561,10 @@ export default function Navbar({
           zIndex: 100,
           padding: "10px 20px",
           transition: "all 0.3s ease",
-          background: scrolled
-            ? theme === 'light' ? "rgba(248,250,252,0.95)" : "rgba(2, 6, 23, 0.88)"
-            : theme === 'light' ? "rgba(248,250,252,0.75)" : "rgba(2, 6, 23, 0.5)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
+          background: theme === 'light' ? "#ffffff" : "#0d0d0f",
           borderBottom: scrolled
-            ? "1px solid var(--accent-border)"
-            : "1px solid var(--border)",
+            ? "1px solid var(--border)"
+            : "1px solid transparent",
           boxShadow: scrolled && theme === 'light' ? "0 2px 12px rgba(15,23,42,0.08)" : "none",
         }}
       >

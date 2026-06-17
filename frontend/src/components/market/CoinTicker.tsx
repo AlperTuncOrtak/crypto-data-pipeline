@@ -55,11 +55,9 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
 
   if (flash === 'up') {
     currentPriceColor = green;
-    currentTextShadow = `0 0 12px ${green}80`;
     currentBg = `linear-gradient(to top, ${green}20, transparent)`;
   } else if (flash === 'down') {
     currentPriceColor = red;
-    currentTextShadow = `0 0 12px ${red}80`;
     currentBg = `linear-gradient(to top, ${red}20, transparent)`;
   }
 
@@ -81,7 +79,7 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: brandColor, boxShadow: `0 0 10px ${brandColor}` }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: brandColor }} />
         <span style={{ 
           fontWeight: 800, 
           fontSize: 14, 
@@ -93,7 +91,7 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
       </div>
       
       <motion.span 
-        animate={{ color: currentPriceColor, textShadow: currentTextShadow }}
+        animate={{ color: currentPriceColor }}
         transition={{ duration: 0.2 }}
         style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 700 }}
       >
