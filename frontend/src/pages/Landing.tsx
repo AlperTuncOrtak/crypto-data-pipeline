@@ -34,6 +34,105 @@ const T = {
   borderFeat: "rgba(0,240,255,0.25)",
 };
 
+// ─── FLOATING COIN CARDS (Uniswap style) ──────────────────────────
+const FLOATING_COINS = [
+  { sym: "BTC",  name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "12%", left: "4%",    delay: 0,   dur: 6.8 },
+  { sym: "ETH",  name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "62%", left: "2%",    delay: 1.5, dur: 7.2 },
+  { sym: "SOL",  name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "18%", right: "3%",   delay: 0.8, dur: 6.2 },
+  { sym: "BNB",  name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "68%", right: "5%", delay: 2.2, dur: 7.6 },
+  { sym: "XRP",  name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "80%", left: "16%", delay: 1.1, dur: 8.1 },
+  { sym: "DOGE", name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "8%",  right: "18%",  delay: 3.0, dur: 6.5 },
+];
+
+function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right, delay, dur }: {
+  sym: string; name: string; price: string; change: string; up: boolean;
+  img: string; top: string; left?: string; right?: string; delay: number; dur: number;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top, left: left ?? "auto", right: right ?? "auto",
+        zIndex: 2,
+        cursor: "pointer",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <style>{`
+        @keyframes fc-float-${sym} {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          40% { transform: translateY(-${8 + delay}px) rotate(${up ? 1 : -1}deg); }
+          70% { transform: translateY(-${4 + delay * 0.4}px) rotate(${up ? -0.4 : 0.4}deg); }
+        }
+        .fc-card-${sym} { animation: fc-float-${sym} ${dur}s ease-in-out ${delay}s infinite; }
+        @keyframes fc-popup { from { opacity:0; transform:translateY(8px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+      `}</style>
+
+      <div className={`fc-card-${sym}`}>
+        {/* Collapsed chip */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          background: "rgba(11,18,39,0.9)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: `1px solid ${hovered ? (up ? "rgba(45,212,191,0.5)" : "rgba(244,63,94,0.5)") : "rgba(255,255,255,0.08)"}`,
+          borderRadius: 14,
+          padding: "8px 12px",
+          boxShadow: hovered ? `0 8px 32px rgba(0,0,0,0.5)` : "0 4px 20px rgba(0,0,0,0.3)",
+          transition: "all 200ms ease",
+          transform: hovered ? "scale(1.06)" : "scale(1)",
+          whiteSpace: "nowrap",
+        }}>
+          <img src={img} alt={sym} style={{ width: 22, height: 22, borderRadius: "50%", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{sym}</span>
+          <span style={{
+            fontSize: 11, fontWeight: 700, color: up ? T.green : T.red,
+            background: up ? "rgba(45,212,191,0.12)" : "rgba(244,63,94,0.12)",
+            padding: "1px 6px", borderRadius: 6,
+          }}>{change}</span>
+        </div>
+
+        {/* Expanded popup on hover */}
+        {hovered && (
+          <div style={{
+            position: "absolute",
+            bottom: "calc(100% + 8px)",
+            left: right ? "auto" : "0",
+            right: right ? "0" : "auto",
+            background: "rgba(11,18,39,0.97)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: `1px solid ${up ? "rgba(45,212,191,0.35)" : "rgba(244,63,94,0.35)"}`,
+            borderRadius: 16,
+            padding: "14px 16px",
+            minWidth: 180,
+            boxShadow: `0 24px 60px rgba(0,0,0,0.7)`,
+            animation: "fc-popup 150ms cubic-bezier(0.16,1,0.3,1) forwards",
+            zIndex: 10,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <img src={img} alt={sym} style={{ width: 32, height: 32, borderRadius: "50%" }} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#fff" }}>{sym}</div>
+                <div style={{ fontSize: 11, color: T.textMuted }}>{name}</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: "#fff", fontFamily: "monospace", letterSpacing: "-0.02em", marginBottom: 6 }}>{price}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: up ? T.green : T.red, boxShadow: `0 0 6px ${up ? T.green : T.red}` }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: up ? T.green : T.red }}>24h: {change}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+
 // ─── COUNTER ─────────────────────────────────────────────────────
 function Counter({ to, suffix = "", prefix = "" }) {
   const [val, setVal] = useState(0);
@@ -477,6 +576,16 @@ export default function Landing({ onAuthOpen }) {
           {/* Dot grid */}
           <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)", backgroundSize: "36px 36px", maskImage: "linear-gradient(to bottom, black 40%, transparent 90%)", WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 90%)" }} />
         </div>
+
+        {/* ── Floating Coins ── */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "auto" }}>
+            {FLOATING_COINS.map((c) => (
+              <FloatingCoinCard key={c.sym} {...c} />
+            ))}
+          </div>
+        </div>
+
 
         {/* Live badge */}
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
