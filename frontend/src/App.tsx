@@ -17,7 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import Market from "./pages/Market";
 import Alerts from "./pages/Alerts";
 import Analysis from "./pages/Analysis";
-import Correlation from "./pages/Correlation";
+
 import CoinDetail from "./pages/CoinDetail";
 import Heatmap from "./pages/Heatmap";
 import AIAnalysis from "./pages/AIAnalysis";
@@ -32,7 +32,7 @@ import Privacy from "./pages/Privacy";
 import Documentation from "./pages/Documentation";
 import { useWatchlist } from "./hooks/useWatchlist";
 import { useMarket } from "./hooks/useMarket";
-import AIChatWidget from "./components/ai/AIChatWidget";
+
 import AuthModal from "./components/ui/AuthModal";
 import { ThemeProvider, useTheme } from "./hooks/useTheme";
 
@@ -45,7 +45,7 @@ function AppInner() {
     () => !!localStorage.getItem("cryptoneko_disclaimer_accepted_v1"),
   );
 
-  const { theme } = useTheme();
+
 
   const { isPro, isEnterprise, isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -95,21 +95,7 @@ function AppInner() {
         position: "relative",
       }}
     >
-      {/* Global Background Effects */}
-      <div className="amber-bg" />
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          backgroundImage:
-            theme === "light"
-              ? "radial-gradient(rgba(15,23,42,0.04) 1px,transparent 1px)"
-              : "radial-gradient(rgba(255,255,255,.015) 1px,transparent 1px)",
-          backgroundSize: "48px 48px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Disclaimer — ilk girişte gösterilir, onaylanınca kaybolur */}
       {/* Disclaimer Modal */}
@@ -169,7 +155,7 @@ function AppInner() {
           <Route path="/coin/:slug" element={<CoinDetail />} />
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analysis" element={<Analysis />} />
-          <Route path="/correlation" element={<Correlation />} />
+
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/docs" element={<Documentation />} />
@@ -274,7 +260,7 @@ function AppInner() {
         isAtLimit={isAtLimit}
         limit={limit}
       />
-      {isLoggedIn && <AIChatWidget />}
+
       {authOpen && (
         <AuthModal
           isOpen={authOpen}

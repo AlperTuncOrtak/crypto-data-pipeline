@@ -12,26 +12,26 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
-import MotoGameModal from "../components/game/MotoGameModal";
+
 
 // ─── THEME ───────────────────────────────────────────────────────
 const T = {
-  bg: "#020617",
-  card: "#0b1227",
-  cardHov: "#0f172a",
-  purple: "#00f0ff",        // accent = cyan, T.purple kullanılan yerlerde artık cyan
-  purpleLight: "#00ffff",
-  purpleDim: "rgba(0,240,255,0.12)",
-  green: "#2dd4bf",
-  greenBg: "rgba(45,212,191,0.1)",
-  greenBorder: "rgba(45,212,191,0.2)",
-  red: "#f43f5e",
-  redBg: "rgba(244,63,94,0.1)",
+  bg: "#0d0d0f",
+  card: "#19191c",
+  cardHov: "#1c1c1f",
+  purple: "#3b82f6",        // accent = professional blue
+  purpleLight: "#60a5fa",
+  purpleDim: "rgba(59,130,246,0.10)",
+  green: "#22c55e",
+  greenBg: "rgba(34,197,94,0.08)",
+  greenBorder: "rgba(34,197,94,0.18)",
+  red: "#ef4444",
+  redBg: "rgba(239,68,68,0.08)",
   textPrimary: "#ffffff",
-  textSecondary: "#94a3b8",
-  textMuted: "#64748b",
-  border: "var(--border)",
-  borderFeat: "rgba(0,240,255,0.25)",
+  textSecondary: "#a1a1aa",
+  textMuted: "#71717a",
+  border: "rgba(255,255,255,0.08)",
+  borderFeat: "rgba(59,130,246,0.20)",
 };
 
 // ─── FLOATING COIN CARDS (Uniswap style) ──────────────────────────
@@ -369,18 +369,7 @@ export default function Landing({ onAuthOpen }) {
   const { data: marketData } = useMarket(200);
   const { t } = useTranslation();
   
-  const [isGameOpen, setIsGameOpen] = useState(false);
-  const [secretClickCount, setSecretClickCount] = useState(0);
 
-  const handleSecretClick = () => {
-    setSecretClickCount((prev) => {
-      if (prev + 1 >= 5) {
-        setIsGameOpen(true);
-        return 0;
-      }
-      return prev + 1;
-    });
-  };
 
   let coinsTracked = 2500;
   let coinsStr = "2,500+";
@@ -590,12 +579,12 @@ export default function Landing({ onAuthOpen }) {
 
       {/* ─── HERO ────────────────────────────────────────────── */}
       <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
-        {/* Background orbs */}
+        {/* Background — subtle, professional */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: "10%", left: "15%", width: 500, height: 500, background: "radial-gradient(circle, rgba(0,240,255,0.1) 0%, transparent 60%)", filter: "blur(60px)" }} />
-          <div style={{ position: "absolute", top: "30%", right: "10%", width: 400, height: 400, background: "radial-gradient(circle, rgba(0,198,255,0.08) 0%, transparent 60%)", filter: "blur(60px)" }} />
-          {/* Dot grid */}
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)", backgroundSize: "36px 36px", maskImage: "linear-gradient(to bottom, black 40%, transparent 90%)", WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 90%)" }} />
+          <div style={{ position: "absolute", top: "10%", left: "10%", width: 600, height: 600, background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 65%)", filter: "blur(80px)" }} />
+          <div style={{ position: "absolute", top: "40%", right: "5%", width: 400, height: 400, background: "radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 65%)", filter: "blur(80px)" }} />
+          {/* Subtle dot grid */}
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.018) 1px, transparent 1px)", backgroundSize: "40px 40px", maskImage: "linear-gradient(to bottom, black 30%, transparent 85%)", WebkitMaskImage: "linear-gradient(to bottom, black 30%, transparent 85%)" }} />
         </div>
 
         {/* ── Floating Coins ── */}
@@ -925,15 +914,14 @@ export default function Landing({ onAuthOpen }) {
             ))}
           </div>
           <div 
-            style={{ fontSize: 12, color: T.textMuted, cursor: "pointer", userSelect: "none" }}
-            onClick={handleSecretClick}
+            style={{ fontSize: 12, color: T.textMuted, userSelect: "none" }}
           >
             {t('landing.footer.disclaimer')}
           </div>
         </div>
       </footer>
       
-      {isGameOpen && <MotoGameModal onClose={() => setIsGameOpen(false)} />}
+
     </div>
   );
 }

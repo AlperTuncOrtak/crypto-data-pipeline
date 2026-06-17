@@ -155,13 +155,11 @@ export default function CoinTicker() {
   return (
     <div style={{
       width: '100%',
-      background: 'rgba(12, 12, 22, 0.65)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
-      borderBottom: '1px solid var(--border)',
+      background: '#141416',
+      borderBottom: '1px solid rgba(255,255,255,0.08)',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
-      height: 38,
+      height: 40,
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
