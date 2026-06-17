@@ -249,6 +249,19 @@ export default function Landing({ onAuthOpen }) {
   const { data: marketData } = useMarket(200);
   const { t } = useTranslation();
   
+  const [isGameOpen, setIsGameOpen] = useState(false);
+  const [secretClickCount, setSecretClickCount] = useState(0);
+
+  const handleSecretClick = () => {
+    setSecretClickCount((prev) => {
+      if (prev + 1 >= 5) {
+        setIsGameOpen(true);
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
+
   let coinsTracked = 2500;
   let coinsStr = "2,500+";
   if (stats && stats.coin_count) {
