@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCoinColor } from '../../utils/colors';
-import { TrendingUp, TrendingDown } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowUp, ArrowDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // A focused list of top coins to track in the global ticker
 const TOP_COINS = [
@@ -26,18 +26,18 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
   const baseAsset = getBaseAsset(data.s);
   const brandColor = getCoinColor(baseAsset);
   
-  const [flashColor, setFlashColor] = useState<string | null>(null);
+  const [flash, setFlash] = useState<'up' | 'down' | null>(null);
   const prevPriceRef = useRef(data.c);
 
   useEffect(() => {
     if (data.c !== prevPriceRef.current) {
       const isUp = Number(data.c) > Number(prevPriceRef.current);
-      setFlashColor(isUp ? 'rgba(40, 200, 64, 0.4)' : 'rgba(255, 95, 87, 0.4)');
+      setFlash(isUp ? 'up' : 'down');
       prevPriceRef.current = data.c;
       
       const timer = setTimeout(() => {
-        setFlashColor(null);
-      }, 300); // Flash duration
+        setFlash(null);
+      }, 400); // Slightly longer for a nice fade
       return () => clearTimeout(timer);
     }
   }, [data.c]);
@@ -45,48 +45,71 @@ const TickerItem = ({ data, onClick }: { data: TickerData, onClick: () => void }
   const priceChangePct = Number(data.P);
   const isUpDaily = priceChangePct >= 0;
 
+  // Flash colors
+  const green = '#22c55e';
+  const red = '#ef4444';
+  
+  let currentPriceColor = 'var(--text-primary)';
+  let currentTextShadow = 'none';
+  let currentBg = `linear-gradient(to top, ${brandColor}08, transparent)`;
+
+  if (flash === 'up') {
+    currentPriceColor = green;
+    currentTextShadow = `0 0 12px ${green}80`;
+    currentBg = `linear-gradient(to top, ${green}20, transparent)`;
+  } else if (flash === 'down') {
+    currentPriceColor = red;
+    currentTextShadow = `0 0 12px ${red}80`;
+    currentBg = `linear-gradient(to top, ${red}20, transparent)`;
+  }
+
   return (
     <motion.div 
       className="ticker-item"
       onClick={onClick}
-      animate={{ backgroundColor: flashColor || 'transparent' }}
+      animate={{ background: currentBg }}
       transition={{ duration: 0.3 }}
       style={{
         borderBottom: `2px solid ${brandColor}40`,
-        background: `linear-gradient(to top, ${brandColor}08, transparent)`,
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 12,
         padding: '0 24px',
         cursor: 'pointer',
         borderRight: '1px solid var(--border-soft)',
-        height: '38px',
+        height: '42px', // Slightly taller for breathing room
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        {/* A small dot of the brand color to ensure it's visible even if text fails */}
-        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: brandColor, boxShadow: `0 0 10px ${brandColor}` }} />
         <span style={{ 
           fontWeight: 800, 
-          fontSize: 13, 
-          color: brandColor,
-          textShadow: `0 0 8px ${brandColor}40`
+          fontSize: 14, 
+          color: '#fff',
+          letterSpacing: '0.02em'
         }}>
           {baseAsset}
         </span>
       </div>
-      <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>
+      
+      <motion.span 
+        animate={{ color: currentPriceColor, textShadow: currentTextShadow }}
+        transition={{ duration: 0.2 }}
+        style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 700 }}
+      >
         ${Number(data.c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-      </span>
+      </motion.span>
+      
       <span style={{ 
-        fontSize: 12, 
-        color: isUpDaily ? 'var(--positive)' : 'var(--negative)',
+        fontSize: 13, 
+        color: isUpDaily ? green : red,
         display: 'flex',
         alignItems: 'center',
         gap: 2,
-        fontWeight: 600
+        fontWeight: 700,
+        fontFamily: 'monospace'
       }}>
-        {isUpDaily ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+        {isUpDaily ? <ArrowUp size={14} strokeWidth={3} /> : <ArrowDown size={14} strokeWidth={3} />}
         {Math.abs(priceChangePct).toFixed(2)}%
       </span>
     </motion.div>
