@@ -6,12 +6,29 @@ import { Bot, Sparkles, AlertTriangle, CheckCircle, BarChart2 } from "lucide-rea
 export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(0);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+
+  const steps = [
+    "Initializing neural processing core...",
+    `Fetching live on-chain metrics for ${symbol}...`,
+    "Analyzing order book depth and momentum...",
+    "Evaluating social sentiment and news...",
+    "Generating final risk and signal report..."
+  ];
 
   const handleAnalyze = async () => {
     setLoading(true);
     setError(null);
+    setStep(0);
+    
+    // Simulate agentic steps for UX
+    for (let i = 0; i < steps.length; i++) {
+      setStep(i);
+      await new Promise(r => setTimeout(r, 600)); // 600ms per step
+    }
+
     try {
       const res = await apiClient.get(`/ai/analyze/${slug}`);
       if (res.data?.error) {
@@ -42,29 +59,28 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
           display: "flex",
           alignItems: "center",
           gap: 8,
-          background: "linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(138, 43, 226, 0.1) 100%)",
-          border: "1px solid rgba(0, 240, 255, 0.3)",
+          background: "var(--accent-soft)",
+          border: "1px solid var(--accent-border)",
           color: "var(--text-primary)",
           padding: "10px 20px",
           borderRadius: 12,
           cursor: "pointer",
           fontWeight: 600,
           fontSize: 14,
-          boxShadow: "0 0 20px rgba(0, 240, 255, 0.05)",
           transition: "all 0.2s ease",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = "0 0 30px rgba(0, 240, 255, 0.15)";
           e.currentTarget.style.transform = "translateY(-1px)";
+          e.currentTarget.style.background = "var(--accent-border)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = "0 0 20px rgba(0, 240, 255, 0.05)";
           e.currentTarget.style.transform = "none";
+          e.currentTarget.style.background = "var(--accent-soft)";
         }}
       >
-        <Bot size={18} style={{ color: "#00f0ff" }} />
+        <Bot size={18} style={{ color: "var(--accent)" }} />
         {t("coin_detail.ai_analyze", "Deep AI Analysis")}
-        <Sparkles size={14} style={{ color: "#8a2be2" }} />
+        <Sparkles size={14} style={{ color: "var(--secondary)" }} />
       </button>
     );
   }
@@ -72,8 +88,8 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
   return (
     <div
       style={{
-        background: "rgba(0, 0, 0, 0.2)",
-        border: "1px solid rgba(0, 240, 255, 0.15)",
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
         borderRadius: 16,
         padding: "24px",
         marginTop: 24,
@@ -81,12 +97,9 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
         overflow: "hidden",
       }}
     >
-      <div style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, background: "radial-gradient(circle, rgba(0,240,255,0.1) 0%, transparent 70%)", filter: "blur(30px)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: -50, left: -50, width: 200, height: 200, background: "radial-gradient(circle, rgba(138,43,226,0.1) 0%, transparent 70%)", filter: "blur(30px)", pointerEvents: "none" }} />
-      
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, position: "relative", zIndex: 1 }}>
-        <div style={{ background: "rgba(0, 240, 255, 0.1)", border: "1px solid rgba(0, 240, 255, 0.2)", padding: 8, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Bot size={20} color="#00f0ff" />
+        <div style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-border)", padding: 8, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Bot size={20} color="var(--accent)" />
         </div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)" }}>CryptoNeko AI Analyst</div>
@@ -95,9 +108,31 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
       </div>
 
       {loading && (
-        <div style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text-muted)", fontSize: 14 }}>
-          <div style={{ width: 16, height: 16, border: "2px solid rgba(0,240,255,0.3)", borderTopColor: "#00f0ff", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-          Analyzing {coinName} ({symbol}) market data, technicals, and momentum...
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16, position: "relative", zIndex: 1 }}>
+          {steps.map((s, index) => {
+            const isCompleted = index < step;
+            const isCurrent = index === step;
+            if (index > step) return null; // hide future steps
+            
+            return (
+              <div key={index} style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 12, 
+                color: isCompleted ? "var(--text-muted)" : "var(--accent)", 
+                fontSize: 13,
+                fontWeight: isCurrent ? 600 : 400,
+                opacity: isCurrent ? 1 : 0.7
+              }}>
+                {isCompleted ? (
+                  <CheckCircle size={14} color="var(--positive)" />
+                ) : (
+                  <div style={{ width: 14, height: 14, border: "2px solid var(--accent-border)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+                )}
+                {s}
+              </div>
+            );
+          })}
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       )}
