@@ -417,11 +417,25 @@ export default function CoinDetail() {
     if (arr.length === 0 || !coin?.current_price) return arr;
     const cur = Number(coin.current_price);
     if (isNaN(cur)) return arr;
+    
     const cloned = [...arr];
-    cloned[cloned.length - 1] = {
-      ...cloned[cloned.length - 1],
-      price: cur
-    };
+    const lastPoint = cloned[cloned.length - 1];
+    const lastTime = new Date(lastPoint.time).getTime();
+    const now = Date.now();
+    
+    // Eğer son veri 60 saniyeden eskiyse grafiğin sonuna anlık zamanla yeni nokta ekle (grafik uzasın)
+    // Değilse son noktayı güncelle
+    if (now - lastTime > 60000) {
+      cloned.push({
+        time: new Date(now).toISOString(),
+        price: cur
+      });
+    } else {
+      cloned[cloned.length - 1] = {
+        ...lastPoint,
+        price: cur
+      };
+    }
     return cloned;
   }, [history, coin?.current_price]);
 

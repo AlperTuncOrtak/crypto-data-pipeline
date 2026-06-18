@@ -160,28 +160,26 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function LightweightCandleChart({ data, currentPrice }: { data: any[], currentPrice?: number | string }) {
-  const baseOhlcData = useMemo(() => aggregateToOHLC(data, 75), [data]);
-
-  const ohlcData = useMemo(() => {
-    if (!baseOhlcData || baseOhlcData.length === 0) return [];
-    if (!currentPrice) return baseOhlcData;
-    
+  const dataWithLive = useMemo(() => {
+    if (!data || data.length === 0) return [];
+    if (!currentPrice) return data;
     const price = Number(currentPrice);
-    if (isNaN(price)) return baseOhlcData;
-
-    // Clone the array to avoid mutating memoized data
-    const cloned = [...baseOhlcData];
-    const last = { ...cloned[cloned.length - 1] };
+    if (isNaN(price)) return data;
     
-    // Inject the real-time tick into the latest candle!
-    last.close = price;
-    if (price > last.high) last.high = price;
-    if (price < last.low) last.low = price;
-    last.range = [last.open, last.close];
+    const cloned = [...data];
+    const lastItem = cloned[cloned.length - 1];
+    const lastTime = new Date(lastItem.time).getTime();
+    const now = Date.now();
     
-    cloned[cloned.length - 1] = last;
+    if (now - lastTime > 60000) {
+      cloned.push({ time: new Date(now).toISOString(), price: price });
+    } else {
+      cloned[cloned.length - 1] = { ...lastItem, price: price };
+    }
     return cloned;
-  }, [baseOhlcData, currentPrice]);
+  }, [data, currentPrice]);
+
+  const ohlcData = useMemo(() => aggregateToOHLC(dataWithLive, 75), [dataWithLive]);
 
   if (!ohlcData || ohlcData.length === 0) {
     return (

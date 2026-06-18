@@ -51,9 +51,8 @@ export function useCoinHistory(slug, range = '24h') {
         queryKey: ['coin-history', slug, range],
         queryFn: () => fetchCoinHistory(slug, range),
         enabled: Boolean(slug),
-        // History cok sik degismez, 60 saniye yeterli
-        refetchInterval: 60 * 1000,
-        staleTime: 30 * 1000,
+        refetchInterval: (range === '1h' || range === '24h') ? 5000 : 30000,
+        staleTime: (range === '1h' || range === '24h') ? 2000 : 15000,
     })
 }
 
