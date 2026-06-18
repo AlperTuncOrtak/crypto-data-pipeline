@@ -29,6 +29,7 @@ import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import AIAnalysisBox from "../components/market/AIAnalysisBox";
 import AttackMomentum from "../components/market/AttackMomentum";
+import HypeRealityWidget from "../components/market/HypeRealityWidget";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
 
@@ -674,6 +675,9 @@ export default function CoinDetail() {
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {/* ATTACK MOMENTUM */}
             <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
+            
+            {/* HYPE VS REALITY WIDGET */}
+            <HypeRealityWidget symbol={coin.symbol} />
           </div>
         </div>
   
