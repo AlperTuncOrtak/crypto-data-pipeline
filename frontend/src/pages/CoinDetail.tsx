@@ -97,9 +97,9 @@ function fmtDate(s) {
 function fmtChartTime(iso, range) {
   if (!iso) return "";
   const d = new Date(iso);
-  if (range === "1h" || range === "24h")
-    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-  return `${d.getMonth() + 1}/${d.getDate()}`;
+  const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  if (range === "1h" || range === "24h") return time;
+  return `${d.getMonth() + 1}/${d.getDate()} ${time}`;
 }
 
 // ─── Animated price ───────────────────────────────────────────

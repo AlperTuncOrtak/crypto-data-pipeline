@@ -54,8 +54,9 @@ function buildChartData(historyRows, symbols) {
 function formatTimeAxis(iso, hours) {
   if (!iso) return ''
   const d = new Date(iso)
-  if (hours <= 24) return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
-  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:00`
+  const time = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
+  if (hours <= 24) return time
+  return `${d.getMonth()+1}/${d.getDate()} ${time}`
 }
 
 function CustomTooltip({ active, payload, label }) {
