@@ -59,6 +59,7 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
         top, left: left ?? "auto", right: right ?? "auto",
         zIndex: 2,
         cursor: "pointer",
+        pointerEvents: "auto", // Enable pointer events only for the coin cards
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -100,9 +101,10 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
             position: "absolute",
             bottom: isTopHalf ? "auto" : `calc(100% + 10px)`,
             top: isTopHalf ? `calc(100% + 10px)` : "auto",
+            // If coin is on the right, box extends to the left. If coin on left, box extends to the right.
             left: right ? "auto" : "50%",
             right: right ? "50%" : "auto",
-            transform: right ? "translateX(50%)" : "translateX(-50%)",
+            transform: right ? "translateX(32px)" : "translateX(-32px)",
             background: "rgba(8,14,32,0.96)",
             backdropFilter: "blur(28px)",
             WebkitBackdropFilter: "blur(28px)",
@@ -120,7 +122,10 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
               position: "absolute", 
               bottom: isTopHalf ? "auto" : -6, 
               top: isTopHalf ? -6 : "auto", 
-              left: "50%", transform: "translateX(-50%)",
+              // Place arrow near the coin: if coin is on the right, arrow is on the right side of the box.
+              // Box is offset by 32px. Arrow is 12px wide, so its center should be at 32px. 32px - 6px = 26px.
+              left: right ? "auto" : "26px", 
+              right: right ? "26px" : "auto",
               width: 12, height: 6,
               borderLeft: "6px solid transparent",
               borderRight: "6px solid transparent",
@@ -596,7 +601,8 @@ export default function Landing({ onAuthOpen }) {
 
         {/* ── Floating Coins ── */}
         <div style={{ position: "absolute", top: 0, bottom: 0, left: "calc(-50vw + 50%)", right: "calc(-50vw + 50%)", pointerEvents: "none", overflow: "visible" }}>
-          <div style={{ position: "absolute", inset: 0, pointerEvents: "auto" }}>
+          {/* Inner wrapper must also have pointerEvents: 'none' so it doesn't block clicks beneath it */}
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
             {FLOATING_COINS.map((c) => (
               <FloatingCoinCard key={c.sym} {...c} />
             ))}
