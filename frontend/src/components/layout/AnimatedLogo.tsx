@@ -25,54 +25,34 @@ export default function AnimatedLogo() {
       }}
     >
       {/* 
-        Behind the text: Cat Head
-        It peeks out from the bottom when hovered.
-      */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: isHovered ? -12 : 20, opacity: isHovered ? 1 : 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        style={{
-          position: "absolute",
-          top: "40%", // Adjust based on exactly where the head should pop up
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 40,
-          height: 40,
-          zIndex: 0, // Behind the text
-          pointerEvents: "none",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <img 
-          src="/cat-head.png" 
-          alt="Cat Head" 
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
-          onError={(e) => {
-            // Fallback if image doesn't exist yet
-            e.currentTarget.style.display = "none";
-          }}
-        />
-      </motion.div>
-
-      {/* 
         Foreground: The Text Container
         It contains CRYPTO and NEKO, which slide apart.
       */}
-      <div style={{ display: "flex", alignItems: "baseline", zIndex: 1 }}>
+      <div style={{ display: "flex", alignItems: "baseline", position: "relative" }}>
+        
+        {/* The Bar that the paws are holding onto */}
+        <div style={{
+          position: "absolute",
+          bottom: -4,
+          left: -15,
+          right: -15,
+          height: 2,
+          background: "var(--border)",
+          borderRadius: 2,
+          zIndex: 1
+        }} />
+
         {/* Left Part: "Crypto" and Left Paw */}
         <motion.div
-          animate={{ x: isHovered ? -8 : 0 }}
+          animate={{ x: isHovered ? -12 : 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}
         >
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--accent)" }}>
             Crypto
           </span>
-          {/* Left Paw positioned slightly under the text */}
-          <div style={{ position: "absolute", bottom: -12, right: 10, width: 24, height: 16, zIndex: 2, pointerEvents: "none" }}>
+          {/* Left Paw gripping the bar */}
+          <div style={{ position: "absolute", bottom: -14, right: 10, width: 24, height: 16, zIndex: 3, pointerEvents: "none" }}>
             <img 
               src="/left-paw.png" 
               alt="Left Paw" 
@@ -82,17 +62,45 @@ export default function AnimatedLogo() {
           </div>
         </motion.div>
 
+        {/* The Gap where the Cat Head appears */}
+        <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 0 }}>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: isHovered ? -18 : 20, opacity: isHovered ? 1 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{
+              position: "absolute",
+              bottom: -4, // Relative to the gap baseline
+              width: 44,
+              height: 44,
+              pointerEvents: "none",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <img 
+              src="/cat-head.png" 
+              alt="Cat Head" 
+              style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom" }}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          </motion.div>
+        </div>
+
         {/* Right Part: "Neko" and Right Paw */}
         <motion.div
-          animate={{ x: isHovered ? 8 : 0 }}
+          animate={{ x: isHovered ? 12 : 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", marginLeft: 4 }}
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}
         >
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary)" }}>
             Neko
           </span>
-          {/* Right Paw positioned slightly under the text */}
-          <div style={{ position: "absolute", bottom: -12, left: 10, width: 24, height: 16, zIndex: 2, pointerEvents: "none" }}>
+          {/* Right Paw gripping the bar */}
+          <div style={{ position: "absolute", bottom: -14, left: 10, width: 24, height: 16, zIndex: 3, pointerEvents: "none" }}>
             <img 
               src="/right-paw.png" 
               alt="Right Paw" 
@@ -105,16 +113,18 @@ export default function AnimatedLogo() {
 
       {/* Subtitle "Analytics" positioned at the bottom, centered */}
       <motion.div
-        animate={{ opacity: isHovered ? 0 : 1, y: isHovered ? 10 : 0 }}
+        animate={{ opacity: isHovered ? 0 : 1, y: isHovered ? 12 : 0 }}
         transition={{ duration: 0.2 }}
         style={{
           position: "absolute",
-          bottom: -4,
+          bottom: -8,
           fontSize: 8,
           color: "var(--text-muted)",
           letterSpacing: "0.18em",
           textTransform: "uppercase",
-          pointerEvents: "none"
+          pointerEvents: "none",
+          width: "100%",
+          textAlign: "center"
         }}
       >
         Analytics
