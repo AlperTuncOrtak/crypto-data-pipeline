@@ -1,10 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export default function AnimatedLogo() {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Calculate normalized mouse position from center of screen (-1 to 1)
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = (e.clientY / window.innerHeight) * 2 - 1;
+      setMousePos({ x, y });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Max pixel movement for the parallax effect
+  const maxMoveX = 5;
+  const maxMoveY = 3;
+  const headX = mousePos.x * maxMoveX;
+  const headY = mousePos.y * maxMoveY;
 
   return (
     <div
@@ -81,8 +99,12 @@ export default function AnimatedLogo() {
             justifyContent: "center"
           }}>
             <motion.div
-              initial={{ y: 28, opacity: 0 }}
-              animate={{ y: isHovered ? 16 : 28, opacity: isHovered ? 1 : 0 }}
+              initial={{ y: 28, opacity: 0, x: 0 }}
+              animate={{ 
+                y: isHovered ? 16 + headY : 28, 
+                x: isHovered ? headX : 0,
+                opacity: isHovered ? 1 : 0 
+              }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               style={{
                 position: "absolute",
