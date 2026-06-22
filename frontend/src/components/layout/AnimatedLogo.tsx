@@ -52,7 +52,7 @@ export default function AnimatedLogo() {
             Crypto
           </span>
           {/* Left Paw gripping the bar */}
-          <div style={{ position: "absolute", bottom: -14, right: 10, width: 24, height: 16, zIndex: 3, pointerEvents: "none" }}>
+          <div style={{ position: "absolute", bottom: -11, right: 10, width: 18, height: 12, zIndex: 3, pointerEvents: "none" }}>
             <img 
               src="/left-paw.png" 
               alt="Left Paw" 
@@ -66,7 +66,7 @@ export default function AnimatedLogo() {
         <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 0 }}>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
-            animate={{ y: isHovered ? -18 : 20, opacity: isHovered ? 1 : 0 }}
+            animate={{ y: isHovered ? -4 : 20, opacity: isHovered ? 1 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             style={{
               position: "absolute",
@@ -100,7 +100,7 @@ export default function AnimatedLogo() {
             Neko
           </span>
           {/* Right Paw gripping the bar */}
-          <div style={{ position: "absolute", bottom: -14, left: 10, width: 24, height: 16, zIndex: 3, pointerEvents: "none" }}>
+          <div style={{ position: "absolute", bottom: -11, left: 10, width: 18, height: 12, zIndex: 3, pointerEvents: "none" }}>
             <img 
               src="/right-paw.png" 
               alt="Right Paw" 
