@@ -50,6 +50,7 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
 }) {
   const [hovered, setHovered] = useState(false);
   const accentColor = up ? "rgba(45,212,191,0.6)" : "rgba(244,63,94,0.6)";
+  const isTopHalf = parseInt(top) < 30; // Check if the coin is near the top edge
 
   return (
     <div
@@ -69,7 +70,8 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
           70% { transform: translateY(-${4 + delay * 0.5}px); }
         }
         .fc-wrap-${sym} { animation: fc-float-${sym} ${dur}s ease-in-out ${delay}s infinite; }
-        @keyframes fc-reveal { from { opacity:0; transform:translateY(10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes fc-reveal-up { from { opacity:0; transform:translateY(10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes fc-reveal-down { from { opacity:0; transform:translateY(-10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
       `}</style>
 
       <div className={`fc-wrap-${sym}`} style={{ position: "relative" }}>
@@ -96,7 +98,8 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
         {hovered && (
           <div style={{
             position: "absolute",
-            bottom: `calc(100% + 10px)`,
+            bottom: isTopHalf ? "auto" : `calc(100% + 10px)`,
+            top: isTopHalf ? `calc(100% + 10px)` : "auto",
             left: right ? "auto" : "50%",
             right: right ? "50%" : "auto",
             transform: right ? "translateX(50%)" : "translateX(-50%)",
@@ -108,17 +111,21 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
             padding: "16px 18px",
             minWidth: 190,
             boxShadow: `0 28px 64px rgba(0,0,0,0.7), 0 0 0 1px ${up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)"}`,
-            animation: "fc-reveal 180ms cubic-bezier(0.16,1,0.3,1) forwards",
+            animation: `${isTopHalf ? "fc-reveal-down" : "fc-reveal-up"} 180ms cubic-bezier(0.16,1,0.3,1) forwards`,
             zIndex: 20,
             pointerEvents: "none",
           }}>
             {/* Arrow */}
             <div style={{
-              position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
+              position: "absolute", 
+              bottom: isTopHalf ? "auto" : -6, 
+              top: isTopHalf ? -6 : "auto", 
+              left: "50%", transform: "translateX(-50%)",
               width: 12, height: 6,
               borderLeft: "6px solid transparent",
               borderRight: "6px solid transparent",
-              borderTop: `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}`,
+              borderTop: isTopHalf ? "none" : `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}`,
+              borderBottom: isTopHalf ? `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}` : "none",
             }} />
 
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
