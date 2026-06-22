@@ -54,9 +54,9 @@ export default function AnimatedLogo() {
           </span>
           {/* Left Paw gripping the bar (moves less than the text by animating slightly to the right to counteract the parent's left movement) */}
           <motion.div 
-            animate={{ x: isHovered ? 6 : 0 }}
+            animate={{ x: isHovered ? 6 : 0, rotate: -5 }} // Slight rotation inward
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            style={{ position: "absolute", bottom: -9, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
+            style={{ position: "absolute", bottom: -5, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
           >
             <img 
               src="/left-paw.png" 
@@ -123,9 +123,9 @@ export default function AnimatedLogo() {
           </span>
           {/* Right Paw gripping the bar (moves less than the text by animating slightly to the left) */}
           <motion.div 
-            animate={{ x: isHovered ? -6 : 0 }}
+            animate={{ x: isHovered ? -6 : 0, rotate: 5 }} // Slight rotation inward
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            style={{ position: "absolute", bottom: -9, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
+            style={{ position: "absolute", bottom: -5, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
           >
             <img 
               src="/right-paw.png" 
