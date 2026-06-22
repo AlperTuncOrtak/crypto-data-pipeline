@@ -117,7 +117,7 @@ export default function AnimatedLogo() {
             transition={{ duration: 0.2 }}
             style={{
               position: "absolute",
-              bottom: -14, // Places it below the bar
+              bottom: -24, // Moved further down to prevent overlapping the bar
               fontSize: 8,
               color: "var(--text-muted)",
               letterSpacing: "0.18em",
