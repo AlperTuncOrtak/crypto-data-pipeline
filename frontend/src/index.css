@@ -59,20 +59,20 @@
    LIGHT THEME
 ═══════════════════════════════════════════════════════════ */
 html.light {
-  /* Off-white backgrounds */
-  --bg-base:     #f4f4f5;
-  --bg-surface:  #fafafa;
+  /* Crisp, high-contrast backgrounds */
+  --bg-base:     #f8fafc; /* slate-50 */
+  --bg-surface:  #f1f5f9; /* slate-100 */
   --bg-elevated: #ffffff;
   --bg-card:     #ffffff;
 
   /* Borders */
-  --border:      rgba(15, 23, 42, 0.10);
-  --border-soft: rgba(15, 23, 42, 0.05);
+  --border:      rgba(15, 23, 42, 0.12);
+  --border-soft: rgba(15, 23, 42, 0.08);
 
-  /* Text */
-  --text-primary:   #09090b;
-  --text-secondary: #3f3f46;
-  --text-muted:     #71717a;
+  /* High contrast text */
+  --text-primary:   #0f172a; /* slate-900 */
+  --text-secondary: #475569; /* slate-600 */
+  --text-muted:     #94a3b8; /* slate-400 */
 
   /* Accent */
   --accent:         #2563eb;
@@ -89,7 +89,7 @@ html.light {
   --negative:       #dc2626;
   --negative-soft:  rgba(220, 38, 38, 0.08);
 
-  --nav-overlay: rgba(244, 244, 245, 0.98);
+  --nav-overlay: rgba(248, 250, 252, 0.98);
 
   color-scheme: light;
 }
@@ -99,16 +99,17 @@ html.light body {
   color: var(--text-primary);
 }
 
+/* Crisp, professional drop-shadows (no glow) */
 html.light .glass-card {
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.09);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 html.light .glass-panel {
-  background: #fafafa;
-  border: 1px solid rgba(15, 23, 42, 0.09);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 html.light ::-webkit-scrollbar-track { background: var(--bg-base); }

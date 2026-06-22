@@ -5,7 +5,7 @@
 
 ## High Priority
 - [x] **Fix all localhost references:** Ensure no `localhost:3000` or `localhost:5173` links remain in production (check Supabase email confirmations, API endpoints).
-- [ ] **Fix Light Theme:** Overhaul the light color palette and shadows (drop-shadows instead of glow) for better contrast.
+- [x] **Fix Light Theme:** Overhaul the light color palette and shadows (drop-shadows instead of glow) for better contrast.
 
 ## Upcoming Ideas & Features
 - [ ] **Stripe/Paywall Integration:** Implement Pro/Enterprise tier paywalls.

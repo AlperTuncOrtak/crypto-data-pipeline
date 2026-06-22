@@ -125,9 +125,8 @@ function AnimatedPrice({ current, prev, flash }) {
           <span
             key={i}
             style={{
-              color: changed ? flashColor : "var(--text-primary)",
-              transition: "color 0.6s ease",
-              textShadow: changed ? `0 0 16px ${flashColor}99, 0 0 32px ${flashColor}44` : "none",
+              color: changed ? flashColor : "inherit",
+              transition: "color 0.1s ease-out",
             }}
           >
             {char}
@@ -136,14 +135,14 @@ function AnimatedPrice({ current, prev, flash }) {
       })}
       <style>{`
         @keyframes pricePulse-up {
-          0%   { box-shadow: 0 0 0 0 rgba(46,204,113,0.55), inset 0 0 0 0 rgba(46,204,113,0.15); background: rgba(46,204,113,0.12); }
-          60%  { box-shadow: 0 0 24px 6px rgba(46,204,113,0.18), inset 0 0 20px 4px rgba(46,204,113,0.08); background: rgba(46,204,113,0.06); }
-          100% { box-shadow: none; background: transparent; }
+          0%   { background-color: rgba(46,204,113,0.15); }
+          50%  { background-color: rgba(46,204,113,0.05); }
+          100% { background-color: transparent; }
         }
         @keyframes pricePulse-down {
-          0%   { box-shadow: 0 0 0 0 rgba(231,76,60,0.55), inset 0 0 0 0 rgba(231,76,60,0.15); background: rgba(231,76,60,0.12); }
-          60%  { box-shadow: 0 0 24px 6px rgba(231,76,60,0.18), inset 0 0 20px 4px rgba(231,76,60,0.08); background: rgba(231,76,60,0.06); }
-          100% { box-shadow: none; background: transparent; }
+          0%   { background-color: rgba(231,76,60,0.15); }
+          50%  { background-color: rgba(231,76,60,0.05); }
+          100% { background-color: transparent; }
         }
       `}</style>
     </span>
