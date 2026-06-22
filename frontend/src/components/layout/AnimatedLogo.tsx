@@ -65,8 +65,8 @@ export default function AnimatedLogo() {
         {/* The Gap where the Cat Head appears */}
         <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 0 }}>
           <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: isHovered ? 6 : 20, opacity: isHovered ? 1 : 0 }}
+            initial={{ y: 28, opacity: 0 }}
+            animate={{ y: isHovered ? 16 : 28, opacity: isHovered ? 1 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             style={{
               position: "absolute",
