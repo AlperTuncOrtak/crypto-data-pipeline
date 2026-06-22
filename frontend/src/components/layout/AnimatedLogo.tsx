@@ -30,15 +30,16 @@ export default function AnimatedLogo() {
       */}
       <div style={{ display: "flex", alignItems: "baseline", position: "relative" }}>
         
-        {/* The Bar that the paws are holding onto */}
+        {/* The Bar / Ledge that the paws are holding onto */}
         <div style={{
           position: "absolute",
           bottom: -4,
-          left: -15,
-          right: -15,
-          height: 2,
-          background: "var(--border)",
-          borderRadius: 2,
+          left: -20,
+          right: -20,
+          height: 3,
+          background: "linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--text-muted) 50%, var(--border) 80%, transparent 100%)",
+          borderRadius: 4,
+          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
           zIndex: 1
         }} />
 
@@ -64,30 +65,41 @@ export default function AnimatedLogo() {
 
         {/* The Gap where the Cat Head appears */}
         <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 0 }}>
-          <motion.div
-            initial={{ y: 28, opacity: 0 }}
-            animate={{ y: isHovered ? 16 : 28, opacity: isHovered ? 1 : 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            style={{
-              position: "absolute",
-              bottom: -4, // Relative to the gap baseline
-              width: 44,
-              height: 44,
-              pointerEvents: "none",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <img 
-              src="/cat-head.png" 
-              alt="Cat Head" 
-              style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom" }}
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
+          {/* Mask container to hide the bottom of the cat behind the bar */}
+          <div style={{
+            position: "absolute",
+            bottom: -4, // aligns with the bar
+            width: 60, // wide enough to not clip the sides of the head
+            height: 50, // tall enough to not clip the top
+            overflow: "hidden", // masks the bottom
+            pointerEvents: "none",
+            display: "flex",
+            justifyContent: "center"
+          }}>
+            <motion.div
+              initial={{ y: 28, opacity: 0 }}
+              animate={{ y: isHovered ? 16 : 28, opacity: isHovered ? 1 : 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              style={{
+                position: "absolute",
+                bottom: 0, // starts at the bottom of the mask
+                width: 44,
+                height: 44,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
               }}
-            />
-          </motion.div>
+            >
+              <img 
+                src="/cat-head.png" 
+                alt="Cat Head" 
+                style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom" }}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            </motion.div>
+          </div>
         </div>
 
         {/* Right Part: "Neko" and Right Paw */}
