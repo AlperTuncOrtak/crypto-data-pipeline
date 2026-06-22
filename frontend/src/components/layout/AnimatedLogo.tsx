@@ -110,6 +110,25 @@ export default function AnimatedLogo() {
               />
             </motion.div>
           </div>
+
+          {/* Subtitle "Analytics" perfectly centered under the cat gap */}
+          <motion.div
+            animate={{ opacity: isHovered ? 0 : 1, y: isHovered ? 12 : 0 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              position: "absolute",
+              bottom: -14, // Places it below the bar
+              fontSize: 8,
+              color: "var(--text-muted)",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+              zIndex: 2
+            }}
+          >
+            Analytics
+          </motion.div>
         </div>
 
         {/* Right Part: "Neko" and Right Paw */}
@@ -137,24 +156,6 @@ export default function AnimatedLogo() {
         </motion.div>
       </div>
 
-      {/* Subtitle "Analytics" positioned at the bottom, centered */}
-      <motion.div
-        animate={{ opacity: isHovered ? 0 : 1, y: isHovered ? 12 : 0 }}
-        transition={{ duration: 0.2 }}
-        style={{
-          position: "absolute",
-          bottom: -8,
-          fontSize: 8,
-          color: "var(--text-muted)",
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          pointerEvents: "none",
-          width: "100%",
-          textAlign: "center"
-        }}
-      >
-        Analytics
-      </motion.div>
     </div>
   );
 }
