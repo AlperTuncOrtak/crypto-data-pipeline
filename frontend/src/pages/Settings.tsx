@@ -276,7 +276,7 @@ export default function Settings() {
     setCancelMsg({ text: "", type: "" });
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const BASE_URL = import.meta.env.VITE_API_URL || "https://api.cryptoneko.online";
       const res = await fetch(`${BASE_URL}/cancel-subscription`, {
         method: "POST",
         headers: {

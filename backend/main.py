@@ -726,7 +726,7 @@ def create_checkout_session(payload: dict, user: dict = Depends(verify_token)):
             status_code=400, detail=f"Price not configured: {price_key}"
         )
 
-    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    frontend_url = os.getenv("FRONTEND_URL", "https://cryptoneko.online")
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
