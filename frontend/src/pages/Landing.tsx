@@ -36,12 +36,12 @@ const T = {
 
 // ─── FLOATING COIN CARDS (Uniswap style) ──────────────────────────
 const FLOATING_COINS = [
-  { sym: "BTC",  name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "12%", left: "1%",   delay: 0,   dur: 7.0, size: 52 },
-  { sym: "ETH",  name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "55%", left: "2%",   delay: 1.5, dur: 7.4, size: 46 },
-  { sym: "SOL",  name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "18%", right: "1%",  delay: 0.8, dur: 6.4, size: 44 },
-  { sym: "BNB",  name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "62%", right: "2%", delay: 2.2, dur: 7.8, size: 42 },
-  { sym: "XRP",  name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "78%", left: "3%", delay: 1.1, dur: 8.2, size: 38 },
-  { sym: "DOGE", name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "8%",  right: "2%",  delay: 3.0, dur: 6.6, size: 40 },
+  { sym: "BTC",  name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "12%", left: "10%",   delay: 0,   dur: 7.0, size: 52 },
+  { sym: "ETH",  name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "55%", left: "14%",   delay: 1.5, dur: 7.4, size: 46 },
+  { sym: "SOL",  name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "18%", right: "10%",  delay: 0.8, dur: 6.4, size: 44 },
+  { sym: "BNB",  name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "62%", right: "12%", delay: 2.2, dur: 7.8, size: 42 },
+  { sym: "XRP",  name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "78%", left: "16%", delay: 1.1, dur: 8.2, size: 38 },
+  { sym: "DOGE", name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "8%",  right: "16%",  delay: 3.0, dur: 6.6, size: 40 },
 ];
 
 function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right, delay, dur, size }: {
