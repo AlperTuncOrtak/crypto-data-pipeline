@@ -606,9 +606,9 @@ export default function Landing({ onAuthOpen }) {
           {/* Inner wrapper must also have pointerEvents: 'none' so it doesn't block clicks beneath it */}
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
             {FLOATING_COINS.map((c) => {
-              const liveCoin = marketData?.find((m) => m.id === c.slug);
+              const liveCoin = marketData?.find((m) => m.symbol === c.sym);
               const livePrice = liveCoin 
-                ? `$${liveCoin.current_price.toLocaleString(undefined, { minimumFractionDigits: liveCoin.current_price < 1 ? 2 : 0, maximumFractionDigits: liveCoin.current_price < 1 ? 6 : 2 })}` 
+                ? `$${Number(liveCoin.current_price).toLocaleString(undefined, { minimumFractionDigits: liveCoin.current_price < 1 ? 2 : 0, maximumFractionDigits: liveCoin.current_price < 1 ? 6 : 2 })}` 
                 : c.price;
               const liveChange = liveCoin 
                 ? `${liveCoin.price_change_percentage_24h > 0 ? '+' : ''}${liveCoin.price_change_percentage_24h.toFixed(1)}%` 
