@@ -93,7 +93,13 @@ export default function AnimatedLogo() {
               <img 
                 src="/cat-head.png" 
                 alt="Cat Head" 
-                style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom" }}
+                style={{ 
+                  width: "100%", 
+                  height: "100%", 
+                  objectFit: "contain", 
+                  objectPosition: "bottom",
+                  filter: "hue-rotate(110deg)" // Changes the green eyes to blue without affecting the black/white body
+                }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
