@@ -36,24 +36,24 @@ export default function AnimatedLogo() {
           bottom: -4,
           left: -20,
           right: -20,
-          height: 3,
+          height: 4,
           background: "linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--text-muted) 50%, var(--border) 80%, transparent 100%)",
           borderRadius: 4,
-          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-          zIndex: 1
+          boxShadow: "0 2px 5px rgba(0,0,0,0.4)",
+          zIndex: 2
         }} />
 
         {/* Left Part: "Crypto" and Left Paw */}
         <motion.div
           animate={{ x: isHovered ? -12 : 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 3 }}
         >
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--accent)" }}>
             Crypto
           </span>
           {/* Left Paw gripping the bar */}
-          <div style={{ position: "absolute", bottom: -11, right: 10, width: 18, height: 12, zIndex: 3, pointerEvents: "none" }}>
+          <div style={{ position: "absolute", bottom: -11, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}>
             <img 
               src="/left-paw.png" 
               alt="Left Paw" 
@@ -64,11 +64,11 @@ export default function AnimatedLogo() {
         </motion.div>
 
         {/* The Gap where the Cat Head appears */}
-        <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 0 }}>
-          {/* Mask container to hide the bottom of the cat behind the bar */}
+        <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 1 }}>
+          {/* Mask container to hide the bottom of the cat exactly at the top of the bar */}
           <div style={{
             position: "absolute",
-            bottom: -4, // aligns with the bar
+            bottom: 0, // 0 is exactly the top edge of the bar (which is at -4 with height 4)
             width: 60, // wide enough to not clip the sides of the head
             height: 50, // tall enough to not clip the top
             overflow: "hidden", // masks the bottom
@@ -106,13 +106,13 @@ export default function AnimatedLogo() {
         <motion.div
           animate={{ x: isHovered ? 12 : 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 3 }}
         >
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary)" }}>
             Neko
           </span>
           {/* Right Paw gripping the bar */}
-          <div style={{ position: "absolute", bottom: -11, left: 10, width: 18, height: 12, zIndex: 3, pointerEvents: "none" }}>
+          <div style={{ position: "absolute", bottom: -11, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}>
             <img 
               src="/right-paw.png" 
               alt="Right Paw" 
