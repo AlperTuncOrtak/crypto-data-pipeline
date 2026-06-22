@@ -36,17 +36,18 @@ const T = {
 
 // ─── FLOATING COIN CARDS (Uniswap style) ──────────────────────────
 const FLOATING_COINS = [
-  { sym: "BTC",  name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "12%", left: "10%",   delay: 0,   dur: 7.0, size: 52 },
-  { sym: "ETH",  name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "55%", left: "14%",   delay: 1.5, dur: 7.4, size: 46 },
-  { sym: "SOL",  name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "18%", right: "10%",  delay: 0.8, dur: 6.4, size: 44 },
-  { sym: "BNB",  name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "62%", right: "12%", delay: 2.2, dur: 7.8, size: 42 },
-  { sym: "XRP",  name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "78%", left: "16%", delay: 1.1, dur: 8.2, size: 38 },
-  { sym: "DOGE", name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "8%",  right: "16%",  delay: 3.0, dur: 6.6, size: 40 },
+  { sym: "BTC",  slug: "bitcoin",     name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "12%", left: "10%",   delay: 0,   dur: 7.0, size: 52 },
+  { sym: "ETH",  slug: "ethereum",    name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "55%", left: "14%",   delay: 1.5, dur: 7.4, size: 46 },
+  { sym: "SOL",  slug: "solana",      name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "18%", right: "10%",  delay: 0.8, dur: 6.4, size: 44 },
+  { sym: "BNB",  slug: "binancecoin", name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "62%", right: "12%", delay: 2.2, dur: 7.8, size: 42 },
+  { sym: "XRP",  slug: "ripple",      name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "78%", left: "16%", delay: 1.1, dur: 8.2, size: 38 },
+  { sym: "DOGE", slug: "dogecoin",    name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "8%",  right: "16%",  delay: 3.0, dur: 6.6, size: 40 },
 ];
 
-function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right, delay, dur, size }: {
+function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right, delay, dur, size, onClick }: {
   sym: string; name: string; price: string; change: string; up: boolean;
   img: string; top: string; left?: string; right?: string; delay: number; dur: number; size: number;
+  onClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const accentColor = up ? "rgba(45,212,191,0.6)" : "rgba(244,63,94,0.6)";
@@ -63,6 +64,7 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
     >
       <style>{`
         @keyframes fc-float-${sym} {
@@ -603,9 +605,27 @@ export default function Landing({ onAuthOpen }) {
         <div style={{ position: "absolute", top: 0, bottom: 0, left: "calc(-50vw + 50%)", right: "calc(-50vw + 50%)", pointerEvents: "none", overflow: "visible" }}>
           {/* Inner wrapper must also have pointerEvents: 'none' so it doesn't block clicks beneath it */}
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-            {FLOATING_COINS.map((c) => (
-              <FloatingCoinCard key={c.sym} {...c} />
-            ))}
+            {FLOATING_COINS.map((c) => {
+              const liveCoin = marketData?.find((m) => m.id === c.slug);
+              const livePrice = liveCoin 
+                ? `$${liveCoin.current_price.toLocaleString(undefined, { minimumFractionDigits: liveCoin.current_price < 1 ? 2 : 0, maximumFractionDigits: liveCoin.current_price < 1 ? 6 : 2 })}` 
+                : c.price;
+              const liveChange = liveCoin 
+                ? `${liveCoin.price_change_percentage_24h > 0 ? '+' : ''}${liveCoin.price_change_percentage_24h.toFixed(1)}%` 
+                : c.change;
+              const liveUp = liveCoin ? liveCoin.price_change_percentage_24h >= 0 : c.up;
+              
+              return (
+                <FloatingCoinCard 
+                  key={c.sym} 
+                  {...c} 
+                  price={livePrice} 
+                  change={liveChange} 
+                  up={liveUp} 
+                  onClick={() => navigate(`/coin/${c.slug}`)} 
+                />
+              );
+            })}
           </div>
         </div>
 
