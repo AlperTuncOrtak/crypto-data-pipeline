@@ -66,7 +66,7 @@ export default function AnimatedLogo() {
         <div style={{ position: "relative", width: 4, display: "flex", justifyContent: "center", zIndex: 0 }}>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
-            animate={{ y: isHovered ? -4 : 20, opacity: isHovered ? 1 : 0 }}
+            animate={{ y: isHovered ? 6 : 20, opacity: isHovered ? 1 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             style={{
               position: "absolute",
