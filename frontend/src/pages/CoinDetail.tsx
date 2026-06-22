@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   AreaChart,
   Area,
@@ -20,6 +20,7 @@ import {
   AlertCircle,
   LineChart,
   CandlestickChart,
+  Lock,
 } from "lucide-react";
 import { AnimatedPrice } from "../components/ui/AnimatedPrice";
 import LightweightCandleChart from "../components/market/LightweightCandleChart";
@@ -379,9 +380,10 @@ function PriceRangeBar({ current, ath, atl, t }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function CoinDetail() {
-  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const { isPro } = useAuth();
   const [range, setRange] = useState("24h");
   const [chartType, setChartType] = useState("simple");
 
@@ -681,21 +683,64 @@ export default function CoinDetail() {
           </div>
         </div>
   
-        <SectionTitle>Pro Crypto Analytics</SectionTitle>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
-          {/* AI ANALYSIS BOX */}
-          <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
+        {isPro ? (
+          <>
+            <SectionTitle>Pro Crypto Analytics</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+              {/* AI ANALYSIS BOX */}
+              <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {/* ATTACK MOMENTUM */}
-            <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
-            
-            {/* HYPE VS REALITY WIDGET */}
-            <HypeRealityWidget symbol={coin.symbol} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                {/* ATTACK MOMENTUM */}
+                <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
+                
+                {/* HYPE VS REALITY WIDGET */}
+                <HypeRealityWidget symbol={coin.symbol} />
+              </div>
+            </div>
+      
+            <AIPulse slug={slug} />
+          </>
+        ) : (
+          <div style={{ marginBottom: 32 }}>
+            <SectionTitle>Pro Crypto Analytics</SectionTitle>
+            <div style={{ 
+              position: "relative", 
+              borderRadius: 24, 
+              overflow: "hidden", 
+              padding: 40,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.05)"
+            }}>
+              {/* Blurred background mockup */}
+              <div style={{ position: "absolute", inset: 0, filter: "blur(8px)", opacity: 0.4, pointerEvents: "none" }}>
+                <div style={{ padding: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                  <div style={{ height: 200, background: "rgba(255,255,255,0.05)", borderRadius: 16 }}></div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                    <div style={{ height: 90, background: "rgba(255,255,255,0.05)", borderRadius: 16 }}></div>
+                    <div style={{ height: 90, background: "rgba(255,255,255,0.05)", borderRadius: 16 }}></div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Lock CTA */}
+              <div style={{ position: "relative", zIndex: 2, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, border: "1px solid rgba(255,255,255,0.2)" }}>
+                  <Lock size={28} color="white" />
+                </div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: "white" }}>Unlock AI Analyst</h3>
+                <p style={{ color: "var(--text-muted)", marginBottom: 24, maxWidth: 400, lineHeight: 1.5 }}>Get real-time AI-powered market sentiment, attack momentum, and advanced predictions by upgrading to Pro.</p>
+                <Link to="/pricing" style={{ padding: "12px 24px", background: "white", color: "black", borderRadius: 100, fontWeight: 700, fontSize: 15, textDecoration: "none", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                  Upgrade to Pro
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-  
-        <AIPulse slug={slug} />
+        )}
 
       {/* PRICE RANGE BAR */}
       {coin.ath && coin.atl && (

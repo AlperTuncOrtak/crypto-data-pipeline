@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMarket } from "../../hooks/useMarket";
+import { getCoinColor } from "../../utils/colors";
 
 function formatPrice(n) {
   const num = Number(n);

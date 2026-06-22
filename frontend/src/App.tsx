@@ -35,6 +35,7 @@ import { useMarket } from "./hooks/useMarket";
 
 import AuthModal from "./components/ui/AuthModal";
 import { ThemeProvider, useTheme } from "./hooks/useTheme";
+import AIChatWidget from "./components/ai/AIChatWidget";
 
 function AppInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -246,6 +247,8 @@ function AppInner() {
       </main>
 
       {location.pathname !== "/" || isLoggedIn ? <Footer /> : null}
+
+      <AIChatWidget />
 
       <RightSidebar
         isOpen={sidebarOpen}
