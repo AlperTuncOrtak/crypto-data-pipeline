@@ -102,7 +102,7 @@ export default function AnimatedLogo() {
                   height: "100%", 
                   objectFit: "contain", 
                   objectPosition: "bottom",
-                  filter: "hue-rotate(160deg) saturate(1.5)" // Changed to 160deg and bumped saturation to ensure strong blue
+                  filter: "hue-rotate(90deg) saturate(1.2)" // 90deg rotation from green yields a cyan/turquoise (husky eye) color
                 }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
