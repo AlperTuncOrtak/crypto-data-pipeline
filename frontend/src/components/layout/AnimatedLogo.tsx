@@ -52,15 +52,19 @@ export default function AnimatedLogo() {
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--accent)" }}>
             Crypto
           </span>
-          {/* Left Paw gripping the bar */}
-          <div style={{ position: "absolute", bottom: -11, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}>
+          {/* Left Paw gripping the bar (moves less than the text by animating slightly to the right to counteract the parent's left movement) */}
+          <motion.div 
+            animate={{ x: isHovered ? 6 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{ position: "absolute", bottom: -11, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
+          >
             <img 
               src="/left-paw.png" 
               alt="Left Paw" 
               style={{ width: "100%", height: "100%", objectFit: "contain" }}
               onError={(e) => { e.currentTarget.style.display = "none"; }}
             />
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* The Gap where the Cat Head appears */}
@@ -98,7 +102,7 @@ export default function AnimatedLogo() {
                   height: "100%", 
                   objectFit: "contain", 
                   objectPosition: "bottom",
-                  filter: "hue-rotate(110deg)" // Changes the green eyes to blue without affecting the black/white body
+                  filter: "hue-rotate(160deg) saturate(1.5)" // Changed to 160deg and bumped saturation to ensure strong blue
                 }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
@@ -117,15 +121,19 @@ export default function AnimatedLogo() {
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary)" }}>
             Neko
           </span>
-          {/* Right Paw gripping the bar */}
-          <div style={{ position: "absolute", bottom: -11, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}>
+          {/* Right Paw gripping the bar (moves less than the text by animating slightly to the left) */}
+          <motion.div 
+            animate={{ x: isHovered ? -6 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{ position: "absolute", bottom: -11, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
+          >
             <img 
               src="/right-paw.png" 
               alt="Right Paw" 
               style={{ width: "100%", height: "100%", objectFit: "contain" }}
               onError={(e) => { e.currentTarget.style.display = "none"; }}
             />
-          </div>
+          </motion.div>
         </motion.div>
       </div>
 
