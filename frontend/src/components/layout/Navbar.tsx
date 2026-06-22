@@ -36,6 +36,7 @@ import AuthModal from "../ui/AuthModal";
 import WalletConnectButton from "../web3/WalletConnectButton";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../../utils/colors";
+import AnimatedLogo from "./AnimatedLogo";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
@@ -578,56 +579,7 @@ export default function Navbar({
           }}
         >
           {/* LOGO */}
-          <div
-            onClick={() => navigate("/")}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              cursor: "pointer",
-              marginRight: 32,
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: 10,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
-                flexShrink: 0,
-                overflow: "hidden"
-              }}
-            >
-              <img src="/logo.png" alt="CryptoNeko Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
-            <div>
-              <div
-                style={{
-                  fontSize: 15,
-                  fontWeight: 800,
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.1,
-                }}
-              >
-                <span style={{ color: "var(--accent)" }}>Crypto</span>
-                <span style={{ color: "var(--text-primary)" }}>Neko</span>
-              </div>
-              <div
-                style={{
-                  fontSize: 8,
-                  color: "var(--text-muted)",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Analytics
-              </div>
-            </div>
-          </div>
+          <AnimatedLogo />
 
           {/* NAV LINKS */}
           <nav
