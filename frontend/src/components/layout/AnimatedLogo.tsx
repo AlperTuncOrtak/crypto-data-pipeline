@@ -56,7 +56,7 @@ export default function AnimatedLogo() {
           <motion.div 
             animate={{ x: isHovered ? 6 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            style={{ position: "absolute", bottom: -11, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
+            style={{ position: "absolute", bottom: -9, right: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
           >
             <img 
               src="/left-paw.png" 
@@ -125,7 +125,7 @@ export default function AnimatedLogo() {
           <motion.div 
             animate={{ x: isHovered ? -6 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            style={{ position: "absolute", bottom: -11, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
+            style={{ position: "absolute", bottom: -9, left: 10, width: 18, height: 12, zIndex: 4, pointerEvents: "none" }}
           >
             <img 
               src="/right-paw.png" 
