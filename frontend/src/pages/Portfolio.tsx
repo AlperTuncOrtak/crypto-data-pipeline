@@ -1049,6 +1049,76 @@ export default function Portfolio() {
       .then(({ data }) => { if (data?.length > 0) setTrades(data); });
   }, [user]);
 
+  // --- Portfolio Performance Chart Logic ---
+  const [chartRange, setChartRange] = useState(24);
+  const [chartData, setChartData] = useState([]);
+  const [isChartLoading, setIsChartLoading] = useState(false);
+
+  useEffect(() => {
+    if (holdings.length === 0) {
+      setChartData([]);
+      return;
+    }
+
+    const fetchHistory = async () => {
+      setIsChartLoading(true);
+      try {
+        const uniqueSymbols = [...new Set(holdings.map(h => h.symbol))];
+        const searchParams = new URLSearchParams();
+        uniqueSymbols.forEach(sym => searchParams.append("symbols", sym));
+        searchParams.append("hours", chartRange.toString());
+
+        const res = await apiClient.get(`/analysis/history?${searchParams.toString()}`);
+        const historyData = res.data;
+
+        const masterSymbol = uniqueSymbols.find(sym => historyData[sym] && historyData[sym].length > 0);
+        if (!masterSymbol) {
+          setChartData([]);
+          return;
+        }
+
+        const masterTimeline = historyData[masterSymbol];
+        
+        const newChartData = masterTimeline.map((point, idx) => {
+          let totalValAtT = 0;
+          uniqueSymbols.forEach(sym => {
+            const h = holdings.find(x => x.symbol === sym);
+            const amt = h ? h.amount : 0;
+            const symHistory = historyData[sym];
+            let price = h ? h.current_price : 0;
+            if (symHistory && symHistory[idx]) {
+              price = symHistory[idx].price;
+            }
+            totalValAtT += amt * price;
+          });
+          
+          return {
+            time: new Date(point.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            fullTime: point.time,
+            value: totalValAtT
+          };
+        });
+
+        // Live injection for the final point
+        const totalValueNow = holdings.reduce((s, h) => s + h.value, 0);
+        if (newChartData.length > 0 && Math.abs(newChartData[newChartData.length - 1].value - totalValueNow) > 0.1) {
+          newChartData.push({
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            fullTime: new Date().toISOString(),
+            value: totalValueNow
+          });
+        }
+
+        setChartData(newChartData);
+      } catch (err) {
+        console.error("Failed to fetch chart history", err);
+      } finally {
+        setIsChartLoading(false);
+      }
+    };
+    fetchHistory();
+  }, [holdings, chartRange]);
+
   useEffect(() => {
     try { localStorage.setItem("crypto_neko_trades", JSON.stringify(trades)); } catch {}
   }, [trades]);
@@ -1136,9 +1206,9 @@ export default function Portfolio() {
     <div className="max-w-[1600px] mx-auto pb-16 px-4 sm:px-6">
 
       {/* HERO */}
-      <div className="relative flex flex-col items-center justify-center py-20 text-center overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center pt-20 pb-10 text-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-[#00f0ff]/10" />
+          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-[var(--accent)]/10" />
         </div>
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           {t('portfolio.title')}
@@ -1151,6 +1221,86 @@ export default function Portfolio() {
           <span>{isPos ? "+" : ""}{fmtUSD(totalPnl)}</span>
           <span className="text-sm opacity-70">({fmtPct(pnlPct)})</span>
         </div>
+
+        {/* PERFORMANCE CHART */}
+        {chartData.length > 0 && (
+          <div className="w-full max-w-4xl mx-auto mt-12 mb-4 relative z-10">
+            <div className="flex justify-end gap-2 mb-4 px-4">
+              {[24, 168, 720].map((hours) => {
+                const labels = { 24: "24H", 168: "7D", 720: "30D" };
+                return (
+                  <button
+                    key={hours}
+                    onClick={() => setChartRange(hours)}
+                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                      chartRange === hours
+                        ? "bg-[var(--accent)] text-white shadow-sm"
+                        : "bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    }`}
+                  >
+                    {labels[hours]}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="h-[250px] w-full">
+              {isChartLoading ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="animate-spin w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full opacity-50" />
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis 
+                      dataKey="time" 
+                      hide 
+                    />
+                    <YAxis 
+                      domain={['auto', 'auto']} 
+                      hide 
+                    />
+                    <RechartTooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          const date = new Date(data.fullTime);
+                          return (
+                            <div className="glass-panel px-4 py-3 rounded-xl border-none shadow-xl">
+                              <p className="text-[var(--text-muted)] text-xs font-semibold mb-1">
+                                {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                              <p className="text-[var(--text-primary)] font-black text-lg">
+                                {fmtUSD(data.value)}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                      cursor={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="var(--accent)" 
+                      strokeWidth={3}
+                      fillOpacity={1} 
+                      fill="url(#colorValue)" 
+                      isAnimationActive={true}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Import message */}

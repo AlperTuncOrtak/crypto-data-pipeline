@@ -9,6 +9,6 @@
 
 ## Upcoming Ideas & Features
 - [ ] **Stripe/Paywall Integration:** Implement Pro/Enterprise tier paywalls.
-- [ ] **Portfolio Performance Chart:** Add a historical performance line chart to the Portfolio page.
+- [x] **Portfolio Performance Chart:** Added interactive Recharts area chart plotting total historical value of current holdings (24H/7D/30D).
 - [ ] **On-Chain Transactions Feed:** Live feed of recent large swaps/whale movements.
 - [ ] **Tokenomics & Unlocks Widget:** Add upcoming token unlocks to CoinDetail page.
