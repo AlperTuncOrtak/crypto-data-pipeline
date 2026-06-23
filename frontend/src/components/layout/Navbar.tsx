@@ -142,7 +142,7 @@ const NAV_ITEMS = [
         label: "Correlation Matrix",
         Icon: Network,
         desc: "Coin price correlations",
-        soon: false,
+        soon: true,
       },
     ],
   },
