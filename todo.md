@@ -11,4 +11,4 @@
 - [ ] **Stripe/Paywall Integration:** Implement Pro/Enterprise tier paywalls.
 - [x] **Portfolio Performance Chart:** Added interactive Recharts area chart plotting total historical value of current holdings (24H/7D/30D).
 - [ ] **On-Chain Transactions Feed:** Live feed of recent large swaps/whale movements.
-- [ ] **Tokenomics & Unlocks Widget:** Add upcoming token unlocks to CoinDetail page.
+- [x] **Tokenomics & Unlocks Widget:** Add upcoming token unlocks to CoinDetail page.

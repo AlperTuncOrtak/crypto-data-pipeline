@@ -31,6 +31,7 @@ import AIPulse from "../components/ai/AIPulse";
 import AIAnalysisBox from "../components/market/AIAnalysisBox";
 import AttackMomentum from "../components/market/AttackMomentum";
 import HypeRealityWidget from "../components/market/HypeRealityWidget";
+import TokenomicsWidget from "../components/market/TokenomicsWidget";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
 
@@ -252,48 +253,6 @@ function ChartTooltip({ active, payload, label }) {
   );
 }
 
-// ─── Supply bar ──────────────────────────────────────────────
-function SupplyBar({ circulating, total, max, t }) {
-  const cap = max || total;
-  if (!circulating || !cap) return null;
-  const pct = Math.min(100, (circulating / cap) * 100).toFixed(1);
-  return (
-    <div style={{ marginTop: 8 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontSize: 11,
-          color: "var(--text-muted)",
-          marginBottom: 5,
-        }}
-      >
-        <span>{t("coin_detail.circulating")}</span>
-        <span>
-          {pct} {max ? t("coin_detail.pct_of_max") : t("coin_detail.pct_of_total")}
-        </span>
-      </div>
-      <div
-        style={{
-          height: 5,
-          borderRadius: 3,
-          background: "var(--border)",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            height: "100%",
-            width: `${pct}%`,
-            background: "var(--accent)",
-            borderRadius: 3,
-            transition: "width 0.6s ease",
-          }}
-        />
-      </div>
-    </div>
-  );
-}
 
 // ─── ATH/ATL bar ─────────────────────────────────────────────
 function PriceRangeBar({ current, ath, atl, t }) {
@@ -825,49 +784,10 @@ export default function CoinDetail() {
         />
       </div>
 
-      {/* SUPPLY */}
-      <div style={{ marginBottom: 8 }}>
-        <SectionTitle>{t("coin_detail.supply_title")}</SectionTitle>
+      {/* TOKENOMICS WIDGET */}
+      <div style={{ marginBottom: 40 }}>
+        <TokenomicsWidget coin={coin} />
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-          gap: 10,
-          marginBottom: 24,
-        }}
-      >
-        <StatCard
-          label={t("coin_detail.circulating")}
-          value={fmtSupply(coin.circulating_supply)}
-          sub={coin.symbol?.toUpperCase()}
-          icon={Coins}
-        />
-        <StatCard
-          label={t("coin_detail.total_supply")}
-          value={fmtSupply(coin.total_supply)}
-          sub={coin.symbol?.toUpperCase()}
-          icon={Coins}
-        />
-        <StatCard
-          label={t("coin_detail.max_supply")}
-          value={
-            fmtSupply(coin.max_supply) === "—"
-              ? t("coin_detail.unlimited")
-              : fmtSupply(coin.max_supply)
-          }
-          sub={coin.symbol?.toUpperCase()}
-          icon={Coins}
-        />
-      </div>
-      {coin.circulating_supply && (coin.max_supply || coin.total_supply) && (
-        <SupplyBar
-          circulating={coin.circulating_supply}
-          total={coin.total_supply}
-          max={coin.max_supply}
-          t={t}
-        />
-      )}
 
       {/* CHART */}
       <div
