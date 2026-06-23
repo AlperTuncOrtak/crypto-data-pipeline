@@ -258,8 +258,8 @@ function NavItem({ item, isActive }) {
           <div
             style={{
               height: 1,
-              background:
-                "linear-gradient(90deg, rgba(245,166,35,0.6), transparent)",
+              background: "linear-gradient(90deg, var(--accent), transparent)",
+              opacity: 0.5,
             }}
           />
           <div style={{ padding: "6px" }}>
@@ -304,9 +304,8 @@ function NavItem({ item, isActive }) {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      background:
-                        "linear-gradient(135deg, rgba(245,166,35,0.18), rgba(245,166,35,0.06))",
-                      border: "1px solid rgba(245,158,11,0.15)",
+                      background: "var(--accent-soft)",
+                      border: "1px solid var(--accent-border)",
                       color: "var(--accent)",
                     }}
                   >
@@ -333,7 +332,7 @@ function NavItem({ item, isActive }) {
                             borderRadius: 4,
                             fontWeight: 700,
                             letterSpacing: "0.08em",
-                            background: "rgba(245,166,35,0.12)",
+                            background: "var(--accent-soft)",
                             color: "var(--accent)",
                           }}
                         >
