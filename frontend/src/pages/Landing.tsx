@@ -284,97 +284,6 @@ function Faq({ q, a }) {
   );
 }
 
-// ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
-function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any, marketData?: any[] }) {
-  let coins = [
-    { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, image_url: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
-    { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, image_url: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
-    { sym: "SOL", price: "$182", change: "-0.9%", up: false, image_url: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
-    { sym: "BNB", price: "$724", change: "+3.2%", up: true, image_url: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
-  ];
-  
-  let mcapStr = "$3.42T";
-  let btcDomStr = "54.2%";
-  
-  if (marketData && marketData.length >= 4) {
-    const btc = marketData.find(c => c.symbol?.toLowerCase() === 'btc') || marketData[0];
-    const eth = marketData.find(c => c.symbol?.toLowerCase() === 'eth') || marketData[1];
-    const sol = marketData.find(c => c.symbol?.toLowerCase() === 'sol') || marketData[2];
-    const bnb = marketData.find(c => c.symbol?.toLowerCase() === 'bnb') || marketData[3];
-    
-    const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
-    
-    coins = [
-      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(btc.price_change_percentage_24h)).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0, image_url: btc.image },
-      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(eth.price_change_percentage_24h)).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0, image_url: eth.image },
-      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(sol.price_change_percentage_24h)).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0, image_url: sol.image },
-      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(bnb.price_change_percentage_24h)).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0, image_url: bnb.image },
-    ];
-
-    const totalMcap = marketData.reduce((sum, c) => sum + (Number(c.market_cap) || 0), 0);
-    if (totalMcap > 0) {
-      mcapStr = "$" + (totalMcap / 1e12).toFixed(2) + "T";
-      const btcDom = ((Number(btc.market_cap) || 0) / totalMcap) * 100;
-      btcDomStr = btcDom.toFixed(1) + "%";
-    }
-  }
-  return (
-    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "none" }}>
-      {/* Browser bar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
-        {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
-        <div style={{ flex: 1, marginLeft: 8, height: 22, borderRadius: 6, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 10, color: T.textMuted }}>www.cryptoneko.online/dashboard</span>
-        </div>
-      </div>
-
-      <div style={{ padding: "20px 20px" }}>
-        {/* Stat strip */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 16 }}>
-          {[
-            { l: "Market Cap", v: mcapStr },
-            { l: "BTC Dom", v: btcDomStr },
-            { l: "Coins", v: coinsStr },
-          ].map((s, i) => (
-            <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
-              <div style={{ fontSize: 9, color: T.textMuted, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>{s.l}</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: T.textPrimary, fontFamily: "monospace" }}>{s.v}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* 2x2 coin grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {coins.map((c, i) => (
-            <div key={c.sym} style={{
-              padding: "14px 16px", borderRadius: 14,
-              background: i === 0 ? "var(--accent-soft)" : T.bg,
-              border: `1px solid ${i === 0 ? T.borderFeat : T.border}`,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  {c.image_url && <img src={c.image_url} alt={c.sym} style={{ width: 24, height: 24, borderRadius: "50%" }} />}
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(c.sym) }}>{c.sym}</div>
-                    <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{c.price}</div>
-                  </div>
-                </div>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 8,
-                  color: c.up ? T.green : T.red,
-                  background: c.up ? T.greenBg : T.redBg,
-                  fontFamily: "monospace",
-                }}>{c.change}</span>
-              </div>
-              <Sparkline up={c.up} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── MAIN ────────────────────────────────────────────────────────
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
@@ -703,16 +612,6 @@ export default function Landing({ onAuthOpen }) {
         </div>
       </section>
 
-      {/* ─── DASHBOARD PREVIEW ───────────────────────────────── */}
-      <section style={{ padding: "0 clamp(20px,5vw,80px) 80px", maxWidth: 1000, margin: "0 auto" }}>
-        <Reveal>
-          <div style={{ position: "relative" }}>
-            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
-            <DashboardMockup coinsStr={coinsStr} t={t} marketData={marketData} />
-          </div>
-        </Reveal>
-      </section>
-
 
 
       {/* ─── FEATURE STICKY CARDS ────────────────────────────── */}
@@ -910,38 +809,6 @@ export default function Landing({ onAuthOpen }) {
           </div>
         </Reveal>
       </section>
-
-      {/* ─── FOOTER ──────────────────────────────────────────── */}
-      <footer style={{ borderTop: `1px solid ${T.border}`, padding: "40px clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: T.purple, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <img src="/logo.png" alt="CryptoNeko" style={{ width: "100%", borderRadius: 8 }} />
-            </div>
-            <span style={{ fontSize: 14, fontWeight: 800, color: T.textPrimary }}>CryptoNeko</span>
-          </div>
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {[
-              { l: t('landing.footer.terms'), p: "/terms" },
-              { l: t('landing.footer.privacy'), p: "/privacy" },
-              { l: t('landing.footer.docs'), p: "/docs" },
-              { l: t('landing.footer.pricing'), p: "/pricing" },
-            ].map(link => (
-              <span key={link.l} onClick={() => navigate(link.p)} style={{ fontSize: 13, color: T.textMuted, cursor: "pointer", transition: "color 150ms" }}
-                onMouseEnter={e => e.currentTarget.style.color = T.textPrimary}
-                onMouseLeave={e => e.currentTarget.style.color = T.textMuted}>
-                {link.l}
-              </span>
-            ))}
-          </div>
-          <div 
-            style={{ fontSize: 12, color: T.textMuted, userSelect: "none" }}
-          >
-            {t('landing.footer.disclaimer')}
-          </div>
-        </div>
-      </footer>
-      
 
     </div>
   );

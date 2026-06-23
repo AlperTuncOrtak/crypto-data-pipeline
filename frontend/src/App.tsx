@@ -105,7 +105,7 @@ function AppInner() {
       {/* Global Ticker */}
       <CoinTicker />
 
-      {location.pathname !== "/" || isLoggedIn ? (
+      {location.pathname !== "/" ? (
         <>
           <Navbar
             onWatchlistOpen={() => openPanel("watchlist")}
@@ -121,7 +121,7 @@ function AppInner() {
       ) : null}
       <main
         className={
-          location.pathname === "/" && !isLoggedIn
+          location.pathname === "/"
             ? ""
             : "main-content"
         }
@@ -246,7 +246,7 @@ function AppInner() {
         </Routes>
       </main>
 
-      {location.pathname !== "/" || isLoggedIn ? <Footer /> : null}
+      <Footer />
 
       <AIChatWidget />
 
