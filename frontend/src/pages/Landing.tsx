@@ -84,10 +84,10 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
           width: size, height: size,
           borderRadius: "50%",
           overflow: "hidden",
-          border: `1.5px solid ${hovered ? accentColor : "rgba(255,255,255,0.12)"}`,
+          border: `1px solid ${hovered ? accentColor : "rgba(255,255,255,0.07)"}`,
           boxShadow: hovered
             ? `0 0 0 4px ${up ? "rgba(45,212,191,0.15)" : "rgba(244,63,94,0.15)"}, 0 8px 32px rgba(0,0,0,0.5)`
-            : "0 4px 20px rgba(0,0,0,0.35)",
+            : "0 4px 20px rgba(0,0,0,0.5)",
           filter: hovered ? "blur(0px)" : "blur(3px)",
           opacity: hovered ? 1 : 0.55,
           transition: "all 300ms cubic-bezier(0.16,1,0.3,1)",
@@ -107,14 +107,14 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
             left: right ? "auto" : "50%",
             right: right ? "50%" : "auto",
             transform: right ? "translateX(32px)" : "translateX(-32px)",
-            background: "rgba(8,14,32,0.96)",
-            backdropFilter: "blur(28px)",
-            WebkitBackdropFilter: "blur(28px)",
-            border: `1px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}`,
-            borderRadius: 18,
+            background: "rgba(18,17,26,0.85)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: `1px solid rgba(255,255,255,0.07)`,
+            borderRadius: 16,
             padding: "16px 18px",
             minWidth: 190,
-            boxShadow: `0 28px 64px rgba(0,0,0,0.7), 0 0 0 1px ${up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)"}`,
+            boxShadow: `0 28px 64px rgba(0,0,0,0.8), 0 0 0 1px ${up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)"}`,
             animation: `${isTopHalf ? "fc-reveal-down" : "fc-reveal-up"} 180ms cubic-bezier(0.16,1,0.3,1) forwards`,
             zIndex: 20,
             pointerEvents: "none",
@@ -638,11 +638,9 @@ export default function Landing({ onAuthOpen }) {
         <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
           <span style={{ color: T.textPrimary }}>{t('landing.hero_title_1')}<br /></span>
           <span style={{
-            background: `linear-gradient(135deg, var(--accent) 0%, #00ffff 40%, #38bdf8 100%)`,
-            backgroundSize: "200% auto",
+            background: `linear-gradient(to bottom, #ffffff 0%, #a0a0a0 100%)`,
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            animation: "lp-grad 6s linear infinite",
           }}>
             {t('landing.hero_title_2')}
           </span>
@@ -653,20 +651,16 @@ export default function Landing({ onAuthOpen }) {
         </p>
 
         {/* CTAs */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", marginBottom: 24, justifyContent: "center" }}>
           {!isLoggedIn && (
             <button
               onClick={() => onAuthOpen?.("signup")}
+              className="btn-primary"
               style={{
-                padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
-                background: T.purple, color: "white",
-                fontSize: 15, fontWeight: 800,
-                boxShadow: "none",
-                transition: "all 200ms ease",
+                padding: "12px 28px", borderRadius: "12px", border: "none", cursor: "pointer",
+                fontSize: 15, fontWeight: 600,
                 display: "flex", alignItems: "center", gap: 8,
               }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
             >
               {t('landing.cta_primary')} <ArrowRight size={16} />
             </button>
@@ -752,9 +746,11 @@ export default function Landing({ onAuthOpen }) {
                   alignItems: "center",
                   padding: "72px 72px",
                   borderRadius: 36,
-                  background: `rgba(15,15,26,0.98)`,
-                  border: `1px solid ${T.border}`,
-                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 var(--border-soft)",
+                  background: `rgba(18,17,26,0.7)`,
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  border: `1px solid rgba(255,255,255,0.07)`,
+                  boxShadow: "0 40px 100px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.03)",
                   overflow: "hidden",
                   transition: "transform 0.3s ease, opacity 0.3s ease",
                   transformOrigin: "top center",
