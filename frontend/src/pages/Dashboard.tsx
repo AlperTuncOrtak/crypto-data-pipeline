@@ -9,6 +9,7 @@ import SentimentSpeedometer from "../components/market/SentimentSpeedometer";
 import Reveal from "../components/ui/Reveal";
 import { TrendingUp, Activity, DollarSign, Flame, Clock, ArrowUpRight, ArrowDownRight, BarChart2, Bell, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import PriceCell from "../components/ui/PriceCell";
 
 // ─── THEME TOKENS ────────────────────────────────────────────────
 const T = {
@@ -39,15 +40,7 @@ function formatLargeNumber(n) {
   return `$${num.toFixed(0)}`;
 }
 
-function formatPrice(n) {
-  const num = Number(n);
-  if (isNaN(num)) return "—";
-  if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-  if (num >= 1) return `$${num.toFixed(2)}`;
-  if (num >= 0.01) return `$${num.toFixed(4)}`;
-  if (num >= 0.0001) return `$${num.toFixed(6)}`;
-  return `<$0.000001`;
-}
+
 
 // ─── SPARKLINE ───────────────────────────────────────────────────
 function Sparkline({ data, color, width = 80, height = 32 }) {
@@ -210,7 +203,7 @@ function CoinCard({ coin, navigate, featured = false }) {
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 22, fontWeight: 800, color: T.textPrimary, letterSpacing: "-0.02em", fontFamily: "monospace" }}>
-              {formatPrice(coin.current_price)}
+              <PriceCell price={coin.current_price} />
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, marginTop: 3 }}>
               MCap: {formatLargeNumber(coin.market_cap)}
@@ -378,6 +371,7 @@ export default function Dashboard() {
                       return (
                         <tr
                           key={coin.symbol}
+                          className="table-row-hover"
                           onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                           style={{ cursor: "pointer", transition: "all 180ms ease", borderBottom: "1px solid rgba(255, 255, 255, 0.03)" }}
                           onMouseEnter={e => { e.currentTarget.style.background = T.cardHov; }}
@@ -402,7 +396,7 @@ export default function Dashboard() {
                             </div>
                           </td>
                           <td style={{ padding: "12px 0", textAlign: "right", fontFamily: "monospace", fontSize: 13, color: T.textPrimary, fontWeight: 600 }}>
-                            {formatPrice(coin.current_price)}
+                            <PriceCell price={coin.current_price} />
                           </td>
                           <td style={{ padding: "16px 0", textAlign: "right" }}>
                             <span style={{

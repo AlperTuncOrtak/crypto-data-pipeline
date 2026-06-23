@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMarket } from "../hooks/useMarket";
 import { useSparklines } from "../hooks/useSparklines";
@@ -19,17 +19,7 @@ function formatLargeNumber(n) {
   return `$${num.toFixed(2)}`;
 }
 
-function formatPrice(n) {
-  const num = Number(n);
-  if (isNaN(num)) return "—";
-  if (num >= 1000)
-    return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-  if (num >= 1) return `$${num.toFixed(2)}`;
-  if (num >= 0.01) return `$${num.toFixed(4)}`;
-  if (num >= 0.0001) return `$${num.toFixed(6)}`;
-  if (num >= 0.000001) return `$${num.toFixed(8)}`;
-  return `<$0.000001`;
-}
+import PriceCell from "../components/ui/PriceCell";
 
 function sortRows(rows, key, direction) {
   if (!key) return rows;
@@ -438,6 +428,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                 return (
                   <tr
                     key={coin.symbol}
+                    className="table-row-hover"
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                     style={{
                       borderTop: "1px solid var(--border-soft)",
@@ -538,7 +529,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
                         color: "var(--text-primary)",
                       }}
                     >
-                      {formatPrice(coin.current_price)}
+                      <PriceCell price={coin.current_price} />
                     </td>
 
                     {/* 24H % */}
