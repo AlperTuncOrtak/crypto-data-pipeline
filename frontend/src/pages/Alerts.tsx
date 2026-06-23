@@ -4,6 +4,7 @@ import { useMarket } from '../hooks/useMarket'
 import { useNavigate } from 'react-router-dom'
 import { TrendingDown, TrendingUp, Zap, Bell, RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import PriceCell from '../components/ui/PriceCell'
 
 const TYPE_CONFIG = {
   'Sharp Drop': {
@@ -29,15 +30,6 @@ const TYPE_CONFIG = {
   },
 }
 
-function formatPrice(n) {
-  const num = Number(n)
-  if (isNaN(num) || num === 0) return '—'
-  if (num >= 1000) return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-  if (num >= 1)    return `$${num.toFixed(2)}`
-  if (num >= 0.01) return `$${num.toFixed(4)}`
-  if (num >= 0.0001) return `$${num.toFixed(6)}`
-  return `<$0.000001`
-}
 
 export default function Alerts() {
   const { t } = useTranslation()
@@ -299,6 +291,7 @@ export default function Alerts() {
                 return (
                   <div
                     key={`${alert.symbol}-${alert.type}-${idx}`}
+                    className="table-row-hover"
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                     style={{
                       display: 'grid',
@@ -356,7 +349,7 @@ export default function Alerts() {
 
                     {/* FİYAT */}
                     <div style={{ textAlign: 'right', fontFamily: 'monospace', fontSize: 12, color: 'var(--text-secondary)' }}>
-                      {formatPrice(price)}
+                      <PriceCell price={price} />
                     </div>
 
                     {/* % DEĞİŞİM */}

@@ -20,17 +20,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useMarket } from "../../hooks/useMarket";
 import { getCoinColor } from "../../utils/colors";
+import PriceCell from "../ui/PriceCell";
 
-function formatPrice(n) {
-  const num = Number(n);
-  if (isNaN(num)) return "—";
-  if (num >= 1000)
-    return `$${num.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-  if (num >= 1) return `$${num.toFixed(2)}`;
-  if (num >= 0.01) return `$${num.toFixed(4)}`;
-  if (num >= 0.0001) return `$${num.toFixed(6)}`;
-  return `<$0.000001`;
-}
 
 function fmtPct(n) {
   const v = Number(n);
@@ -392,7 +383,7 @@ function WatchlistPanel({
                         color: "var(--text-muted)",
                       }}
                     >
-                      {formatPrice(coin.current_price)}
+                      <PriceCell price={coin.current_price} />
                     </span>
                   </div>
                 ))}
@@ -561,7 +552,7 @@ function WatchlistPanel({
                           color: "var(--text-primary)",
                         }}
                       >
-                        {formatPrice(coin.current_price)}
+                        <PriceCell price={coin.current_price} />
                       </div>
                       <div
                         style={{
