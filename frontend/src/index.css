@@ -26,7 +26,7 @@
 
   /* Muted Violet Secondary */
   --secondary:      #8b5cf6;
-  --secondary-soft: rgba(139, 92, 246, 0.10);
+  --secondary-soft: var(--secondary-soft);
 
   /* Green / Red — clean, not neon */
   --positive:       #22c55e;

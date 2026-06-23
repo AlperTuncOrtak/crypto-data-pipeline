@@ -167,8 +167,8 @@ function WatchlistPanel({
                   fontSize: 11,
                   padding: "1px 6px",
                   borderRadius: 999,
-                  background: "rgba(245,158,11,0.15)",
-                  color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
+                  background: "var(--accent-soft)",
+                  color: getCoinColor(coin.symbol), textShadow: "none",
                   fontFamily: "monospace",
                 }}
               >
@@ -229,7 +229,7 @@ function WatchlistPanel({
                             : "var(--text-secondary)",
                         background:
                           sort === o.id
-                            ? "rgba(245,166,35,0.08)"
+                            ? "var(--accent-soft)"
                             : "transparent",
                         fontWeight: sort === o.id ? 600 : 400,
                       }}
@@ -240,7 +240,7 @@ function WatchlistPanel({
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.background =
                           sort === o.id
-                            ? "rgba(245,166,35,0.08)"
+                            ? "var(--accent-soft)"
                             : "transparent")
                       }
                     >
@@ -261,11 +261,11 @@ function WatchlistPanel({
                 width: 28,
                 height: 28,
                 borderRadius: 7,
-                border: `1px solid ${isAtLimit ? "rgba(231,76,60,0.3)" : showAdd ? "rgba(245,166,35,0.3)" : "var(--border)"}`,
+                border: `1px solid ${isAtLimit ? "rgba(231,76,60,0.3)" : showAdd ? "var(--accent-soft)" : "var(--border)"}`,
                 background: isAtLimit
                   ? "rgba(231,76,60,0.06)"
                   : showAdd
-                    ? "rgba(245,158,11,0.1)"
+                    ? "var(--accent-soft)"
                     : "transparent",
                 color: isAtLimit
                   ? "#e74c3c"
@@ -293,7 +293,7 @@ function WatchlistPanel({
                 gap: 8,
                 padding: "7px 10px",
                 background: "var(--bg-elevated)",
-                border: "1px solid rgba(245,166,35,0.3)",
+                border: "1px solid var(--accent-soft)",
                 borderRadius: 9,
               }}
             >
@@ -371,7 +371,7 @@ function WatchlistPanel({
                           justifyContent: "center",
                           fontSize: 9,
                           fontWeight: 700,
-                          color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
+                          color: getCoinColor(coin.symbol), textShadow: "none",
                         }}
                       >
                         {coin.symbol?.[0]}
@@ -442,7 +442,7 @@ function WatchlistPanel({
                   style={{ borderRadius: 10, transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)", border: "1px solid transparent" }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = "var(--bg-elevated)";
-                    e.currentTarget.style.borderColor = "rgba(245,166,35,0.2)";
+                    e.currentTarget.style.borderColor = "var(--accent-soft)";
                     e.currentTarget.style.transform = "translateX(2px)";
                   }}
                   onMouseLeave={(e) => {
@@ -486,7 +486,7 @@ function WatchlistPanel({
                             justifyContent: "center",
                             fontSize: 10,
                             fontWeight: 700,
-                            color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
+                            color: getCoinColor(coin.symbol), textShadow: "none",
                           }}
                         >
                           {coin.symbol?.slice(0, 2)}
@@ -515,7 +515,7 @@ function WatchlistPanel({
                           style={{
                             fontSize: 13,
                             fontWeight: 700,
-                            color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
+                            color: getCoinColor(coin.symbol), textShadow: "none",
                             fontFamily: "monospace",
                           }}
                         >
@@ -619,8 +619,8 @@ function WatchlistPanel({
           style={{
             margin: "8px 10px",
             padding: "12px 14px",
-            background: "rgba(245,166,35,0.06)",
-            border: "1px solid rgba(245,166,35,0.2)",
+            background: "var(--accent-soft)",
+            border: "1px solid var(--accent-soft)",
             borderRadius: 12,
           }}
         >
@@ -845,8 +845,8 @@ function AlertsPanel({ marketData, onClose }) {
                 fontSize: 11,
                 padding: "1px 6px",
                 borderRadius: 999,
-                background: "rgba(245,158,11,0.15)",
-                color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
+                background: "var(--accent-soft)",
+                color: getCoinColor(coin.symbol), textShadow: "none",
                 fontFamily: "monospace",
               }}
             >
@@ -883,9 +883,9 @@ function AlertsPanel({ marketData, onClose }) {
               fontWeight: 600,
               padding: "4px 10px",
               borderRadius: 7,
-              border: "1px solid rgba(245,166,35,0.3)",
-              background: "rgba(245,166,35,0.08)",
-              color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}50`,
+              border: "1px solid var(--accent-soft)",
+              background: "var(--accent-soft)",
+              color: getCoinColor(coin.symbol), textShadow: "none",
               cursor: "pointer",
             }}
           >
@@ -897,9 +897,9 @@ function AlertsPanel({ marketData, onClose }) {
               width: 28,
               height: 28,
               borderRadius: 7,
-              border: `1px solid ${showSettings ? "rgba(245,166,35,0.3)" : "var(--border)"}`,
+              border: `1px solid ${showSettings ? "var(--accent-soft)" : "var(--border)"}`,
               background: showSettings
-                ? "rgba(245,166,35,0.08)"
+                ? "var(--accent-soft)"
                 : "transparent",
               color: showSettings ? "var(--accent)" : "var(--text-muted)",
               cursor: "pointer",
@@ -1121,7 +1121,7 @@ function AlertsPanel({ marketData, onClose }) {
                   onMouseEnter={e => {
                     if(!isTriggered) {
                       e.currentTarget.style.background = "var(--bg-elevated)";
-                      e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)";
+                      e.currentTarget.style.borderColor = "var(--accent-soft)";
                     }
                   }}
                   onMouseLeave={e => {
@@ -1362,7 +1362,7 @@ export default function RightSidebar({
                   border: "none",
                   cursor: "pointer",
                   backgroundColor: isActive
-                    ? "rgba(245,158,11,0.15)"
+                    ? "var(--accent-soft)"
                     : "transparent",
                   color: isActive ? "var(--accent)" : "var(--text-muted)",
                   transition: "all 0.15s",

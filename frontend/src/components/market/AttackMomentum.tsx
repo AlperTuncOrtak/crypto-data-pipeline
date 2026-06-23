@@ -103,7 +103,7 @@ export default function AttackMomentum({ symbol, brandColor }: { symbol: string,
           <div style={{ 
             width: 8, height: 8, borderRadius: '50%', 
             background: isBullish ? '#28c840' : '#ff5f57',
-            boxShadow: `0 0 10px ${isBullish ? '#28c840' : '#ff5f57'}`
+            boxShadow: "none"
           }} />
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>{t("coin_detail.live_order_flow", "Live Order Flow")}</h3>
         </div>

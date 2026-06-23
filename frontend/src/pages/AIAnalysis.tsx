@@ -49,9 +49,9 @@ const SIGNAL_CONFIG = {
   },
   neutral: {
     color: "var(--accent)",
-    bg: "rgba(245,166,35,0.08)",
-    border: "rgba(245,166,35,0.25)",
-    glow: "rgba(245,166,35,0.12)",
+    bg: "var(--accent-soft)",
+    border: "var(--accent-soft)",
+    glow: "var(--accent-soft)",
     icon: Minus,
     label: "NEUTRAL",
   },
@@ -74,9 +74,9 @@ const SIGNAL_CONFIG = {
   },
   hold: {
     color: "var(--accent)",
-    bg: "rgba(245,166,35,0.08)",
-    border: "rgba(245,166,35,0.25)",
-    glow: "rgba(245,166,35,0.12)",
+    bg: "var(--accent-soft)",
+    border: "var(--accent-soft)",
+    glow: "var(--accent-soft)",
     icon: Minus,
     label: "NEUTRAL",
   },
@@ -149,7 +149,7 @@ function RSIGauge({ value }) {
           style={{
             width: "40%",
             height: "100%",
-            backgroundColor: "rgba(245,166,35,0.2)",
+            backgroundColor: "var(--accent-soft)",
           }}
         />
         <div
@@ -790,13 +790,13 @@ const ACTION_TAG_CONFIG = {
   BUY_THE_DIP: { color: "#2ecc71", bg: "rgba(46,204,113,0.10)", icon: "📉➕" },
   WAIT_FOR_BREAKOUT: {
     color: "var(--accent)",
-    bg: "rgba(245,166,35,0.10)",
+    bg: "var(--accent-soft)",
     icon: "⏳",
   },
-  WAIT_FOR_DIP: { color: "var(--accent)", bg: "rgba(245,166,35,0.10)", icon: "⏬" },
+  WAIT_FOR_DIP: { color: "var(--accent)", bg: "var(--accent-soft)", icon: "⏬" },
   HOLD_AND_MONITOR: {
     color: "var(--accent)",
-    bg: "rgba(245,166,35,0.08)",
+    bg: "var(--accent-soft)",
     icon: "👁️",
   },
   TIGHTEN_STOP_LOSS: {
@@ -820,7 +820,7 @@ const ACTION_TAG_CONFIG = {
     icon: "📊",
   },
   AVOID_ENTRY: { color: "#e74c3c", bg: "rgba(231,76,60,0.12)", icon: "🚫" },
-  WATCH_SUPPORT: { color: "var(--accent)", bg: "rgba(245,166,35,0.08)", icon: "📍" },
+  WATCH_SUPPORT: { color: "var(--accent)", bg: "var(--accent-soft)", icon: "📍" },
   WATCH_RESISTANCE: {
     color: "#e74c3c",
     bg: "rgba(231,76,60,0.08)",
@@ -858,7 +858,7 @@ function ActionTagsCard({ tags }) {
         {tags.map((tag) => {
           const cfg = ACTION_TAG_CONFIG[tag] || {
             color: "var(--accent)",
-            bg: "rgba(245,166,35,0.08)",
+            bg: "var(--accent-soft)",
             icon: "•",
           };
           return (
@@ -1023,8 +1023,8 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
             marginTop: 8,
             padding: "8px 12px",
             borderRadius: 8,
-            backgroundColor: "rgba(245,166,35,0.08)",
-            border: "1px solid rgba(245,166,35,0.2)",
+            backgroundColor: "var(--accent-soft)",
+            border: "1px solid var(--accent-soft)",
           }}
         >
           <div className="flex items-center gap-2">
@@ -1141,7 +1141,7 @@ export default function AIAnalysis() {
                 style={{
                   height: 1,
                   background:
-                    "linear-gradient(90deg, rgba(245,166,35,0.8), transparent)",
+                    "linear-gradient(90deg, var(--accent-border), transparent)",
                 }}
               />
               <div style={{ padding: "24px 24px 20px" }}>
@@ -1267,7 +1267,7 @@ export default function AIAnalysis() {
                           transition: "border-color 0.15s",
                         }}
                         onFocus={(e) =>
-                          (e.target.style.borderColor = "rgba(245,166,35,0.4)")
+                          (e.target.style.borderColor = "var(--accent-border)")
                         }
                         onBlur={(e) =>
                           (e.target.style.borderColor =
@@ -1408,13 +1408,13 @@ export default function AIAnalysis() {
                               cursor: "pointer",
                               border: "none",
                               background: active
-                                ? "rgba(245,166,35,0.12)"
+                                ? "var(--accent-soft)"
                                 : "var(--border-soft)",
                               color: active
                                 ? "var(--accent)"
                                 : "var(--text-muted)",
                               outline: active
-                                ? "1px solid rgba(245,166,35,0.3)"
+                                ? "1px solid var(--accent-soft)"
                                 : "1px solid var(--border)",
                               textAlign: "left",
                               transition: "all 0.15s",
@@ -1469,13 +1469,13 @@ export default function AIAnalysis() {
                               cursor: "pointer",
                               border: "none",
                               background: active
-                                ? "rgba(245,166,35,0.12)"
+                                ? "var(--accent-soft)"
                                 : "var(--border-soft)",
                               color: active
                                 ? "var(--accent)"
                                 : "var(--text-muted)",
                               outline: active
-                                ? "1px solid rgba(245,166,35,0.3)"
+                                ? "1px solid var(--accent-soft)"
                                 : "1px solid var(--border)",
                               textAlign: "left",
                               transition: "all 0.15s",
@@ -1566,9 +1566,9 @@ export default function AIAnalysis() {
                 height: 48,
                 borderRadius: 16,
                 background:
-                  "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,158,11,0.05))",
-                border: "1px solid rgba(245,166,35,0.3)",
-                boxShadow: "0 0 24px rgba(245,158,11,0.1)",
+                  "linear-gradient(135deg, var(--accent-soft), var(--accent-soft))",
+                border: "1px solid var(--accent-soft)",
+                boxShadow: "0 0 24px var(--accent-soft)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1638,7 +1638,7 @@ export default function AIAnalysis() {
             gap: 10,
             padding: "6px 6px 6px 16px",
             background: "var(--border-soft)",
-            border: `1px solid ${showDropdown ? "rgba(245,166,35,0.3)" : "var(--border)"}`,
+            border: `1px solid ${showDropdown ? "var(--accent-soft)" : "var(--border)"}`,
             borderRadius: 16,
             transition: "border-color 0.2s, box-shadow 0.2s",
             boxShadow: "none",
@@ -1670,7 +1670,7 @@ export default function AIAnalysis() {
                     width: 32,
                     height: 32,
                     borderRadius: "50%",
-                    background: "rgba(245,158,11,0.15)",
+                    background: "var(--accent-soft)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -1817,7 +1817,7 @@ export default function AIAnalysis() {
             onMouseLeave={(e) => {
               e.currentTarget.style.boxShadow =
                 selected && !loading
-                  ? "0 4px 16px rgba(245,166,35,0.3)"
+                  ? "0 4px 16px var(--accent-soft)"
                   : "none";
               e.currentTarget.style.transform = "translateY(0)";
             }}
@@ -1893,7 +1893,7 @@ export default function AIAnalysis() {
                         width: 32,
                         height: 32,
                         borderRadius: "50%",
-                        background: "rgba(245,166,35,0.12)",
+                        background: "var(--accent-soft)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1986,7 +1986,7 @@ export default function AIAnalysis() {
               style={{
                 position: "absolute",
                 inset: -10,
-                border: "2px solid rgba(245,166,35,0.2)",
+                border: "2px solid var(--accent-soft)",
                 borderTopColor: "var(--accent)",
                 borderRadius: "50%",
                 animation: "spin 1s linear infinite",
@@ -2042,7 +2042,7 @@ export default function AIAnalysis() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: `0 0 30px ${signalConfig.color}25`,
+                    boxShadow: "none",
                   }}
                 >
                   <SignalIcon size={36} style={{ color: signalConfig.color }} />
@@ -2218,8 +2218,8 @@ export default function AIAnalysis() {
             <div
               className="rounded-2xl"
               style={{
-                backgroundColor: "rgba(245,166,35,0.06)",
-                border: "1px solid rgba(245,166,35,0.2)",
+                backgroundColor: "var(--accent-soft)",
+                border: "1px solid var(--accent-soft)",
                 padding: "20px",
               }}
             >

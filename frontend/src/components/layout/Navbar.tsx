@@ -460,7 +460,7 @@ export default function Navbar({
         }
         @keyframes pulseGlow {
           0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,0); }
-          50%       { box-shadow: 0 0 0 4px rgba(245,166,35,0.12); }
+          50%       { box-shadow: 0 0 0 4px var(--accent-soft); }
         }
       `}</style>
 
@@ -610,11 +610,11 @@ export default function Navbar({
                 fontWeight: 500,
                 background:
                   watchlistCount > 0
-                    ? "rgba(245,158,11,0.1)"
+                    ? "var(--accent-soft)"
                     : "var(--border-soft)",
                 border:
                   watchlistCount > 0
-                    ? "1px solid rgba(245,166,35,0.25)"
+                    ? "1px solid var(--accent-soft)"
                     : "1px solid var(--border)",
                 color:
                   watchlistCount > 0
@@ -623,13 +623,13 @@ export default function Navbar({
                 transition: "all 0.18s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(245,166,35,0.4)";
+                e.currentTarget.style.borderColor = "var(--accent-border)";
                 e.currentTarget.style.color = "var(--accent)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor =
                   watchlistCount > 0
-                    ? "rgba(245,166,35,0.25)"
+                    ? "var(--accent-soft)"
                     : "var(--border)";
                 e.currentTarget.style.color =
                   watchlistCount > 0
@@ -649,7 +649,7 @@ export default function Navbar({
                     fontFamily: "monospace",
                     fontWeight: 700,
                     color: "var(--accent)",
-                    background: "rgba(245,158,11,0.15)",
+                    background: "var(--accent-soft)",
                     padding: "0 5px",
                     borderRadius: 5,
                   }}
@@ -701,9 +701,9 @@ export default function Navbar({
                   gap: 8,
                   padding: "6px 12px",
                   borderRadius: 10,
-                  background: searchOpen ? "rgba(245,158,11,0.05)" : "var(--border-soft)",
-                  border: `1px solid ${searchOpen ? "rgba(245,166,35,0.4)" : "var(--border)"}`,
-                  boxShadow: searchOpen ? "0 0 16px rgba(245,158,11,0.1)" : "none",
+                  background: searchOpen ? "var(--accent-soft)" : "var(--border-soft)",
+                  border: `1px solid ${searchOpen ? "var(--accent-border)" : "var(--border)"}`,
+                  boxShadow: searchOpen ? "0 0 16px var(--accent-soft)" : "none",
                   width: searchOpen ? 220 : 110,
                   transition: "all 0.25s ease",
                 }}
@@ -800,7 +800,7 @@ export default function Navbar({
                             width: 26,
                             height: 26,
                             borderRadius: "50%",
-                            background: "rgba(245,158,11,0.15)",
+                            background: "var(--accent-soft)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -983,14 +983,14 @@ export default function Navbar({
                     borderRadius: 10,
                     cursor: "pointer",
                     background: profileOpen
-                      ? "rgba(245,166,35,0.12)"
+                      ? "var(--accent-soft)"
                       : "var(--border-soft)",
-                    border: `1px solid ${profileOpen ? "rgba(245,166,35,0.25)" : "var(--border)"}`,
+                    border: `1px solid ${profileOpen ? "var(--accent-soft)" : "var(--border)"}`,
                     transition: "all 0.18s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(245,158,11,0.1)";
-                    e.currentTarget.style.borderColor = "rgba(245,166,35,0.2)";
+                    e.currentTarget.style.background = "var(--accent-soft)";
+                    e.currentTarget.style.borderColor = "var(--accent-soft)";
                   }}
                   onMouseLeave={(e) => {
                     if (!profileOpen) {
@@ -1008,7 +1008,7 @@ export default function Navbar({
                         width: 22,
                         height: 22,
                         borderRadius: "50%",
-                        border: "1px solid rgba(245,166,35,0.3)",
+                        border: "1px solid var(--accent-soft)",
                       }}
                       alt={displayName}
                     />
@@ -1079,7 +1079,7 @@ export default function Navbar({
                         height: 1,
                         background:
                           isPro || isEnterprise
-                            ? "linear-gradient(90deg, rgba(245,166,35,0.6), transparent)"
+                            ? "linear-gradient(90deg, var(--accent-border), transparent)"
                             : "linear-gradient(90deg, rgba(255,255,255,0.1), transparent)",
                       }}
                     />
@@ -1106,7 +1106,7 @@ export default function Navbar({
                               width: 38,
                               height: 38,
                               borderRadius: "50%",
-                              border: "2px solid rgba(245,166,35,0.3)",
+                              border: "2px solid var(--accent-soft)",
                             }}
                           />
                         ) : (
@@ -1160,11 +1160,11 @@ export default function Navbar({
                           padding: "7px 10px",
                           borderRadius: 8,
                           background: isEnterprise
-                            ? "rgba(139,92,246,0.1)"
+                            ? "var(--secondary-soft)"
                             : isPro
-                              ? "rgba(245,166,35,0.08)"
+                              ? "var(--accent-soft)"
                               : "var(--border-soft)",
-                          border: `1px solid ${isEnterprise ? "rgba(139,92,246,0.2)" : isPro ? "rgba(245,158,11,0.15)" : "var(--border)"}`,
+                          border: `1px solid ${isEnterprise ? "var(--secondary-soft)" : isPro ? "var(--accent-soft)" : "var(--border)"}`,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
@@ -1237,17 +1237,17 @@ export default function Navbar({
                           borderRadius: 10,
                           cursor: "pointer",
                           background:
-                            "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(232,148,26,0.06))",
-                          border: "1px solid rgba(245,166,35,0.2)",
+                            "linear-gradient(135deg, var(--accent-soft), rgba(232,148,26,0.06))",
+                          border: "1px solid var(--accent-soft)",
                           transition: "all 0.15s",
                         }}
                         onMouseEnter={(e) =>
                           (e.currentTarget.style.background =
-                            "linear-gradient(135deg, rgba(245,166,35,0.2), rgba(232,148,26,0.1))")
+                            "linear-gradient(135deg, var(--accent-soft), rgba(232,148,26,0.1))")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.background =
-                            "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(232,148,26,0.06))")
+                            "linear-gradient(135deg, var(--accent-soft), rgba(232,148,26,0.06))")
                         }
                       >
                         <div
@@ -1280,13 +1280,13 @@ export default function Navbar({
                           </div>
                           <ChevronRight
                             size={12}
-                            style={{ color: "rgba(245,166,35,0.5)" }}
+                            style={{ color: "var(--accent-border)" }}
                           />
                         </div>
                         <div
                           style={{
                             fontSize: 11,
-                            color: "rgba(245,166,35,0.5)",
+                            color: "var(--accent-border)",
                             marginTop: 3,
                           }}
                         >
@@ -1390,7 +1390,7 @@ export default function Navbar({
                                 fontWeight: 700,
                                 padding: "1px 5px",
                                 borderRadius: 4,
-                                background: "rgba(245,158,11,0.1)",
+                                background: "var(--accent-soft)",
                                 color: "var(--accent)",
                               }}
                             >

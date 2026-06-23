@@ -7,8 +7,8 @@ export default function Privacy() {
       <div className="flex items-center gap-4 mb-8 pb-8" style={{ borderBottom: '1px solid var(--border)' }}>
         <div style={{
           width: 56, height: 56, borderRadius: 16,
-          background: 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,158,11,0.05))',
-          border: '1px solid rgba(245,166,35,0.3)',
+          background: 'linear-gradient(135deg, var(--accent-soft), var(--accent-soft))',
+          border: '1px solid var(--accent-soft)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Lock size={28} style={{ color: 'var(--accent)' }} />

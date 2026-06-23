@@ -50,7 +50,7 @@ const PLANS = [
     id: "pro",
     icon: Crown,
     price: { monthly: 10, yearly: 7 },
-    color: "rgba(245,166,35,0.12)",
+    color: "var(--accent-soft)",
     accent: "var(--accent)",
     badge_key: "most_popular",
     features: [
@@ -130,7 +130,7 @@ function PlanCard({
           background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
           color: "var(--text-primary)",
           border: "none",
-          boxShadow: "0 4px 20px rgba(139,92,246,0.3)",
+          boxShadow: "0 4px 20px var(--secondary-soft)",
         }
       : {
           background: "transparent",
@@ -143,7 +143,7 @@ function PlanCard({
       style={{
         position: "relative",
         background: plan.color,
-        border: `1px solid ${isPrimary ? "rgba(245,166,35,0.35)" : isPurple ? "rgba(139,92,246,0.3)" : "var(--border)"}`,
+        border: `1px solid ${isPrimary ? "var(--accent-border)" : isPurple ? "var(--secondary-soft)" : "var(--border)"}`,
         borderRadius: 20,
         padding: "28px 24px",
         display: "flex",
@@ -361,8 +361,8 @@ export default function Pricing({ onAuthOpen }) {
             gap: 6,
             padding: "5px 14px",
             borderRadius: 999,
-            background: "rgba(245,166,35,0.08)",
-            border: "1px solid rgba(245,166,35,0.2)",
+            background: "var(--accent-soft)",
+            border: "1px solid var(--accent-soft)",
             marginBottom: 16,
           }}
         >
@@ -584,8 +584,8 @@ export default function Pricing({ onAuthOpen }) {
           marginTop: 64,
           padding: "40px 24px",
           background:
-            "linear-gradient(135deg, rgba(245,166,35,0.08), rgba(245,166,35,0.03))",
-          border: "1px solid rgba(245,166,35,0.2)",
+            "linear-gradient(135deg, var(--accent-soft), var(--accent-soft))",
+          border: "1px solid var(--accent-soft)",
           borderRadius: 20,
         }}
       >

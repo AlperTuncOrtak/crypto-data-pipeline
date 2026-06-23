@@ -200,7 +200,7 @@ export default function CreateAlert() {
                 gap: 10,
                 padding: "10px 14px",
                 background: "var(--bg-elevated)",
-                border: `1px solid ${showDrop ? "rgba(245,166,35,0.4)" : "var(--border)"}`,
+                border: `1px solid ${showDrop ? "var(--accent-border)" : "var(--border)"}`,
                 borderRadius: 12,
                 transition: "border-color 0.2s",
               }}
@@ -495,7 +495,7 @@ export default function CreateAlert() {
                   fontFamily: "monospace",
                 }}
                 onFocus={(e) =>
-                  (e.target.style.borderColor = "rgba(245,166,35,0.4)")
+                  (e.target.style.borderColor = "var(--accent-border)")
                 }
                 onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
               />
@@ -555,7 +555,7 @@ export default function CreateAlert() {
               boxSizing: "border-box",
             }}
             onFocus={(e) =>
-              (e.target.style.borderColor = "rgba(245,166,35,0.4)")
+              (e.target.style.borderColor = "var(--accent-border)")
             }
             onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
           />
@@ -572,7 +572,7 @@ export default function CreateAlert() {
             border: "none",
             background:
               !selectedCoin || !targetValue
-                ? "rgba(245,166,35,0.2)"
+                ? "var(--accent-soft)"
                 : saved
                   ? "rgba(46,204,113,0.8)"
                   : "linear-gradient(135deg, var(--accent), #8B5CF6)",

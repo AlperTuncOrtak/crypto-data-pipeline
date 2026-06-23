@@ -61,7 +61,7 @@ export default function AIPulse({ slug }) {
 
       <div style={{
         width: 32, height: 32, borderRadius: '50%',
-        background: 'rgba(245,158,11,0.1)',
+        background: 'var(--accent-soft)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0, marginTop: hasAccess ? 2 : 0,
       }}>
@@ -94,12 +94,12 @@ export default function AIPulse({ slug }) {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 6,
                     padding: '6px 14px', fontSize: 13, fontWeight: 600,
-                    background: 'rgba(245,158,11,0.15)', color: 'var(--accent)',
-                    border: '1px solid rgba(245,166,35,0.3)', borderRadius: 20,
+                    background: 'var(--accent-soft)', color: 'var(--accent)',
+                    border: '1px solid var(--accent-soft)', borderRadius: 20,
                     cursor: 'pointer', backdropFilter: 'blur(2px)', transition: '0.2s ease'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.background = 'rgba(245,166,35,0.25)'}
-                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(245,158,11,0.15)'}
+                  onMouseOver={(e) => e.currentTarget.style.background = 'var(--accent-soft)'}
+                  onMouseOut={(e) => e.currentTarget.style.background = 'var(--accent-soft)'}
                 >
                   <Lock size={12} />
                   Unlock AI Pulse

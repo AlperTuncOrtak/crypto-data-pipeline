@@ -51,12 +51,12 @@ function Message({ msg }) {
         background: isError
           ? 'rgba(231,76,60,0.1)'
           : isUser
-            ? 'linear-gradient(135deg, rgba(245,166,35,0.18), rgba(245,166,35,0.08))'
+            ? 'linear-gradient(135deg, var(--accent-soft), var(--accent-soft))'
             : 'var(--bg-elevated)',
         border: isError
           ? '1px solid rgba(231,76,60,0.3)'
           : isUser
-            ? '1px solid rgba(245,166,35,0.3)'
+            ? '1px solid var(--accent-soft)'
             : '1px solid var(--border)',
         color: isError ? 'var(--negative)' : isUser ? 'var(--accent)' : 'var(--text-primary)',
         fontSize: 13,
@@ -163,18 +163,18 @@ export default function AIChatWidget() {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes fabPulse {
-          0%, 100% { box-shadow: 0 8px 32px rgba(245,166,35,0.4), inset 0 2px 0 var(--text-muted); }
-          50%       { box-shadow: 0 8px 48px rgba(245,166,35,0.65), inset 0 2px 0 var(--text-muted); }
+          0%, 100% { box-shadow: 0 8px 32px var(--accent-border), inset 0 2px 0 var(--text-muted); }
+          50%       { box-shadow: 0 8px 48px var(--accent-border), inset 0 2px 0 var(--text-muted); }
         }
         .ai-fab { animation: fabPulse 3s ease-in-out infinite; }
         .ai-fab:hover { transform: scale(1.1) !important; animation: none !important;
-          box-shadow: 0 12px 40px rgba(245,166,35,0.6), inset 0 2px 0 var(--text-muted) !important; }
+          box-shadow: 0 12px 40px var(--accent-border), inset 0 2px 0 var(--text-muted) !important; }
         .ai-input::placeholder { color: var(--text-muted); }
         .ai-send:hover { background: var(--accent-hover) !important; }
-        .ai-quick:hover { color: var(--accent) !important; border-color: rgba(245,166,35,0.35) !important; background: rgba(245,166,35,0.06) !important; }
+        .ai-quick:hover { color: var(--accent) !important; border-color: var(--accent-border) !important; background: var(--accent-soft) !important; }
         .ai-clear:hover { color: var(--text-primary) !important; border-color: var(--border) !important; }
         .ai-messages::-webkit-scrollbar { width: 3px; }
-        .ai-messages::-webkit-scrollbar-thumb { background: rgba(245,166,35,0.25); border-radius: 2px; }
+        .ai-messages::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 2px; }
       `}</style>
 
       {/* ── FAB ── */}
@@ -203,7 +203,7 @@ export default function AIChatWidget() {
           background: 'rgba(10, 10, 20, 0.92)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          border: '1px solid rgba(245,166,35,0.22)',
+          border: '1px solid var(--accent-soft)',
           borderRadius: 20,
           boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px var(--border-soft) inset',
           display: 'flex', flexDirection: 'column',
@@ -216,14 +216,14 @@ export default function AIChatWidget() {
             padding: '14px 18px',
             borderBottom: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'linear-gradient(180deg, rgba(245,166,35,0.08) 0%, transparent 100%)',
+            background: 'linear-gradient(180deg, var(--accent-soft) 0%, transparent 100%)',
             flexShrink: 0,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 34, height: 34, borderRadius: 10,
-                background: 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.06))',
-                border: '1px solid rgba(245,166,35,0.25)',
+                background: 'linear-gradient(135deg, var(--accent-soft), var(--accent-soft))',
+                border: '1px solid var(--accent-soft)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <Brain size={17} color="var(--accent)" />
@@ -318,7 +318,7 @@ export default function AIChatWidget() {
               borderRadius: 12, padding: '6px 6px 6px 14px',
               transition: 'border-color 0.2s',
             }}
-              onFocusCapture={e => e.currentTarget.style.borderColor = 'rgba(245,166,35,0.35)'}
+              onFocusCapture={e => e.currentTarget.style.borderColor = 'var(--accent-border)'}
               onBlurCapture={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
             >
               <input

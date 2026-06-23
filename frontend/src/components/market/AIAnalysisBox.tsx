@@ -176,7 +176,7 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
 
           <div style={{ background: "rgba(255,255,255,0.02)", padding: 20, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)", fontSize: 14, lineHeight: 1.6, color: "var(--text-secondary)" }}>
             <h4 style={{ margin: "0 0 12px 0", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 8 }}>
-              <BarChart2 size={16} color={brandColor || "#00f0ff"} /> AI Summary
+              <BarChart2 size={16} color={brandColor || "var(--accent)"} /> AI Summary
             </h4>
             {data.summary}
           </div>

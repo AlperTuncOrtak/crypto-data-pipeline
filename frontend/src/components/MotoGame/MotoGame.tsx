@@ -499,7 +499,7 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
     // Bike Drawing
     const crashed = stateRef.current === "crashed";
-    const primaryColor = crashed ? "#e74c3c" : "#00f0ff";
+    const primaryColor = crashed ? "#e74c3c" : "var(--accent)";
 
     ctx.save();
     ctx.translate(chassis.position.x, chassis.position.y);

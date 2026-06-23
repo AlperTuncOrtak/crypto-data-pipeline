@@ -216,8 +216,8 @@ function Card({ children, style = {}, featured = false }) {
   return (
     <div
       style={{
-        background: featured ? "rgba(0,240,255,0.04)" : T.card,
-        border: `1px solid ${hov ? (featured ? "rgba(0,240,255,0.4)" : "rgba(0,240,255,0.15)") : (featured ? T.borderFeat : T.border)}`,
+        background: featured ? "var(--accent-soft)" : T.card,
+        border: `1px solid ${hov ? (featured ? "var(--accent-border)" : "var(--accent-soft)") : (featured ? T.borderFeat : T.border)}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
@@ -267,7 +267,7 @@ function Faq({ q, a }) {
       style={{
         borderRadius: 16,
         border: `1px solid ${open ? T.borderFeat : T.border}`,
-        background: open ? "rgba(0,240,255,0.04)" : T.card,
+        background: open ? "var(--accent-soft)" : T.card,
         transition: "all 200ms ease",
         cursor: "pointer",
         overflow: "hidden",
@@ -348,7 +348,7 @@ function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any
           {coins.map((c, i) => (
             <div key={c.sym} style={{
               padding: "14px 16px", borderRadius: 14,
-              background: i === 0 ? "rgba(0,240,255,0.05)" : T.bg,
+              background: i === 0 ? "var(--accent-soft)" : T.bg,
               border: `1px solid ${i === 0 ? T.borderFeat : T.border}`,
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -481,9 +481,9 @@ export default function Landing({ onAuthOpen }) {
       mockupSide: "left",
       mockup: (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,240,255,0.06)", border: `1px solid ${T.borderFeat}` }}>
+          <div style={{ padding: "14px 16px", borderRadius: 12, background: "var(--accent-soft)", border: `1px solid ${T.borderFeat}` }}>
             <div style={{ fontSize: 9, color: T.purple, fontWeight: 800, letterSpacing: ".15em", marginBottom: 8 }}>🤖 NEKO AI</div>
-            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: t('landing.feat2.mockup').replace('+18.4%', '<span style="color: #00c6ff; font-weight: 700">+18.4%</span>').replace('15%', '<span style="color: #00f0ff; font-weight: 700">15%</span>').replace('%18.4', '<span style="color: #00c6ff; font-weight: 700">%18.4</span>').replace('%15', '<span style="color: #00f0ff; font-weight: 700">%15</span>') }} />
+            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: t('landing.feat2.mockup').replace('+18.4%', '<span style="color: #00c6ff; font-weight: 700">+18.4%</span>').replace('15%', '<span style="color: var(--accent); font-weight: 700">15%</span>').replace('%18.4', '<span style="color: #00c6ff; font-weight: 700">%18.4</span>').replace('%15', '<span style="color: var(--accent); font-weight: 700">%15</span>') }} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             {[
@@ -596,7 +596,7 @@ export default function Landing({ onAuthOpen }) {
         {/* Background — subtle, professional */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: "10%", left: "10%", width: 600, height: 600, background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 65%)", filter: "blur(80px)" }} />
-          <div style={{ position: "absolute", top: "40%", right: "5%", width: 400, height: 400, background: "radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 65%)", filter: "blur(80px)" }} />
+          <div style={{ position: "absolute", top: "40%", right: "5%", width: 400, height: 400, background: "radial-gradient(circle, var(--secondary-soft) 0%, transparent 65%)", filter: "blur(80px)" }} />
           {/* Subtle dot grid */}
           <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.018) 1px, transparent 1px)", backgroundSize: "40px 40px", maskImage: "linear-gradient(to bottom, black 30%, transparent 85%)", WebkitMaskImage: "linear-gradient(to bottom, black 30%, transparent 85%)" }} />
         </div>
@@ -640,7 +640,7 @@ export default function Landing({ onAuthOpen }) {
         <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
           <span style={{ color: T.textPrimary }}>{t('landing.hero_title_1')}<br /></span>
           <span style={{
-            background: `linear-gradient(135deg, #00f0ff 0%, #00ffff 40%, #38bdf8 100%)`,
+            background: `linear-gradient(135deg, var(--accent) 0%, #00ffff 40%, #38bdf8 100%)`,
             backgroundSize: "200% auto",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -715,7 +715,7 @@ export default function Landing({ onAuthOpen }) {
       <section style={{ padding: "0 clamp(20px,5vw,80px) 80px", maxWidth: 1000, margin: "0 auto" }}>
         <Reveal>
           <div style={{ position: "relative" }}>
-            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, rgba(0,240,255,0.12) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
             <DashboardMockup coinsStr={coinsStr} t={t} marketData={marketData} />
           </div>
         </Reveal>
@@ -767,7 +767,7 @@ export default function Landing({ onAuthOpen }) {
 
                 {/* Text */}
                 <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: `0 0 20px ${f.badgeColor}20` }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: "none" }}>
                     <Icon size={14} />{f.badge}
                   </div>
                   <h3 style={{ fontSize: "clamp(30px,4vw,48px)", fontWeight: 900, color: T.textPrimary, margin: "0 0 20px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
@@ -819,7 +819,7 @@ export default function Landing({ onAuthOpen }) {
                   </div>
                 )}
                 {/* Corner glow */}
-                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(0,240,255,0.15) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
+                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, var(--accent-soft) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
 
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? T.purple : T.textMuted, marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
@@ -849,7 +849,7 @@ export default function Landing({ onAuthOpen }) {
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {plan.perks.map((perk, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 6, background: plan.featured ? "rgba(0,240,255,0.12)" : T.greenBg, border: `1px solid ${plan.featured ? T.borderFeat : T.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: plan.featured ? "var(--accent-soft)" : T.greenBg, border: `1px solid ${plan.featured ? T.borderFeat : T.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           <Check size={10} style={{ color: plan.featured ? T.purple : T.green }} />
                         </div>
                         <span style={{ fontSize: 13, color: T.textSecondary }}>{perk}</span>
@@ -881,8 +881,8 @@ export default function Landing({ onAuthOpen }) {
       {/* ─── FINAL CTA ───────────────────────────────────────── */}
       <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
         <Reveal>
-          <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "rgba(0,240,255,0.05)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, rgba(0,240,255,0.15) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
+          <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "var(--accent-soft)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, var(--accent-soft) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 20 }}>{t('landing.cta.badge')}</div>
               <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 16px" }}>{t('landing.cta.title')}</h2>

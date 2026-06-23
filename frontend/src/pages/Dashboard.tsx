@@ -93,14 +93,14 @@ function Card({ children, style = {}, featured = false, onClick }) {
       onClick={onClick}
       style={{
         background: T.card,
-        border: `1px solid ${hov ? (featured ? "rgba(0,240,255,0.3)" : "rgba(255,255,255,0.08)") : (featured ? "rgba(0,240,255,0.15)" : "transparent")}`,
+        border: `1px solid ${hov ? (featured ? "var(--accent-soft)" : "rgba(255,255,255,0.08)") : (featured ? "var(--accent-soft)" : "transparent")}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
         transition: "all 200ms ease",
         cursor: onClick ? "pointer" : "default",
         ...(featured && {
-          background: "rgba(0,240,255,0.04)",
+          background: "var(--accent-soft)",
           boxShadow: "none",
         }),
         ...(hov && !featured && { background: T.cardHov }),
@@ -170,7 +170,7 @@ function CoinCard({ coin, navigate, featured = false }) {
       <div style={{
         position: "absolute", top: -40, right: -40,
         width: 120, height: 120, borderRadius: "50%",
-        background: `radial-gradient(circle, ${featured ? "rgba(0,240,255,0.15)" : color + "15"} 0%, transparent 60%)`,
+        background: `radial-gradient(circle, ${featured ? "var(--accent-soft)" : color + "15"} 0%, transparent 60%)`,
         filter: "blur(20px)", pointerEvents: "none",
       }} />
 
@@ -183,7 +183,7 @@ function CoinCard({ coin, navigate, featured = false }) {
             ) : (
               <div style={{
                 width: 36, height: 36, borderRadius: "50%",
-                background: `${featured ? "rgba(0,240,255,0.15)" : "var(--border)"}`,
+                background: `${featured ? "var(--accent-soft)" : "var(--border)"}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 800, color: featured ? T.purple : T.textMuted,
               }}>
@@ -191,7 +191,7 @@ function CoinCard({ coin, navigate, featured = false }) {
               </div>
             )}
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}40` }}>{coin.symbol?.toUpperCase()}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: "none" }}>{coin.symbol?.toUpperCase()}</div>
               <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
             </div>
           </div>
@@ -391,12 +391,12 @@ export default function Dashboard() {
                               {coin.image_url ? (
                                 <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%" }} />
                               ) : (
-                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(0,240,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: T.purple }}>
+                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: T.purple }}>
                                   {coin.symbol?.slice(0, 1)}
                                 </div>
                               )}
                               <div>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: `0 0 10px ${getCoinColor(coin.symbol)}40` }}>{coin.symbol?.toUpperCase()}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: "none" }}>{coin.symbol?.toUpperCase()}</div>
                                 <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
                               </div>
                             </div>

@@ -96,7 +96,7 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
     <div className="relative" style={{ width: 280 }}>
       <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{
         backgroundColor: 'var(--bg-elevated)',
-        border: `1px solid ${open ? 'rgba(245,166,35,0.4)' : 'var(--border)'}`,
+        border: `1px solid ${open ? 'var(--accent-border)' : 'var(--border)'}`,
         transition: 'border-color 0.2s',
       }}>
         <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
@@ -177,8 +177,8 @@ export default function Analysis() {
         <div className="flex items-center gap-3 mb-2">
           <div style={{
             width: 48, height: 48, borderRadius: 16,
-            background: 'linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,158,11,0.05))',
-            border: '1px solid rgba(245,166,35,0.3)',
+            background: 'linear-gradient(135deg, var(--accent-soft), var(--accent-soft))',
+            border: '1px solid var(--accent-soft)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <GitCompare size={22} style={{ color: 'var(--accent)' }} />

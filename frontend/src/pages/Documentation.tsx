@@ -9,7 +9,7 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
          border: '1px solid var(--border)',
        }}>
     <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
-         style={{ backgroundColor: 'rgba(245,158,11,0.1)', color: 'var(--accent)' }}>
+         style={{ backgroundColor: 'var(--accent-soft)', color: 'var(--accent)' }}>
       <Icon size={24} />
     </div>
     <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">{title}</h3>
@@ -21,8 +21,8 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 const Callout = ({ title, children, icon: Icon = Zap }) => (
   <div className="my-12 p-6 rounded-2xl flex gap-5 items-start relative overflow-hidden" 
        style={{ 
-         backgroundColor: 'rgba(245,166,35,0.03)', 
-         border: '1px solid rgba(245,166,35,0.2)' 
+         backgroundColor: 'var(--accent-soft)', 
+         border: '1px solid var(--accent-soft)' 
        }}>
     {/* Subtle background glow */}
     <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--accent)] opacity-5 blur-3xl rounded-full"></div>
@@ -86,7 +86,7 @@ export default function Documentation() {
                   className="flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-left relative group mb-1"
                   style={{
                     color: isActive ? 'var(--accent)' : '#9ca3af',
-                    backgroundColor: isActive ? 'rgba(245,158,11,0.05)' : 'transparent',
+                    backgroundColor: isActive ? 'var(--accent-soft)' : 'transparent',
                   }}
                 >
                   {isActive && (

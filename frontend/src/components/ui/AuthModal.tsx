@@ -87,7 +87,7 @@ function AuthInput({ icon: Icon, rightEl, ...props }) {
           left: 15,
           top: "50%",
           transform: "translateY(-50%)",
-          color: focused ? "rgba(245,166,35,0.6)" : "var(--text-muted)",
+          color: focused ? "var(--accent-border)" : "var(--text-muted)",
           pointerEvents: "none",
           transition: "color 0.2s",
         }}
@@ -665,7 +665,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                           border: "none",
                           cursor: "pointer",
                           fontSize: 12,
-                          color: "rgba(245,166,35,0.6)",
+                          color: "var(--accent-border)",
                           padding: 0,
                           transition: "color 0.15s",
                         }}
@@ -673,7 +673,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                           (e.currentTarget.style.color = "var(--accent)")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.color = "rgba(245,166,35,0.6)")
+                          (e.currentTarget.style.color = "var(--accent-border)")
                         }
                       >
                         Forgot password?
@@ -763,7 +763,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       borderRadius: 16,
                       border: "none",
                       background: submitDisabled
-                        ? "rgba(245,166,35,0.25)"
+                        ? "var(--accent-soft)"
                         : "linear-gradient(135deg, var(--accent), #8B5CF6)",
                       color: "#111",
                       fontSize: 14,
@@ -775,7 +775,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       gap: 8,
                       boxShadow: submitDisabled
                         ? "none"
-                        : "0 4px 20px rgba(245,166,35,0.3)",
+                        : "0 4px 20px var(--accent-soft)",
                       transition: "all 0.2s",
                     }}
                     onMouseEnter={(e) => {
@@ -788,7 +788,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.style.boxShadow = submitDisabled
                         ? "none"
-                        : "0 4px 20px rgba(245,166,35,0.3)";
+                        : "0 4px 20px var(--accent-soft)";
                     }}
                   >
                     {loading ? (

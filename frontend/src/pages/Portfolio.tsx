@@ -80,7 +80,7 @@ const COIN_COLORS = {
 };
 
 const CHART_COLORS = [
-  "#00f0ff", // Neon Cyan
+  "var(--accent)", // Neon Cyan
   "#2dd4bf", // Teal
   "#3b82f6", // Blue
   "#a855f7", // Purple
@@ -910,8 +910,8 @@ function GuideModal({ exchange, onClose }) {
               <div
                 style={{
                   padding: "10px 14px",
-                  background: "rgba(245,166,35,0.06)",
-                  border: "1px solid rgba(245,158,11,0.15)",
+                  background: "var(--accent-soft)",
+                  border: "1px solid var(--accent-soft)",
                   borderRadius: 10,
                   display: "flex",
                   gap: 8,
@@ -1322,7 +1322,7 @@ export default function Portfolio() {
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('portfolio.data_sources')}</h3>
             <button
               onClick={() => setShowAddSource(v => !v)}
-              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
             >
               {showAddSource ? t('portfolio.close_options') : t('portfolio.add_source')}
             </button>
@@ -1351,11 +1351,11 @@ export default function Portfolio() {
                 value={walletInput} 
                 onChange={e => setWalletInput(e.target.value)} 
                 placeholder="0x..."
-                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#00f0ff]/40 focus:bg-white/[0.04] transition-all duration-300" 
+                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[var(--accent)]/40 focus:bg-white/[0.04] transition-all duration-300" 
               />
               <button 
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
-                className="px-6 py-3 rounded-2xl bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+                className="px-6 py-3 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
               >
                 {isFetchingWallet ? t('portfolio.fetching') : t('portfolio.add_wallet')}
               </button>
@@ -1388,7 +1388,7 @@ export default function Portfolio() {
                 </span>
               )}
               {binanceKeys.key && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
                   <CheckCircle size={12} /> Binance Synced
                 </span>
               )}
@@ -1445,7 +1445,7 @@ export default function Portfolio() {
                               </div>
                           }
                           <div>
-                            <div className="text-sm font-bold transition-colors" style={{ color: getCoinColor(h.symbol), textShadow: `0 0 10px ${getCoinColor(h.symbol)}40` }}>{h.symbol}</div>
+                            <div className="text-sm font-bold transition-colors" style={{ color: getCoinColor(h.symbol), textShadow: "none" }}>{h.symbol}</div>
                             <div className="text-xs text-gray-500">{h.name}</div>
                           </div>
                         </div>
@@ -1517,12 +1517,12 @@ export default function Portfolio() {
 
       {/* AI PORTFOLIO INSIGHTS */}
       {holdings.length > 0 && (
-        <SoftCard className="mb-10 border-[#00f0ff]/20 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
+        <SoftCard className="mb-10 border-[var(--accent)]/20 relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-[#00f0ff] mb-1 flex items-center gap-2">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--accent)] mb-1 flex items-center gap-2">
                 <Brain size={14} /> {t('portfolio.ai_analysis.title')}
               </h3>
               <p className="text-sm text-gray-400">{t('portfolio.ai_analysis.desc')}</p>
@@ -1531,7 +1531,7 @@ export default function Portfolio() {
             <button 
               onClick={handleGetAIInsights}
               disabled={isAnalyzingAI}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f0ff] to-[#00f0ff] text-[var(--text-primary)] shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[var(--accent)] to-[var(--accent)] text-[var(--text-primary)] shadow-[0_0_20px_var(--accent-soft)] hover:shadow-[0_0_30px_var(--accent-border)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isAnalyzingAI ? (
                 <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> {t('portfolio.ai_analysis.analyzing')}</>
@@ -1554,9 +1554,9 @@ export default function Portfolio() {
                     <div className="text-xs font-bold text-gray-500 uppercase mb-4">{t('portfolio.ai_analysis.risk')}</div>
                     <div className="flex items-center gap-5">
                       <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
-                        backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.1)' : 'rgba(45,212,191,0.1)',
-                        color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? '#00f0ff' : '#2DD4BF',
-                        border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'rgba(0,240,255,0.3)' : 'rgba(45,212,191,0.3)'}`
+                        backgroundColor: aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.1)' : aiInsights.risk_score > 4 ? 'var(--accent-soft)' : 'rgba(45,212,191,0.1)',
+                        color: aiInsights.risk_score > 7 ? '#F43F5E' : aiInsights.risk_score > 4 ? 'var(--accent)' : '#2DD4BF',
+                        border: `1px solid ${aiInsights.risk_score > 7 ? 'rgba(244,63,94,0.3)' : aiInsights.risk_score > 4 ? 'var(--accent-soft)' : 'rgba(45,212,191,0.3)'}`
                       }}>
                         {aiInsights.risk_score}/10
                       </div>
@@ -1608,12 +1608,12 @@ export default function Portfolio() {
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-[#00f0ff]/5 border border-[#00f0ff]/20">
-                <div className="text-xs font-bold text-[#00f0ff] uppercase mb-4">{t('portfolio.ai_analysis.recommendations')}</div>
+              <div className="p-6 rounded-2xl bg-[var(--accent)]/5 border border-[var(--accent)]/20">
+                <div className="text-xs font-bold text-[var(--accent)] uppercase mb-4">{t('portfolio.ai_analysis.recommendations')}</div>
                 <ul className="space-y-4">
                   {aiInsights.recommendations?.map((r, i) => (
-                    <li key={i} className="text-sm md:text-base text-[#00f0ff]/90 flex items-start gap-3">
-                      <span className="text-[#00f0ff] mt-0.5 shrink-0">→</span> <span>{r}</span>
+                    <li key={i} className="text-sm md:text-base text-[var(--accent)]/90 flex items-start gap-3">
+                      <span className="text-[var(--accent)] mt-0.5 shrink-0">→</span> <span>{r}</span>
                     </li>
                   ))}
                 </ul>
@@ -1634,7 +1634,7 @@ export default function Portfolio() {
             </div>
             <button 
               onClick={() => exportTaxCSV(taxData)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)] whitespace-nowrap"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)] whitespace-nowrap"
             >
               <FileDown size={16} /> {t('portfolio.tax.export')}
             </button>
@@ -1651,10 +1651,10 @@ export default function Portfolio() {
               <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estLongTax)}</div>
               <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_long')}</div>
             </div>
-            <div className="p-5 rounded-2xl bg-[#00f0ff]/5 border border-[#00f0ff]/20 relative overflow-hidden">
-              <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-[#00f0ff]/10 rounded-full blur-2xl"></div>
-              <div className="text-xs font-bold text-[#00f0ff]/70 uppercase mb-2 relative z-10">{t('portfolio.tax.total')}</div>
-              <div className="text-3xl font-black font-mono text-[#00f0ff] relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
+            <div className="p-5 rounded-2xl bg-[var(--accent)]/5 border border-[var(--accent)]/20 relative overflow-hidden">
+              <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-[var(--accent)]/10 rounded-full blur-2xl"></div>
+              <div className="text-xs font-bold text-[var(--accent)]/70 uppercase mb-2 relative z-10">{t('portfolio.tax.total')}</div>
+              <div className="text-3xl font-black font-mono text-[var(--accent)] relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
             </div>
           </div>
         </SoftCard>
@@ -1671,7 +1671,7 @@ export default function Portfolio() {
           <p className="font-semibold text-base mb-2 text-gray-400">{t('portfolio.empty.title')}</p>
           <p className="text-sm mb-6 text-gray-500">{t('portfolio.empty.desc')}</p>
           <button onClick={() => setShowAddSource(true)} 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/20 hover:bg-[#00f0ff]/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
           >
             {t('portfolio.empty.btn')}
           </button>

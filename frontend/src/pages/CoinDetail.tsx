@@ -156,7 +156,7 @@ function StatCard({ label, value, sub, highlight, icon: Icon }) {
     <div
       className="glass-panel"
       style={{
-        border: `1px solid ${highlight ? "rgba(245,166,35,0.25)" : "var(--border)"}`,
+        border: `1px solid ${highlight ? "var(--accent-soft)" : "var(--border)"}`,
         borderRadius: 16,
         padding: "16px 18px",
         transition: "var(--transition-smooth)",
@@ -464,8 +464,8 @@ export default function CoinDetail() {
           style={{
             padding: "8px 18px",
             borderRadius: 8,
-            border: "1px solid rgba(245,166,35,0.3)",
-            background: "rgba(245,166,35,0.08)",
+            border: "1px solid var(--accent-soft)",
+            background: "var(--accent-soft)",
             color: "var(--accent)",
             cursor: "pointer",
             fontSize: 13,
@@ -539,7 +539,7 @@ export default function CoinDetail() {
           )}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <h1 style={{ fontSize: 28, fontWeight: 800, color: brandColor, textShadow: `0 0 24px ${brandColor}40, 0 4px 12px rgba(0,0,0,0.5)` }}>{coin.name}</h1>
+              <h1 style={{ fontSize: 28, fontWeight: 800, color: brandColor, textShadow: "none" }}>{coin.name}</h1>
               {coin.market_cap_rank && (
                 <span
                   style={{
@@ -562,7 +562,7 @@ export default function CoinDetail() {
                   padding: "4px 10px", borderRadius: 8,
                   background: "var(--card-bg)",
                   border: `1px solid ${scoreColor}55`,
-                  boxShadow: `0 0 10px ${scoreColor}22`
+                  boxShadow: "none"
                 }}>
                   <div style={{ width: 6, height: 6, borderRadius: "50%", background: scoreColor, boxShadow: `0 0 6px ${scoreColor}` }} />
                   <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "monospace", color: scoreColor }}>
@@ -825,8 +825,8 @@ export default function CoinDetail() {
                   borderRadius: 7,
                   fontSize: 12,
                   fontWeight: 600,
-                  background: range === r.value ? "rgba(245,158,11,0.15)" : "transparent",
-                  border: range === r.value ? "1px solid rgba(245,166,35,0.25)" : "1px solid transparent",
+                  background: range === r.value ? "var(--accent-soft)" : "transparent",
+                  border: range === r.value ? "1px solid var(--accent-soft)" : "1px solid transparent",
                   color: range === r.value ? "var(--accent)" : "var(--text-muted)",
                   cursor: "pointer",
                   transition: "all 0.15s",

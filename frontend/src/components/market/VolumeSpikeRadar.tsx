@@ -142,7 +142,7 @@ export default function VolumeSpikeRadar() {
                     padding: "10px 0",
                   }}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "rgba(245,166,35,0.04)")
+                    (e.currentTarget.style.backgroundColor = "var(--accent-soft)")
                   }
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.backgroundColor = "transparent")

@@ -88,7 +88,7 @@ function Input({ value, onChange, placeholder, type = "text", disabled, readOnly
           cursor: readOnly || disabled ? "not-allowed" : "text",
           boxSizing: "border-box",
         }}
-        onFocus={e => { if (!readOnly && !disabled) e.target.style.borderColor = "rgba(245,166,35,0.4)"; }}
+        onFocus={e => { if (!readOnly && !disabled) e.target.style.borderColor = "var(--accent-border)"; }}
         onBlur={e => { e.target.style.borderColor = "var(--border)"; }}
       />
       {isPassword && (
@@ -111,7 +111,7 @@ function SaveButton({ loading, onClick, label = "Save Changes" }) {
       background: loading ? "var(--bg-elevated)" : "linear-gradient(135deg, var(--accent), #8B5CF6)",
       color: loading ? "var(--text-muted)" : "#111",
       fontWeight: 700, fontSize: 13, border: "none",
-      boxShadow: loading ? "none" : "0 4px 16px rgba(245,166,35,0.3)",
+      boxShadow: loading ? "none" : "0 4px 16px var(--accent-soft)",
       transition: "all 0.2s",
     }}>
       {loading ? <Loader size={13} style={{ animation: "spin 0.8s linear infinite" }} /> : null}
@@ -325,7 +325,7 @@ export default function Settings() {
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
           <div style={{ position: "relative" }}>
             {avatar
-              ? <img src={avatar} style={{ width: 64, height: 64, borderRadius: "50%", border: "2px solid rgba(245,166,35,0.3)" }} />
+              ? <img src={avatar} style={{ width: 64, height: 64, borderRadius: "50%", border: "2px solid var(--accent-soft)" }} />
               : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, var(--accent), #8B5CF6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 800, color: "#111" }}>
                   {displayName?.slice(0,1).toUpperCase()}
                 </div>
@@ -341,7 +341,7 @@ export default function Settings() {
           <div>
             <div style={{ fontSize: 15, fontWeight: 700 }}>{displayName}</div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{email}</div>
-            <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, padding: "3px 8px", borderRadius: 6, background: isPro || isEnterprise ? "rgba(245,166,35,0.08)" : "var(--border-soft)", border: `1px solid ${isPro || isEnterprise ? "rgba(245,166,35,0.2)" : "var(--border)"}`, width: "fit-content" }}>
+            <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, padding: "3px 8px", borderRadius: 6, background: isPro || isEnterprise ? "var(--accent-soft)" : "var(--border-soft)", border: `1px solid ${isPro || isEnterprise ? "var(--accent-soft)" : "var(--border)"}`, width: "fit-content" }}>
               <Crown size={10} style={{ color: isPro || isEnterprise ? "var(--accent)" : "var(--text-muted)" }} />
               <span style={{ fontSize: 11, color: isPro || isEnterprise ? "var(--accent)" : "var(--text-muted)", fontWeight: 600 }}>
                 {t("settings.plan_active", { plan: isEnterprise ? "Enterprise" : isPro ? "Pro" : "Free" })}
@@ -365,7 +365,7 @@ export default function Settings() {
       {(isPro || isEnterprise) && (
         <Section title={t("settings.subscription")} icon={Crown}>
           <Toast message={cancelMsg.text} type={cancelMsg.type} />
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderRadius: 10, background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderRadius: 10, background: "var(--accent-soft)", border: "1px solid var(--accent-soft)" }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Crown size={14} />
@@ -425,7 +425,7 @@ export default function Settings() {
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>{t("settings.2fa")}</div>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{t("settings.2fa_desc")}</div>
           </div>
-          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: "rgba(245,158,11,0.1)", color: "var(--accent)" }}>SOON</span>
+          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: "var(--accent-soft)", color: "var(--accent)" }}>SOON</span>
         </div>
       </Section>
 
@@ -560,9 +560,9 @@ export default function Settings() {
               </div>
               {/* Dark preview */}
               <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
-                <div style={{ background: "#020617", height: 8, borderBottom: "1px solid rgba(0,240,255,0.15)" }} />
+                <div style={{ background: "#020617", height: 8, borderBottom: "1px solid var(--accent-soft)" }} />
                 <div style={{ background: "#0b1227", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
-                  {["#2dd4bf", "#00f0ff", "rgba(255,255,255,0.1)"].map((c, i) => (
+                  {["#2dd4bf", "var(--accent)", "rgba(255,255,255,0.1)"].map((c, i) => (
                     <div key={i} style={{ height: 6, borderRadius: 3, background: c, width: i === 2 ? 20 : 12 }} />
                   ))}
                 </div>

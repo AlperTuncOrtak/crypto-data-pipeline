@@ -71,8 +71,8 @@ export default function ProtectedRoute({
             width: 72,
             height: 72,
             borderRadius: 24,
-            background: "rgba(245,158,11,0.1)",
-            border: "1px solid rgba(245,166,35,0.3)",
+            background: "var(--accent-soft)",
+            border: "1px solid var(--accent-soft)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -164,8 +164,8 @@ export default function ProtectedRoute({
         <div
           style={{
             background:
-              "linear-gradient(135deg, rgba(245,166,35,0.08), rgba(245,166,35,0.03))",
-            border: "1px solid rgba(245,166,35,0.25)",
+              "linear-gradient(135deg, var(--accent-soft), var(--accent-soft))",
+            border: "1px solid var(--accent-soft)",
             borderRadius: 20,
             padding: "32px 40px",
             maxWidth: 480,

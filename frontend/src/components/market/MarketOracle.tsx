@@ -28,7 +28,7 @@ import { useOracle } from "../../hooks/useOracle";
 function getSentimentStyle(score) {
   if (score <= 20) return { color: "#e74c3c", bg: "rgba(231,76,60,0.1)",  label: "Extreme Fear" };
   if (score <= 40) return { color: "#e67e22", bg: "rgba(230,126,34,0.1)", label: "Fear" };
-  if (score <= 60) return { color: "var(--accent)", bg: "rgba(245,158,11,0.1)", label: "Neutral" };
+  if (score <= 60) return { color: "var(--accent)", bg: "var(--accent-soft)", label: "Neutral" };
   if (score <= 80) return { color: "#2ecc71", bg: "rgba(46,204,113,0.1)", label: "Greed" };
   return            { color: "#27ae60", bg: "rgba(39,174,96,0.1)",         label: "Extreme Greed" };
 }
@@ -53,9 +53,9 @@ function CoinBadge({ coin }) {
     <span
       className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
       style={{
-        backgroundColor: "rgba(245,166,35,0.12)",
+        backgroundColor: "var(--accent-soft)",
         color:           "var(--accent)",
-        border:          "1px solid rgba(245,166,35,0.35)",
+        border:          "1px solid var(--accent-border)",
         letterSpacing:   "0.06em",
       }}
     >
@@ -207,7 +207,7 @@ export default function MarketOracle() {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color        = "var(--accent)";
-            e.currentTarget.style.borderColor  = "rgba(245,166,35,0.3)";
+            e.currentTarget.style.borderColor  = "var(--accent-soft)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color        = "var(--text-muted)";
