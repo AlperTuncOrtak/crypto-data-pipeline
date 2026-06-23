@@ -271,7 +271,7 @@ export default function Dashboard() {
   const top4 = top10.slice(0, 4);
 
   return (
-    <div style={{ color: T.textPrimary, fontFamily: "Inter, sans-serif" }}>
+    <div className="mesh-hero" style={{ color: T.textPrimary, fontFamily: "Inter, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         @keyframes dash-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }

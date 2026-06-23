@@ -559,13 +559,17 @@ export default function Navbar({
           position: "sticky",
           top: 0,
           zIndex: 100,
-          padding: "10px 20px",
+          padding: "8px 20px",
           transition: "all 0.3s ease",
-          background: theme === 'light' ? "#ffffff" : "#0d0d0f",
+          background: theme === 'light'
+            ? "rgba(248, 250, 252, 0.85)"
+            : "rgba(10, 10, 11, 0.75)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           borderBottom: scrolled
-            ? "1px solid var(--border)"
+            ? `1px solid ${theme === 'light' ? 'rgba(15,23,42,0.08)' : 'rgba(255,255,255,0.06)'}`
             : "1px solid transparent",
-          boxShadow: scrolled && theme === 'light' ? "0 2px 12px rgba(15,23,42,0.08)" : "none",
+          boxShadow: scrolled ? "0 1px 0 rgba(255,255,255,0.03)" : "none",
         }}
       >
         <div

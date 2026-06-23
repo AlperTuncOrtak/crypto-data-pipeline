@@ -582,7 +582,7 @@ export default function Landing({ onAuthOpen }) {
   ];
 
   return (
-    <div style={{ background: T.bg, color: T.textPrimary, fontFamily: "Inter, sans-serif", overflowX: "clip" }}>
+    <div className="mesh-hero" style={{ background: T.bg, color: T.textPrimary, fontFamily: "Inter, sans-serif", overflowX: "clip" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         @keyframes lp-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
@@ -593,12 +593,10 @@ export default function Landing({ onAuthOpen }) {
 
       {/* ─── HERO ────────────────────────────────────────────── */}
       <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
-        {/* Background — subtle, professional */}
+        {/* Background — Linear-inspired dot grid */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: "10%", left: "10%", width: 600, height: 600, background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 65%)", filter: "blur(80px)" }} />
-          <div style={{ position: "absolute", top: "40%", right: "5%", width: 400, height: 400, background: "radial-gradient(circle, var(--secondary-soft) 0%, transparent 65%)", filter: "blur(80px)" }} />
           {/* Subtle dot grid */}
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.018) 1px, transparent 1px)", backgroundSize: "40px 40px", maskImage: "linear-gradient(to bottom, black 30%, transparent 85%)", WebkitMaskImage: "linear-gradient(to bottom, black 30%, transparent 85%)" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
         </div>
 
         {/* ── Floating Coins ── */}
