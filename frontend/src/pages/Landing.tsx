@@ -779,13 +779,7 @@ export default function Landing({ onAuthOpen }) {
                 </div>
 
                 {/* Mockup panel */}
-                <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1, background: "rgba(10,10,15,0.8)", border: `1px solid ${T.border}`, borderRadius: 20, padding: "20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
-                    {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
-                    <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 9, color: T.textMuted }}>www.cryptoneko.online</span>
-                    </div>
-                  </div>
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1 }}>
                   {f.mockup}
                 </div>
               </div>
