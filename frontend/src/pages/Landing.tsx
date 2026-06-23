@@ -501,46 +501,70 @@ export default function Landing({ onAuthOpen }) {
       `}</style>
 
       {/* ─── HERO ────────────────────────────────────────────── */}
-      <section className="linear-bg" style={{ position: "relative", padding: "160px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto", minHeight: "85vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        
-        {/* Subtle dot grid fallback */}
+      <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
+        {/* Background — Linear-inspired dot grid */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
+          {/* Subtle dot grid */}
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
+        </div>
+
+        {/* ── Floating Coins ── */}
+        <div style={{ position: "absolute", top: 0, bottom: 0, left: "calc(-50vw + 50%)", right: "calc(-50vw + 50%)", pointerEvents: "none", overflow: "visible" }}>
+          {/* Inner wrapper must also have pointerEvents: 'none' so it doesn't block clicks beneath it */}
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+            {FLOATING_COINS.map((c) => {
+              const liveCoin = marketData?.find((m) => m.symbol === c.sym);
+              const livePrice = liveCoin 
+                ? `$${Number(liveCoin.current_price).toLocaleString(undefined, { minimumFractionDigits: liveCoin.current_price < 1 ? 2 : 0, maximumFractionDigits: liveCoin.current_price < 1 ? 6 : 2 })}` 
+                : c.price;
+              const liveChange = liveCoin 
+                ? `${liveCoin.price_change_percentage_24h > 0 ? '+' : ''}${liveCoin.price_change_percentage_24h.toFixed(1)}%` 
+                : c.change;
+              const liveUp = liveCoin ? liveCoin.price_change_percentage_24h >= 0 : c.up;
+              
+              return (
+                <FloatingCoinCard 
+                  key={c.sym} 
+                  {...c} 
+                  price={livePrice} 
+                  change={liveChange} 
+                  up={liveUp} 
+                  onClick={() => navigate(`/coin/${c.slug}`)} 
+                />
+              );
+            })}
+          </div>
         </div>
 
 
-
         {/* Live badge */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="pill-badge" style={{ marginBottom: 32 }}>
-            <span style={{ color: "#a1a1aa" }}>✨ Introducing Crypto Data Pipeline 2.0</span>
-            <ArrowRight size={14} color="#a1a1aa" />
-          </div>
-        </motion.div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>{t('landing.live_tracking', { count: coinsStr })}</span>
+        </div>
 
         {/* Headline */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ fontSize: "clamp(52px, 8vw, 96px)", fontWeight: 900, lineHeight: 1.0, letterSpacing: "-0.05em", margin: "0 0 24px" }}
-        >
-          <span className="linear-text-gradient">
-            {t('landing.hero_title_1')} {t('landing.hero_title_2')}
+        <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
+          <span style={{ color: T.textPrimary }}>{t('landing.hero_title_1')}<br /></span>
+          <span style={{
+            background: `linear-gradient(to bottom, #ffffff 0%, #a0a0a0 100%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}>
+            {t('landing.hero_title_2')}
           </span>
-        </motion.h1>
+        </h1>
 
-        <motion.p 
-          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-          style={{ fontSize: "clamp(18px, 2.5vw, 22px)", color: "#a1a1aa", maxWidth: 640, margin: "0 auto 48px", lineHeight: 1.6, fontWeight: 400 }}
-        >
+        <p style={{ fontSize: "clamp(16px, 2.2vw, 20px)", color: T.textSecondary, maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7 }}>
           {t('landing.hero_subtitle')}
-        </motion.p>
+        </p>
 
         {/* CTAs */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", marginBottom: 24, justifyContent: "center" }}>
           {!isLoggedIn && (
             <button
               onClick={() => onAuthOpen?.("signup")}
-              className="btn-primary btn-spring"
+              className="btn-primary"
               style={{
                 padding: "12px 28px", borderRadius: "12px", border: "none", cursor: "pointer",
                 fontSize: 15, fontWeight: 600,
@@ -602,57 +626,62 @@ export default function Landing({ onAuthOpen }) {
           </Reveal>
         </div>
 
-        <div ref={featuresRef} className="bento-grid" style={{ position: "relative", userSelect: "none", WebkitUserSelect: "none", zIndex: 10 }}>
+        <div ref={featuresRef} style={{ position: "relative", userSelect: "none", WebkitUserSelect: "none" }}>
           {features.map((f, i) => {
             const Icon = f.icon;
-            // Make the 1st and 4th items span 2 columns
-            const isLarge = i === 0 || i === 3; 
-            
+            const isRight = f.mockupSide === "right";
             return (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+              <div
                 key={i}
-                className={`bento-card ${isLarge ? 'bento-large' : ''}`}
+                className="feature-card"
                 style={{
-                  display: "flex",
-                  flexDirection: isLarge ? "row" : "column",
-                  gap: 32,
-                  alignItems: isLarge ? "center" : "flex-start",
+                  position: "sticky",
+                  top: `calc(100px + ${i * 24}px)`,
+                  marginBottom: 24,
+                  zIndex: i + 5,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 60,
+                  alignItems: "center",
+                  padding: "72px 72px",
+                  borderRadius: 36,
+                  background: `rgba(18,17,26,0.7)`,
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  border: `1px solid rgba(255,255,255,0.07)`,
+                  boxShadow: "0 40px 100px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.03)",
+                  overflow: "hidden",
+                  transition: "transform 0.3s ease, opacity 0.3s ease",
+                  transformOrigin: "top center",
                 }}
               >
                 {/* bg glow */}
-                <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "120%", height: "140%", background: `radial-gradient(circle at top left, ${f.badgeColor}10 0%, transparent 60%)`, filter: "blur(60px)", pointerEvents: "none", zIndex: 0 }} />
+                <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
 
                 {/* Text */}
-                <div style={{ position: "relative", zIndex: 1, flex: 1, width: "100%" }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 11, fontWeight: 800, letterSpacing: ".1em", marginBottom: 20 }}>
-                    <Icon size={12} />{f.badge}
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: "none" }}>
+                    <Icon size={14} />{f.badge}
                   </div>
-                  <h3 style={{ fontSize: isLarge ? "clamp(24px,3vw,36px)" : "22px", fontWeight: 800, color: T.textPrimary, margin: "0 0 12px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
-                  <p style={{ fontSize: isLarge ? "16px" : "14px", color: T.textSecondary, lineHeight: 1.6, margin: "0 0 24px" }}>{f.desc}</p>
-                  
-                  {isLarge && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {f.points.map((pt, j) => (
-                        <div key={j} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ width: 16, height: 16, borderRadius: 5, background: `${f.badgeColor}15`, border: `1px solid ${f.badgeColor}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <Check size={8} style={{ color: f.badgeColor }} />
-                          </div>
-                          <span style={{ fontSize: 13, color: T.textSecondary }}>{pt}</span>
+                  <h3 style={{ fontSize: "clamp(30px,4vw,48px)", fontWeight: 900, color: T.textPrimary, margin: "0 0 20px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
+                  <p style={{ fontSize: "clamp(15px,1.8vw,18px)", color: T.textSecondary, lineHeight: 1.7, margin: "0 0 32px", maxWidth: 460 }}>{f.desc}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {f.points.map((pt, j) => (
+                      <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: `${f.badgeColor}15`, border: `1px solid ${f.badgeColor}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={10} style={{ color: f.badgeColor }} />
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <span style={{ fontSize: 14, color: T.textSecondary }}>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Mockup panel */}
-                <div style={{ position: "relative", zIndex: 1, flex: 1, width: "100%", opacity: 0.9 }}>
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1 }}>
                   {f.mockup}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
