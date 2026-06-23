@@ -1,142 +1,393 @@
 // ============================================================
-// pages/Landing.tsx — Linear.app Inspired Minimalist V4
+// pages/Landing.tsx — Purple Design System v3
 // ============================================================
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useMarketStats } from "../hooks/useMarket";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useMarket, useMarketStats } from "../hooks/useMarket";
+import { motion } from "framer-motion";
 import {
-  Brain,
-  BarChart2,
-  Wallet,
-  Bell,
-  ArrowRight,
-  ChevronRight,
-  Activity,
-  LineChart,
-  Shield,
-  Zap
+  Brain, BarChart2, Wallet, Bell, Shield, ArrowRight,
+  Check, ChevronDown, TrendingUp, Zap, Globe, Star,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getCoinColor } from "../utils/colors";
 
-// ─── FLOATING COINS (Orbital layout) ──────────────────────────
+
+// ─── THEME ───────────────────────────────────────────────────────
+const T = {
+  bg: "#0d0d0f",
+  card: "#19191c",
+  cardHov: "#1c1c1f",
+  purple: "#3b82f6",        // accent = professional blue
+  purpleLight: "#60a5fa",
+  purpleDim: "rgba(59,130,246,0.10)",
+  green: "#22c55e",
+  greenBg: "rgba(34,197,94,0.08)",
+  greenBorder: "rgba(34,197,94,0.18)",
+  red: "#ef4444",
+  redBg: "rgba(239,68,68,0.08)",
+  textPrimary: "#ffffff",
+  textSecondary: "#a1a1aa",
+  textMuted: "#71717a",
+  border: "rgba(255,255,255,0.08)",
+  borderFeat: "rgba(59,130,246,0.20)",
+};
+
+// ─── FLOATING COIN CARDS (Uniswap style) ──────────────────────────
 const FLOATING_COINS = [
-  { sym: "BTC",  name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "15%", left: "10%",  delay: 0,   dur: 7.0, size: 48 },
-  { sym: "ETH",  name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "60%", left: "5%",   delay: 1.5, dur: 8.4, size: 44 },
-  { sym: "SOL",  name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "20%", right: "8%", delay: 0.8, dur: 6.4, size: 42 },
-  { sym: "BNB",  name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "50%", right: "5%", delay: 2.2, dur: 7.8, size: 38 },
-  { sym: "XRP",  name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "80%", left: "20%", delay: 1.1, dur: 9.2, size: 36 },
-  { sym: "DOGE", name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "75%", right: "20%", delay: 3.0, dur: 6.6, size: 40 },
+  { sym: "BTC",  slug: "bitcoin",     name: "Bitcoin",  price: "$107,412", change: "+2.4%", up: true,  img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",    top: "12%", left: "10%",   delay: 0,   dur: 7.0, size: 52 },
+  { sym: "ETH",  slug: "ethereum",    name: "Ethereum", price: "$3,891",   change: "+1.8%", up: true,  img: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",  top: "55%", left: "14%",   delay: 1.5, dur: 7.4, size: 46 },
+  { sym: "SOL",  slug: "solana",      name: "Solana",   price: "$182",     change: "-0.9%", up: false, img: "https://assets.coingecko.com/coins/images/4128/small/solana.png",   top: "18%", right: "10%",  delay: 0.8, dur: 6.4, size: 44 },
+  { sym: "BNB",  slug: "binancecoin", name: "BNB",      price: "$724",     change: "+3.2%", up: true,  img: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", top: "62%", right: "12%", delay: 2.2, dur: 7.8, size: 42 },
+  { sym: "XRP",  slug: "ripple",      name: "XRP",      price: "$2.18",    change: "+5.1%", up: true,  img: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", top: "78%", left: "16%", delay: 1.1, dur: 8.2, size: 38 },
+  { sym: "DOGE", slug: "dogecoin",    name: "Dogecoin", price: "$0.38",    change: "+7.3%", up: true,  img: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",    top: "8%",  right: "16%",  delay: 3.0, dur: 6.6, size: 40 },
 ];
 
-function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right, delay, dur, size }: any) {
+function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right, delay, dur, size, onClick }: {
+  sym: string; name: string; price: string; change: string; up: boolean;
+  img: string; top: string; left?: string; right?: string; delay: number; dur: number; size: number;
+  onClick?: () => void;
+}) {
   const [hovered, setHovered] = useState(false);
-  const accentColor = up ? "rgba(34, 197, 94, 0.6)" : "rgba(239, 68, 68, 0.6)";
+  const accentColor = up ? "rgba(45,212,191,0.6)" : "rgba(244,63,94,0.6)";
+  const isTopHalf = parseInt(top) < 30; // Check if the coin is near the top edge
 
   return (
     <div
-      className="hidden md:block absolute z-20 cursor-pointer pointer-events-auto"
-      style={{ top, left: left ?? "auto", right: right ?? "auto" }}
+      style={{
+        position: "absolute",
+        top, left: left ?? "auto", right: right ?? "auto",
+        zIndex: 2,
+        cursor: "pointer",
+        pointerEvents: "auto", // Enable pointer events only for the coin cards
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
     >
       <style>{`
-        @keyframes orbit-float-${sym} {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-${15 + delay * 2}px) rotate(${delay % 2 === 0 ? 2 : -2}deg); }
+        @keyframes fc-float-${sym} {
+          0%, 100% { transform: translateY(0px); }
+          45% { transform: translateY(-${9 + delay}px); }
+          70% { transform: translateY(-${4 + delay * 0.5}px); }
         }
-        .orbit-wrap-${sym} { animation: orbit-float-${sym} ${dur}s ease-in-out ${delay}s infinite; }
+        .fc-wrap-${sym} { animation: fc-float-${sym} ${dur}s ease-in-out ${delay}s infinite; }
+        @keyframes fc-reveal-up { from { opacity:0; transform:translateY(10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes fc-reveal-down { from { opacity:0; transform:translateY(-10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
       `}</style>
 
-      <div className={`orbit-wrap-${sym} relative`}>
-        {/* Coin Icon Orb */}
-        <div 
-          className="rounded-full overflow-hidden flex items-center justify-center bg-[#0b0b12]/80"
-          style={{
-            width: size, height: size,
-            border: `1px solid ${hovered ? accentColor : "rgba(255,255,255,0.07)"}`,
-            boxShadow: hovered ? `0 0 24px ${up ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}` : "0 4px 12px rgba(0,0,0,0.5)",
-            transform: hovered ? "scale(1.1)" : "scale(1)",
-            transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-            backdropFilter: "blur(8px)"
-          }}
-        >
-          <img src={img} alt={sym} className="w-[85%] h-[85%] object-contain opacity-80" />
+      <div className={`fc-wrap-${sym}`} style={{ position: "relative" }}>
+
+        {/* ── Blurred circle icon ── */}
+        <div style={{
+          width: size, height: size,
+          borderRadius: "50%",
+          overflow: "hidden",
+          border: `1.5px solid ${hovered ? accentColor : "rgba(255,255,255,0.12)"}`,
+          boxShadow: hovered
+            ? `0 0 0 4px ${up ? "rgba(45,212,191,0.15)" : "rgba(244,63,94,0.15)"}, 0 8px 32px rgba(0,0,0,0.5)`
+            : "0 4px 20px rgba(0,0,0,0.35)",
+          filter: hovered ? "blur(0px)" : "blur(3px)",
+          opacity: hovered ? 1 : 0.55,
+          transition: "all 300ms cubic-bezier(0.16,1,0.3,1)",
+          transform: hovered ? "scale(1.12)" : "scale(1)",
+          background: "rgba(11,18,39,0.6)",
+        }}>
+          <img src={img} alt={sym} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         </div>
 
-        {/* Hover Data Card - Linear Style Minimal */}
-        <div 
-          className="absolute pointer-events-none"
-          style={{
-            top: "50%",
-            left: right ? "auto" : "calc(100% + 16px)",
-            right: right ? "calc(100% + 16px)" : "auto",
-            transform: `translateY(-50%) ${hovered ? "scale(1)" : "scale(0.95)"}`,
-            opacity: hovered ? 1 : 0,
-            background: "rgba(18, 17, 26, 0.85)",
-            backdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: "12px",
-            padding: "12px 16px",
-            minWidth: "160px",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.5)",
-            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-semibold text-white tracking-tight">{sym}</span>
-            <span className="text-xs text-gray-500">{name}</span>
+        {/* ── Reveal card on hover ── */}
+        {hovered && (
+          <div style={{
+            position: "absolute",
+            bottom: isTopHalf ? "auto" : `calc(100% + 10px)`,
+            top: isTopHalf ? `calc(100% + 10px)` : "auto",
+            // If coin is on the right, box extends to the left. If coin on left, box extends to the right.
+            left: right ? "auto" : "50%",
+            right: right ? "50%" : "auto",
+            transform: right ? "translateX(32px)" : "translateX(-32px)",
+            background: "rgba(8,14,32,0.96)",
+            backdropFilter: "blur(28px)",
+            WebkitBackdropFilter: "blur(28px)",
+            border: `1px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}`,
+            borderRadius: 18,
+            padding: "16px 18px",
+            minWidth: 190,
+            boxShadow: `0 28px 64px rgba(0,0,0,0.7), 0 0 0 1px ${up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)"}`,
+            animation: `${isTopHalf ? "fc-reveal-down" : "fc-reveal-up"} 180ms cubic-bezier(0.16,1,0.3,1) forwards`,
+            zIndex: 20,
+            pointerEvents: "none",
+          }}>
+            {/* Arrow */}
+            <div style={{
+              position: "absolute", 
+              bottom: isTopHalf ? "auto" : -6, 
+              top: isTopHalf ? -6 : "auto", 
+              // Place arrow near the coin: if coin is on the right, arrow is on the right side of the box.
+              // Box is offset by 32px. Arrow is 12px wide, so its center should be at 32px. 32px - 6px = 26px.
+              left: right ? "auto" : "26px", 
+              right: right ? "26px" : "auto",
+              width: 12, height: 6,
+              borderLeft: "6px solid transparent",
+              borderRight: "6px solid transparent",
+              borderTop: isTopHalf ? "none" : `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}`,
+              borderBottom: isTopHalf ? `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}` : "none",
+            }} />
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <img src={img} alt={sym} style={{ width: 34, height: 34, borderRadius: "50%", boxShadow: `0 0 12px ${up ? "rgba(45,212,191,0.4)" : "rgba(244,63,94,0.4)"}` }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: "#fff", letterSpacing: "0.02em" }}>{sym}</div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{name}</div>
+              </div>
+            </div>
+
+            <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", fontFamily: "monospace", letterSpacing: "-0.03em", marginBottom: 8 }}>
+              {price}
+            </div>
+
+            <div style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "5px 10px", borderRadius: 8,
+              background: up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)",
+              border: `1px solid ${up ? "rgba(45,212,191,0.2)" : "rgba(244,63,94,0.2)"}`,
+              width: "fit-content",
+            }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: up ? T.green : T.red, boxShadow: `0 0 6px ${up ? T.green : T.red}` }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: up ? T.green : T.red, fontFamily: "monospace" }}>
+                {change} (24h)
+              </span>
+            </div>
           </div>
-          <div className="text-lg font-mono font-bold text-white mb-1">{price}</div>
-          <div className={`text-xs font-mono font-semibold ${up ? "text-green-500" : "text-red-500"}`}>
-            {change}
-          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+
+// ─── COUNTER ─────────────────────────────────────────────────────
+function Counter({ to, suffix = "", prefix = "" }) {
+  const [val, setVal] = useState(0);
+  const ref = useRef(null);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      const start = Date.now();
+      const tick = () => {
+        const p = Math.min((Date.now() - start) / 1800, 1);
+        setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      obs.disconnect();
+    }, { threshold: 0.5 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [to]);
+  return <span ref={ref}>{prefix}{val.toLocaleString()}{suffix}</span>;
+}
+
+// ─── REVEAL ──────────────────────────────────────────────────────
+function Reveal({ children, delay = 0 }) {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: 0.12 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref} style={{
+      opacity: vis ? 1 : 0,
+      transform: vis ? "translateY(0)" : "translateY(28px)",
+      transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+// ─── CARD ────────────────────────────────────────────────────────
+function Card({ children, style = {}, featured = false }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      style={{
+        background: featured ? "var(--accent-soft)" : T.card,
+        border: `1px solid ${hov ? (featured ? "var(--accent-border)" : "var(--accent-soft)") : (featured ? T.borderFeat : T.border)}`,
+        borderRadius: 20,
+        position: "relative",
+        overflow: "hidden",
+        transition: "all 200ms ease",
+        boxShadow: "none",
+        ...style,
+      }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── FAKE SPARKLINE ──────────────────────────────────────────────
+function Sparkline({ up = true }) {
+  const pts = Array.from({ length: 16 }, (_, i) => {
+    const v = up ? i * 3.5 + Math.sin(i * 1.3) * 6 : (16 - i) * 3.5 + Math.sin(i * 1.3) * 6;
+    return `${(i / 15) * 80},${36 - Math.min(36, Math.max(0, v - 10))}`;
+  }).join(" ");
+  const color = up ? T.green : T.red;
+  return (
+    <svg width={80} height={36} style={{ overflow: "visible" }}>
+      <motion.polyline 
+        points={pts} 
+        fill="none" 
+        stroke={color} 
+        strokeWidth="1.5" 
+        strokeLinejoin="round" 
+        strokeLinecap="round" 
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+      />
+    </svg>
+  );
+}
+
+// ─── FAQ ─────────────────────────────────────────────────────────
+function Faq({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      onClick={() => setOpen(!open)}
+      style={{
+        borderRadius: 16,
+        border: `1px solid ${open ? T.borderFeat : T.border}`,
+        background: open ? "var(--accent-soft)" : T.card,
+        transition: "all 200ms ease",
+        cursor: "pointer",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px" }}>
+        <span style={{ fontSize: 15, fontWeight: 600, color: T.textPrimary }}>{q}</span>
+        <ChevronDown size={16} style={{ color: T.purple, transition: "transform 200ms", transform: open ? "rotate(180deg)" : "none", flexShrink: 0, marginLeft: 12 }} />
+      </div>
+      {open && (
+        <div style={{ padding: "0 22px 20px", fontSize: 14, color: T.textSecondary, lineHeight: 1.7 }}>{a}</div>
+      )}
+    </div>
+  );
+}
+
+// ─── MINI DASHBOARD MOCKUP ───────────────────────────────────────
+function DashboardMockup({ coinsStr, t, marketData }: { coinsStr: string, t: any, marketData?: any[] }) {
+  let coins = [
+    { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, image_url: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
+    { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, image_url: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
+    { sym: "SOL", price: "$182", change: "-0.9%", up: false, image_url: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
+    { sym: "BNB", price: "$724", change: "+3.2%", up: true, image_url: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
+  ];
+  
+  let mcapStr = "$3.42T";
+  let btcDomStr = "54.2%";
+  
+  if (marketData && marketData.length >= 4) {
+    const btc = marketData.find(c => c.symbol?.toLowerCase() === 'btc') || marketData[0];
+    const eth = marketData.find(c => c.symbol?.toLowerCase() === 'eth') || marketData[1];
+    const sol = marketData.find(c => c.symbol?.toLowerCase() === 'sol') || marketData[2];
+    const bnb = marketData.find(c => c.symbol?.toLowerCase() === 'bnb') || marketData[3];
+    
+    const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
+    
+    coins = [
+      { sym: btc.symbol?.toUpperCase(), price: formatCurrency(btc.current_price), change: (btc.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(btc.price_change_percentage_24h)).toFixed(1) + "%", up: btc.price_change_percentage_24h >= 0, image_url: btc.image },
+      { sym: eth.symbol?.toUpperCase(), price: formatCurrency(eth.current_price), change: (eth.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(eth.price_change_percentage_24h)).toFixed(1) + "%", up: eth.price_change_percentage_24h >= 0, image_url: eth.image },
+      { sym: sol.symbol?.toUpperCase(), price: formatCurrency(sol.current_price), change: (sol.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(sol.price_change_percentage_24h)).toFixed(1) + "%", up: sol.price_change_percentage_24h >= 0, image_url: sol.image },
+      { sym: bnb.symbol?.toUpperCase(), price: formatCurrency(bnb.current_price), change: (bnb.price_change_percentage_24h >= 0 ? "▲" : "▼") + " " + Math.abs(Number(bnb.price_change_percentage_24h)).toFixed(1) + "%", up: bnb.price_change_percentage_24h >= 0, image_url: bnb.image },
+    ];
+
+    const totalMcap = marketData.reduce((sum, c) => sum + (Number(c.market_cap) || 0), 0);
+    if (totalMcap > 0) {
+      mcapStr = "$" + (totalMcap / 1e12).toFixed(2) + "T";
+      const btcDom = ((Number(btc.market_cap) || 0) / totalMcap) * 100;
+      btcDomStr = btcDom.toFixed(1) + "%";
+    }
+  }
+  return (
+    <div style={{ background: T.card, border: `1px solid ${T.borderFeat}`, borderRadius: 24, overflow: "hidden", boxShadow: "none" }}>
+      {/* Browser bar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
+        {["#ff5f57","#febc2e","#28c840"].map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
+        <div style={{ flex: 1, marginLeft: 8, height: 22, borderRadius: 6, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: 10, color: T.textMuted }}>www.cryptoneko.online/dashboard</span>
+        </div>
+      </div>
+
+      <div style={{ padding: "20px 20px" }}>
+        {/* Stat strip */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 16 }}>
+          {[
+            { l: "Market Cap", v: mcapStr },
+            { l: "BTC Dom", v: btcDomStr },
+            { l: "Coins", v: coinsStr },
+          ].map((s, i) => (
+            <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
+              <div style={{ fontSize: 9, color: T.textMuted, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>{s.l}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: T.textPrimary, fontFamily: "monospace" }}>{s.v}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* 2x2 coin grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          {coins.map((c, i) => (
+            <div key={c.sym} style={{
+              padding: "14px 16px", borderRadius: 14,
+              background: i === 0 ? "var(--accent-soft)" : T.bg,
+              border: `1px solid ${i === 0 ? T.borderFeat : T.border}`,
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {c.image_url && <img src={c.image_url} alt={c.sym} style={{ width: 24, height: 24, borderRadius: "50%" }} />}
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(c.sym) }}>{c.sym}</div>
+                    <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textPrimary, fontWeight: 600 }}>{c.price}</div>
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 8,
+                  color: c.up ? T.green : T.red,
+                  background: c.up ? T.greenBg : T.redBg,
+                  fontFamily: "monospace",
+                }}>{c.change}</span>
+              </div>
+              <Sparkline up={c.up} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-// ─── COUNTER ─────────────────────────────────────────────────────
-function Counter({ to, suffix = "", prefix = "" }: { to: number, suffix?: string, prefix?: string }) {
-  const [val, setVal] = useState(0);
-  const ref = useRef(null);
-  
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      const start = Date.now();
-      const tick = () => {
-        const p = Math.min((Date.now() - start) / 1500, 1);
-        setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-      obs.disconnect();
-    }, { threshold: 0.1 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [to]);
-  
-  return <span ref={ref}>{prefix}{val.toLocaleString()}{suffix}</span>;
-}
-
-// ─── MAIN LANDING PAGE ───────────────────────────────────────────
-export default function Landing({ onAuthOpen }: { onAuthOpen: (mode: string) => void }) {
+// ─── MAIN ────────────────────────────────────────────────────────
+export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { data: stats } = useMarketStats();
+  const { data: marketData } = useMarket(200);
   const { t } = useTranslation();
+  
 
-  const { scrollY } = useScroll();
-  const previewY = useTransform(scrollY, [0, 500], [0, -50]);
-  const previewRotate = useTransform(scrollY, [0, 500], [2, 0]);
-  const previewScale = useTransform(scrollY, [0, 500], [0.95, 1]);
 
   let coinsTracked = 2500;
   let coinsStr = "2,500+";
-  if (stats?.coin_count) {
+  if (stats && stats.coin_count) {
     if (stats.coin_count >= 1000) {
       coinsTracked = Math.floor(stats.coin_count / 1000) * 1000;
       coinsStr = `${Math.floor(coinsTracked / 1000)},000+`;
@@ -146,257 +397,563 @@ export default function Landing({ onAuthOpen }: { onAuthOpen: (mode: string) => 
     }
   }
 
-  // Linear-style Bento Grid Features
+  const [scrolled, setScrolled] = useState(false);
+  const featuresRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const cards = featuresRef.current?.querySelectorAll('.feature-card');
+      cards?.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        // Here we align with the `top` css property. The card sticks at calc(100px + i*24px)
+        const topVal = 100 + i * 24;
+        const overlap = topVal - rect.top;
+        const progress = Math.min(Math.max(overlap / (card.clientHeight * 0.6), 0), 1);
+        const el = card as HTMLElement;
+        el.style.transform = `scale(${1 - progress * 0.04})`;
+        el.style.opacity = String(1 - progress * 0.35);
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once on mount
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const features = [
     {
-      id: "ai",
-      title: "AI Technical Analysis",
-      desc: "Our neural network analyzes 150+ indicators instantly. Get risk scores, correlation matrices, and automated portfolio rebalancing suggestions.",
-      icon: Brain,
-      colSpan: "col-span-12 md:col-span-8",
-      bg: "bg-white/[0.02]",
-      img: (
-        <div className="absolute right-0 bottom-0 w-2/3 h-[85%] border-t border-l border-white/[0.07] bg-[#12111a] rounded-tl-2xl overflow-hidden shadow-2xl flex flex-col">
-          <div className="h-8 border-b border-white/[0.05] flex items-center px-4 gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-500/50" />
-            <div className="w-2 h-2 rounded-full bg-amber-500/50" />
-            <div className="w-2 h-2 rounded-full bg-green-500/50" />
-          </div>
-          <div className="flex-1 p-6 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(94,106,210,0.15),transparent_70%)]" />
-            <div className="flex items-end gap-4 h-full pt-4 relative z-10 opacity-70">
-              <div className="w-8 bg-indigo-500/20 rounded-t-sm h-[40%]" />
-              <div className="w-8 bg-indigo-500/40 rounded-t-sm h-[60%]" />
-              <div className="w-8 bg-indigo-500/60 rounded-t-sm h-[30%]" />
-              <div className="w-8 bg-indigo-500/80 rounded-t-sm h-[80%]" />
-              <div className="w-8 bg-indigo-500 rounded-t-sm h-[100%]" />
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: "portfolio",
-      title: "Portfolio Tracker",
-      desc: "Sync via APIs or CSV. FIFO tax calculations built-in.",
-      icon: Wallet,
-      colSpan: "col-span-12 md:col-span-4",
-      bg: "bg-white/[0.02]",
-      img: (
-        <div className="absolute -right-4 -bottom-4 w-[120%] h-[120%] opacity-20 bg-[radial-gradient(circle_at_bottom_right,var(--accent),transparent_60%)]" />
-      )
-    },
-    {
-      id: "screener",
-      title: "Market Screener",
-      desc: "Filter 10,000+ coins by RSI, MACD, Volume Anomalies, and more.",
-      icon: Activity,
-      colSpan: "col-span-12 md:col-span-4",
-      bg: "bg-white/[0.02]",
-    },
-    {
-      id: "alerts",
-      title: "Custom Alerts",
-      desc: "Never miss a move. Get notified via Telegram, Email, or Webhooks when price or volume spikes.",
-      icon: Bell,
-      colSpan: "col-span-12 md:col-span-8",
-      bg: "bg-white/[0.02]",
-      img: (
-        <div className="absolute right-8 bottom-0 w-1/2 h-[70%] border-t border-l border-r border-white/[0.07] bg-[#161522] rounded-t-xl shadow-2xl p-4 flex flex-col gap-3">
-          <div className="h-10 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center px-3 gap-3">
-            <Bell size={14} className="text-indigo-400" /> <div className="h-2 w-24 bg-white/10 rounded-full" />
-          </div>
-          <div className="h-10 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center px-3 gap-3">
-            <Zap size={14} className="text-amber-400" /> <div className="h-2 w-32 bg-white/10 rounded-full" />
-          </div>
-        </div>
-      )
-    }
-  ];
-
-  return (
-    <div className="min-h-screen relative overflow-hidden bg-[var(--bg-base)] text-white mesh-hero">
-      
-      {/* ─── FLOATING COINS ORBIT ─────────────────────────────────── */}
-      <div className="absolute inset-0 max-w-[1440px] mx-auto pointer-events-none">
-        {FLOATING_COINS.map((c) => (
-          <FloatingCoinCard key={c.sym} {...c} />
-        ))}
-      </div>
-
-      {/* ─── HERO SECTION ─────────────────────────────────────────── */}
-      <div className="relative z-10 pt-[120px] pb-16 px-6 max-w-[1200px] mx-auto text-center flex flex-col items-center">
-        
-        {/* Subtle Badge */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-gray-300 mb-8 cursor-default"
-        >
-          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-          {t('landing.tracking_live')} <span className="text-white font-bold">{coinsStr}</span> {t('landing.coins')}
-        </motion.div>
-
-        {/* Huge Linear Typography */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-5xl sm:text-6xl md:text-8xl font-black tracking-[-0.04em] leading-[1.05] mb-6"
-          style={{
-            background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.5) 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
-          }}
-        >
-          Meet the new standard <br className="hidden md:block" /> for crypto data.
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-lg md:text-xl text-gray-400 max-w-[600px] mx-auto mb-10 tracking-tight"
-        >
-          {t('landing.hero_desc', "A professional suite for portfolio tracking, AI-powered analysis, and real-time market screening. Engineered for speed.")}
-        </motion.p>
-
-        {/* Linear Action Buttons */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center gap-4"
-        >
-          {isLoggedIn ? (
-            <button 
-              onClick={() => navigate("/dashboard")}
-              className="group flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-semibold text-sm hover:bg-gray-100 transition-all shadow-[0_0_24px_rgba(255,255,255,0.15)]"
-            >
-              {t('landing.go_dashboard')} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          ) : (
-            <>
-              <button 
-                onClick={() => onAuthOpen("register")}
-                className="group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm bg-gradient-to-b from-[#6e7ae2] to-[var(--accent)] text-white shadow-[0_2px_12px_rgba(94,106,210,0.3)] hover:shadow-[0_4px_24px_rgba(94,106,210,0.5)] border border-[var(--accent-border)] hover:border-indigo-400 transition-all w-full sm:w-auto"
-              >
-                {t('auth.start_free')} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button 
-                onClick={() => onAuthOpen("login")}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm bg-white/[0.03] text-gray-300 border border-white/[0.08] hover:bg-white/[0.06] hover:text-white transition-all w-full sm:w-auto"
-              >
-                {t('auth.login')}
-              </button>
-            </>
-          )}
-        </motion.div>
-      </div>
-
-      {/* ─── PRODUCT PREVIEW MOCKUP ───────────────────────────────── */}
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 mb-32 perspective-1000">
-        <motion.div
-          style={{ y: previewY, rotateX: previewRotate, scale: previewScale }}
-          className="w-full aspect-[16/9] md:aspect-[21/9] bg-[#12111a] rounded-2xl md:rounded-3xl border border-white/[0.08] shadow-[0_32px_128px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.03)_inset] overflow-hidden flex flex-col relative"
-        >
-          {/* Mockup Header */}
-          <div className="h-12 border-b border-white/[0.05] bg-[#0b0b12]/50 backdrop-blur-md flex items-center px-4 gap-4">
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-white/[0.1]" />
-              <div className="w-3 h-3 rounded-full bg-white/[0.1]" />
-              <div className="w-3 h-3 rounded-full bg-white/[0.1]" />
-            </div>
-            <div className="h-6 w-48 bg-white/[0.03] rounded-md border border-white/[0.02]" />
-          </div>
-          {/* Mockup Body Content - Abstract layout */}
-          <div className="flex-1 p-6 md:p-8 flex gap-6">
-            <div className="w-1/3 flex flex-col gap-4">
-              <div className="h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 border border-white/[0.04] rounded-xl" />
-              <div className="flex-1 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
-            </div>
-            <div className="w-2/3 flex flex-col gap-4">
-              <div className="h-1/2 bg-white/[0.02] border border-white/[0.04] rounded-xl relative overflow-hidden">
-                {/* Abstract Chart Line */}
-                <svg className="absolute bottom-0 w-full h-[80%] opacity-30" preserveAspectRatio="none" viewBox="0 0 100 100">
-                  <path d="M0,100 L0,50 Q25,20 50,60 T100,30 L100,100 Z" fill="url(#gradient)" />
-                  <path d="M0,50 Q25,20 50,60 T100,30" fill="none" stroke="var(--accent)" strokeWidth="2" />
-                  <defs>
-                    <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.5" />
-                      <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <div className="h-1/2 flex gap-4">
-                <div className="w-1/2 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
-                <div className="w-1/2 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
-              </div>
-            </div>
-          </div>
-          
-          {/* Glow reflection on the mockup itself */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.03] to-transparent pointer-events-none" />
-        </motion.div>
-      </div>
-
-
-      {/* ─── BENTO GRID FEATURES ──────────────────────────────────── */}
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 pb-40">
-        <div className="mb-12 md:mb-20">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-            Built for speed. <br className="hidden md:block" /> Designed for power.
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl">
-            Everything you need to track, analyze, and automate your crypto portfolio in one unified workspace.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-12 gap-4 md:gap-6">
-          {features.map((f, i) => (
-            <div 
-              key={f.id}
-              className={`glass-card ${f.colSpan} p-8 md:p-10 min-h-[320px] relative overflow-hidden group`}
-            >
-              {/* Radial Hover Glow (CSS effect applied globally usually, simulated here) */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-[radial-gradient(circle_800px_at_50%_0%,rgba(94,106,210,0.06),transparent)]" />
-              
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-6 text-indigo-400">
-                  <f.icon size={20} />
+      badge: t('landing.feat1.badge'),
+      badgeColor: "#00c6ff",
+      icon: BarChart2,
+      title: t('landing.feat1.title'),
+      desc: t('landing.feat1.desc', { count: coinsStr }),
+      points: [t('landing.feat1.p1'), t('landing.feat1.p2'), t('landing.feat1.p3')],
+      mockupSide: "right",
+      mockup: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {[
+            { sym: "BTC", price: "$107,412", change: "+2.4%", up: true, bar: 82, image_url: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
+            { sym: "ETH", price: "$3,891", change: "+1.8%", up: true, bar: 71, image_url: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
+            { sym: "SOL", price: "$182", change: "-0.9%", up: false, bar: 44, image_url: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
+            { sym: "BNB", price: "$724", change: "+3.2%", up: true, bar: 60, image_url: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
+            { sym: "AVAX", price: "$38", change: "-1.5%", up: false, bar: 35, image_url: "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png" },
+          ].map((c, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 12, background: T.bg, border: `1px solid ${T.border}` }}>
+              {c.image_url ? (
+                <img src={c.image_url} alt={c.sym} style={{ width: 32, height: 32, borderRadius: "50%" }} />
+              ) : (
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(0,198,255,0.1)", border: "1px solid rgba(0,198,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#00c6ff" }}>{c.sym.slice(0,1)}</div>
+              )}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: getCoinColor(c.sym) }}>{c.sym}</div>
+                <div style={{ height: 3, width: 50, borderRadius: 2, background: T.border, marginTop: 4 }}>
+                  <motion.div 
+                    initial={{ width: 0 }} 
+                    whileInView={{ width: `${c.bar}%` }} 
+                    viewport={{ once: true }} 
+                    transition={{ duration: 1, delay: 0.2 + i * 0.1, ease: "easeOut" }}
+                    style={{ height: "100%", borderRadius: 2, background: c.up ? T.green : T.red }} 
+                  />
                 </div>
-                <h3 className="text-xl font-bold tracking-tight text-white mb-3">{f.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed max-w-[85%]">{f.desc}</p>
               </div>
-
-              {/* Decorative Image/Element */}
-              {f.img}
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary, fontFamily: "monospace" }}>{c.price}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: c.up ? T.green : T.red, fontFamily: "monospace" }}>{c.change}</div>
+              </div>
             </div>
           ))}
         </div>
-      </div>
-
-      {/* ─── BOTTOM CTA ───────────────────────────────────────────── */}
-      <div className="relative z-10 border-t border-white/[0.05] bg-[#0b0b12]">
-        <div className="max-w-[1200px] mx-auto px-6 py-24 md:py-32 flex flex-col items-center text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/[0.08] flex items-center justify-center mb-8">
-            <Shield size={28} className="text-indigo-400" />
+      ),
+    },
+    {
+      badge: t('landing.feat2.badge'),
+      badgeColor: T.purple,
+      icon: Brain,
+      title: t('landing.feat2.title'),
+      desc: t('landing.feat2.desc'),
+      points: [t('landing.feat2.p1'), t('landing.feat2.p2'), t('landing.feat2.p3')],
+      mockupSide: "left",
+      mockup: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ padding: "14px 16px", borderRadius: 12, background: "var(--accent-soft)", border: `1px solid ${T.borderFeat}` }}>
+            <div style={{ fontSize: 9, color: T.purple, fontWeight: 800, letterSpacing: ".15em", marginBottom: 8 }}>🤖 NEKO AI</div>
+            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: t('landing.feat2.mockup').replace('+18.4%', '<span style="color: #00c6ff; font-weight: 700">+18.4%</span>').replace('15%', '<span style="color: var(--accent); font-weight: 700">15%</span>').replace('%18.4', '<span style="color: #00c6ff; font-weight: 700">%18.4</span>').replace('%15', '<span style="color: var(--accent); font-weight: 700">%15</span>') }} />
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">Ready to take control?</h2>
-          <p className="text-gray-400 text-lg mb-10 max-w-xl">
-            Join thousands of traders who have upgraded their workflow. Free to start, cancel anytime.
-          </p>
-          <button 
-            onClick={() => onAuthOpen("register")}
-            className="group flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-base bg-white text-black hover:bg-gray-100 transition-all shadow-[0_0_32px_rgba(255,255,255,0.15)]"
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {[
+              { l: t('landing.feat2.m_score'), v: "87/100", c: T.green },
+              { l: t('landing.feat2.m_risk'), v: t('landing.feat2.m_risk_val'), c: "#f59e0b" },
+              { l: t('landing.feat2.m_corr'), v: "0.72", c: T.purple },
+              { l: t('landing.feat2.m_sharpe'), v: "1.84", c: "#00c6ff" },
+            ].map((s, i) => (
+              <div key={i} style={{ padding: "12px 14px", borderRadius: 10, background: T.bg, border: `1px solid ${T.border}` }}>
+                <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 4 }}>{s.l}</div>
+                <div style={{ fontSize: 17, fontWeight: 900, color: s.c, fontFamily: "monospace" }}>{s.v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      badge: t('landing.feat3.badge'),
+      badgeColor: T.green,
+      icon: Wallet,
+      title: t('landing.feat3.title'),
+      desc: t('landing.feat3.desc'),
+      points: [t('landing.feat3.p1'), t('landing.feat3.p2'), t('landing.feat3.p3')],
+      mockupSide: "right",
+      mockup: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <span style={{ fontSize: 10, color: T.textMuted, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>{t('landing.feat3.m_title')}</span>
+            <span style={{ fontSize: 10, color: T.green, fontWeight: 700, background: T.greenBg, padding: "2px 10px", borderRadius: 100, border: `1px solid ${T.greenBorder}` }}>FY 2024</span>
+          </div>
+          {[
+            { type: "BUY", asset: "BTC", amount: "+0.42", value: "$43,210", pnl: null },
+            { type: "SELL", asset: "ETH", amount: "-2.5", value: "$8,340", pnl: "+$1,240" },
+            { type: "SELL", asset: "SOL", amount: "-45", value: "$6,750", pnl: "+$3,100" },
+            { type: "BUY", asset: "BNB", amount: "+8.2", value: "$4,120", pnl: null },
+          ].map((t, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, background: T.bg, border: `1px solid ${T.border}` }}>
+              <span style={{ fontSize: 9, fontWeight: 800, padding: "2px 8px", borderRadius: 6, color: t.type === "BUY" ? T.green : T.red, background: t.type === "BUY" ? T.greenBg : T.redBg, letterSpacing: ".08em" }}>{t.type}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary }}>{t.asset} <span style={{ color: T.textMuted, fontSize: 11 }}>{t.amount}</span></div>
+                <div style={{ fontSize: 11, fontFamily: "monospace", color: T.textMuted }}>{t.value}</div>
+              </div>
+              {t.pnl && <span style={{ fontSize: 12, fontWeight: 800, color: T.green, fontFamily: "monospace" }}>{t.pnl}</span>}
+            </div>
+          ))}
+          <div style={{ padding: "12px 16px", borderRadius: 12, background: T.greenBg, border: `1px solid ${T.greenBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: T.textMuted }}>{t('landing.feat3.m_total')}</span>
+            <span style={{ fontSize: 20, fontWeight: 900, color: T.green, fontFamily: "monospace" }}>+$4,340</span>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const plans = [
+    {
+      name: t('landing.pricing.free'),
+      price: "$0",
+      sub: t('landing.pricing.free_sub'),
+      featured: false,
+      cta: t('landing.pricing.free_cta'),
+      perks: [
+        t('landing.pricing.f1', { count: coinsStr }),
+        t('landing.pricing.f2'),
+        t('landing.pricing.f3'),
+        t('landing.pricing.f4'),
+        t('landing.pricing.f5'),
+        t('landing.pricing.f6'),
+      ],
+    },
+    {
+      name: "Pro",
+      price: "$10",
+      sub: t('landing.pricing.pro_sub'),
+      featured: true,
+      cta: t('landing.pricing.pro_cta'),
+      perks: [
+        t('landing.pricing.p1'),
+        t('landing.pricing.p2'),
+        t('landing.pricing.p3'),
+        t('landing.pricing.p4'),
+        t('landing.pricing.p5'),
+        t('landing.pricing.p6'),
+        t('landing.pricing.p7'),
+      ],
+    },
+  ];
+
+  const faqs = [
+    { q: t('landing.faq.q1'), a: t('landing.faq.a1', { count: coinsStr }) },
+    { q: t('landing.faq.q2'), a: t('landing.faq.a2', { count: coinsStr }) },
+    { q: t('landing.faq.q3'), a: t('landing.faq.a3') },
+    { q: t('landing.faq.q4'), a: t('landing.faq.a4') },
+    { q: t('landing.faq.q5'), a: t('landing.faq.a5') },
+  ];
+
+  return (
+    <div className="mesh-hero" style={{ background: T.bg, color: T.textPrimary, fontFamily: "Inter, sans-serif", overflowX: "clip" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @keyframes lp-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes lp-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        @keyframes lp-ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes lp-grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+      `}</style>
+
+      {/* ─── HERO ────────────────────────────────────────────── */}
+      <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
+        {/* Background — Linear-inspired dot grid */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+          {/* Subtle dot grid */}
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
+        </div>
+
+        {/* ── Floating Coins ── */}
+        <div style={{ position: "absolute", top: 0, bottom: 0, left: "calc(-50vw + 50%)", right: "calc(-50vw + 50%)", pointerEvents: "none", overflow: "visible" }}>
+          {/* Inner wrapper must also have pointerEvents: 'none' so it doesn't block clicks beneath it */}
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+            {FLOATING_COINS.map((c) => {
+              const liveCoin = marketData?.find((m) => m.symbol === c.sym);
+              const livePrice = liveCoin 
+                ? `$${Number(liveCoin.current_price).toLocaleString(undefined, { minimumFractionDigits: liveCoin.current_price < 1 ? 2 : 0, maximumFractionDigits: liveCoin.current_price < 1 ? 6 : 2 })}` 
+                : c.price;
+              const liveChange = liveCoin 
+                ? `${liveCoin.price_change_percentage_24h > 0 ? '+' : ''}${liveCoin.price_change_percentage_24h.toFixed(1)}%` 
+                : c.change;
+              const liveUp = liveCoin ? liveCoin.price_change_percentage_24h >= 0 : c.up;
+              
+              return (
+                <FloatingCoinCard 
+                  key={c.sym} 
+                  {...c} 
+                  price={livePrice} 
+                  change={liveChange} 
+                  up={liveUp} 
+                  onClick={() => navigate(`/coin/${c.slug}`)} 
+                />
+              );
+            })}
+          </div>
+        </div>
+
+
+        {/* Live badge */}
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>{t('landing.live_tracking', { count: coinsStr })}</span>
+        </div>
+
+        {/* Headline */}
+        <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
+          <span style={{ color: T.textPrimary }}>{t('landing.hero_title_1')}<br /></span>
+          <span style={{
+            background: `linear-gradient(135deg, var(--accent) 0%, #00ffff 40%, #38bdf8 100%)`,
+            backgroundSize: "200% auto",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            animation: "lp-grad 6s linear infinite",
+          }}>
+            {t('landing.hero_title_2')}
+          </span>
+        </h1>
+
+        <p style={{ fontSize: "clamp(16px, 2.2vw, 20px)", color: T.textSecondary, maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7 }}>
+          {t('landing.hero_subtitle')}
+        </p>
+
+        {/* CTAs */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
+          {!isLoggedIn && (
+            <button
+              onClick={() => onAuthOpen?.("signup")}
+              style={{
+                padding: "14px 32px", borderRadius: 14, border: "none", cursor: "pointer",
+                background: T.purple, color: "white",
+                fontSize: 15, fontWeight: 800,
+                boxShadow: "none",
+                transition: "all 200ms ease",
+                display: "flex", alignItems: "center", gap: 8,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
+            >
+              {t('landing.cta_primary')} <ArrowRight size={16} />
+            </button>
+          )}
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{
+              padding: "14px 32px", borderRadius: 14, cursor: "pointer",
+              background: isLoggedIn ? T.purple : "transparent",
+              color: isLoggedIn ? "white" : T.textSecondary,
+              fontSize: 15, fontWeight: isLoggedIn ? 800 : 600,
+              border: isLoggedIn ? "none" : `1px solid ${T.border}`,
+              transition: "all 200ms ease",
+              boxShadow: "none",
+              display: "flex", alignItems: "center", gap: 8,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
           >
-            Start for free <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            {isLoggedIn ? t('nav.dashboard') : t('landing.cta_secondary')} {isLoggedIn && <ArrowRight size={16} />}
           </button>
         </div>
-      </div>
+        {!isLoggedIn && <div style={{ fontSize: 12, color: T.textMuted }}>{t('landing.no_credit_card')}</div>}
+
+        {/* Stat row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
+          {[
+            { v: coinsTracked, s: "+", p: "", l: t('landing.stats.coins') },
+            { v: 5, s: "+", p: "", l: t('landing.stats.ai') },
+            { v: 99, s: "%", p: "", l: t('landing.stats.uptime') },
+            { v: 0, s: "", p: "$", l: t('landing.stats.start') },
+          ].map((st, i) => (
+            <div key={i} style={{ padding: "0 clamp(20px,4vw,48px)", borderRight: i < 3 ? `1px solid ${T.border}` : "none", textAlign: "center" }}>
+              <div style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 900, color: T.purple, fontFamily: "monospace", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                <Counter to={st.v} suffix={st.s} prefix={st.p} />
+              </div>
+              <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, letterSpacing: "0.06em", textTransform: "uppercase" }}>{st.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── DASHBOARD PREVIEW ───────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 80px", maxWidth: 1000, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ position: "relative" }}>
+            <div style={{ position: "absolute", inset: -40, background: `radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 60%)`, filter: "blur(40px)", pointerEvents: "none" }} />
+            <DashboardMockup coinsStr={coinsStr} t={t} marketData={marketData} />
+          </div>
+        </Reveal>
+      </section>
+
+
+
+      {/* ─── FEATURE STICKY CARDS ────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto 160px" }}>
+        <div style={{ textAlign: "center", marginBottom: 80 }}>
+          <Reveal>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>{t('landing.features_header.badge')}</div>
+            <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0, lineHeight: 1.1 }}>
+              {t('landing.features_header.title')}<br />
+              <span style={{ color: T.textMuted }}>{t('landing.features_header.subtitle')}</span>
+            </h2>
+          </Reveal>
+        </div>
+
+        <div ref={featuresRef} style={{ position: "relative", userSelect: "none", WebkitUserSelect: "none" }}>
+          {features.map((f, i) => {
+            const Icon = f.icon;
+            const isRight = f.mockupSide === "right";
+            return (
+              <div
+                key={i}
+                className="feature-card"
+                style={{
+                  position: "sticky",
+                  top: `calc(100px + ${i * 24}px)`,
+                  marginBottom: 24,
+                  zIndex: i + 5,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 60,
+                  alignItems: "center",
+                  padding: "72px 72px",
+                  borderRadius: 36,
+                  background: `rgba(15,15,26,0.98)`,
+                  border: `1px solid ${T.border}`,
+                  boxShadow: "0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 var(--border-soft)",
+                  overflow: "hidden",
+                  transition: "transform 0.3s ease, opacity 0.3s ease",
+                  transformOrigin: "top center",
+                }}
+              >
+                {/* bg glow */}
+                <div style={{ position: "absolute", top: "-40%", left: isRight ? "-10%" : "auto", right: isRight ? "auto" : "-10%", width: "60%", height: "180%", background: `radial-gradient(circle, ${f.badgeColor}10 0%, transparent 55%)`, filter: "blur(80px)", pointerEvents: "none", zIndex: 0 }} />
+
+                {/* Text */}
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 1 : 2 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 100, background: `${f.badgeColor}12`, border: `1px solid ${f.badgeColor}35`, color: f.badgeColor, fontSize: 12, fontWeight: 800, letterSpacing: ".12em", marginBottom: 28, boxShadow: "none" }}>
+                    <Icon size={14} />{f.badge}
+                  </div>
+                  <h3 style={{ fontSize: "clamp(30px,4vw,48px)", fontWeight: 900, color: T.textPrimary, margin: "0 0 20px", letterSpacing: "-0.03em", lineHeight: 1.1 }}>{f.title}</h3>
+                  <p style={{ fontSize: "clamp(15px,1.8vw,18px)", color: T.textSecondary, lineHeight: 1.7, margin: "0 0 32px", maxWidth: 460 }}>{f.desc}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {f.points.map((pt, j) => (
+                      <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: `${f.badgeColor}15`, border: `1px solid ${f.badgeColor}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={10} style={{ color: f.badgeColor }} />
+                        </div>
+                        <span style={{ fontSize: 14, color: T.textSecondary }}>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mockup panel */}
+                <div style={{ position: "relative", zIndex: 1, order: isRight ? 2 : 1, background: "rgba(10,10,15,0.8)", border: `1px solid ${T.border}`, borderRadius: 20, padding: "20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.border}` }}>
+                    {["#ff5f57","#febc2e","#28c840"].map((c,idx) => <div key={idx} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+                    <div style={{ flex: 1, marginLeft: 6, height: 18, borderRadius: 5, background: "var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 9, color: T.textMuted }}>www.cryptoneko.online</span>
+                    </div>
+                  </div>
+                  {f.mockup}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─── PRICING ─────────────────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>{t('landing.pricing.badge')}</div>
+            <h2 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>{t('landing.pricing.title')}<br /><span style={{ color: T.textMuted }}>{t('landing.pricing.subtitle')}</span></h2>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            {plans.map((plan) => (
+              <Card key={plan.name} featured={plan.featured} style={{ padding: "40px 36px" }}>
+                {plan.featured && (
+                  <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)" }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", padding: "4px 16px", borderRadius: 100, background: T.purple, color: "white" }}>{t('landing.pricing.most_popular')}</div>
+                  </div>
+                )}
+                {/* Corner glow */}
+                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, var(--accent-soft) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
+
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? T.purple : T.textMuted, marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 32 }}>
+                    <span style={{ fontSize: 52, fontWeight: 900, color: T.textPrimary, letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
+                    <span style={{ fontSize: 16, color: T.textMuted, marginBottom: 8 }}>{plan.sub}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onAuthOpen?.("signup")}
+                    style={{
+                      width: "100%", padding: "13px", borderRadius: 12, cursor: "pointer",
+                      border: plan.featured ? "none" : `1px solid ${T.borderFeat}`,
+                      background: plan.featured ? T.purple : "transparent",
+                      color: plan.featured ? "white" : T.purple,
+                      fontSize: 14, fontWeight: 700,
+                      transition: "all 200ms ease",
+                      marginBottom: 32,
+                      boxShadow: "none",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
+                  >
+                    {plan.cta}
+                  </button>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {plan.perks.map((perk, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, background: plan.featured ? "var(--accent-soft)" : T.greenBg, border: `1px solid ${plan.featured ? T.borderFeat : T.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={10} style={{ color: plan.featured ? T.purple : T.green }} />
+                        </div>
+                        <span style={{ fontSize: 13, color: T.textSecondary }}>{perk}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ─── FAQ ─────────────────────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 740, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 16 }}>{t('landing.faq.badge')}</div>
+            <h2 style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", margin: 0 }}>{t('landing.faq.title')}</h2>
+          </div>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {faqs.map((faq, i) => <Faq key={i} {...faq} />)}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ─── FINAL CTA ───────────────────────────────────────── */}
+      <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
+        <Reveal>
+          <div style={{ position: "relative", padding: "80px 60px", borderRadius: 36, background: "var(--accent-soft)", border: `1px solid ${T.borderFeat}`, textAlign: "center", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, var(--accent-soft) 0%, transparent 60%)", filter: "blur(60px)", pointerEvents: "none" }} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: T.purple, marginBottom: 20 }}>{t('landing.cta.badge')}</div>
+              <h2 style={{ fontSize: "clamp(32px,5vw,56px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 16px" }}>{t('landing.cta.title')}</h2>
+              <p style={{ fontSize: 18, color: T.textSecondary, margin: "0 0 48px", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
+                {t('landing.cta.desc')}
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+                {!isLoggedIn ? (
+                  <button
+                    onClick={() => onAuthOpen?.("signup")}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "none", transition: "all 200ms" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
+                  >
+                    {t('landing.cta.btn1')}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    style={{ padding: "14px 36px", borderRadius: 14, border: "none", cursor: "pointer", background: T.purple, color: "white", fontSize: 15, fontWeight: 800, boxShadow: "none", transition: "all 200ms", display: "flex", alignItems: "center", gap: 8 }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = ""; }}
+                  >
+                    {t('nav.dashboard')} <ArrowRight size={16} />
+                  </button>
+                )}
+                <button
+                  onClick={() => navigate("/market")}
+                  style={{ padding: "14px 32px", borderRadius: 14, cursor: "pointer", background: "transparent", color: T.textSecondary, fontSize: 15, fontWeight: 600, border: `1px solid ${T.border}`, transition: "all 200ms" }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderFeat; e.currentTarget.style.color = T.textPrimary; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSecondary; }}
+                >
+                  {t('landing.cta.btn2')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ─── FOOTER ──────────────────────────────────────────── */}
+      <footer style={{ borderTop: `1px solid ${T.border}`, padding: "40px clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: T.purple, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/logo.png" alt="CryptoNeko" style={{ width: "100%", borderRadius: 8 }} />
+            </div>
+            <span style={{ fontSize: 14, fontWeight: 800, color: T.textPrimary }}>CryptoNeko</span>
+          </div>
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+            {[
+              { l: t('landing.footer.terms'), p: "/terms" },
+              { l: t('landing.footer.privacy'), p: "/privacy" },
+              { l: t('landing.footer.docs'), p: "/docs" },
+              { l: t('landing.footer.pricing'), p: "/pricing" },
+            ].map(link => (
+              <span key={link.l} onClick={() => navigate(link.p)} style={{ fontSize: 13, color: T.textMuted, cursor: "pointer", transition: "color 150ms" }}
+                onMouseEnter={e => e.currentTarget.style.color = T.textPrimary}
+                onMouseLeave={e => e.currentTarget.style.color = T.textMuted}>
+                {link.l}
+              </span>
+            ))}
+          </div>
+          <div 
+            style={{ fontSize: 12, color: T.textMuted, userSelect: "none" }}
+          >
+            {t('landing.footer.disclaimer')}
+          </div>
+        </div>
+      </footer>
+      
 
     </div>
   );
 }
+
