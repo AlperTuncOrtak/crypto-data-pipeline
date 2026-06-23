@@ -187,31 +187,30 @@ function NavItem({ item, isActive }) {
           display: "flex",
           alignItems: "center",
           gap: 6,
-          padding: "7px 12px",
-          borderRadius: 10,
+          padding: "6px 12px",
+          borderRadius: 8,
           cursor: "pointer",
           userSelect: "none",
           fontSize: 13,
-          fontWeight: isActive ? 600 : 500,
-          color: isActive ? "var(--accent)" : "var(--text-secondary)",
-          background: isActive ? "var(--accent-soft)" : "transparent",
-          border: isActive
-            ? "1px solid var(--accent-border)"
-            : "1px solid transparent",
-          boxShadow: "none",
-          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-          backdropFilter: isActive ? "blur(8px)" : "none",
+          fontWeight: isActive ? 500 : 400,
+          letterSpacing: "-0.01em",
+          color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+          background: isActive ? "var(--bg-hover)" : "transparent",
+          border: "1px solid transparent",
+          transition: "all 0.2s ease",
         }}
         onMouseEnter={(e) => {
           if (!isActive) {
-            e.currentTarget.style.color = "var(--accent)";
-            e.currentTarget.style.background = "var(--accent-soft)";
+            e.currentTarget.style.color = "var(--text-primary)";
+            e.currentTarget.style.background = "var(--bg-hover)";
+            e.currentTarget.style.borderColor = "var(--border)";
           }
         }}
         onMouseLeave={(e) => {
           if (!isActive) {
             e.currentTarget.style.color = "var(--text-secondary)";
             e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.borderColor = "transparent";
           }
         }}
       >
@@ -221,7 +220,7 @@ function NavItem({ item, isActive }) {
           <ChevronDown
             size={11}
             style={{
-              opacity: 0.6,
+              opacity: 0.5,
               transform: open ? "rotate(180deg)" : "rotate(0)",
               transition: "transform 0.2s ease",
             }}
@@ -233,35 +232,26 @@ function NavItem({ item, isActive }) {
         <div
           style={{
             position: "absolute",
-            top: "calc(100% + 10px)",
+            top: "calc(100% + 8px)",
             left: 0,
             zIndex: 1000,
-            borderRadius: 16,
+            borderRadius: 12,
             overflow: "hidden",
-            minWidth: 280,
-            background: "rgba(2,6,23,0.85)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid var(--border)",
-            boxShadow: "none",
+            minWidth: 272,
+            background: "rgba(18, 17, 26, 0.92)",
+            backdropFilter: "blur(28px)",
+            WebkitBackdropFilter: "blur(28px)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.04) inset",
             opacity: open ? 1 : 0,
-            transform: open
-              ? "translateY(0) scale(1)"
-              : "translateY(-6px) scale(0.97)",
+            transform: open ? "translateY(0) scale(1)" : "translateY(-6px) scale(0.97)",
             pointerEvents: open ? "auto" : "none",
-            transition:
-              "opacity 0.18s ease, transform 0.18s cubic-bezier(0.4,0,0.2,1)",
+            transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.4,0,0.2,1)",
             transformOrigin: "top left",
           }}
         >
-          {/* accent line */}
-          <div
-            style={{
-              height: 1,
-              background: "linear-gradient(90deg, var(--accent), transparent)",
-              opacity: 0.5,
-            }}
-          />
+          {/* top indigo gradient line */}
+          <div style={{ height: 1, background: "linear-gradient(90deg, var(--accent), transparent 60%)", opacity: 0.6 }} />
           <div style={{ padding: "6px" }}>
             {item.dropdown.map((sub, idx) => {
               const SubIcon = sub.Icon;
@@ -277,29 +267,29 @@ function NavItem({ item, isActive }) {
                     alignItems: "center",
                     gap: 12,
                     padding: "10px 12px",
-                    borderRadius: 10,
+                    borderRadius: 8,
                     cursor: sub.soon ? "not-allowed" : "pointer",
-                    opacity: sub.soon ? 0.4 : 1,
-                    transition: "background 0.15s",
-                    animation: open
-                      ? `fadeSlideIn 0.2s ease ${idx * 0.04}s both`
-                      : "none",
+                    opacity: sub.soon ? 0.38 : 1,
+                    transition: "background 0.2s ease, border-color 0.2s ease",
+                    border: "1px solid transparent",
+                    animation: open ? `fadeSlideIn 0.2s ease ${idx * 0.04}s both` : "none",
                   }}
                   onMouseEnter={(e) => {
-                    if (!sub.soon)
-                      e.currentTarget.style.background =
-                        "var(--border)";
+                    if (!sub.soon) {
+                      e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+                    }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.borderColor = "transparent";
                   }}
                 >
                   <div
-                    className="icon-wrap"
                     style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 9,
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
                       flexShrink: 0,
                       display: "flex",
                       alignItems: "center",
@@ -309,16 +299,15 @@ function NavItem({ item, isActive }) {
                       color: "var(--accent)",
                     }}
                   >
-                    <SubIcon size={15} />
+                    <SubIcon size={14} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 6 }}
-                    >
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span
                         style={{
                           fontSize: 13,
-                          fontWeight: 600,
+                          fontWeight: 500,
+                          letterSpacing: "-0.01em",
                           color: "var(--text-primary)",
                         }}
                       >
@@ -330,23 +319,18 @@ function NavItem({ item, isActive }) {
                             fontSize: 9,
                             padding: "1px 5px",
                             borderRadius: 4,
-                            fontWeight: 700,
-                            letterSpacing: "0.08em",
+                            fontWeight: 600,
+                            letterSpacing: "0.06em",
                             background: "var(--accent-soft)",
                             color: "var(--accent)",
+                            border: "1px solid var(--accent-border)",
                           }}
                         >
                           SOON
                         </span>
                       )}
                     </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: "var(--text-muted)",
-                        marginTop: 1,
-                      }}
-                    >
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>
                       {t(`nav.${sub.label.toLowerCase().replace(/ /g, "_")}_desc`, sub.desc)}
                     </div>
                   </div>
@@ -555,21 +539,13 @@ export default function Navbar({
 
       {/* ── MAIN NAVBAR ─────────────────────────────────────── */}
       <div
+        className="frosted"
         style={{
           position: "sticky",
           top: 0,
           zIndex: 100,
-          padding: "8px 20px",
-          transition: "all 0.3s ease",
-          background: theme === 'light'
-            ? "rgba(248, 250, 252, 0.85)"
-            : "rgba(10, 10, 11, 0.75)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: scrolled
-            ? `1px solid ${theme === 'light' ? 'rgba(15,23,42,0.08)' : 'rgba(255,255,255,0.06)'}`
-            : "1px solid transparent",
-          boxShadow: scrolled ? "0 1px 0 rgba(255,255,255,0.03)" : "none",
+          padding: "6px 20px",
+          transition: "border-color 0.2s ease",
         }}
       >
         <div
