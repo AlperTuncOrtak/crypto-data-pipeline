@@ -9,6 +9,7 @@ import { getCoinColor } from "../utils/colors";
 import { supabase } from "../lib/supabase";
 import { useMarket } from "../hooks/useMarket";
 import { apiClient } from "../api/client";
+import { useTranslation } from "react-i18next";
 import {
   PieChart,
   Pie,
@@ -965,7 +966,6 @@ function SoftCard({ children, className = "", noPadding = false }) {
 // ─────────────────────────────────────────────────────────────────
 // MAIN PORTFOLIO PAGE
 // ─────────────────────────────────────────────────────────────────
-import { useTranslation } from "react-i18next";
 
 export default function Portfolio() {
   const { t } = useTranslation();
