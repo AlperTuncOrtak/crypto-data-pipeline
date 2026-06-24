@@ -746,8 +746,10 @@ export default function Landing({ onAuthOpen }) {
             {plans.map((plan) => (
               <Card key={plan.name} featured={plan.featured} style={{ padding: plan.featured ? "48px 40px" : "36px 32px" }}>
                 {plan.featured && (
-                  <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)" }}>
-                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", padding: "4px 16px", borderRadius: 100, background: "#fff", color: "#000" }}>{t('landing.pricing.most_popular')}</div>
+                  <div style={{ position: "absolute", top: 24, right: 24 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", padding: "6px 16px", borderRadius: 100, background: "#fff", color: "#000", boxShadow: "0 4px 14px rgba(255,255,255,0.25)" }}>
+                      {t('landing.pricing.most_popular')}
+                    </div>
                   </div>
                 )}
                 {/* Corner glow */}
@@ -757,7 +759,7 @@ export default function Landing({ onAuthOpen }) {
                   <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? "#fff" : "rgba(255,255,255,0.4)", marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
                   <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 32 }}>
                     {plan.featured ? (
-                      <span style={{ fontSize: 52, fontWeight: 900, background: "linear-gradient(to right, #ffffff, #737373)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
+                      <span style={{ fontSize: 52, fontWeight: 900, background: "linear-gradient(to right, #ffffff, #888888)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
                     ) : (
                       <span style={{ fontSize: 52, fontWeight: 900, color: "rgba(255,255,255,0.4)", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
                     )}
@@ -767,28 +769,30 @@ export default function Landing({ onAuthOpen }) {
                   <button
                     onClick={() => onAuthOpen?.("signup")}
                     style={{
-                      width: "100%", padding: "13px", borderRadius: 12, cursor: "pointer",
+                      width: "100%", padding: "14px", borderRadius: 12, cursor: "pointer",
                       border: plan.featured ? "none" : `1px solid rgba(255,255,255,0.1)`,
-                      background: plan.featured ? "#fff" : "transparent",
+                      background: plan.featured ? "linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)" : "transparent",
                       color: plan.featured ? "#000" : "rgba(255,255,255,0.5)",
-                      fontSize: 14, fontWeight: 700,
+                      fontSize: 15, fontWeight: 800,
                       transition: "all 200ms ease",
                       marginBottom: 32,
-                      boxShadow: "none",
+                      boxShadow: plan.featured ? "0 4px 14px rgba(255,255,255,0.1)" : "none",
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.color = plan.featured ? "#000" : "#fff"; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.color = plan.featured ? "#000" : "rgba(255,255,255,0.5)"; }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = "0.9"; e.currentTarget.style.transform = plan.featured ? "translateY(-2px)" : "none"; e.currentTarget.style.color = plan.featured ? "#000" : "#fff"; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; e.currentTarget.style.color = plan.featured ? "#000" : "rgba(255,255,255,0.5)"; }}
                   >
                     {plan.cta}
                   </button>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ width: "100%", height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 32 }} />
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     {plan.perks.map((perk, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, opacity: plan.featured ? 1 : 0.5 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 6, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(255,255,255,0.1)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <Check size={10} color="#fff" />
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, opacity: plan.featured ? 1 : 0.5 }}>
+                        <div style={{ width: 20, height: 20, borderRadius: 6, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(255,255,255,0.1)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={12} color="#fff" />
                         </div>
-                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)" }}>{perk}</span>
+                        <span style={{ fontSize: 14, color: "rgba(255,255,255,0.8)" }}>{perk}</span>
                       </div>
                     ))}
                   </div>
