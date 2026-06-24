@@ -212,14 +212,15 @@ function Reveal({ children, delay = 0 }) {
 function Card({ children, style = {}, featured = false }) {
   const [hov, setHov] = useState(false);
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -5 }}
       style={{
         background: featured ? "rgba(18,17,26,0.9)" : "rgba(10,10,10,0.5)",
         border: `1px solid ${hov ? (featured ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)") : (featured ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)")}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
-        transition: "all 200ms ease",
+        transition: "border 200ms ease, background 200ms ease",
         boxShadow: "none",
         ...style,
       }}
@@ -227,7 +228,7 @@ function Card({ children, style = {}, featured = false }) {
       onMouseLeave={() => setHov(false)}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -741,22 +742,26 @@ export default function Landing({ onAuthOpen }) {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, alignItems: "center" }}>
             {plans.map((plan) => (
-              <Card key={plan.name} featured={plan.featured} style={{ padding: "40px 36px" }}>
+              <Card key={plan.name} featured={plan.featured} style={{ padding: plan.featured ? "48px 40px" : "36px 32px" }}>
                 {plan.featured && (
                   <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)" }}>
                     <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".1em", padding: "4px 16px", borderRadius: 100, background: "#fff", color: "#000" }}>{t('landing.pricing.most_popular')}</div>
                   </div>
                 )}
                 {/* Corner glow */}
-                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
+                {plan.featured && <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%)", filter: "blur(30px)", pointerEvents: "none" }} />}
 
                 <div style={{ position: "relative", zIndex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? "#fff" : "rgba(255,255,255,0.5)", marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: plan.featured ? "#fff" : "rgba(255,255,255,0.4)", marginBottom: 20, letterSpacing: "0.06em", textTransform: "uppercase" }}>{plan.name}</div>
                   <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 32 }}>
-                    <span style={{ fontSize: 52, fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
-                    <span style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{plan.sub}</span>
+                    {plan.featured ? (
+                      <span style={{ fontSize: 52, fontWeight: 900, background: "linear-gradient(to right, #ffffff, #737373)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
+                    ) : (
+                      <span style={{ fontSize: 52, fontWeight: 900, color: "rgba(255,255,255,0.4)", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</span>
+                    )}
+                    <span style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>{plan.sub}</span>
                   </div>
 
                   <button
@@ -765,25 +770,25 @@ export default function Landing({ onAuthOpen }) {
                       width: "100%", padding: "13px", borderRadius: 12, cursor: "pointer",
                       border: plan.featured ? "none" : `1px solid rgba(255,255,255,0.1)`,
                       background: plan.featured ? "#fff" : "transparent",
-                      color: plan.featured ? "#000" : "#fff",
+                      color: plan.featured ? "#000" : "rgba(255,255,255,0.5)",
                       fontSize: 14, fontWeight: 700,
                       transition: "all 200ms ease",
                       marginBottom: 32,
                       boxShadow: "none",
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.color = plan.featured ? "#000" : "#fff"; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.color = plan.featured ? "#000" : "rgba(255,255,255,0.5)"; }}
                   >
                     {plan.cta}
                   </button>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {plan.perks.map((perk, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, opacity: plan.featured ? 1 : 0.5 }}>
                         <div style={{ width: 18, height: 18, borderRadius: 6, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(255,255,255,0.1)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           <Check size={10} color="#fff" />
                         </div>
-                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>{perk}</span>
+                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)" }}>{perk}</span>
                       </div>
                     ))}
                   </div>

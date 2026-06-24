@@ -27,55 +27,55 @@ const IconDiscord = ({ size = 18 }) => (
 export default function Footer() {
   return (
     <footer style={{ 
-      borderTop: '1px solid var(--border)', 
+      borderTop: '1px solid rgba(255,255,255,0.05)', 
       marginTop: 'auto',
       padding: '40px 24px',
-      backgroundColor: 'transparent',
+      backgroundColor: '#000',
       position: 'relative',
       zIndex: 10
     }}>
       <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Brand */}
-        <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
            <div
             style={{
               width: 24,
               height: 24,
               borderRadius: 6,
-              background: "linear-gradient(135deg,var(--accent),#8B5CF6)",
+              background: "#fff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 12,
               fontWeight: 900,
-              color: "#111",
+              color: "#000",
             }}
           >
             N
           </div>
           <span
-            style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--text-primary)" }}
+            style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}
           >
-            Crypto<span style={{ color: "var(--accent)" }}>Neko</span>
+            Crypto<span style={{ color: "rgba(255,255,255,0.6)" }}>Neko</span>
           </span>
         </div>
 
         {/* Links */}
-        <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-          <a href="/docs" className="hover:text-[var(--accent)] transition-colors">Documentation</a>
-          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent)] transition-colors">API</a>
-          <a href="/terms" className="hover:text-[var(--accent)] transition-colors">Terms of Service</a>
-          <a href="/privacy" className="hover:text-[var(--accent)] transition-colors">Privacy Policy</a>
+        <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <a href="/docs" className="hover:text-white transition-colors">Documentation</a>
+          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">API</a>
+          <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
         </div>
 
         {/* Socials & Copyright */}
         <div className="flex flex-col items-center md:items-end gap-3">
-          <div className="flex items-center gap-5" style={{ color: 'var(--text-muted)' }}>
-            <a href="#" title="X (Twitter)" className="hover:text-[var(--accent)] transition-colors"><IconX size={18} /></a>
-            <a href="#" title="Discord" className="hover:text-[var(--accent)] transition-colors"><IconDiscord size={18} /></a>
-            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-[var(--accent)] transition-colors"><IconGithub size={18} /></a>
+          <div className="flex items-center gap-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <a href="#" title="X (Twitter)" className="hover:text-white transition-colors"><IconX size={18} /></a>
+            <a href="#" title="Discord" className="hover:text-white transition-colors"><IconDiscord size={18} /></a>
+            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-white transition-colors"><IconGithub size={18} /></a>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.6 }}>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
             © {new Date().getFullYear()} CryptoNeko. All rights reserved.
           </div>
         </div>
