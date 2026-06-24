@@ -13,22 +13,22 @@ import PriceCell from "../components/ui/PriceCell";
 
 // ─── THEME TOKENS ────────────────────────────────────────────────
 const T = {
-  bg:           "var(--bg-base)",
-  card:         "var(--bg-card)",
-  cardHov:      "var(--bg-elevated)",
-  purple:       "var(--accent)",
-  purpleLight:  "var(--accent-hover)",
-  green:        "#2dd4bf",
-  greenBg:      "rgba(45,212,191,0.1)",
-  greenBorder:  "rgba(45,212,191,0.2)",
-  red:          "#f43f5e",
-  redBg:        "rgba(244,63,94,0.1)",
-  redBorder:    "rgba(244,63,94,0.2)",
-  textPrimary:  "var(--text-primary)",
-  textSecondary:"var(--text-secondary)",
-  textMuted:    "var(--text-muted)",
-  border:       "var(--border)",
-  borderFeat:   "var(--accent-border)",
+  bg:           "#000",
+  card:         "rgba(10,10,10,0.5)",
+  cardHov:      "rgba(20,20,20,0.8)",
+  purple:       "#fff",
+  purpleLight:  "#eee",
+  green:        "#10b981",
+  greenBg:      "rgba(16,185,129,0.1)",
+  greenBorder:  "rgba(16,185,129,0.2)",
+  red:          "#ef4444",
+  redBg:        "rgba(239,68,68,0.1)",
+  redBorder:    "rgba(239,68,68,0.2)",
+  textPrimary:  "#fff",
+  textSecondary:"rgba(255,255,255,0.7)",
+  textMuted:    "rgba(255,255,255,0.5)",
+  border:       "rgba(255,255,255,0.05)",
+  borderFeat:   "rgba(255,255,255,0.15)",
 };
 
 function formatLargeNumber(n) {
@@ -81,21 +81,18 @@ function Card({ children, style = {}, featured = false, onClick }) {
   const [hov, setHov] = useState(false);
   return (
     <motion.div
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: onClick ? -2 : 0 }}
+      whileTap={onClick ? { scale: 0.98 } : {}}
       onClick={onClick}
       style={{
-        background: T.card,
-        border: `1px solid ${hov ? (featured ? "var(--accent-soft)" : "rgba(255,255,255,0.08)") : (featured ? "var(--accent-soft)" : "transparent")}`,
+        background: featured ? "rgba(15,15,15,0.9)" : T.card,
+        border: `1px solid ${hov ? (featured ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)") : (featured ? "rgba(255,255,255,0.1)" : T.border)}`,
         borderRadius: 20,
         position: "relative",
         overflow: "hidden",
-        transition: "all 200ms ease",
+        transition: "border 200ms ease, background 200ms ease",
         cursor: onClick ? "pointer" : "default",
-        ...(featured && {
-          background: "var(--accent-soft)",
-          boxShadow: "none",
-        }),
+        boxShadow: "none",
         ...(hov && !featured && { background: T.cardHov }),
         ...style,
       }}
@@ -120,7 +117,7 @@ function SectionLabel({ children }) {
 }
 
 // ─── STAT ROW ────────────────────────────────────────────────────
-function HeroStat({ label, value, sub, color = T.purple }) {
+function HeroStat({ label, value, sub }) {
   return (
     <div style={{
       flex: 1, padding: "20px 24px",
@@ -163,7 +160,7 @@ function CoinCard({ coin, navigate, featured = false }) {
       <div style={{
         position: "absolute", top: -40, right: -40,
         width: 120, height: 120, borderRadius: "50%",
-        background: `radial-gradient(circle, ${featured ? "var(--accent-soft)" : color + "15"} 0%, transparent 60%)`,
+        background: `radial-gradient(circle, ${featured ? "rgba(255,255,255,0.08)" : color + "15"} 0%, transparent 60%)`,
         filter: "blur(20px)", pointerEvents: "none",
       }} />
 
@@ -176,9 +173,10 @@ function CoinCard({ coin, navigate, featured = false }) {
             ) : (
               <div style={{
                 width: 36, height: 36, borderRadius: "50%",
-                background: `${featured ? "var(--accent-soft)" : "var(--border)"}`,
+                background: `${featured ? "#fff" : T.cardHov}`,
+                border: `1px solid ${T.border}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, fontWeight: 800, color: featured ? T.purple : T.textMuted,
+                fontSize: 13, fontWeight: 800, color: featured ? "#000" : T.textMuted,
               }}>
                 {coin.symbol?.slice(0, 1)}
               </div>
@@ -273,7 +271,7 @@ export default function Dashboard() {
       {/* ── HEADER ── */}
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: T.purple, marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#fff", opacity: 0.6, marginBottom: 8 }}>
             {t('dashboard.live_badge')}
           </div>
           <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", color: T.textPrimary, lineHeight: 1.1, margin: 0 }}>
@@ -334,9 +332,9 @@ export default function Dashboard() {
                 <SectionLabel>{t('dashboard.top10')}</SectionLabel>
                 <span
                   onClick={() => navigate("/market")}
-                  style={{ fontSize: 11, color: T.purple, cursor: "pointer", fontWeight: 700, opacity: 0.8, transition: "opacity 0.15s" }}
+                  style={{ fontSize: 11, color: "#fff", cursor: "pointer", fontWeight: 700, opacity: 0.5, transition: "opacity 0.15s" }}
                   onMouseEnter={e => e.currentTarget.style.opacity = "1"}
-                  onMouseLeave={e => e.currentTarget.style.opacity = "0.8"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "0.5"}
                 >
                   {t('dashboard.view_all')}
                 </span>
@@ -385,7 +383,7 @@ export default function Dashboard() {
                               {coin.image_url ? (
                                 <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%" }} />
                               ) : (
-                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: T.purple }}>
+                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#fff", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#000" }}>
                                   {coin.symbol?.slice(0, 1)}
                                 </div>
                               )}
@@ -489,7 +487,7 @@ export default function Dashboard() {
               justifyContent: "center", gap: 4, padding: "12px 0",
               cursor: "pointer", color: T.textMuted, transition: "color 150ms",
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = T.purple; }}
+            onMouseEnter={e => { e.currentTarget.style.color = "#fff"; }}
             onMouseLeave={e => { e.currentTarget.style.color = T.textMuted; }}
           >
             <Icon size={20} />
