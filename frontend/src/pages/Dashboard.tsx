@@ -262,7 +262,14 @@ export default function Dashboard() {
   const top4 = top10.slice(0, 4);
 
   return (
-    <div className="mesh-hero" style={{ color: T.textPrimary, fontFamily: "Inter, sans-serif" }}>
+    <div style={{ 
+      background: "#000",
+      backgroundImage: "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
+      backgroundSize: "40px 40px",
+      minHeight: "100vh", 
+      color: T.textPrimary, 
+      fontFamily: "Inter, sans-serif" 
+    }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         @keyframes dash-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
