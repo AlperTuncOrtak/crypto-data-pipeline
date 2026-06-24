@@ -50,7 +50,7 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
   onClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const accentColor = up ? "rgba(45,212,191,0.6)" : "rgba(244,63,94,0.6)";
+  const accentColor = up ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.4)";
   const isTopHalf = parseInt(top) < 30; // Check if the coin is near the top edge
 
   return (
@@ -73,8 +73,8 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
           70% { transform: translateY(-${4 + delay * 0.5}px); }
         }
         .fc-wrap-${sym} { animation: fc-float-${sym} ${dur}s ease-in-out ${delay}s infinite; }
-        @keyframes fc-reveal-up { from { opacity:0; transform:translateY(10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
-        @keyframes fc-reveal-down { from { opacity:0; transform:translateY(-10px) scale(0.93); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes fc-reveal-up { from { opacity:0; transform:translateY(10px) scale(0.93); filter: blur(4px); } to { opacity:1; transform:translateY(0) scale(1); filter: blur(0); } }
+        @keyframes fc-reveal-down { from { opacity:0; transform:translateY(-10px) scale(0.93); filter: blur(4px); } to { opacity:1; transform:translateY(0) scale(1); filter: blur(0); } }
       `}</style>
 
       <div className={`fc-wrap-${sym}`} style={{ position: "relative" }}>
@@ -84,15 +84,15 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
           width: size, height: size,
           borderRadius: "50%",
           overflow: "hidden",
-          border: `1px solid ${hovered ? accentColor : "rgba(255,255,255,0.07)"}`,
+          border: `1px solid ${hovered ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.04)"}`,
           boxShadow: hovered
-            ? `0 0 0 4px ${up ? "rgba(45,212,191,0.15)" : "rgba(244,63,94,0.15)"}, 0 8px 32px rgba(0,0,0,0.5)`
+            ? `0 0 0 4px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.5)`
             : "0 4px 20px rgba(0,0,0,0.5)",
-          filter: hovered ? "blur(0px)" : "blur(3px)",
-          opacity: hovered ? 1 : 0.55,
+          filter: hovered ? "blur(0px)" : "blur(4px)",
+          opacity: hovered ? 1 : 0.4,
           transition: "all 300ms cubic-bezier(0.16,1,0.3,1)",
           transform: hovered ? "scale(1.12)" : "scale(1)",
-          background: "rgba(11,18,39,0.6)",
+          background: "rgba(0,0,0,0.6)",
         }}>
           <img src={img} alt={sym} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         </div>
@@ -101,61 +101,59 @@ function FloatingCoinCard({ sym, name, price, change, up, img, top, left, right,
         {hovered && (
           <div style={{
             position: "absolute",
-            bottom: isTopHalf ? "auto" : `calc(100% + 10px)`,
-            top: isTopHalf ? `calc(100% + 10px)` : "auto",
-            // If coin is on the right, box extends to the left. If coin on left, box extends to the right.
+            bottom: isTopHalf ? "auto" : `calc(100% + 14px)`,
+            top: isTopHalf ? `calc(100% + 14px)` : "auto",
             left: right ? "auto" : "50%",
             right: right ? "50%" : "auto",
             transform: right ? "translateX(32px)" : "translateX(-32px)",
-            background: "rgba(18,17,26,0.85)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: `1px solid rgba(255,255,255,0.07)`,
-            borderRadius: 16,
-            padding: "16px 18px",
-            minWidth: 190,
-            boxShadow: `0 28px 64px rgba(0,0,0,0.8), 0 0 0 1px ${up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)"}`,
-            animation: `${isTopHalf ? "fc-reveal-down" : "fc-reveal-up"} 180ms cubic-bezier(0.16,1,0.3,1) forwards`,
+            background: "rgba(10,10,10,0.85)",
+            backdropFilter: "blur(40px)",
+            WebkitBackdropFilter: "blur(40px)",
+            border: `1px solid rgba(255,255,255,0.1)`,
+            borderRadius: 20,
+            padding: "16px 20px",
+            minWidth: 200,
+            boxShadow: `0 30px 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05)`,
+            animation: `${isTopHalf ? "fc-reveal-down" : "fc-reveal-up"} 200ms cubic-bezier(0.16,1,0.3,1) forwards`,
             zIndex: 20,
             pointerEvents: "none",
           }}>
             {/* Arrow */}
             <div style={{
               position: "absolute", 
-              bottom: isTopHalf ? "auto" : -6, 
-              top: isTopHalf ? -6 : "auto", 
-              // Place arrow near the coin: if coin is on the right, arrow is on the right side of the box.
-              // Box is offset by 32px. Arrow is 12px wide, so its center should be at 32px. 32px - 6px = 26px.
+              bottom: isTopHalf ? "auto" : -7, 
+              top: isTopHalf ? -7 : "auto", 
               left: right ? "auto" : "26px", 
               right: right ? "26px" : "auto",
-              width: 12, height: 6,
-              borderLeft: "6px solid transparent",
-              borderRight: "6px solid transparent",
-              borderTop: isTopHalf ? "none" : `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}`,
-              borderBottom: isTopHalf ? `6px solid ${up ? "rgba(45,212,191,0.3)" : "rgba(244,63,94,0.3)"}` : "none",
+              width: 14, height: 7,
+              borderLeft: "7px solid transparent",
+              borderRight: "7px solid transparent",
+              borderTop: isTopHalf ? "none" : `7px solid rgba(255,255,255,0.1)`,
+              borderBottom: isTopHalf ? `7px solid rgba(255,255,255,0.1)` : "none",
+              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))"
             }} />
 
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <img src={img} alt={sym} style={{ width: 34, height: 34, borderRadius: "50%", boxShadow: `0 0 12px ${up ? "rgba(45,212,191,0.4)" : "rgba(244,63,94,0.4)"}` }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+              <img src={img} alt={sym} style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)" }} />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: "#fff", letterSpacing: "0.02em" }}>{sym}</div>
-                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{name}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "0.02em" }}>{sym}</div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{name}</div>
               </div>
             </div>
 
-            <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", fontFamily: "monospace", letterSpacing: "-0.03em", marginBottom: 8 }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: "#fff", fontFamily: "monospace", letterSpacing: "-0.04em", marginBottom: 10 }}>
               {price}
             </div>
 
             <div style={{
               display: "flex", alignItems: "center", gap: 6,
-              padding: "5px 10px", borderRadius: 8,
-              background: up ? "rgba(45,212,191,0.08)" : "rgba(244,63,94,0.08)",
-              border: `1px solid ${up ? "rgba(45,212,191,0.2)" : "rgba(244,63,94,0.2)"}`,
+              padding: "6px 12px", borderRadius: 100,
+              background: "rgba(255,255,255,0.04)",
+              border: `1px solid rgba(255,255,255,0.08)`,
               width: "fit-content",
             }}>
-              <div style={{ width: 5, height: 5, borderRadius: "50%", background: up ? T.green : T.red, boxShadow: `0 0 6px ${up ? T.green : T.red}` }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: up ? T.green : T.red, fontFamily: "monospace" }}>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", background: up ? "#34d399" : "#f43f5e", boxShadow: `0 0 8px ${up ? "#34d399" : "#f43f5e"}` }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: up ? "#34d399" : "#f43f5e", fontFamily: "monospace", letterSpacing: "0.02em" }}>
                 {change} (24h)
               </span>
             </div>
@@ -498,14 +496,17 @@ export default function Landing({ onAuthOpen }) {
         @keyframes lp-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
         @keyframes lp-ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
         @keyframes lp-grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+        @keyframes system-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 12px rgba(255,255,255,0.8); } }
       `}</style>
 
       {/* ─── HERO ────────────────────────────────────────────── */}
       <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
-        {/* Background — Linear-inspired dot grid */}
+        {/* Background — Linear-inspired dot grid + Top Glow */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
           {/* Subtle dot grid */}
           <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
+          {/* Top massive white glow */}
+          <div style={{ position: "absolute", top: -300, left: "50%", transform: "translateX(-50%)", width: 800, height: 600, background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)", filter: "blur(60px)" }} />
         </div>
 
         {/* ── Floating Coins ── */}
@@ -538,16 +539,16 @@ export default function Landing({ onAuthOpen }) {
 
 
         {/* Live badge */}
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(52,211,153,0.08)", border: `1px solid ${T.greenBorder}`, marginBottom: 32, animation: "lp-pulse 3s infinite" }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, boxShadow: `0 0 8px ${T.green}` }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: T.green, letterSpacing: "0.06em" }}>{t('landing.live_tracking', { count: coinsStr })}</span>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", marginBottom: 32, backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+          <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#fff", animation: "system-pulse 2s infinite" }} />
+          <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "0.15em" }}>[ SYSTEM ONLINE ]</span>
         </div>
 
         {/* Headline */}
-        <h1 style={{ fontSize: "clamp(44px, 7vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.04em", margin: "0 0 24px" }}>
-          <span style={{ color: T.textPrimary }}>{t('landing.hero_title_1')}<br /></span>
+        <h1 style={{ fontSize: "clamp(44px, 7vw, 84px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.06em", margin: "0 0 24px" }}>
+          <span style={{ color: "#fff" }}>{t('landing.hero_title_1')}<br /></span>
           <span style={{
-            background: `linear-gradient(to bottom, #ffffff 0%, #a0a0a0 100%)`,
+            background: "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}>
@@ -555,21 +556,25 @@ export default function Landing({ onAuthOpen }) {
           </span>
         </h1>
 
-        <p style={{ fontSize: "clamp(16px, 2.2vw, 20px)", color: T.textSecondary, maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7 }}>
+        <p style={{ fontSize: "clamp(16px, 2.2vw, 20px)", color: "rgba(255,255,255,0.5)", maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7, fontWeight: 500 }}>
           {t('landing.hero_subtitle')}
         </p>
 
         {/* CTAs */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", marginBottom: 24, justifyContent: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
           {!isLoggedIn && (
             <button
               onClick={() => onAuthOpen?.("signup")}
-              className="btn-primary"
               style={{
-                padding: "12px 28px", borderRadius: "12px", border: "none", cursor: "pointer",
-                fontSize: 15, fontWeight: 600,
+                padding: "14px 32px", borderRadius: "100px", border: "none", cursor: "pointer",
+                fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em",
+                background: "#fff", color: "#000",
                 display: "flex", alignItems: "center", gap: 8,
+                transition: "all 0.2s ease",
+                boxShadow: "0 8px 32px rgba(255,255,255,0.2), inset 0 -2px 0 rgba(0,0,0,0.1)",
               }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.1)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(255,255,255,0.2), inset 0 -2px 0 rgba(0,0,0,0.1)"; }}
             >
               {t('landing.cta_primary')} <ArrowRight size={16} />
             </button>
@@ -577,22 +582,20 @@ export default function Landing({ onAuthOpen }) {
           <button
             onClick={() => navigate("/dashboard")}
             style={{
-              padding: "14px 32px", borderRadius: 14, cursor: "pointer",
-              background: isLoggedIn ? T.purple : "transparent",
-              color: isLoggedIn ? "white" : T.textSecondary,
-              fontSize: 15, fontWeight: isLoggedIn ? 800 : 600,
-              border: isLoggedIn ? "none" : `1px solid ${T.border}`,
-              transition: "all 200ms ease",
-              boxShadow: "none",
+              padding: "14px 32px", borderRadius: "100px", cursor: "pointer",
+              background: "transparent",
+              color: "rgba(255,255,255,0.6)",
+              fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em",
+              border: "1px solid transparent",
+              transition: "all 0.2s ease",
               display: "flex", alignItems: "center", gap: 8,
             }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255,255,255,0.6)"; }}
           >
             {isLoggedIn ? t('nav.dashboard') : t('landing.cta_secondary')} {isLoggedIn && <ArrowRight size={16} />}
           </button>
         </div>
-        {!isLoggedIn && <div style={{ fontSize: 12, color: T.textMuted }}>{t('landing.no_credit_card')}</div>}
 
         {/* Stat row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
