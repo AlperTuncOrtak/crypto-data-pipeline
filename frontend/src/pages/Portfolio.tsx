@@ -1054,6 +1054,16 @@ export default function Portfolio() {
   const [chartData, setChartData] = useState([]);
   const [isChartLoading, setIsChartLoading] = useState(false);
 
+  const holdings = useMemo(
+    () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
+    [trades, marketData, walletHoldings, binanceHoldings]
+  );
+  
+  const taxData = useMemo(() => calcTax(trades), [trades]);
+  const totalValue = useMemo(() => holdings.reduce((s, h) => s + h.value, 0), [holdings]);
+  const totalCost  = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
+  const totalPnl   = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
+
   useEffect(() => {
     if (holdings.length === 0) {
       setChartData([]);
@@ -1123,15 +1133,7 @@ export default function Portfolio() {
     try { localStorage.setItem("crypto_neko_trades", JSON.stringify(trades)); } catch {}
   }, [trades]);
 
-  const holdings = useMemo(
-    () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
-    [trades, marketData, walletHoldings, binanceHoldings]
-  );
-  
-  const taxData = useMemo(() => calcTax(trades), [trades]);
-  const totalValue = useMemo(() => holdings.reduce((s, h) => s + h.value, 0), [holdings]);
-  const totalCost  = useMemo(() => holdings.reduce((s, h) => s + h.cost_basis, 0), [holdings]);
-  const totalPnl   = useMemo(() => totalValue - totalCost, [totalValue, totalCost]);
+
 
   const handleGetAIInsights = async () => {
     if (holdings.length === 0) return;
