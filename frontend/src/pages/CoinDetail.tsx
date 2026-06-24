@@ -120,7 +120,7 @@ function AnimatedPrice({ current, prev, flash }) {
   const flashColor = flash === "up" ? upColor : downColor;
 
   return (
-    <span>
+    <span style={{ fontFamily: "'Inter', sans-serif" }}>
       {curAligned.split("").map((char, i) => {
         const changed = flash && char !== prvAligned[i] && char !== " " && char !== "." && char !== "$";
         return (
@@ -989,6 +989,6 @@ export default function CoinDetail() {
         <SectionTitle>{t("coin_detail.latest_news")}</SectionTitle>
         <CryptoNews symbol={coin.symbol} />
       </div>
-    </div>
+    </motion.div>
   );
 }
