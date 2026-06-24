@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useMarket, useGainers, useLosers, useVolume, useTrending, useMarketStats } from "../hooks/useMarket";
@@ -261,21 +261,50 @@ export default function Dashboard() {
   // Top 4 coins for the 2×2 grid
   const top4 = top10.slice(0, 4);
 
-  return (
-    <div style={{ 
-      background: "#000",
-      backgroundImage: "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
-      backgroundSize: "40px 40px",
-      minHeight: "100vh", 
-      color: T.textPrimary, 
-      fontFamily: "Inter, sans-serif" 
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        @keyframes dash-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-      `}</style>
+  const gridRef = useRef<HTMLDivElement>(null);
 
-      {/* ── HEADER ── */}
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!gridRef.current) return;
+      const rect = gridRef.current.parentElement?.getBoundingClientRect();
+      if (!rect) return;
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      gridRef.current.style.maskImage = `radial-gradient(circle 800px at ${x}px ${y}px, rgba(0,0,0,1), rgba(0,0,0,0.02))`;
+      gridRef.current.style.webkitMaskImage = `radial-gradient(circle 800px at ${x}px ${y}px, rgba(0,0,0,1), rgba(0,0,0,0.02))`;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  return (
+    <div style={{ position: "relative", background: "#000", minHeight: "100vh", color: T.textPrimary, fontFamily: "Inter, sans-serif", overflow: "hidden" }}>
+      {/* ── CINEMATIC RADAR GRID BACKGROUND ── */}
+      <div 
+        ref={gridRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          zIndex: 0,
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage: "radial-gradient(circle 800px at 50% 50%, rgba(0,0,0,1), rgba(0,0,0,0.02))",
+          WebkitMaskImage: "radial-gradient(circle 800px at 50% 50%, rgba(0,0,0,1), rgba(0,0,0,0.02))",
+          transition: "mask-image 0.15s ease-out, -webkit-mask-image 0.15s ease-out"
+        }} 
+      />
+
+      {/* ── MAIN CONTENT ── */}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+          @keyframes dash-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        `}</style>
+
+        {/* ── HEADER ── */}
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#fff", opacity: 0.6, marginBottom: 8 }}>
@@ -501,6 +530,7 @@ export default function Dashboard() {
             <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em" }}>{label}</span>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

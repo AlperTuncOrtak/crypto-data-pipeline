@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════
    DARK THEME — Linear.app design system
@@ -6,8 +6,8 @@
 ═══════════════════════════════════════════════════════════ */
 :root {
   /* ── Backgrounds (4-layer depth system) ── */
-  --bg-base:       #0b0b12;   /* Canvas — deepest layer           */
-  --bg-surface:    #12111a;   /* Elevated surfaces (cards, panels) */
+  --bg-base:       #000000;   /* Canvas — deepest layer           */
+  --bg-surface:    #0a0a0a;   /* Elevated surfaces (cards, panels) */
   --bg-elevated:   #161522;   /* Popovers, modals                  */
   --bg-card:       #12111a;   /* Standard card surface             */
   --bg-hover:      #1a1927;   /* Hover state for rows/items        */
