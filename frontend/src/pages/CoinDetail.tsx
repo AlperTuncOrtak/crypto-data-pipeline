@@ -34,6 +34,7 @@ import HypeRealityWidget from "../components/market/HypeRealityWidget";
 import TokenomicsWidget from "../components/market/TokenomicsWidget";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
+import { motion } from "framer-motion";
 
 const RANGES = [
   { label: "1H", value: "1h" },
@@ -150,35 +151,37 @@ function AnimatedPrice({ current, prev, flash }) {
   );
 }
 
-// ─── Stat card ───────────────────────────────────────────────
+// ─── Stat card (Glassmorphic) ──────────────────────────────────
 function StatCard({ label, value, sub, highlight, icon: Icon }) {
   return (
-    <div
-      className="glass-panel"
+    <motion.div
+      whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.06)" }}
       style={{
-        border: `1px solid ${highlight ? "var(--accent-soft)" : "var(--border)"}`,
-        borderRadius: 16,
-        padding: "16px 18px",
-        transition: "var(--transition-smooth)",
+        background: "rgba(10, 10, 10, 0.4)",
+        backdropFilter: "blur(24px)",
+        border: `1px solid ${highlight ? "var(--accent-soft)" : "rgba(255,255,255,0.05)"}`,
+        borderRadius: 20,
+        padding: "24px",
+        transition: "border 0.3s ease",
+        position: "relative",
+        overflow: "hidden"
       }}
-      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 6,
-          marginBottom: 8,
+          gap: 8,
+          marginBottom: 12,
         }}
       >
-        {Icon && <Icon size={13} style={{ color: "var(--text-muted)" }} />}
+        {Icon && <Icon size={14} style={{ color: "var(--text-muted)" }} />}
         <span
           style={{
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 600,
             textTransform: "uppercase",
-            letterSpacing: "0.08em",
+            letterSpacing: "0.1em",
             color: "var(--text-muted)",
           }}
         >
@@ -187,9 +190,10 @@ function StatCard({ label, value, sub, highlight, icon: Icon }) {
       </div>
       <div
         style={{
-          fontSize: 17,
+          fontSize: 24,
           fontWeight: 700,
-          fontFamily: "monospace",
+          fontFamily: "'Inter', sans-serif",
+          letterSpacing: "-0.02em",
           color: highlight ? "var(--accent)" : "var(--text-primary)",
           lineHeight: 1.2,
         }}
@@ -197,11 +201,11 @@ function StatCard({ label, value, sub, highlight, icon: Icon }) {
         {value}
       </div>
       {sub && (
-        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6 }}>
           {sub}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -268,10 +272,11 @@ function PriceRangeBar({ current, ath, atl, t }) {
     <div
       style={{
         marginTop: 16,
-        padding: "14px 18px",
-        background: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        borderRadius: 12,
+        padding: "20px 24px",
+        background: "rgba(10, 10, 10, 0.4)",
+        backdropFilter: "blur(24px)",
+        border: "1px solid rgba(255,255,255,0.05)",
+        borderRadius: 20,
       }}
     >
       <div
@@ -477,7 +482,26 @@ export default function CoinDetail() {
     );
 
   return (
-    <div style={{ color: "var(--text-primary)", maxWidth: 1100 }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      style={{ color: "var(--text-primary)", maxWidth: 1100, position: "relative", zIndex: 1 }}
+    >
+      {/* ── HOLOGRAPHIC AMBIENT GLOW ── */}
+      <div style={{
+        position: "absolute", top: -250, left: "50%", transform: "translateX(-50%)",
+        width: "200%", height: 700,
+        background: `radial-gradient(ellipse at top, ${brandColor} 0%, transparent 60%)`,
+        opacity: 0.15, filter: "blur(80px)", pointerEvents: "none", zIndex: -1,
+        animation: "ambient-glow 6s ease-in-out infinite alternate"
+      }} />
+      <style>{`
+        @keyframes ambient-glow { 
+          0% { opacity: 0.08; transform: translateX(-50%) scale(0.95); } 
+          100% { opacity: 0.25; transform: translateX(-50%) scale(1.05); } 
+        }
+      `}</style>
       {/* BACK */}
       <button
         onClick={() => navigate(-1)}
@@ -584,9 +608,10 @@ export default function CoinDetail() {
         <div style={{ textAlign: "right" }}>
         <div
           style={{
-            fontSize: 36,
-            fontWeight: 700,
-            fontFamily: "monospace",
+            fontSize: 48,
+            fontWeight: 800,
+            fontFamily: "'Inter', sans-serif",
+            letterSpacing: "-0.04em",
             padding: "8px 14px",
             borderRadius: 12,
             display: "inline-block",
