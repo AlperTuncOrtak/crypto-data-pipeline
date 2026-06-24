@@ -67,7 +67,7 @@ export default function AnimatedLogo() {
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 3 }}
         >
-          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--accent)" }}>
+          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>
             Crypto
           </span>
           {/* Left Paw gripping the bar (moves less than the text by animating slightly to the right to counteract the parent's left movement) */}
@@ -124,7 +124,7 @@ export default function AnimatedLogo() {
                   height: "100%", 
                   objectFit: "contain", 
                   objectPosition: "bottom",
-                  filter: "hue-rotate(90deg) saturate(1.2)" // 90deg rotation from green yields a cyan/turquoise (husky eye) color
+                  filter: "grayscale(100%) brightness(1.5)" // monochrome cat head
                 }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";

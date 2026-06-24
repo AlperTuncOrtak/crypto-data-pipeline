@@ -451,7 +451,7 @@ export default function Navbar({
       {/* ── SCROLLING STATS MARQUEE ───────────────────────────────────────── */}
       <div
         style={{
-          backgroundColor: theme === 'light' ? "#fafafa" : "#141416",
+          backgroundColor: theme === 'light' ? "#fafafa" : "#000",
           borderBottom: `1px solid var(--border)`,
           overflow: "hidden",
           whiteSpace: "nowrap",
@@ -500,7 +500,7 @@ export default function Navbar({
               </div>
               <div className="stat-item">
                 <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>BTC</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", fontFamily: "monospace" }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#fff", fontFamily: "monospace" }}>
                   {btcPrice ? `$${Number(btcPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "—"}
                 </span>
               </div>
@@ -590,36 +590,36 @@ export default function Navbar({
                 fontWeight: 500,
                 background:
                   watchlistCount > 0
-                    ? "var(--accent-soft)"
+                    ? "rgba(255,255,255,0.1)"
                     : "var(--border-soft)",
                 border:
                   watchlistCount > 0
-                    ? "1px solid var(--accent-soft)"
+                    ? "1px solid rgba(255,255,255,0.2)"
                     : "1px solid var(--border)",
                 color:
                   watchlistCount > 0
-                    ? "var(--accent)"
+                    ? "#fff"
                     : "var(--text-muted)",
                 transition: "all 0.18s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--accent-border)";
-                e.currentTarget.style.color = "var(--accent)";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)";
+                e.currentTarget.style.color = "#fff";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor =
                   watchlistCount > 0
-                    ? "var(--accent-soft)"
+                    ? "rgba(255,255,255,0.2)"
                     : "var(--border)";
                 e.currentTarget.style.color =
                   watchlistCount > 0
-                    ? "var(--accent)"
+                    ? "#fff"
                     : "var(--text-muted)";
               }}
             >
               <Star
                 size={12}
-                fill={watchlistCount > 0 ? "var(--accent)" : "none"}
+                fill={watchlistCount > 0 ? "#fff" : "none"}
               />
               <span>{t("nav.watchlist")}</span>
               {watchlistCount > 0 && (
@@ -628,8 +628,8 @@ export default function Navbar({
                     fontSize: 11,
                     fontFamily: "monospace",
                     fontWeight: 700,
-                    color: "var(--accent)",
-                    background: "var(--accent-soft)",
+                    color: "#000",
+                    background: "#fff",
                     padding: "0 5px",
                     borderRadius: 5,
                   }}
@@ -659,9 +659,9 @@ export default function Navbar({
                 flexShrink: 0,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--accent-border)";
-                e.currentTarget.style.color = "var(--accent)";
-                e.currentTarget.style.background = "var(--accent-soft)";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)";
+                e.currentTarget.style.color = "#fff";
+                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "var(--border)";
@@ -681,9 +681,9 @@ export default function Navbar({
                   gap: 8,
                   padding: "6px 12px",
                   borderRadius: 10,
-                  background: searchOpen ? "var(--accent-soft)" : "var(--border-soft)",
-                  border: `1px solid ${searchOpen ? "var(--accent-border)" : "var(--border)"}`,
-                  boxShadow: searchOpen ? "0 0 16px var(--accent-soft)" : "none",
+                  background: searchOpen ? "rgba(255,255,255,0.05)" : "var(--border-soft)",
+                  border: `1px solid ${searchOpen ? "rgba(255,255,255,0.2)" : "var(--border)"}`,
+                  boxShadow: searchOpen ? "0 0 16px rgba(255,255,255,0.05)" : "none",
                   width: searchOpen ? 220 : 110,
                   transition: "all 0.25s ease",
                 }}
@@ -780,13 +780,13 @@ export default function Navbar({
                             width: 26,
                             height: 26,
                             borderRadius: "50%",
-                            background: "var(--accent-soft)",
+                            background: "#fff",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             fontSize: 10,
                             fontWeight: 700,
-                            color: "var(--accent)",
+                            color: "#000",
                           }}
                         >
                           {coin.symbol?.slice(0, 1)}
@@ -1531,7 +1531,7 @@ export default function Navbar({
             {/* Drawer header */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 16, fontWeight: 800, color: "var(--accent)" }}>Crypto</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>Crypto</span>
                 <span style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)" }}>Neko</span>
               </div>
               <button
@@ -1560,8 +1560,8 @@ export default function Navbar({
                         padding: "12px 14px",
                         borderRadius: 12,
                         cursor: "pointer",
-                        background: isActive ? "var(--accent-soft)" : "transparent",
-                        color: isActive ? "var(--accent)" : "var(--text-secondary)",
+                        background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
+                        color: isActive ? "#fff" : "var(--text-secondary)",
                         fontWeight: isActive ? 600 : 400,
                         fontSize: 14,
                         marginBottom: 2,
@@ -1615,7 +1615,7 @@ export default function Navbar({
                   onClick={() => { onAuthOpen("login"); setMobileOpen(false); }}
                   style={{
                     padding: "11px", borderRadius: 10, width: "100%",
-                    background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
+                    background: "#fff",
                     border: "none", color: "#111", fontSize: 13, fontWeight: 700,
                     cursor: "pointer",
                   }}
