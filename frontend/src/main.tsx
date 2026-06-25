@@ -24,7 +24,7 @@ import App from './App.jsx'
 // --- WAGMI & RAINBOWKIT CONFIG ---
 const config = getDefaultConfig({
   appName: 'CryptoNeko',
-  projectId: 'a21efd965e1ce0ce6f6edb8c4c795d2c', // Replace with your WalletConnect project ID in production
+  projectId: '60d9ccc9681d82d9101fc65f31073a01', // Your personal WalletConnect project ID
   chains: [mainnet, polygon, optimism, arbitrum, base],
 });
 
