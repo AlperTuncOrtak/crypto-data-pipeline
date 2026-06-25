@@ -159,7 +159,7 @@ function WatchlistPanel({
                   padding: "1px 6px",
                   borderRadius: 999,
                   background: "var(--accent-soft)",
-                  color: getCoinColor(coin.symbol), textShadow: "none",
+                  color: "var(--accent)",
                   fontFamily: "monospace",
                 }}
               >
