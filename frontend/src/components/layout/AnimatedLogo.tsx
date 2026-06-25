@@ -97,7 +97,7 @@ export default function AnimatedLogo() {
             pointerEvents: "none",
             display: "flex",
             justifyContent: "center",
-            marginLeft: 18 // Shift cat to the right to avoid overlapping 'o'
+            marginLeft: 12 // Centered perfectly between 'Crypto' and 'Neko'
           }}>
             <motion.div
               initial={{ y: 28, opacity: 0, x: 0 }}
