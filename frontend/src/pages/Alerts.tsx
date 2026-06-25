@@ -136,7 +136,7 @@ export default function Alerts() {
         <div className="flex flex-col gap-4">
 
           {/* SUMMARY */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, var(--border-soft), transparent)' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.summary')}
             </div>
@@ -160,7 +160,7 @@ export default function Alerts() {
           </div>
 
           {/* FILTER */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, var(--border-soft), transparent)' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.filter')}
             </div>
@@ -196,7 +196,7 @@ export default function Alerts() {
           </div>
 
           {/* SORT */}
-          <div className="rounded-xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(circle at top right, var(--border-soft), transparent)' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.sort_by')}
             </div>
@@ -251,16 +251,15 @@ export default function Alerts() {
           )}
 
           {filtered.length > 0 && (
-            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 12px 48px rgba(0,0,0,0.5)' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '8px 0' }}>
 
               {/* HEADER */}
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '44px 1fr 90px 100px 72px',
-                  padding: '10px 16px',
-                  borderBottom: '1px solid var(--border)',
-                  backgroundColor: 'var(--bg-elevated)',
+                  padding: '16px 20px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
                 }}
               >
                 {['', t('alerts.col_coin'), t('alerts.col_price'), t('alerts.col_change'), t('alerts.col_type')].map((h, i) => (
@@ -297,8 +296,8 @@ export default function Alerts() {
                       display: 'grid',
                       gridTemplateColumns: '44px 1fr 90px 100px 72px',
                       alignItems: 'center',
-                      padding: '12px 16px',
-                      borderTop: idx === 0 ? 'none' : '1px solid var(--border-soft)',
+                      padding: '16px 20px',
+                      borderTop: idx === 0 ? 'none' : '1px solid rgba(255, 255, 255, 0.02)',
                       borderLeft: `3px solid ${config.border}`,
                       cursor: coin.slug ? 'pointer' : 'default',
                       transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',

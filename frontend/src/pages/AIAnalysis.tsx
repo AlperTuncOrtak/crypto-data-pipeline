@@ -356,11 +356,11 @@ function MarketContextCard({ marketContext }) {
 
   return (
     <div
-      className="rounded-2xl"
       style={{
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        padding: "20px",
+        background: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: 24,
+        padding: "24px",
       }}
     >
       <div className="flex items-center gap-2 mb-5">
@@ -655,11 +655,11 @@ function BullishnessGauge({ score }) {
 
   return (
     <div
-      className="rounded-2xl"
       style={{
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        padding: "20px",
+        background: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: 24,
+        padding: "24px",
       }}
     >
       <div className="flex items-center gap-2 mb-4">
@@ -838,11 +838,11 @@ function ActionTagsCard({ tags }) {
   if (!tags || tags.length === 0) return null;
   return (
     <div
-      className="rounded-2xl"
       style={{
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        padding: "20px",
+        background: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: 24,
+        padding: "24px",
       }}
     >
       <div className="flex items-center gap-2 mb-4">
@@ -931,11 +931,11 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
 
   return (
     <div
-      className="rounded-2xl"
       style={{
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        padding: "20px",
+        background: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: 24,
+        padding: "24px",
       }}
     >
       <div className="flex items-center justify-between mb-5">
@@ -1973,10 +1973,11 @@ export default function AIAnalysis() {
 
       {loading && (
         <div
-          className="flex flex-col items-center justify-center rounded-2xl"
+          className="flex flex-col items-center justify-center"
           style={{
-            backgroundColor: "var(--bg-surface)",
-            border: "1px solid var(--border)",
+            background: "rgba(255, 255, 255, 0.02)",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
+            borderRadius: 24,
             padding: "64px 24px",
           }}
         >
@@ -2284,11 +2285,11 @@ export default function AIAnalysis() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
             {/* Technical Indicators */}
             <div
-              className="rounded-2xl"
               style={{
-                backgroundColor: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-                padding: "20px",
+                background: "rgba(255, 255, 255, 0.02)",
+                border: "1px solid rgba(255, 255, 255, 0.06)",
+                borderRadius: 24,
+                padding: "24px",
               }}
             >
               <div className="flex items-center gap-2 mb-5">
@@ -2391,11 +2392,11 @@ export default function AIAnalysis() {
 
             {/* AI Summary */}
             <div
-              className="rounded-2xl"
               style={{
-                backgroundColor: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-                padding: "20px",
+                background: "rgba(255, 255, 255, 0.02)",
+                border: "1px solid rgba(255, 255, 255, 0.06)",
+                borderRadius: 24,
+                padding: "24px",
               }}
             >
               <div className="flex items-center gap-2 mb-5">
@@ -2459,11 +2460,11 @@ export default function AIAnalysis() {
             {/* Risk + Key Levels */}
             <div className="flex flex-col gap-4">
               <div
-                className="rounded-2xl"
                 style={{
-                  backgroundColor: "var(--bg-surface)",
-                  border: "1px solid var(--border)",
-                  padding: "20px",
+                  background: "rgba(255, 255, 255, 0.02)",
+                  border: "1px solid rgba(255, 255, 255, 0.06)",
+                  borderRadius: 24,
+                  padding: "24px",
                 }}
               >
                 <div className="flex items-center gap-2 mb-4">
@@ -2515,11 +2516,12 @@ export default function AIAnalysis() {
               </div>
 
               <div
-                className="rounded-2xl flex-1"
+                className="flex-1"
                 style={{
-                  backgroundColor: "var(--bg-surface)",
-                  border: "1px solid var(--border)",
-                  padding: "20px",
+                  background: "rgba(255, 255, 255, 0.02)",
+                  border: "1px solid rgba(255, 255, 255, 0.06)",
+                  borderRadius: 24,
+                  padding: "24px",
                 }}
               >
                 <div className="flex items-center gap-2 mb-4">

@@ -291,15 +291,15 @@ export default function Market({ isWatched, toggleWatchlist }) {
         style={{ marginBottom: 16 }}
       >
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded-xl glass-panel"
-          style={{ width: 300, transition: "var(--transition-smooth)" }}
+          className="flex items-center gap-2 px-4 py-2"
+          style={{ width: 320, transition: "var(--transition-smooth)", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", borderRadius: 16 }}
           onFocusCapture={(e) => {
             e.currentTarget.style.boxShadow = "0 0 0 2px var(--accent-soft)";
             e.currentTarget.style.borderColor = "var(--accent-border)";
           }}
           onBlurCapture={(e) => {
             e.currentTarget.style.boxShadow = "none";
-            e.currentTarget.style.borderColor = "var(--border)";
+            e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.06)";
           }}
         >
           <Search size={14} style={{ color: "var(--text-muted)" }} />
@@ -350,15 +350,13 @@ export default function Market({ isWatched, toggleWatchlist }) {
       {/* TABLE */}
       {paginated.length > 0 && (
         <div
-          className="overflow-x-auto rounded-2xl glass-panel shadow-2xl"
-          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}
+          style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", borderRadius: 24, padding: "8px 0" }}
         >
           <table className="w-full">
             <thead>
               <tr
                 style={{
-                  borderBottom: "1px solid rgba(255, 255, 255, 0.02)",
-                  backgroundColor: "var(--bg-elevated)",
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
                 }}
               >
                 <th style={{ padding: "16px 4px 16px 20px", width: 40 }}></th>

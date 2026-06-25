@@ -952,7 +952,7 @@ function SoftCard({ children, className = "", noPadding = false }) {
   return (
     <div
       className={[
-        "bg-white/[0.02] backdrop-blur-xl border border-white/[0.04] rounded-3xl",
+        "bg-white/[0.02] backdrop-blur-xl border border-white/[0.06] rounded-[24px]",
         "transition-all duration-300 ease-out overflow-hidden relative",
         noPadding ? "" : "p-6 sm:p-8",
         className,

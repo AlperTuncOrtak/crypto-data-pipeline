@@ -157,11 +157,12 @@ function StatCard({ label, value, sub, highlight, icon: Icon }) {
     <motion.div
       whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.06)" }}
       style={{
-        background: "rgba(10, 10, 10, 0.4)",
+        background: "rgba(255, 255, 255, 0.02)",
         backdropFilter: "blur(24px)",
-        border: `1px solid ${highlight ? "var(--accent-soft)" : "rgba(255,255,255,0.05)"}`,
-        borderRadius: 20,
-        padding: "24px",
+        WebkitBackdropFilter: "blur(24px)",
+        border: `1px solid ${highlight ? "var(--accent-soft)" : "rgba(255,255,255,0.06)"}`,
+        borderRadius: 24,
+        padding: "24px 32px",
         transition: "border 0.3s ease",
         position: "relative",
         overflow: "hidden"
@@ -272,11 +273,12 @@ function PriceRangeBar({ current, ath, atl, t }) {
     <div
       style={{
         marginTop: 16,
-        padding: "20px 24px",
-        background: "rgba(10, 10, 10, 0.4)",
+        padding: "24px 32px",
+        background: "rgba(255, 255, 255, 0.02)",
         backdropFilter: "blur(24px)",
-        border: "1px solid rgba(255,255,255,0.05)",
-        borderRadius: 20,
+        WebkitBackdropFilter: "blur(24px)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: 24,
       }}
     >
       <div
@@ -695,9 +697,11 @@ export default function CoinDetail() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
               background: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(255,255,255,0.05)"
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 24px 48px -12px rgba(0,0,0,0.5)"
             }}>
               {/* Blurred background mockup */}
               <div style={{ position: "absolute", inset: 0, filter: "blur(8px)", opacity: 0.4, pointerEvents: "none" }}>
@@ -742,9 +746,9 @@ export default function CoinDetail() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-          gap: 10,
-          marginBottom: 24,
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 24,
+          marginBottom: 40,
         }}
       >
         <StatCard
@@ -776,9 +780,9 @@ export default function CoinDetail() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-          gap: 10,
-          marginBottom: 24,
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 24,
+          marginBottom: 40,
         }}
       >
         <StatCard
