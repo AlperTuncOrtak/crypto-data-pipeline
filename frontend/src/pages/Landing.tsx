@@ -283,6 +283,211 @@ function Faq({ q, a }) {
   );
 }
 
+// ─── LIVE TICKER STRIP ───────────────────────────────────────────
+function TickerStrip({ marketData }) {
+  const coins = (marketData || []).slice(0, 12);
+  if (coins.length === 0) return null;
+  const items = [...coins, ...coins]; // duplicate for seamless infinite loop
+  return (
+    <div style={{
+      overflow: "hidden",
+      borderTop: "1px solid rgba(255,255,255,0.05)",
+      borderBottom: "1px solid rgba(255,255,255,0.05)",
+      padding: "14px 0",
+      background: "rgba(255,255,255,0.015)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+    }}>
+      <div style={{ display: "flex", gap: 56, width: "max-content", animation: "lp-ticker 40s linear infinite" }}>
+        {items.map((coin, i) => {
+          const up = (coin.price_change_percentage_24h ?? 0) >= 0;
+          const price = Number(coin.current_price);
+          const priceStr = price >= 1000
+            ? `$${price.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+            : price >= 1
+            ? `$${price.toFixed(2)}`
+            : `$${price.toFixed(4)}`;
+          return (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, whiteSpace: "nowrap" }}>
+              {coin.image_url && (
+                <img src={coin.image_url} alt={coin.symbol} style={{ width: 16, height: 16, borderRadius: "50%", opacity: 0.8 }} />
+              )}
+              <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", letterSpacing: "0.08em" }}>
+                {coin.symbol?.toUpperCase()}
+              </span>
+              <span style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>
+                {priceStr}
+              </span>
+              <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: up ? "#22c55e" : "#ef4444" }}>
+                {up ? "+" : ""}{(coin.price_change_percentage_24h ?? 0).toFixed(2)}%
+              </span>
+              <span style={{ color: "rgba(255,255,255,0.08)", fontSize: 14, marginLeft: 8 }}>·</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── HERO PRODUCT MOCKUP ─────────────────────────────────────────
+function HeroMockup() {
+  return (
+    <div style={{
+      perspective: 1000,
+      maxWidth: 720,
+      margin: "64px auto 0",
+      position: "relative",
+      zIndex: 2,
+    }}>
+      {/* Glow below the screen */}
+      <div style={{
+        position: "absolute",
+        bottom: -60,
+        left: "10%",
+        right: "10%",
+        height: 100,
+        background: "radial-gradient(ellipse, rgba(94,106,210,0.35) 0%, transparent 70%)",
+        filter: "blur(30px)",
+        pointerEvents: "none",
+      }} />
+      {/* Screen */}
+      <div style={{
+        background: "rgba(8,8,12,0.95)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: 20,
+        overflow: "hidden",
+        boxShadow: "0 40px 120px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.08)",
+        transform: "rotateX(4deg)",
+        transformStyle: "preserve-3d",
+      }}>
+        {/* Top bar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
+          <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.04)", marginLeft: 8 }} />
+        </div>
+        {/* Content rows */}
+        <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 8 }}>
+          {[
+            { sym: "BTC", price: "$107,412", chg: "+2.41%", up: true, w: 82 },
+            { sym: "ETH", price: "$3,891",   chg: "+1.83%", up: true,  w: 71 },
+            { sym: "SOL", price: "$182.40",  chg: "-0.92%", up: false, w: 45 },
+            { sym: "BNB", price: "$724.10",  chg: "+3.21%", up: true,  w: 61 },
+            { sym: "XRP", price: "$2.18",    chg: "+5.10%", up: true,  w: 55 },
+          ].map((row, i) => (
+            <div key={i} style={{
+              display: "grid",
+              gridTemplateColumns: "28px 1fr auto auto",
+              alignItems: "center",
+              gap: 12,
+              padding: "10px 12px",
+              borderRadius: 10,
+              background: i === 1 ? "rgba(94,106,210,0.08)" : "rgba(255,255,255,0.02)",
+              border: `1px solid ${i === 1 ? "rgba(94,106,210,0.2)" : "rgba(255,255,255,0.04)"}`,
+              transition: "all 200ms ease",
+            }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: `rgba(255,255,255,${0.04 + i * 0.01})`, border: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: "rgba(255,255,255,0.5)" }}>{row.sym[0]}</div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.9)", fontFamily: "monospace" }}>{row.sym}</div>
+                <div style={{ height: 3, width: `${row.w}%`, maxWidth: 80, borderRadius: 2, background: row.up ? "rgba(34,197,94,0.6)" : "rgba(239,68,68,0.5)", marginTop: 5 }} />
+              </div>
+              <div style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>{row.price}</div>
+              <div style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: row.up ? "#22c55e" : "#ef4444", minWidth: 54, textAlign: "right" }}>{row.chg}</div>
+            </div>
+          ))}
+        </div>
+        {/* Bottom bar */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderTop: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.01)" }}>
+          <div style={{ display: "flex", gap: 16 }}>
+            {["Market", "Portfolio", "Alerts", "AI Analysis"].map((item, i) => (
+              <span key={i} style={{ fontSize: 10, color: i === 0 ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.25)", fontWeight: i === 0 ? 700 : 400, letterSpacing: "0.06em" }}>{item}</span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 4 }}>
+            {[...Array(3)].map((_, i) => <div key={i} style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(255,255,255,0.15)" }} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── BENTO GRID SECTION ──────────────────────────────────────────
+function BentoGrid({ t }) {
+  const [hov, setHov] = useState<number | null>(null);
+  const cards = [
+    { icon: "⚡", title: "Real-time Data",      desc: "Sub-second price updates across 2,500+ assets.",                  size: "large" },
+    { icon: "🧠", title: "AI Signals",           desc: "Gemini-powered bullish/bearish analysis on demand.",              size: "small" },
+    { icon: "🔔", title: "Smart Alerts",         desc: "Instant notifications for drops, pumps & whale moves.",          size: "small" },
+    { icon: "📊", title: "Portfolio Tracker",    desc: "PnL, ROI, tax reports & CSV export. All in one place.",          size: "small" },
+    { icon: "🌍", title: "Multi-language",       desc: "Available in 8+ languages including TR, EN, DE, FR.",            size: "small" },
+    { icon: "🔒", title: "Non-custodial",        desc: "We never touch your keys. Read-only, always.",                   size: "large" },
+  ];
+
+  return (
+    <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 1100, margin: "0 auto" }}>
+      <Reveal>
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 14 }}>BUILT DIFFERENT</div>
+          <h2 style={{ fontSize: "clamp(28px,4vw,48px)", fontWeight: 900, letterSpacing: "-0.04em", margin: 0, color: "#fff", lineHeight: 1.1 }}>
+            Every feature you need.<br /><span style={{ color: "rgba(255,255,255,0.35)" }}>Nothing you don't.</span>
+          </h2>
+        </div>
+      </Reveal>
+      <Reveal delay={0.1}>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gridAutoRows: "160px",
+          gap: 12,
+        }}>
+          {cards.map((card, i) => (
+            <div
+              key={i}
+              onMouseEnter={() => setHov(i)}
+              onMouseLeave={() => setHov(null)}
+              style={{
+                gridColumn: card.size === "large" ? "span 2" : "span 1",
+                position: "relative",
+                borderRadius: 20,
+                padding: "28px 28px",
+                background: "rgba(255,255,255,0.02)",
+                border: `1px solid ${hov === i ? "rgba(94,106,210,0.4)" : "rgba(255,255,255,0.06)"}`,
+                overflow: "hidden",
+                cursor: "default",
+                transition: "border-color 300ms ease, box-shadow 300ms ease, transform 300ms ease",
+                boxShadow: hov === i ? "0 0 0 1px rgba(94,106,210,0.2), 0 20px 60px rgba(94,106,210,0.1)" : "none",
+                transform: hov === i ? "translateY(-2px)" : "none",
+              }}
+            >
+              {/* Hover glow blob */}
+              {hov === i && (
+                <div style={{
+                  position: "absolute",
+                  top: -40, right: -40,
+                  width: 200, height: 200,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(94,106,210,0.18) 0%, transparent 70%)",
+                  filter: "blur(30px)",
+                  pointerEvents: "none",
+                  transition: "opacity 300ms ease",
+                }} />
+              )}
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ fontSize: 24, marginBottom: 14 }}>{card.icon}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 8, letterSpacing: "-0.02em" }}>{card.title}</div>
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, maxWidth: 280 }}>{card.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 // ─── MAIN ────────────────────────────────────────────────────────
 export default function Landing({ onAuthOpen }) {
   const navigate = useNavigate();
@@ -539,16 +744,27 @@ export default function Landing({ onAuthOpen }) {
         @keyframes lp-ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
         @keyframes lp-grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
         @keyframes system-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 12px rgba(255,255,255,0.8); } }
+        @keyframes aurora1 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(60px,-40px) scale(1.15);} }
+        @keyframes aurora2 { 0%,100%{transform:translate(0,0) scale(1.05);} 50%{transform:translate(-50px,50px) scale(0.92);} }
+        @keyframes aurora3 { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(30px,25px) scale(1.1);} 66%{transform:translate(-25px,-15px) scale(0.95);} }
+        @keyframes hero-float { 0%,100%{transform:rotateX(4deg) translateY(0px);} 50%{transform:rotateX(4deg) translateY(-8px);} }
+        .hero-screen { animation: hero-float 6s ease-in-out infinite; }
       `}</style>
 
       {/* ─── HERO ────────────────────────────────────────────── */}
       <section style={{ position: "relative", padding: "130px clamp(20px,5vw,80px) 100px", textAlign: "center", maxWidth: 1100, margin: "0 auto" }}>
-        {/* Background — Linear-inspired dot grid + Top Glow */}
+        {/* Background — Aurora + dot grid */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          {/* Subtle dot grid */}
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
-          {/* Top massive white glow */}
-          <div style={{ position: "absolute", top: -300, left: "50%", transform: "translateX(-50%)", width: 800, height: 600, background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)", filter: "blur(60px)" }} />
+          {/* Aurora blob 1 — Indigo */}
+          <div style={{ position: "absolute", top: -200, left: -150, width: 750, height: 750, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,106,210,0.18) 0%, transparent 60%)", filter: "blur(80px)", animation: "aurora1 14s ease-in-out infinite" }} />
+          {/* Aurora blob 2 — Violet */}
+          <div style={{ position: "absolute", top: -100, right: -200, width: 650, height: 650, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 60%)", filter: "blur(80px)", animation: "aurora2 18s ease-in-out infinite" }} />
+          {/* Aurora blob 3 — deep indigo, bottom */}
+          <div style={{ position: "absolute", bottom: -100, left: "25%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,106,210,0.09) 0%, transparent 60%)", filter: "blur(100px)", animation: "aurora3 22s ease-in-out infinite" }} />
+          {/* Subtle dot grid on top */}
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)", backgroundSize: "32px 32px", maskImage: "linear-gradient(to bottom, black 20%, transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 80%)" }} />
+          {/* Top white glow */}
+          <div style={{ position: "absolute", top: -300, left: "50%", transform: "translateX(-50%)", width: 800, height: 600, background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)", filter: "blur(60px)" }} />
         </div>
 
         {/* ── Floating Coins ── */}
@@ -590,9 +806,11 @@ export default function Landing({ onAuthOpen }) {
         <h1 style={{ fontSize: "clamp(44px, 7vw, 84px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.06em", margin: "0 0 24px" }}>
           <span style={{ color: "#fff" }}>{t('landing.hero_title_1')}<br /></span>
           <span style={{
-            background: "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%)",
+            background: "linear-gradient(90deg, #5e6ad2, #7c3aed, #a78bfa, #5e6ad2)",
+            backgroundSize: "300% 100%",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
+            animation: "lp-grad 5s linear infinite",
           }}>
             {t('landing.hero_title_2')}
           </span>
@@ -639,8 +857,11 @@ export default function Landing({ onAuthOpen }) {
           </button>
         </div>
 
+        {/* Hero product mockup */}
+        <HeroMockup />
+
         {/* Stat row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 64, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginTop: 80, flexWrap: "wrap" }}>
           {[
             { v: coinsTracked, s: "+", p: "", l: t('landing.stats.coins') },
             { v: 5, s: "+", p: "", l: t('landing.stats.ai') },
@@ -657,7 +878,8 @@ export default function Landing({ onAuthOpen }) {
         </div>
       </section>
 
-
+      {/* ─── LIVE TICKER ─────────────────────────────────────── */}
+      <TickerStrip marketData={marketData} />
 
       {/* ─── FEATURE STICKY CARDS ────────────────────────────── */}
       <section style={{ padding: "0 clamp(20px,5vw,80px)", maxWidth: 1200, margin: "0 auto 160px" }}>
@@ -731,6 +953,9 @@ export default function Landing({ onAuthOpen }) {
           })}
         </div>
       </section>
+
+      {/* ─── BENTO GRID ──────────────────────────────────────── */}
+      <BentoGrid t={t} />
 
       {/* ─── PRICING ─────────────────────────────────────────── */}
       <section style={{ padding: "0 clamp(20px,5vw,80px) 120px", maxWidth: 900, margin: "0 auto" }}>
