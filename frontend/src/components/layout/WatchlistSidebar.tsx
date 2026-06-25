@@ -837,7 +837,7 @@ function AlertsPanel({ marketData, onClose }) {
                 padding: "1px 6px",
                 borderRadius: 999,
                 background: "var(--accent-soft)",
-                color: getCoinColor(coin.symbol), textShadow: "none",
+                color: "var(--accent)",
                 fontFamily: "monospace",
               }}
             >
@@ -876,7 +876,7 @@ function AlertsPanel({ marketData, onClose }) {
               borderRadius: 7,
               border: "1px solid var(--accent-soft)",
               background: "var(--accent-soft)",
-              color: getCoinColor(coin.symbol), textShadow: "none",
+              color: "var(--accent)",
               cursor: "pointer",
             }}
           >
