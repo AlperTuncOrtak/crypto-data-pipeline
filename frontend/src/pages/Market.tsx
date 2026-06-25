@@ -6,6 +6,7 @@ import Sparkline from "../components/market/Sparkline";
 import { TableRowSkeleton } from "../components/ui/Skeleton";
 import { ChevronLeft, ChevronRight, Search, Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const PAGE_SIZE = 100;
 
@@ -150,6 +151,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const revealRef = useScrollReveal();
 
   useEffect(() => {
     const sortParam = searchParams.get("sort");
@@ -271,9 +273,9 @@ export default function Market({ isWatched, toggleWatchlist }) {
   };
 
   return (
-    <div style={{ color: "var(--text-primary)" }}>
+    <div ref={revealRef} style={{ color: "var(--text-primary)" }}>
       {/* HEADER */}
-      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div className="reveal" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t("market.title")}</h1>
           <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
@@ -287,8 +289,8 @@ export default function Market({ isWatched, toggleWatchlist }) {
 
       {/* SEARCH + PAGINATION */}
       <div
-        className="flex items-center justify-between gap-4"
-        style={{ marginBottom: 16 }}
+        className="reveal flex items-center justify-between gap-4"
+        style={{ marginBottom: 16, '--reveal-delay': '80ms' }}
       >
         <div
           className="flex items-center gap-2 px-4 py-2"
@@ -350,7 +352,8 @@ export default function Market({ isWatched, toggleWatchlist }) {
       {/* TABLE */}
       {paginated.length > 0 && (
         <div
-          style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", borderRadius: 24, padding: "8px 0" }}
+          className="reveal"
+          style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", borderRadius: 24, padding: "8px 0", '--reveal-delay': '160ms' }}
         >
           <table className="w-full">
             <thead>

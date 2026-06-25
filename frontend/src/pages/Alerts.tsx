@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { TrendingDown, TrendingUp, Zap, Bell, RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PriceCell from '../components/ui/PriceCell'
+import { useScrollReveal } from '../hooks/useScrollReveal'
 
 const TYPE_CONFIG = {
   'Sharp Drop': {
@@ -39,6 +40,7 @@ export default function Alerts() {
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('severity')
   const [prevCount, setPrevCount] = useState(0)
+  const revealRef = useScrollReveal()
 
   // Custom Synth Audio Ping for new alerts
   useEffect(() => {
@@ -104,10 +106,10 @@ export default function Alerts() {
   ]
 
   return (
-    <div style={{ color: 'var(--text-primary)' }}>
+    <div ref={revealRef} style={{ color: 'var(--text-primary)' }}>
 
       {/* HEADER */}
-      <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
+      <div className="reveal flex items-center justify-between" style={{ marginBottom: 24 }}>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t('alerts.title')}</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -136,7 +138,7 @@ export default function Alerts() {
         <div className="flex flex-col gap-4">
 
           {/* SUMMARY */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px' }}>
+          <div className="reveal" style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px', '--reveal-delay': '80ms' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.summary')}
             </div>
@@ -160,7 +162,7 @@ export default function Alerts() {
           </div>
 
           {/* FILTER */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px' }}>
+          <div className="reveal" style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px', '--reveal-delay': '160ms' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.filter')}
             </div>
@@ -196,7 +198,7 @@ export default function Alerts() {
           </div>
 
           {/* SORT */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px' }}>
+          <div className="reveal" style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '24px', '--reveal-delay': '240ms' }}>
             <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 12 }}>
               {t('alerts.sort_by')}
             </div>
@@ -251,7 +253,7 @@ export default function Alerts() {
           )}
 
           {filtered.length > 0 && (
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '8px 0' }}>
+            <div className="reveal" style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 24, padding: '8px 0', '--reveal-delay': '120ms' }}>
 
               {/* HEADER */}
               <div

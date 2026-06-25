@@ -17,6 +17,7 @@ import {
   Wind,
 } from "lucide-react";
 import { apiClient } from "../api/client";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 function formatPrice(n) {
   const num = Number(n);
@@ -1056,6 +1057,7 @@ export default function AIAnalysis() {
     riskTolerance: "balanced",
     timeframe: "short",
   });
+  const revealRef = useScrollReveal();
 
   const filtered = search.trim()
     ? (marketData || [])
@@ -1099,6 +1101,7 @@ export default function AIAnalysis() {
 
   return (
     <div
+      ref={revealRef}
       style={{ color: "var(--text-primary)", maxWidth: 1100, margin: "0 auto" }}
     >
       {/* MODAL */}
@@ -1557,7 +1560,7 @@ export default function AIAnalysis() {
       )}
 
       {/* HEADER */}
-      <div style={{ marginBottom: 28 }}>
+      <div className="reveal" style={{ marginBottom: 28 }}>
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div
@@ -1630,7 +1633,7 @@ export default function AIAnalysis() {
       </div>
 
       {/* COİN SEÇİCİ */}
-      <div style={{ marginBottom: 24, position: "relative", zIndex: 100 }}>
+      <div className="reveal" style={{ marginBottom: 24, position: "relative", zIndex: 100, '--reveal-delay': '80ms' }}>
         <div
           style={{
             display: "flex",
@@ -2010,7 +2013,7 @@ export default function AIAnalysis() {
         <div className="flex flex-col gap-4">
           {/* ANA SİNYAL */}
           <div
-            className="rounded-2xl relative overflow-hidden"
+            className="reveal-scale rounded-2xl relative overflow-hidden"
             style={{
               backgroundColor: signalConfig.bg,
               border: `1px solid ${signalConfig.border}`,

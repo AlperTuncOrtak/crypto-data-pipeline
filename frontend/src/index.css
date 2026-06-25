@@ -335,7 +335,7 @@ img { max-width: 100%; height: auto; }
   .btn-group { flex-wrap: wrap; }
 }
 
-/* ��� MICRO-ANIMATIONS ��� */
+/* ✦ MICRO-ANIMATIONS ✦ */
 .btn-spring { transition: transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 150ms ease !important; }
 .btn-spring:active { transform: scale(0.94) !important; }
 .table-row-hover { transition: all 200ms ease; position: relative; }
@@ -344,3 +344,71 @@ img { max-width: 100%; height: auto; }
 @keyframes flash-red { 0% { color: #ef4444; text-shadow: 0 0 12px rgba(239,68,68,0.8); } 100% { color: inherit; text-shadow: none; } }
 .price-flash-up { animation: flash-green 1s ease-out; }
 .price-flash-down { animation: flash-red 1s ease-out; }
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL-REVEAL ANIMATION SYSTEM
+   Inspired by Raycast · Resend · Linear
+   Usage: add class "reveal" to any element.
+   Variants: reveal-left | reveal-right | reveal-scale
+   Stagger: style={{ '--reveal-delay': '100ms' }}
+═══════════════════════════════════════════════════════════ */
+
+/* Hidden state — before element enters viewport */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(20px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+/* Visible state — added by IntersectionObserver when in viewport */
+.reveal.in-view,
+.reveal-left.in-view,
+.reveal-right.in-view,
+.reveal-scale.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
