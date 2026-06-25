@@ -96,7 +96,8 @@ export default function AnimatedLogo() {
             overflow: "hidden", // masks the bottom
             pointerEvents: "none",
             display: "flex",
-            justifyContent: "center"
+            justifyContent: "center",
+            marginLeft: 18 // Shift cat to the right to avoid overlapping 'o'
           }}>
             <motion.div
               initial={{ y: 28, opacity: 0, x: 0 }}
