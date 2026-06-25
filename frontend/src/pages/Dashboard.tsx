@@ -86,8 +86,8 @@ function Card({ children, style = {}, featured = false, onClick }) {
       onClick={onClick}
       style={{
         background: featured ? "rgba(15,15,15,0.9)" : T.card,
-        border: `1px solid ${hov ? (featured ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)") : (featured ? "rgba(255,255,255,0.1)" : T.border)}`,
-        borderRadius: 20,
+        border: `1px solid ${hov ? (featured ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.15)") : (featured ? "rgba(255,255,255,0.1)" : T.border)}`,
+        borderRadius: 24,
         position: "relative",
         overflow: "hidden",
         transition: "border 200ms ease, background 200ms ease",
@@ -120,101 +120,22 @@ function SectionLabel({ children }) {
 function HeroStat({ label, value, sub }) {
   return (
     <div style={{
-      flex: 1, padding: "20px 24px",
-      borderRight: `1px solid ${T.border}`,
+      flex: 1, padding: "24px 32px", display: "flex", flexDirection: "column", gap: 8
     }}>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: T.textMuted, marginBottom: 10 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: T.textMuted }}>
         {label}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 800, color: T.textPrimary, letterSpacing: "-0.03em", lineHeight: 1 }}>
+      <div style={{ fontSize: 32, fontWeight: 500, color: T.textPrimary, letterSpacing: "-0.03em", lineHeight: 1 }}>
         {value}
       </div>
       {sub && (
-        <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>{sub}</div>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>{sub}</div>
       )}
     </div>
   );
 }
 
-// ─── COIN CARD (2x2) ─────────────────────────────────────────────
-function CoinCard({ coin, navigate, featured = false }) {
-  const change = Number(coin.price_change_percentage_24h);
-  const isPos = change >= 0;
-  const color = isPos ? T.green : T.red;
-  const bg = isPos ? T.greenBg : T.redBg;
-  const border = isPos ? T.greenBorder : T.redBorder;
 
-  // Generate fake sparkline from price change direction
-  const fakeSparkline = Array.from({ length: 16 }, (_, i) => {
-    const trend = isPos ? i * 2 : (16 - i) * 2;
-    return 40 + trend + Math.sin(i * 1.2) * 8;
-  });
-
-  return (
-    <Card
-      featured={featured}
-      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-      style={{ padding: "20px 22px" }}
-    >
-      {/* Corner glow */}
-      <div style={{
-        position: "absolute", top: -40, right: -40,
-        width: 120, height: 120, borderRadius: "50%",
-        background: `radial-gradient(circle, ${featured ? "rgba(255,255,255,0.08)" : color + "15"} 0%, transparent 60%)`,
-        filter: "blur(20px)", pointerEvents: "none",
-      }} />
-
-      <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Top row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            {coin.image_url ? (
-              <img src={coin.image_url} alt={coin.symbol} style={{ width: 36, height: 36, borderRadius: "50%" }} />
-            ) : (
-              <div style={{
-                width: 36, height: 36, borderRadius: "50%",
-                background: `${featured ? "#fff" : T.cardHov}`,
-                border: `1px solid ${T.border}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, fontWeight: 800, color: featured ? "#000" : T.textMuted,
-              }}>
-                {coin.symbol?.slice(0, 1)}
-              </div>
-            )}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: "none" }}>{coin.symbol?.toUpperCase()}</div>
-              <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
-            </div>
-          </div>
-          {/* 24h pill */}
-          <div style={{
-            fontSize: 12, fontWeight: 700, padding: "4px 10px",
-            borderRadius: 100, color, background: bg,
-            border: `1px solid ${border}`,
-            fontFamily: "monospace",
-          }}>
-            {isPos ? "▲" : "▼"} {Math.abs(change).toFixed(2)}%
-          </div>
-        </div>
-
-        {/* Price + sparkline */}
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: T.textPrimary, letterSpacing: "-0.02em", fontFamily: "monospace" }}>
-              <PriceCell price={coin.current_price} />
-            </div>
-            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 3 }}>
-              MCap: {formatLargeNumber(coin.market_cap)}
-            </div>
-          </div>
-          <Sparkline data={fakeSparkline} color={color} width={80} height={36} />
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-// AlertsWidget removed
 
 // ─── LAST UPDATED ────────────────────────────────────────────────
 function LastUpdated({ marketData }) {
@@ -257,9 +178,6 @@ export default function Dashboard() {
   const top10 = coins.length > 0
     ? [...coins].filter(c => Number(c.market_cap) > 0).sort((a, b) => Number(b.market_cap) - Number(a.market_cap)).slice(0, 10)
     : [];
-
-  // Top 4 coins for the 2×2 grid
-  const top4 = top10.slice(0, 4);
 
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -322,47 +240,29 @@ export default function Dashboard() {
 
       {/* ── HERO STAT STRIP ── */}
       <Reveal delay={0.05}>
-        <Card style={{ marginBottom: 28, padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "flex", flexWrap: "wrap" }}>
-            <HeroStat label={t('dashboard.total_mcap')} value={formatLargeNumber(allMCap)} sub={t('dashboard.assets_tracked', { count: coins.length })} />
-            <HeroStat label={t('dashboard.vol_24h')} value={formatLargeNumber(totalVolume)} sub={t('dashboard.across_pairs')} />
-            <HeroStat label={t('dashboard.btc_dom')} value={`${btcDom}%`} sub={t('dashboard.of_total')} />
-            <HeroStat label={t('dashboard.eth_dom')} value={`${ethDom}%`} sub={t('dashboard.of_total')} />
-            <div style={{ flex: 1, padding: "20px 24px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: T.textMuted, marginBottom: 10 }}>
-                {t('dashboard.coins_tracked')}
-              </div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: T.purple, letterSpacing: "-0.03em", lineHeight: 1 }}>
-                {stats.data?.coin_count || coins.length || 0}+
-              </div>
-              <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>{t('dashboard.live_data')}</div>
+        <div style={{ marginBottom: 32, display: "flex", background: T.card, border: `1px solid ${T.border}`, borderRadius: 24, overflow: "hidden" }}>
+          <HeroStat label={t('dashboard.total_mcap')} value={formatLargeNumber(allMCap)} sub={t('dashboard.assets_tracked', { count: coins.length })} />
+          <HeroStat label={t('dashboard.vol_24h')} value={formatLargeNumber(totalVolume)} sub={t('dashboard.across_pairs')} />
+          <HeroStat label={t('dashboard.btc_dom')} value={`${btcDom}%`} sub={t('dashboard.of_total')} />
+          <HeroStat label={t('dashboard.eth_dom')} value={`${ethDom}%`} sub={t('dashboard.of_total')} />
+          <div style={{ flex: 1, padding: "24px 32px", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: T.textMuted }}>
+              {t('dashboard.coins_tracked')}
             </div>
+            <div style={{ fontSize: 32, fontWeight: 500, color: "#fff", letterSpacing: "-0.03em", lineHeight: 1 }}>
+              {stats.data?.coin_count || coins.length || 0}+
+            </div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>{t('dashboard.live_data')}</div>
           </div>
-        </Card>
+        </div>
       </Reveal>
 
       {/* ── MAIN GRID ── */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 380px", gap: 20 }}>
 
-        {/* ── LEFT + CENTER: 2×2 Coin Cards ── */}
-        <div style={{ gridColumn: "1 / 3", display: "flex", flexDirection: "column", gap: 20 }}>
-
-          {/* 2×2 Coin Grid */}
+        {/* ── LEFT + CENTER: Top 10 Table ── */}
+        <div style={{ gridColumn: "1 / 3", display: "flex", flexDirection: "column" }}>
           <Reveal delay={0.1}>
-            <div>
-              <SectionLabel>{t('dashboard.featured')}</SectionLabel>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                {top4.length > 0 ? top4.map((coin, i) => (
-                  <CoinCard key={coin.symbol} coin={coin} navigate={navigate} featured={i === 0} />
-                )) : Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} style={{ height: 140, borderRadius: 20, background: T.card, border: `1px solid ${T.border}`, animation: "dash-pulse 1.5s infinite" }} />
-                ))}
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Top 10 Table */}
-          <Reveal delay={0.15}>
             <Card style={{ padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
                 <SectionLabel>{t('dashboard.top10')}</SectionLabel>
@@ -388,10 +288,10 @@ export default function Dashboard() {
                     <tr>
                       {[t('dashboard.table.rank'), t('dashboard.table.asset'), t('dashboard.table.price'), t('dashboard.table.change'), t('dashboard.table.mcap')].map((h, i) => (
                         <th key={h} style={{
-                          paddingBottom: 12, fontSize: 10, fontWeight: 700, color: T.textMuted,
-                          textTransform: "uppercase", letterSpacing: "0.08em",
+                          paddingBottom: 16, fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.4)",
+                          textTransform: "uppercase", letterSpacing: "0.15em",
                           textAlign: i <= 1 ? "left" : "right",
-                          borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
+                          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
                         }}>
                           {h}
                         </th>
@@ -411,38 +311,38 @@ export default function Dashboard() {
                           onMouseEnter={e => { e.currentTarget.style.background = T.cardHov; }}
                           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                         >
-                          <td style={{ padding: "16px 12px 16px 0", width: 28 }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, fontFamily: "monospace" }}>{idx + 1}</span>
+                          <td style={{ padding: "20px 12px 20px 0", width: 28 }}>
+                            <span style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>{idx + 1}</span>
                           </td>
-                          <td style={{ padding: "16px 0" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <td style={{ padding: "20px 0" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                               {coin.image_url ? (
-                                <img src={coin.image_url} alt={coin.symbol} style={{ width: 28, height: 28, borderRadius: "50%" }} />
+                                <img src={coin.image_url} alt={coin.symbol} style={{ width: 32, height: 32, borderRadius: "50%" }} />
                               ) : (
-                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#fff", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#000" }}>
+                                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#111", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff" }}>
                                   {coin.symbol?.slice(0, 1)}
                                 </div>
                               )}
                               <div>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: getCoinColor(coin.symbol), textShadow: "none" }}>{coin.symbol?.toUpperCase()}</div>
-                                <div style={{ fontSize: 11, color: T.textMuted }}>{coin.name}</div>
+                                <div style={{ fontSize: 15, fontWeight: 600, color: getCoinColor(coin.symbol), textShadow: "none" }}>{coin.symbol?.toUpperCase()}</div>
+                                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{coin.name}</div>
                               </div>
                             </div>
                           </td>
-                          <td style={{ padding: "12px 0", textAlign: "right", fontFamily: "monospace", fontSize: 13, color: T.textPrimary, fontWeight: 600 }}>
+                          <td style={{ padding: "20px 0", textAlign: "right", fontFamily: "monospace", fontSize: 16, color: "#fff", fontWeight: 500 }}>
                             <PriceCell price={coin.current_price} />
                           </td>
-                          <td style={{ padding: "16px 0", textAlign: "right" }}>
+                          <td style={{ padding: "20px 0", textAlign: "right" }}>
                             <span style={{
-                              fontSize: 12, fontWeight: 700, fontFamily: "monospace",
+                              fontSize: 13, fontWeight: 500, fontFamily: "monospace",
                               color: isPos ? T.green : T.red,
                               background: isPos ? "rgba(52, 211, 153, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                              padding: "3px 8px", borderRadius: 8,
+                              padding: "4px 10px", borderRadius: 8,
                             }}>
                               {isPos ? "▲" : "▼"} {Math.abs(change).toFixed(2)}%
                             </span>
                           </td>
-                          <td style={{ padding: "12px 0 12px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: T.textMuted }}>
+                          <td style={{ padding: "20px 0 20px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 14, color: "rgba(255,255,255,0.4)" }}>
                             {formatLargeNumber(coin.market_cap)}
                           </td>
                         </tr>
