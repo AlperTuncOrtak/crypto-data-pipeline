@@ -4,6 +4,7 @@
     "market": "Market",
     "alerts": "Alerts",
     "portfolio": "Portfolio",
+    "pro": "Pro",
     "ai_analysis": "AI Analysis",
     "logout": "Sign Out",
     "login": "Sign In",
@@ -656,5 +657,24 @@
     "start_free_desc": "Start with the free plan — no credit card required.",
     "get_started_free": "Get started for free →",
     "payment_error": "Payment error. Please try again or contact hello@cryptoanalytics.com"
+  },
+  "pro_page": {
+    "hero_badge": "◆ CryptoNeko Pro",
+    "hero_title1": "Be faster. Be smarter.",
+    "hero_title2": "Upgrade your trading workflow.",
+    "hero_desc": "Get advanced AI insights, unlimited price & volume alerts, collaborative portfolios, and dedicated priority WebSocket data streams.",
+    "cta_upgrade": "Upgrade to Pro",
+    "cta_pricing": "View Pricing",
+    "features_title": "Advanced tools for advanced traders",
+    "feature_ai_title": "AI Technical Analysis",
+    "feature_ai_desc": "Get instant bullish/bearish assessments based on 150+ technical indicators (RSI, MACD, Bollinger Bands) processed by Gemini AI.",
+    "feature_alerts_title": "Unlimited Smart Alerts",
+    "feature_alerts_desc": "Create unlimited real-time price, volume, and volatility alerts delivered directly to your Telegram or Discord via webhooks.",
+    "feature_portfolio_title": "Advanced Portfolio Engine",
+    "feature_portfolio_desc": "Import trades instantly from Binance, OKX, Bybit, Coinbase, and Kraken. Generate tax-compliant FIFO P&L reports.",
+    "themes_title": "Make it yours.",
+    "themes_subtitle": "Switch between sleek developer themes. Personalize your dark-mode experience.",
+    "simulator_title": "Interact with our AI Simulator",
+    "simulator_subtitle": "Click any prompt to see the intelligence engine analyze real-time market metrics in front of your eyes."
   }
 }

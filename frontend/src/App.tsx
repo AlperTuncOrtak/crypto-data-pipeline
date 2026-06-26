@@ -22,6 +22,7 @@ import CoinDetail from "./pages/CoinDetail";
 import Heatmap from "./pages/Heatmap";
 import AIAnalysis from "./pages/AIAnalysis";
 import Pricing from "./pages/Pricing";
+import Pro from "./pages/Pro";
 import Portfolio from "./pages/Portfolio";
 import CreateAlert from "./pages/CreateAlert";
 import DisclaimerModal from "./components/DisclaimerModal";
@@ -164,6 +165,7 @@ function AppInner() {
             path="/pricing"
             element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}
           />
+          <Route path="/pro" element={<Pro />} />
 
           {/* Login gerekli */}
           <Route

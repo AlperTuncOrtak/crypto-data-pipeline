@@ -4,6 +4,7 @@
     "market": "Piyasa",
     "alerts": "Alarmlar",
     "portfolio": "Portföy",
+    "pro": "Pro",
     "ai_analysis": "Yapay Zeka Analizi",
     "logout": "Çıkış Yap",
     "login": "Giriş Yap",
@@ -656,5 +657,24 @@
     "start_free_desc": "Ücretsiz planla başlayın — kredi kartı gerekmez.",
     "get_started_free": "Ücretsiz başlayın →",
     "payment_error": "Ödeme hatası. Lütfen tekrar deneyin veya hello@cryptoanalytics.com ile iletişime geçin"
+  },
+  "pro_page": {
+    "hero_badge": "◆ CryptoNeko Pro",
+    "hero_title1": "Daha hızlı. Daha akıllı.",
+    "hero_title2": "İş akışınızı bir üst seviyeye taşıyın.",
+    "hero_desc": "Gelişmiş yapay zeka analizlerine, sınırsız fiyat ve hacim alarmlarına, ortaklaşa portföylere ve öncelikli WebSocket veri akışlarına sahip olun.",
+    "cta_upgrade": "Pro'ya Yükselt",
+    "cta_pricing": "Ücretlendirmeyi Gör",
+    "features_title": "Ciddi yatırımcılar için gelişmiş araçlar",
+    "feature_ai_title": "YZ Teknik Analizi",
+    "feature_ai_desc": "Gemini YZ tarafından işlenen 150'den fazla teknik göstergeye (RSI, MACD, Bollinger Bantları) dayalı anlık boğa/ayı değerlendirmeleri alın.",
+    "feature_alerts_title": "Sınırsız Akıllı Alarmlar",
+    "feature_alerts_desc": "Doğrudan Telegram veya Discord'unuza web kancaları (webhooks) ile gönderilen sınırsız gerçek zamanlı fiyat, hacim ve volatilite alarmları oluşturun.",
+    "feature_portfolio_title": "Gelişmiş Portföy Motoru",
+    "feature_portfolio_desc": "Binance, OKX, Bybit, Coinbase ve Kraken'den işlemleri anında içe aktarın. Vergi uyumlu FIFO K/Z raporları oluşturun.",
+    "themes_title": "Kendinize göre özelleştirin.",
+    "themes_subtitle": "Şık geliştirici temaları arasında geçiş yapın. Karanlık mod deneyiminizi kişiselleştirin.",
+    "simulator_title": "YZ Simülatörümüzü Deneyimleyin",
+    "simulator_subtitle": "Yapay zeka motorunun gerçek zamanlı piyasa metriklerini gözünüzün önünde analiz etmesini izlemek için bir komut seçin."
   }
 }

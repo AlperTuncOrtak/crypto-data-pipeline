@@ -41,6 +41,7 @@ import AnimatedLogo from "./AnimatedLogo";
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
   { to: "/portfolio", label: "Portfolio", Icon: Wallet, dropdown: null },
+  { to: "/pro", label: "Pro", Icon: Crown, dropdown: null },
   {
     to: "/market",
     label: "Market",
