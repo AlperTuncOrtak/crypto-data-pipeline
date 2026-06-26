@@ -157,13 +157,14 @@ function StatCard({ label, value, sub, highlight, icon: Icon }) {
     <motion.div
       whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.06)" }}
       style={{
-        background: "rgba(255, 255, 255, 0.02)",
+        background: "var(--bg-surface)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
-        border: `1px solid ${highlight ? "var(--accent-soft)" : "rgba(255,255,255,0.06)"}`,
+        border: `1px solid ${highlight ? "var(--accent-soft)" : "var(--border)"}`,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
         borderRadius: 24,
         padding: "24px 32px",
-        transition: "border 0.3s ease",
+        transition: "all 0.3s ease",
         position: "relative",
         overflow: "hidden"
       }}
@@ -274,10 +275,11 @@ function PriceRangeBar({ current, ath, atl, t }) {
       style={{
         marginTop: 16,
         padding: "24px 32px",
-        background: "rgba(255, 255, 255, 0.02)",
+        background: "var(--bg-surface)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid var(--border)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
         borderRadius: 24,
       }}
     >
@@ -697,11 +699,11 @@ export default function CoinDetail() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              background: "rgba(255,255,255,0.02)",
+              background: "var(--bg-surface)",
               backdropFilter: "blur(24px)",
               WebkitBackdropFilter: "blur(24px)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              boxShadow: "0 24px 48px -12px rgba(0,0,0,0.5)"
+              border: "1px solid var(--border)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02), 0 24px 48px -12px rgba(0,0,0,0.5)"
             }}>
               {/* Blurred background mockup */}
               <div style={{ position: "absolute", inset: 0, filter: "blur(8px)", opacity: 0.4, pointerEvents: "none" }}>

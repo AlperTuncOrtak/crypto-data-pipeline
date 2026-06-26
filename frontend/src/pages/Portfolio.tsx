@@ -952,8 +952,8 @@ function SoftCard({ children, className = "", noPadding = false }) {
   return (
     <div
       className={[
-        "bg-white/[0.02] backdrop-blur-xl border border-white/[0.06] rounded-[24px]",
-        "transition-all duration-300 ease-out overflow-hidden relative",
+        "bg-[var(--bg-surface)] backdrop-blur-xl border border-[var(--border)] rounded-[24px]",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] transition-all duration-300 ease-out overflow-hidden relative",
         noPadding ? "" : "p-6 sm:p-8",
         className,
       ].filter(Boolean).join(" ")}

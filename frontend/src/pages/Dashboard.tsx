@@ -32,9 +32,11 @@ function fmt(n: number) {
 }
 
 const GLASS = {
-  background: "rgba(255,255,255,0.02)",
-  border: "1px solid rgba(255,255,255,0.06)",
+  background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
+  backdropFilter: "blur(20px)",
+  border: "1px solid var(--border)",
   borderRadius: 24,
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
 };
 
 // ─── SPARKLINE ───────────────────────────────────────────────
@@ -196,16 +198,28 @@ function SectionHeader({ icon: Icon, title, action, onAction }: {
         <button
           onClick={onAction}
           style={{
-            background: "none", border: "none", cursor: "pointer",
+            background: "rgba(255, 255, 255, 0.03)",
+            border: "1px solid var(--border)",
+            borderRadius: 6,
+            cursor: "pointer",
             display: "flex", alignItems: "center", gap: 4,
-            fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.35)",
-            transition: "color 150ms",
-            padding: 0,
+            fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.5)",
+            transition: "all 150ms ease",
+            padding: "4px 8px",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
           }}
-          onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}
+          onMouseEnter={e => {
+            e.currentTarget.style.color = "#fff";
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
+            e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.03)";
+            e.currentTarget.style.borderColor = "var(--border)";
+          }}
         >
-          {action} <ArrowRight size={11} />
+          {action} <ArrowRight size={10} />
         </button>
       )}
     </div>
@@ -250,14 +264,15 @@ function GlowCard({ children, style = {}, onClick, glowColor = "94,106,210" }: {
       onMouseMove={handleMouseMove}
       style={{
         position: "relative",
-        background: "rgba(255,255,255,0.02)",
-        border: `1px solid ${hov ? `rgba(${glowColor},0.35)` : "rgba(255,255,255,0.06)"}`,
+        background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid ${hov ? `rgba(${glowColor},0.2)` : "var(--border)"}`,
         borderRadius: 24,
         cursor: onClick ? "pointer" : "default",
         transition: "border-color 200ms ease, box-shadow 200ms ease",
         boxShadow: hov
-          ? `0 0 0 1px rgba(${glowColor},0.12), 0 20px 60px rgba(${glowColor},0.08)`
-          : "none",
+          ? `0 0 0 1px rgba(${glowColor},0.12), 0 20px 60px rgba(${glowColor},0.08), inset 0 1px 0 rgba(255,255,255,0.02)`
+          : "inset 0 1px 0 rgba(255,255,255,0.02)",
         overflow: "hidden",
         ...style,
       }}
@@ -351,8 +366,16 @@ export default function Dashboard() {
 
       {/* ── AURORA BACKGROUND ── */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -200, left: -150, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,106,210,0.12) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-a 16s ease-in-out infinite" }} />
-        <div style={{ position: "absolute", top: 100, right: -200, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.09) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-b 20s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", top: -200, left: -150, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,106,210,0.08) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-a 16s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", top: 100, right: -200, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-b 20s ease-in-out infinite" }} />
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          opacity: 0.6
+        }} />
       </div>
 
       {/* ── CURSOR SPOTLIGHT ── */}
@@ -379,12 +402,10 @@ export default function Dashboard() {
       <div className="reveal" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
           <h1 style={{
-            fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", margin: 0,
-            background: "linear-gradient(90deg, #fff 40%, rgba(94,106,210,0.9) 70%, #fff 100%)",
-            backgroundSize: "200% 100%",
+            fontSize: 32, fontWeight: 700, letterSpacing: "-0.04em", margin: 0,
+            background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.4) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            animation: "dash-grad 6s ease infinite",
           }}>
             Dashboard
           </h1>

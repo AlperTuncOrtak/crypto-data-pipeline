@@ -37,6 +37,7 @@ function Section({ title, icon: Icon, children }) {
     <div style={{
       background: "var(--bg-surface)", border: "1px solid var(--border)",
       borderRadius: 16, overflow: "hidden", marginBottom: 16,
+      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)"
     }}>
       <div style={{
         display: "flex", alignItems: "center", gap: 10,
