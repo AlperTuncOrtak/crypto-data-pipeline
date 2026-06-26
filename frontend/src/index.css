@@ -7,21 +7,21 @@
 :root {
   /* ── Backgrounds (4-layer depth system) ── */
   --bg-base:       #000000;   /* Canvas — deepest layer           */
-  --bg-surface:    #0a0a0a;   /* Elevated surfaces (cards, panels) */
-  --bg-elevated:   #161522;   /* Popovers, modals                  */
-  --bg-card:       #12111a;   /* Standard card surface             */
-  --bg-hover:      #1a1927;   /* Hover state for rows/items        */
+  --bg-surface:    #050505;   /* Elevated surfaces (cards, panels) */
+  --bg-elevated:   #0a0a0c;   /* Popovers, modals                  */
+  --bg-card:       #0a0a0a;   /* Standard card surface             */
+  --bg-hover:      #121212;   /* Hover state for rows/items        */
 
   /* ── Hairline Borders ── */
-  --border:        rgba(255, 255, 255, 0.07);
-  --border-soft:   rgba(255, 255, 255, 0.04);
-  --border-mid:    rgba(255, 255, 255, 0.11);
-  --border-focus:  rgba(94, 106, 210, 0.55);   /* Indigo focus ring */
+  --border:        rgba(255, 255, 255, 0.04);
+  --border-soft:   rgba(255, 255, 255, 0.02);
+  --border-mid:    rgba(255, 255, 255, 0.08);
+  --border-focus:  rgba(255, 255, 255, 0.15);
 
   /* ── Text ── */
-  --text-primary:   #e8e8f0;
-  --text-secondary: #8e8ea0;
-  --text-muted:     #52526a;
+  --text-primary:   rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted:     rgba(255, 255, 255, 0.3);
 
   /* ── Accent — Indigo/Violet #5e6ad2 ── */
   --accent:         #5e6ad2;
@@ -103,10 +103,11 @@
 
 /* Frosted nav surface — used in sticky headers / dropdowns */
 .frosted {
-  background: rgba(11, 11, 18, 0.72);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(5, 5, 5, 0.65);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
   border-bottom: 1px solid var(--border);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Mesh gradient hero background */
