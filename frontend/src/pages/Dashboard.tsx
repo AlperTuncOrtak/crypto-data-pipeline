@@ -214,7 +214,6 @@ function SectionHeader({ icon: Icon, title, action, onAction }: {
 
 // ─── LIVE BADGE ──────────────────────────────────────────────
 function LiveBadge() {
-  const [sec, setSec] = useState(0);
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
@@ -225,11 +224,92 @@ function LiveBadge() {
   );
 }
 
+// ─── GLOW CARD (Raycast-style hover border glow) ──────────────
+function GlowCard({ children, style = {}, onClick, glowColor = "94,106,210" }: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+  onClick?: () => void;
+  glowColor?: string;
+}) {
+  const [hov, setHov] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <div
+      ref={ref}
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      onMouseMove={handleMouseMove}
+      style={{
+        position: "relative",
+        background: "rgba(255,255,255,0.02)",
+        border: `1px solid ${hov ? `rgba(${glowColor},0.35)` : "rgba(255,255,255,0.06)"}`,
+        borderRadius: 24,
+        cursor: onClick ? "pointer" : "default",
+        transition: "border-color 200ms ease, box-shadow 200ms ease",
+        boxShadow: hov
+          ? `0 0 0 1px rgba(${glowColor},0.12), 0 20px 60px rgba(${glowColor},0.08)`
+          : "none",
+        overflow: "hidden",
+        ...style,
+      }}
+    >
+      {/* Spotlight inside card */}
+      {hov && (
+        <div
+          style={{
+            position: "absolute",
+            top: pos.y - 120,
+            left: pos.x - 120,
+            width: 240,
+            height: 240,
+            borderRadius: "50%",
+            background: `radial-gradient(circle, rgba(${glowColor},0.12) 0%, transparent 70%)`,
+            pointerEvents: "none",
+            zIndex: 0,
+            transition: "opacity 200ms ease",
+          }}
+        />
+      )}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN ────────────────────────────────────────────────────
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const revealRef = useScrollReveal();
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const spotRef   = useRef<HTMLDivElement>(null);
+
+  // Cursor-following spotlight
+  useEffect(() => {
+    const move = (e: MouseEvent) => {
+      if (!canvasRef.current || !spotRef.current) return;
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      spotRef.current.style.left = `${x - 300}px`;
+      spotRef.current.style.top  = `${y - 300}px`;
+      spotRef.current.style.opacity = "1";
+    };
+    const hide = () => { if (spotRef.current) spotRef.current.style.opacity = "0"; };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseleave", hide);
+    return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseleave", hide); };
+  }, []);
 
   const { data: marketData } = useMarket(500);
   const { data: gainersData } = useGainers(5);
@@ -258,15 +338,54 @@ export default function Dashboard() {
   const ethUp = ethPoints.length > 1 ? ethPoints[ethPoints.length - 1] >= ethPoints[0] : true;
 
   const fngValue = fng ? parseInt(fng.value) : null;
-
   const recentAlerts = (alertsData || []).slice(0, 4);
 
   return (
-    <div ref={revealRef} style={{ color: "var(--text-primary)" }}>
+    <div ref={canvasRef} style={{ position: "relative", color: "var(--text-primary)", overflow: "hidden" }}>
+      {/* ── CSS KEYFRAMES ── */}
+      <style>{`
+        @keyframes aurora-a { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(60px,-40px) scale(1.12);} }
+        @keyframes aurora-b { 0%,100%{transform:translate(0,0) scale(1.05);} 50%{transform:translate(-50px,50px) scale(0.92);} }
+        @keyframes dash-grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+      `}</style>
+
+      {/* ── AURORA BACKGROUND ── */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -200, left: -150, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,106,210,0.12) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-a 16s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", top: 100, right: -200, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.09) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-b 20s ease-in-out infinite" }} />
+      </div>
+
+      {/* ── CURSOR SPOTLIGHT ── */}
+      <div
+        ref={spotRef}
+        style={{
+          position: "absolute",
+          width: 600,
+          height: 600,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(94,106,210,0.07) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+          opacity: 0,
+          transition: "opacity 400ms ease",
+          filter: "blur(8px)",
+        }}
+      />
+
+      {/* ── ALL CONTENT (above aurora) ── */}
+      <div ref={revealRef} style={{ position: "relative", zIndex: 1 }}>
+
       {/* ── HEADER ── */}
       <div className="reveal" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", margin: 0, color: "#fff" }}>
+          <h1 style={{
+            fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", margin: 0,
+            background: "linear-gradient(90deg, #fff 40%, rgba(94,106,210,0.9) 70%, #fff 100%)",
+            backgroundSize: "200% 100%",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            animation: "dash-grad 6s ease infinite",
+          }}>
             Dashboard
           </h1>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
@@ -320,12 +439,11 @@ export default function Dashboard() {
           { coin: btcCoin, points: btcPoints, up: btcUp, sym: "BTC" },
           { coin: ethCoin, points: ethPoints, up: ethUp, sym: "ETH" },
         ].map(({ coin, points, up, sym }) => (
-          <div
+          <GlowCard
             key={sym}
             onClick={() => navigate(`/coin/${sym === "BTC" ? "bitcoin" : "ethereum"}`)}
-            style={{ ...GLASS, padding: "20px 24px", cursor: "pointer", transition: "border-color 200ms" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)")}
+            glowColor={up ? "34,197,94" : "239,68,68"}
+            style={{ padding: "20px 24px" }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
               <div>
@@ -350,7 +468,7 @@ export default function Dashboard() {
             <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginTop: 8, letterSpacing: "0.06em" }}>
               48h CHART
             </div>
-          </div>
+          </GlowCard>
         ))}
 
         {/* Fear & Greed */}
@@ -562,6 +680,7 @@ export default function Dashboard() {
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: "var(--accent)", flexShrink: 0 }}>
           Analiz Yap <ArrowRight size={14} />
         </div>
+      </div>
       </div>
     </div>
   );
