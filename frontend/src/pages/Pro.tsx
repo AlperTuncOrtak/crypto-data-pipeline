@@ -1,20 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Sparkles,
   Zap,
-  Terminal,
-  Cpu,
-  RefreshCw,
-  FolderSync,
-  Palette,
   Cloud,
   ArrowRight,
-  Check,
-  Star,
+  Search,
+  Command,
+  ChevronRight,
+  MessageSquare,
   Lock,
-  MessageSquare
+  Cpu,
+  Palette,
+  Terminal
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -22,60 +21,36 @@ import { useTranslation } from "react-i18next";
 const BackgroundAurora = () => {
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 }}>
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-          rotate: [0, 90, 0]
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      <div
         style={{
           position: "absolute",
-          top: "-20%",
-          left: "10%",
-          width: "60vw",
-          height: "60vw",
-          background: "radial-gradient(circle, rgba(255, 51, 102, 0.15) 0%, transparent 60%)",
-          filter: "blur(100px)",
+          top: "10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "800px",
+          height: "600px",
+          background: "radial-gradient(ellipse at center, rgba(255, 51, 102, 0.12) 0%, rgba(139, 92, 246, 0.08) 30%, transparent 70%)",
+          filter: "blur(80px)",
           borderRadius: "50%"
         }}
       />
-      <motion.div
-        animate={{
-          scale: [1, 1.5, 1],
-          opacity: [0.2, 0.4, 0.2],
-          rotate: [0, -90, 0]
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        style={{
-          position: "absolute",
-          bottom: "-10%",
-          right: "5%",
-          width: "50vw",
-          height: "50vw",
-          background: "radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%)",
-          filter: "blur(120px)",
-          borderRadius: "50%"
-        }}
-      />
-      
-      {/* Subtle Grid overlay like raycast */}
+      {/* Subtle Grain / Dot pattern overlay */}
       <div 
         style={{
           position: "absolute",
           inset: 0,
-          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-          maskImage: "linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)",
-          opacity: 0.5
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          opacity: 0.6
         }}
       />
     </div>
   );
 };
 
-// ── Bento Card (Glassmorphic) ───────────────────────────────────
+// ── Bento Card (Glassmorphic Premium) ───────────────────────────────────
 interface BentoCardProps {
   icon: any;
   title: string;
@@ -94,24 +69,25 @@ const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         position: "relative",
-        background: "rgba(20, 20, 20, 0.6)",
+        background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
         backdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: 24,
+        border: "1px solid rgba(255,255,255,0.04)",
+        borderRadius: 20,
         padding: "32px",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        gap: 16
+        gap: 16,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)"
       }}
     >
       {/* Spotlight Hover */}
@@ -121,50 +97,36 @@ const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
             position: "absolute",
             inset: 0,
             pointerEvents: "none",
-            background: `radial-gradient(400px circle at ${coords.x}px ${coords.y}px, rgba(255,255,255,0.06), transparent 80%)`,
+            background: `radial-gradient(300px circle at ${coords.x}px ${coords.y}px, rgba(255,255,255,0.03), transparent 80%)`,
             zIndex: 0
           }}
         />
       )}
-      {/* Border Hover Glow */}
-      {isHovered && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            borderRadius: 24,
-            padding: 1,
-            background: `radial-gradient(300px circle at ${coords.x}px ${coords.y}px, rgba(255, 255, 255, 0.4), transparent 80%)`,
-            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "xor",
-            maskComposite: "exclude",
-            zIndex: 1
-          }}
-        />
-      )}
+      
+      {/* Subtle top border highlight */}
+      <div style={{ position: "absolute", top: 0, left: 20, right: 20, height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)" }} />
 
       <div style={{ position: "relative", zIndex: 2 }}>
         <div
           style={{
-            width: 48,
-            height: 48,
-            borderRadius: 14,
-            background: "linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02))",
-            border: "1px solid rgba(255,255,255,0.1)",
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: "linear-gradient(180deg, rgba(40,40,40,1) 0%, rgba(20,20,20,1) 100%)",
+            border: "1px solid rgba(255,255,255,0.08)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginBottom: 20,
-            boxShadow: "0 8px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)"
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)"
           }}
         >
-          <Icon size={22} style={{ color: "#fff" }} />
+          <Icon size={20} style={{ color: "rgba(255,255,255,0.9)" }} />
         </div>
-        <h3 style={{ fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 8, letterSpacing: "-0.02em" }}>
+        <h3 style={{ fontSize: 18, fontWeight: 500, color: "#fff", marginBottom: 8, letterSpacing: "-0.01em" }}>
           {title}
         </h3>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
           {desc}
         </p>
       </div>
@@ -172,114 +134,76 @@ const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
   );
 };
 
-// ── Hero Mockup Component (Raycast Style) ──────────────────────
+// ── Raycast-like Command Mockup ──────────────────────
 const HeroMockup = () => {
   const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.5]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.98]);
 
   return (
     <motion.div 
-      style={{ y, scale, opacity }}
-      initial={{ opacity: 0, y: 100 }}
+      style={{ y, scale }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
       className="hero-mockup-wrapper"
     >
       <div 
         style={{
           width: "100%",
-          maxWidth: 900,
+          maxWidth: 720,
           margin: "0 auto",
-          background: "rgba(10, 10, 10, 0.8)",
+          background: "rgba(18, 18, 18, 0.8)",
           backdropFilter: "blur(40px)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          borderRadius: 24,
-          boxShadow: "0 30px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: 20,
+          boxShadow: "0 40px 100px -20px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           position: "relative"
         }}
       >
-        {/* Mockup Header */}
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 12 }}>
-          <Sparkles size={16} style={{ color: "#ff3366" }} />
-          <span style={{ color: "#fff", fontSize: 14, fontWeight: 500 }}>CryptoNeko AI Console</span>
+        {/* Mockup Header - Search Bar */}
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 16 }}>
+          <Search size={22} style={{ color: "rgba(255,255,255,0.4)" }} />
+          <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 22, fontWeight: 400, flex: 1, letterSpacing: "-0.02em" }}>
+            Ask CryptoNeko AI...
+          </div>
+          <div style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", padding: "4px 8px", borderRadius: 6, fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
+            <Command size={12} /> K
+          </div>
         </div>
         
-        {/* Mockup Content */}
-        <div style={{ display: "flex", padding: 24, gap: 24, height: 380 }}>
-          {/* Left Panel */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255, 153, 0, 0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 16 }}>₿</span>
-              </div>
-              <div>
-                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>Bitcoin AI Signal</div>
-                <div style={{ color: "#10b981", fontSize: 11, fontWeight: 500 }}>Strong Buy - Confidence 92%</div>
-              </div>
-            </div>
-            
-            <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(99, 102, 241, 0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 16 }}>Ξ</span>
-              </div>
-              <div>
-                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>Ethereum Analysis</div>
-                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>Analyzing smart contract volume...</div>
-              </div>
-            </div>
-            
-            <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(236, 72, 153, 0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 16 }}>◎</span>
-              </div>
-              <div>
-                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>Solana Alert</div>
-                <div style={{ color: "#ef4444", fontSize: 11 }}>Whale sell-off detected</div>
-              </div>
-            </div>
+        {/* Mockup Content - Command List */}
+        <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ padding: "0 12px", color: "rgba(255,255,255,0.3)", fontSize: 12, fontWeight: 500, marginBottom: 4, marginTop: 8 }}>
+            SUGGESTED
           </div>
           
-          {/* Right Panel (Terminal) */}
-          <div style={{ flex: 1.5, background: "#050505", borderRadius: 16, border: "1px solid rgba(255,255,255,0.08)", padding: 20, fontFamily: "monospace", display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 16 }}>// AI Market Analysis Stream</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-              <div style={{ color: "#e2e8f0", fontSize: 13, display: "flex", gap: 8 }}>
-                <span style={{ color: "#ff3366" }}>{">"}</span>
-                <span>Initializing deep learning models... [OK]</span>
-              </div>
-              <div style={{ color: "#e2e8f0", fontSize: 13, display: "flex", gap: 8 }}>
-                <span style={{ color: "#ff3366" }}>{">"}</span>
-                <span>Scanning order books across 14 exchanges... [OK]</span>
-              </div>
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
-                style={{ color: "#10b981", fontSize: 13, display: "flex", gap: 8, marginTop: 8 }}
-              >
-                <span style={{ color: "#10b981" }}>$</span>
-                <span>Opportunity Found: BTC/USDT Arbitrage</span>
-              </motion.div>
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.5, duration: 0.5 }}
-                style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, paddingLeft: 16 }}
-              >
-                Expected yield: 0.8% • Execution time: 1.2s<br/>
-                Auto-execute enabled via Pro API.
-              </motion.div>
-              <motion.div 
-                animate={{ opacity: [1, 0, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-                style={{ width: 8, height: 16, background: "#ff3366", marginTop: 8 }}
-              />
+          <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, border: "1px solid rgba(255,255,255,0.02)" }}>
+            <div style={{ background: "linear-gradient(135deg, #ff3366, #ff7733)", padding: 6, borderRadius: 8 }}>
+              <Sparkles size={16} style={{ color: "#fff" }} />
             </div>
+            <div style={{ color: "#fff", fontSize: 15, fontWeight: 500 }}>Analyze BTC Technicals</div>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
+              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Pro Feature</span>
+              <kbd style={{ background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: 4, fontSize: 12, color: "rgba(255,255,255,0.6)", minWidth: 20, textAlign: "center" }}>↵</kbd>
+            </div>
+          </div>
+
+          <div style={{ borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, transition: "background 0.2s" }}>
+            <div style={{ background: "rgba(255,255,255,0.1)", padding: 6, borderRadius: 8 }}>
+              <MessageSquare size={16} style={{ color: "rgba(255,255,255,0.8)" }} />
+            </div>
+            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, fontWeight: 500 }}>Summarize Market Sentiment</div>
+          </div>
+          
+          <div style={{ borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ background: "rgba(255,255,255,0.1)", padding: 6, borderRadius: 8 }}>
+              <Zap size={16} style={{ color: "rgba(255,255,255,0.8)" }} />
+            </div>
+            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, fontWeight: 500 }}>Check Whale Alert Anomalies</div>
           </div>
         </div>
       </div>
@@ -300,45 +224,45 @@ export default function Pro() {
         minHeight: "100vh",
         color: "#ffffff",
         overflowX: "hidden",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
         paddingBottom: 120
       }}
     >
       <BackgroundAurora />
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto", padding: "0 24px" }}>
         
         {/* ── HERO SECTION ── */}
-        <div style={{ paddingTop: 140, paddingBottom: 100, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ paddingTop: 160, paddingBottom: 100, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
           
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
-              padding: "6px 16px",
+              padding: "6px 14px",
               borderRadius: 999,
-              background: "rgba(255, 51, 102, 0.1)",
-              border: "1px solid rgba(255, 51, 102, 0.2)",
+              background: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
               marginBottom: 32,
-              boxShadow: "0 0 20px rgba(255, 51, 102, 0.1)"
             }}
           >
-            <Star size={14} style={{ color: "#ff3366", fill: "#ff3366" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#ff3366", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-              {t("pro_page.hero_badge") || "CryptoNeko Pro"}
+            <Sparkles size={14} style={{ color: "rgba(255,255,255,0.8)" }} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.9)", letterSpacing: "0.02em" }}>
+              {t("pro_page.hero_badge") || "Introducing CryptoNeko Pro"}
             </span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontSize: "clamp(48px, 6vw, 80px)",
-              fontWeight: 800,
+              fontSize: "clamp(56px, 7vw, 88px)",
+              fontWeight: 700,
               letterSpacing: "-0.04em",
               lineHeight: 1.05,
               marginBottom: 24,
@@ -349,7 +273,7 @@ export default function Pro() {
             <br />
             <span
               style={{
-                background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.5) 100%)",
+                background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.4) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent"
               }}
@@ -361,49 +285,48 @@ export default function Pro() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontSize: 20,
+              fontSize: 21,
               color: "rgba(255,255,255,0.5)",
-              maxWidth: 600,
+              maxWidth: 580,
               margin: "0 auto 48px",
               lineHeight: 1.5,
-              letterSpacing: "-0.01em"
+              letterSpacing: "-0.01em",
+              fontWeight: 400
             }}
           >
-            {t("pro_page.hero_desc") || "Supercharge your trading with predictive AI, custom themes, and lightning-fast real-time webhooks. Built for professionals."}
+            {t("pro_page.hero_desc") || "Supercharge your workflow with predictive AI, custom themes, and lightning-fast real-time data integrations."}
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             style={{ display: "flex", alignItems: "center", gap: 16 }}
           >
             <button
               onClick={() => navigate("/pricing")}
               style={{
-                padding: "14px 32px",
+                padding: "14px 28px",
                 borderRadius: 999,
                 background: "#ffffff",
                 color: "#000000",
                 fontWeight: 600,
-                fontSize: 16,
+                fontSize: 15,
                 border: "none",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
                 transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                boxShadow: "0 0 40px rgba(255, 255, 255, 0.2)"
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 8px 20px -8px rgba(255,255,255,0.4)"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = "0 0 60px rgba(255, 255, 255, 0.4)";
+                e.currentTarget.style.transform = "scale(1.03)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "0 0 40px rgba(255, 255, 255, 0.2)";
               }}
             >
               Get Pro <ArrowRight size={16} />
@@ -411,18 +334,22 @@ export default function Pro() {
             <button
               onClick={() => navigate("/pricing")}
               style={{
-                padding: "14px 32px",
+                padding: "14px 28px",
                 borderRadius: 999,
-                background: "transparent",
+                background: "rgba(255,255,255,0.03)",
                 color: "#ffffff",
-                fontWeight: 600,
-                fontSize: 16,
-                border: "1px solid rgba(255,255,255,0.2)",
+                fontWeight: 500,
+                fontSize: 15,
+                border: "1px solid rgba(255,255,255,0.1)",
                 cursor: "pointer",
-                transition: "background 0.2s"
+                transition: "all 0.2s"
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+              }}
             >
               View Pricing
             </button>
@@ -433,18 +360,19 @@ export default function Pro() {
         <HeroMockup />
 
         {/* ── BENTO GRID FEATURES ── */}
-        <div style={{ marginTop: 160 }}>
+        <div style={{ marginTop: 200 }}>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            style={{ textAlign: "center", marginBottom: 64 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{ textAlign: "center", marginBottom: 80 }}
           >
-            <h2 style={{ fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 16 }}>
-              Everything you need to excel
+            <h2 style={{ fontSize: 44, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 16 }}>
+              Everything you need.
             </h2>
-            <p style={{ fontSize: 18, color: "rgba(255,255,255,0.5)" }}>
-              Powerful features engineered for performance.
+            <p style={{ fontSize: 20, color: "rgba(255,255,255,0.4)" }}>
+              Powerful features engineered for professional traders.
             </p>
           </motion.div>
 
@@ -453,20 +381,20 @@ export default function Pro() {
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
               gap: 24,
-              maxWidth: 1000,
+              maxWidth: 900,
               margin: "0 auto"
             }}
           >
             <BentoCard
               icon={Cpu}
-              title={t("pro_page.feature_ai_title") || "More AI Power"}
-              desc={t("pro_page.feature_ai_desc") || "Access advanced, uncensored trading models and deep sentiment analysis."}
+              title={t("pro_page.feature_ai_title") || "Advanced AI"}
+              desc={t("pro_page.feature_ai_desc") || "Access advanced trading models and deep sentiment analysis right from the command bar."}
               delay={0}
             />
             <BentoCard
               icon={Palette}
               title={t("pro_page.themes_title") || "Custom Themes"}
-              desc={t("pro_page.themes_subtitle") || "Make it yours with custom color palettes and personalized dashboards."}
+              desc={t("pro_page.themes_subtitle") || "Make it yours with custom color palettes, specific to your trading environment."}
               delay={0.1}
             />
             <BentoCard
@@ -476,7 +404,7 @@ export default function Pro() {
               delay={0.2}
             />
             <BentoCard
-              icon={Zap}
+              icon={Terminal}
               title="Unlimited APIs"
               desc="Connect to unlimited exchange APIs with zero rate limits on our platform."
               delay={0.3}
@@ -489,46 +417,50 @@ export default function Pro() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           style={{
-            marginTop: 160,
+            marginTop: 200,
             marginBottom: 80,
             textAlign: "center",
-            padding: "80px 40px",
-            background: "linear-gradient(180deg, rgba(20,20,20,0) 0%, rgba(20,20,20,0.8) 100%)",
-            border: "1px solid rgba(255,255,255,0.05)",
+            padding: "100px 40px",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%)",
+            borderTop: "1px solid rgba(255,255,255,0.04)",
             borderRadius: 32,
             position: "relative",
             overflow: "hidden"
           }}
         >
           {/* subtle glow in CTA */}
-          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 300, height: 300, background: "radial-gradient(circle, rgba(255,51,102,0.15), transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)", width: 600, height: 300, background: "radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
           
-          <Lock size={40} style={{ color: "rgba(255,255,255,0.8)", margin: "0 auto 24px", display: "block" }} />
-          <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 16 }}>
+          <div style={{ width: 64, height: 64, margin: "0 auto 32px", background: "linear-gradient(180deg, rgba(40,40,40,1), rgba(20,20,20,1))", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.5)" }}>
+             <Lock size={28} style={{ color: "rgba(255,255,255,0.9)" }} />
+          </div>
+
+          <h2 style={{ fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 16 }}>
             Ready to become a Pro?
           </h2>
-          <p style={{ fontSize: 18, color: "rgba(255,255,255,0.5)", marginBottom: 40, maxWidth: 500, margin: "0 auto 40px" }}>
-            Join thousands of traders leveraging our AI tools. Cancel anytime.
+          <p style={{ fontSize: 18, color: "rgba(255,255,255,0.4)", marginBottom: 40, maxWidth: 500, margin: "0 auto 40px" }}>
+            Join thousands of traders leveraging our tools.
           </p>
           <button
             onClick={() => navigate("/pricing")}
             style={{
-              padding: "16px 40px",
+              padding: "14px 32px",
               borderRadius: 999,
               background: "#ffffff",
               color: "#000000",
-              fontWeight: 700,
-              fontSize: 16,
+              fontWeight: 600,
+              fontSize: 15,
               border: "none",
               cursor: "pointer",
               transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-              boxShadow: "0 10px 30px rgba(255, 255, 255, 0.15)"
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 8px 20px -8px rgba(255,255,255,0.4)"
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            Start Free Trial
+            Start Your Free Trial
           </button>
         </motion.div>
 
