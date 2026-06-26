@@ -574,7 +574,18 @@
       "desc": "Avantaj elde etmek isteyen ciddi yatırımcılar için.",
       "cta": "Pro'ya Geç"
     },
+    "teams": {
+      "name": "Teams",
+      "desc": "Ekipler için işbirlikçi analitik ve kurumsal API erişimi.",
+      "cta": "Satışla İletişime Geç"
+    },
     "features": {
+      "all_pro": "Pro plandaki her şey",
+      "team_webhooks": "Ekip webhook'ları ve özel entegrasyonlar",
+      "shared_portfolios": "Paylaşılan portföyler ve izleme listeleri",
+      "api_keys": "Yüksek limitli özel API anahtarları",
+      "sso_security": "SSO/SAML tekli oturum açma",
+      "priority_support": "7/24 Öncelikli destek",
       "live_data": "Canlı piyasa verileri (Gate.io, Bybit, OKX)",
       "top10": "Piyasa değerine göre ilk 10 + Isı Haritası",
       "coin_detail": "Coin detay sayfaları",
@@ -596,6 +607,13 @@
       "watchlist_unlimited": "Sınırsız izleme listesi",
       "vol_anomaly": "Hacim anomalisi tespiti",
       "priority_data": "Öncelikli veri güncellemeleri"
+    },
+    "matrix": {
+      "title": "Tüm özellikleri karşılaştırın",
+      "cat_data": "Piyasa Verileri",
+      "cat_ai": "YZ ve Analitik",
+      "cat_collab": "İşbirliği ve Alarm",
+      "cat_enterprise": "Kurumsal ve Limitler"
     },
     "current_plan": "MEVCUT PLAN",
     "free_text": "Ücretsiz",
