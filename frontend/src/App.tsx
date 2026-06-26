@@ -106,20 +106,18 @@ function AppInner() {
       {/* Global Ticker */}
       <CoinTicker />
 
-      {location.pathname !== "/" ? (
-        <>
-          <Navbar
-            onWatchlistOpen={() => openPanel("watchlist")}
-            watchlistCount={watchlist.length}
-            onAuthOpen={(mode = "login") => {
-              setAuthMode(mode);
-              setAuthOpen(true);
-            }}
-            authOpen={authOpen}
-            setAuthOpen={setAuthOpen}
-          />
-        </>
-      ) : null}
+      <>
+        <Navbar
+          onWatchlistOpen={() => openPanel("watchlist")}
+          watchlistCount={watchlist.length}
+          onAuthOpen={(mode = "login") => {
+            setAuthMode(mode);
+            setAuthOpen(true);
+          }}
+          authOpen={authOpen}
+          setAuthOpen={setAuthOpen}
+        />
+      </>
       <main
         className={
           location.pathname === "/"

@@ -30,7 +30,7 @@ export default function Footer() {
       borderTop: '1px solid rgba(255,255,255,0.05)', 
       marginTop: 'auto',
       padding: '40px 24px',
-      backgroundColor: '#000',
+      backgroundColor: 'transparent',
       position: 'relative',
       zIndex: 10
     }}>
