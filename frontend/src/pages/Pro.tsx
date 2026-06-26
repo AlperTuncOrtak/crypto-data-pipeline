@@ -1,104 +1,145 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
-  Crown,
-  Zap,
-  BarChart2,
-  Bell,
-  Webhook,
-  Palette,
   Sparkles,
+  Zap,
   Terminal,
-  ArrowRight,
-  Check,
   Cpu,
   RefreshCw,
-  FolderSync
+  FolderSync,
+  Palette,
+  Cloud,
+  ArrowRight,
+  Check,
+  Star,
+  Lock,
+  MessageSquare
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-// ── Theme Switcher Config ──────────────────────────────────────
-const THEMES = [
-  { id: "dark", label: "Linear Dark", bg: "#0a0a0a", border: "rgba(255, 255, 255, 0.08)", accent: "#5e6ad2", accentSoft: "rgba(94, 106, 210, 0.12)", text: "#e8e8f0", textMuted: "#8e8ea0" },
-  { id: "purple", label: "Purple Mist", bg: "#0d071a", border: "rgba(139, 92, 246, 0.18)", accent: "#8b5cf6", accentSoft: "rgba(139, 92, 246, 0.12)", text: "#e9d5ff", textMuted: "#a78bfa" },
-  { id: "forest", label: "Forest Glow", bg: "#040e08", border: "rgba(16, 185, 129, 0.18)", accent: "#10b981", accentSoft: "rgba(16, 185, 129, 0.12)", text: "#d1fae5", textMuted: "#34d399" },
-  { id: "light", label: "Light Frost", bg: "#ffffff", border: "rgba(15, 23, 42, 0.09)", accent: "#5e6ad2", accentSoft: "rgba(94, 106, 210, 0.06)", text: "#0f172a", textMuted: "#64748b" }
-];
-
-// ── AI Simulator Prompts & Responses ──────────────────────────
-const PROMPTS = {
-  btc: "🤖 [BTC/USDT Analysis]\nTrend: Strong Bullish (Confidence: 89%)\nIndicators: RSI is at 62.4 (neutral-bullish), MACD crossover completed on 4h timeframe, Bollinger Bands expanding upwards.\nAltfins AI Signal: Bullish breakout pattern confirmed. Target: $105,000, Support: $94,200.",
-  sentiment: "🤖 [Market Sentiment Summary]\nFear & Greed Index: 74 (Greed)\nSocial Volume: SOL mentions up 12% in 2h. Sentiment ratio 4.2x bullish to bearish.\nAI Assessment: High risk-appetite. Large whale transactions detected transferring USDC to decentralized markets.",
-  anomalies: "🤖 [Volume Spike Anomalies]\nAlert: SOL volume spiked 420% above 24h moving average on Bybit.\nAlert: BNB price volatility increased to 8.2% on Gate.io (breakout support at $580).\nWhale Watch: $42M USDT deposited into exchange orderbook in the last 15 minutes."
+// ── Background Aurora ──────────────────────────────────────────
+const BackgroundAurora = () => {
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 }}>
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+          rotate: [0, 90, 0]
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: "absolute",
+          top: "-20%",
+          left: "10%",
+          width: "60vw",
+          height: "60vw",
+          background: "radial-gradient(circle, rgba(255, 51, 102, 0.15) 0%, transparent 60%)",
+          filter: "blur(100px)",
+          borderRadius: "50%"
+        }}
+      />
+      <motion.div
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.2, 0.4, 0.2],
+          rotate: [0, -90, 0]
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: "absolute",
+          bottom: "-10%",
+          right: "5%",
+          width: "50vw",
+          height: "50vw",
+          background: "radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%)",
+          filter: "blur(120px)",
+          borderRadius: "50%"
+        }}
+      />
+      
+      {/* Subtle Grid overlay like raycast */}
+      <div 
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+          maskImage: "linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)",
+          opacity: 0.5
+        }}
+      />
+    </div>
+  );
 };
 
-// ── Feature Card ──────────────────────────────────────────────
+// ── Bento Card (Glassmorphic) ───────────────────────────────────
 interface BentoCardProps {
   icon: any;
   title: string;
   desc: string;
-  accentColor: string;
+  delay?: number;
 }
 
-function BentoCard({ icon: Icon, title, desc, accentColor }: BentoCardProps) {
+const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
   const [coords, setCoords] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setCoords({ x, y });
+    setCoords({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }
 
   return (
-    <div
-      style={{
-        position: "relative",
-        background: "rgba(255, 255, 255, 0.02)",
-        border: "1px solid var(--border)",
-        borderRadius: 16,
-        padding: "24px",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        transform: isHovered ? "translateY(-4px)" : "translateY(0)"
-      }}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{
+        position: "relative",
+        background: "rgba(20, 20, 20, 0.6)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 24,
+        padding: "32px",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16
+      }}
     >
-      {/* Mouse Spotlight Background */}
+      {/* Spotlight Hover */}
       {isHovered && (
         <div
           style={{
             position: "absolute",
             inset: 0,
             pointerEvents: "none",
-            zIndex: 0,
-            background: `radial-gradient(300px circle at ${coords.x}px ${coords.y}px, rgba(94, 106, 210, 0.05), transparent 80%)`
+            background: `radial-gradient(400px circle at ${coords.x}px ${coords.y}px, rgba(255,255,255,0.06), transparent 80%)`,
+            zIndex: 0
           }}
         />
       )}
-
-      {/* Mouse Spotlight Border Glow */}
+      {/* Border Hover Glow */}
       {isHovered && (
         <div
           style={{
             position: "absolute",
             inset: 0,
             pointerEvents: "none",
-            zIndex: 1,
-            borderRadius: 16,
-            border: `1px solid transparent`,
-            backgroundImage: `radial-gradient(150px circle at ${coords.x}px ${coords.y}px, ${accentColor || "var(--accent)"}, transparent 100%)`,
-            backgroundOrigin: "border-box",
-            backgroundClip: "border-box",
-            WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "destination-out",
-            maskComposite: "exclude"
+            borderRadius: 24,
+            padding: 1,
+            background: `radial-gradient(300px circle at ${coords.x}px ${coords.y}px, rgba(255, 255, 255, 0.4), transparent 80%)`,
+            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+            zIndex: 1
           }}
         />
       )}
@@ -106,544 +147,391 @@ function BentoCard({ icon: Icon, title, desc, accentColor }: BentoCardProps) {
       <div style={{ position: "relative", zIndex: 2 }}>
         <div
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            background: `${accentColor || "var(--accent)"}15`,
-            border: `1px solid ${accentColor || "var(--accent)"}30`,
+            width: 48,
+            height: 48,
+            borderRadius: 14,
+            background: "linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02))",
+            border: "1px solid rgba(255,255,255,0.1)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 8
+            marginBottom: 20,
+            boxShadow: "0 8px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)"
           }}
         >
-          <Icon size={20} style={{ color: accentColor || "var(--accent)" }} />
+          <Icon size={22} style={{ color: "#fff" }} />
         </div>
-        <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>{title}</h4>
-        <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.5 }}>{desc}</p>
+        <h3 style={{ fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 8, letterSpacing: "-0.02em" }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+          {desc}
+        </p>
       </div>
-    </div>
+    </motion.div>
   );
-}
+};
+
+// ── Hero Mockup Component (Raycast Style) ──────────────────────
+const HeroMockup = () => {
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.5]);
+
+  return (
+    <motion.div 
+      style={{ y, scale, opacity }}
+      initial={{ opacity: 0, y: 100 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      className="hero-mockup-wrapper"
+    >
+      <div 
+        style={{
+          width: "100%",
+          maxWidth: 900,
+          margin: "0 auto",
+          background: "rgba(10, 10, 10, 0.8)",
+          backdropFilter: "blur(40px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: 24,
+          boxShadow: "0 30px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          position: "relative"
+        }}
+      >
+        {/* Mockup Header */}
+        <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 12 }}>
+          <Sparkles size={16} style={{ color: "#ff3366" }} />
+          <span style={{ color: "#fff", fontSize: 14, fontWeight: 500 }}>CryptoNeko AI Console</span>
+        </div>
+        
+        {/* Mockup Content */}
+        <div style={{ display: "flex", padding: 24, gap: 24, height: 380 }}>
+          {/* Left Panel */}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255, 153, 0, 0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 16 }}>₿</span>
+              </div>
+              <div>
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>Bitcoin AI Signal</div>
+                <div style={{ color: "#10b981", fontSize: 11, fontWeight: 500 }}>Strong Buy - Confidence 92%</div>
+              </div>
+            </div>
+            
+            <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(99, 102, 241, 0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 16 }}>Ξ</span>
+              </div>
+              <div>
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>Ethereum Analysis</div>
+                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>Analyzing smart contract volume...</div>
+              </div>
+            </div>
+            
+            <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(236, 72, 153, 0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 16 }}>◎</span>
+              </div>
+              <div>
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>Solana Alert</div>
+                <div style={{ color: "#ef4444", fontSize: 11 }}>Whale sell-off detected</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Panel (Terminal) */}
+          <div style={{ flex: 1.5, background: "#050505", borderRadius: 16, border: "1px solid rgba(255,255,255,0.08)", padding: 20, fontFamily: "monospace", display: "flex", flexDirection: "column" }}>
+            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 16 }}>// AI Market Analysis Stream</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+              <div style={{ color: "#e2e8f0", fontSize: 13, display: "flex", gap: 8 }}>
+                <span style={{ color: "#ff3366" }}>{">"}</span>
+                <span>Initializing deep learning models... [OK]</span>
+              </div>
+              <div style={{ color: "#e2e8f0", fontSize: 13, display: "flex", gap: 8 }}>
+                <span style={{ color: "#ff3366" }}>{">"}</span>
+                <span>Scanning order books across 14 exchanges... [OK]</span>
+              </div>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 0.5 }}
+                style={{ color: "#10b981", fontSize: 13, display: "flex", gap: 8, marginTop: 8 }}
+              >
+                <span style={{ color: "#10b981" }}>$</span>
+                <span>Opportunity Found: BTC/USDT Arbitrage</span>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5, duration: 0.5 }}
+                style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, paddingLeft: 16 }}
+              >
+                Expected yield: 0.8% • Execution time: 1.2s<br/>
+                Auto-execute enabled via Pro API.
+              </motion.div>
+              <motion.div 
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+                style={{ width: 8, height: 16, background: "#ff3366", marginTop: 8 }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 // ── Main Page ──────────────────────────────────────────────────
 export default function Pro() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const featuresRef = useRef<HTMLDivElement>(null);
-
-  // Tema Switcher State
-  const [selectedTheme, setSelectedTheme] = useState(THEMES[0]);
-
-  // AI Simulator State
-  const [simulatedText, setSimulatedText] = useState("");
-  const [typing, setTyping] = useState(false);
-  const [activePrompt, setActivePrompt] = useState("");
-  const timerRef = useRef<number | null>(null);
-
-  function startAISimulator(promptKey: keyof typeof PROMPTS) {
-    if (typing) return;
-    if (timerRef.current) clearInterval(timerRef.current);
-    
-    setTyping(true);
-    setActivePrompt(promptKey);
-    setSimulatedText("");
-    
-    const fullText = PROMPTS[promptKey];
-    let index = 0;
-    
-    timerRef.current = window.setInterval(() => {
-      if (index < fullText.length) {
-        setSimulatedText((prev) => prev + fullText.charAt(index));
-        index++;
-      } else {
-        if (timerRef.current) clearInterval(timerRef.current);
-        setTyping(false);
-      }
-    }, 20); // typing speed ms
-  }
-
-  useEffect(() => {
-    // Start with BTC simulation on mount
-    startAISimulator("btc");
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  function handleScrollToFeatures() {
-    featuresRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
 
   return (
     <div
       style={{
         position: "relative",
-        color: "var(--text-primary)",
-        maxWidth: 1100,
-        margin: "0 auto",
-        padding: "0 24px 80px",
-        overflow: "hidden"
+        background: "#000000",
+        minHeight: "100vh",
+        color: "#ffffff",
+        overflowX: "hidden",
+        paddingBottom: 120
       }}
     >
-      {/* Background Aurora Blobs */}
-      <div
-        style={{
-          position: "absolute",
-          top: 150,
-          left: "5%",
-          width: 450,
-          height: 450,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
-          opacity: 0.08,
-          filter: "blur(90px)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: 600,
-          right: "5%",
-          width: 500,
-          height: 500,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, var(--secondary) 0%, transparent 70%)",
-          opacity: 0.06,
-          filter: "blur(100px)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
+      <BackgroundAurora />
 
-      <div style={{ position: "relative", zIndex: 1 }}>
-        {/* HERO SECTION */}
-        <div style={{ textAlign: "center", marginBottom: 72, marginTop: 48 }}>
-          <div
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+        
+        {/* ── HERO SECTION ── */}
+        <div style={{ paddingTop: 140, paddingBottom: 100, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 6,
-              padding: "5px 14px",
+              gap: 8,
+              padding: "6px 16px",
               borderRadius: 999,
-              background: "var(--accent-soft)",
-              border: "1px solid var(--accent-border)",
-              marginBottom: 16
+              background: "rgba(255, 51, 102, 0.1)",
+              border: "1px solid rgba(255, 51, 102, 0.2)",
+              marginBottom: 32,
+              boxShadow: "0 0 20px rgba(255, 51, 102, 0.1)"
             }}
           >
-            <Crown size={12} style={{ color: "var(--accent)" }} />
-            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)" }}>
-              {t("pro_page.hero_badge")}
+            <Star size={14} style={{ color: "#ff3366", fill: "#ff3366" }} />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#ff3366", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              {t("pro_page.hero_badge") || "CryptoNeko Pro"}
             </span>
-          </div>
+          </motion.div>
 
-          <h1
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
             style={{
-              fontSize: 48,
-              fontWeight: 900,
+              fontSize: "clamp(48px, 6vw, 80px)",
+              fontWeight: 800,
               letterSpacing: "-0.04em",
-              marginBottom: 16,
-              lineHeight: 1.1
+              lineHeight: 1.05,
+              marginBottom: 24,
+              maxWidth: 900
             }}
           >
-            {t("pro_page.hero_title1")}
+            Unlock a new level of
             <br />
             <span
               style={{
-                background: "linear-gradient(135deg, var(--accent), #8b5cf6)",
+                background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.5) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent"
               }}
             >
-              {t("pro_page.hero_title2")}
+              crypto intelligence.
             </span>
-          </h1>
+          </motion.h1>
 
-          <p
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
             style={{
-              fontSize: 16,
-              color: "var(--text-secondary)",
-              maxWidth: 580,
-              margin: "0 auto 36px",
-              lineHeight: 1.6
+              fontSize: 20,
+              color: "rgba(255,255,255,0.5)",
+              maxWidth: 600,
+              margin: "0 auto 48px",
+              lineHeight: 1.5,
+              letterSpacing: "-0.01em"
             }}
           >
-            {t("pro_page.hero_desc")}
-          </p>
+            {t("pro_page.hero_desc") || "Supercharge your trading with predictive AI, custom themes, and lightning-fast real-time webhooks. Built for professionals."}
+          </motion.p>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            style={{ display: "flex", alignItems: "center", gap: 16 }}
+          >
             <button
               onClick={() => navigate("/pricing")}
               style={{
-                padding: "12px 28px",
-                borderRadius: 12,
-                background: "linear-gradient(135deg, var(--accent), #8b5cf6)",
-                color: "#ffffff",
-                fontWeight: 700,
-                fontSize: 14,
+                padding: "14px 32px",
+                borderRadius: 999,
+                background: "#ffffff",
+                color: "#000000",
+                fontWeight: 600,
+                fontSize: 16,
                 border: "none",
                 cursor: "pointer",
-                boxShadow: "0 4px 20px rgba(94, 106, 210, 0.15)",
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                transition: "transform 0.2s"
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
-              {t("pro_page.cta_upgrade")} <ArrowRight size={14} />
-            </button>
-            <button
-              onClick={handleScrollToFeatures}
-              style={{
-                padding: "12px 28px",
-                borderRadius: 12,
-                background: "transparent",
-                color: "var(--text-secondary)",
-                fontWeight: 600,
-                fontSize: 14,
-                border: "1px solid var(--border)",
-                cursor: "pointer",
-                transition: "all 0.2s"
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                boxShadow: "0 0 40px rgba(255, 255, 255, 0.2)"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--text-muted)";
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.02)";
+                e.currentTarget.style.transform = "scale(1.05)";
+                e.currentTarget.style.boxShadow = "0 0 60px rgba(255, 255, 255, 0.4)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "0 0 40px rgba(255, 255, 255, 0.2)";
               }}
             >
-              {t("pro_page.cta_pricing")}
+              Get Pro <ArrowRight size={16} />
             </button>
-          </div>
+            <button
+              onClick={() => navigate("/pricing")}
+              style={{
+                padding: "14px 32px",
+                borderRadius: 999,
+                background: "transparent",
+                color: "#ffffff",
+                fontWeight: 600,
+                fontSize: 16,
+                border: "1px solid rgba(255,255,255,0.2)",
+                cursor: "pointer",
+                transition: "background 0.2s"
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              View Pricing
+            </button>
+          </motion.div>
         </div>
 
-        {/* BENTO GRID SHOWCASE */}
-        <div ref={featuresRef} style={{ marginBottom: 80 }}>
-          <h2
-            style={{
-              fontSize: 26,
-              fontWeight: 700,
-              textAlign: "center",
-              marginBottom: 36,
-              letterSpacing: "-0.02em"
-            }}
-          >
-            {t("pro_page.features_title")}
-          </h2>
+        {/* ── HERO MOCKUP ── */}
+        <HeroMockup />
 
-          <div
+        {/* ── BENTO GRID FEATURES ── */}
+        <div style={{ marginTop: 160 }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            style={{ textAlign: "center", marginBottom: 64 }}
+          >
+            <h2 style={{ fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 16 }}>
+              Everything you need to excel
+            </h2>
+            <p style={{ fontSize: 18, color: "rgba(255,255,255,0.5)" }}>
+              Powerful features engineered for performance.
+            </p>
+          </motion.div>
+
+          <div 
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: 20
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              gap: 24,
+              maxWidth: 1000,
+              margin: "0 auto"
             }}
           >
             <BentoCard
               icon={Cpu}
-              title={t("pro_page.feature_ai_title")}
-              desc={t("pro_page.feature_ai_desc")}
-              accentColor="rgba(94, 106, 210, 0.4)"
+              title={t("pro_page.feature_ai_title") || "More AI Power"}
+              desc={t("pro_page.feature_ai_desc") || "Access advanced, uncensored trading models and deep sentiment analysis."}
+              delay={0}
             />
             <BentoCard
-              icon={Bell}
-              title={t("pro_page.feature_alerts_title")}
-              desc={t("pro_page.feature_alerts_desc")}
-              accentColor="rgba(139, 92, 246, 0.4)"
+              icon={Palette}
+              title={t("pro_page.themes_title") || "Custom Themes"}
+              desc={t("pro_page.themes_subtitle") || "Make it yours with custom color palettes and personalized dashboards."}
+              delay={0.1}
             />
             <BentoCard
-              icon={FolderSync}
-              title={t("pro_page.feature_portfolio_title")}
-              desc={t("pro_page.feature_portfolio_desc")}
-              accentColor="rgba(16, 185, 129, 0.4)"
+              icon={Cloud}
+              title="Cloud Sync"
+              desc="Seamlessly sync your portfolios, alerts, and settings across all your devices securely."
+              delay={0.2}
+            />
+            <BentoCard
+              icon={Zap}
+              title="Unlimited APIs"
+              desc="Connect to unlimited exchange APIs with zero rate limits on our platform."
+              delay={0.3}
             />
           </div>
         </div>
 
-        {/* THEME SWITCHER MODUL (RAYCAST THEMES) */}
-        <div
+        {/* ── BOTTOM CTA ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           style={{
-            background: "rgba(255, 255, 255, 0.01)",
-            border: "1px solid var(--border)",
-            borderRadius: 20,
-            padding: "40px",
+            marginTop: 160,
             marginBottom: 80,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 40,
-            alignItems: "center"
-          }}
-        >
-          <div>
-            <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12, letterSpacing: "-0.02em" }}>
-              {t("pro_page.themes_title")}
-            </h3>
-            <p
-              style={{
-                fontSize: 14,
-                color: "var(--text-secondary)",
-                lineHeight: 1.6,
-                marginBottom: 24
-              }}
-            >
-              {t("pro_page.themes_subtitle")}
-            </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {THEMES.map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() => setSelectedTheme(theme)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "12px 16px",
-                    borderRadius: 12,
-                    background: selectedTheme.id === theme.id ? "rgba(255, 255, 255, 0.04)" : "transparent",
-                    border: `1px solid ${selectedTheme.id === theme.id ? "var(--border-mid)" : "transparent"}`,
-                    cursor: "pointer",
-                    textAlign: "left",
-                    color: selectedTheme.id === theme.id ? "var(--text-primary)" : "var(--text-muted)",
-                    fontWeight: 600,
-                    fontSize: 13,
-                    transition: "all 0.2s"
-                  }}
-                  onMouseEnter={(e) => {
-                    if (selectedTheme.id !== theme.id) e.currentTarget.style.color = "var(--text-secondary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (selectedTheme.id !== theme.id) e.currentTarget.style.color = "var(--text-muted)";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 14, height: 14, borderRadius: "50%", background: theme.accent }} />
-                    {theme.label}
-                  </div>
-                  {selectedTheme.id === theme.id && <Check size={14} style={{ color: theme.accent }} />}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Theme Mockup Box */}
-          <div
-            style={{
-              background: selectedTheme.bg,
-              border: `1px solid ${selectedTheme.border}`,
-              borderRadius: 16,
-              padding: "24px",
-              minHeight: 250,
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-              transition: "all 0.3s ease",
-              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)"
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", borderBottom: `1px solid ${selectedTheme.border}`, paddingBottom: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 22, height: 22, borderRadius: 6, background: selectedTheme.accentSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Palette size={12} style={{ color: selectedTheme.accent }} />
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: selectedTheme.text }}>Preview Workspace</span>
-              </div>
-              <div style={{ display: "flex", gap: 4, marginLeft: "auto" }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "red" }} />
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "yellow" }} />
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "green" }} />
-              </div>
-            </div>
-
-            {/* Simulated Widget Content */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div style={{ background: "rgba(255,255,255,0.01)", border: `1px solid ${selectedTheme.border}`, borderRadius: 10, padding: 12 }}>
-                <span style={{ fontSize: 10, color: selectedTheme.textMuted, fontWeight: 600 }}>BTC / USDT</span>
-                <div style={{ fontSize: 16, fontWeight: 800, color: selectedTheme.text, marginTop: 4 }}>$103,450</div>
-                <span style={{ fontSize: 9, color: "#2ecc71", fontWeight: 700 }}>+3.2%</span>
-              </div>
-              <div style={{ background: "rgba(255,255,255,0.01)", border: `1px solid ${selectedTheme.border}`, borderRadius: 10, padding: 12 }}>
-                <span style={{ fontSize: 10, color: selectedTheme.textMuted, fontWeight: 600 }}>ETH / USDT</span>
-                <div style={{ fontSize: 16, fontWeight: 800, color: selectedTheme.text, marginTop: 4 }}>$3,620</div>
-                <span style={{ fontSize: 9, color: "#2ecc71", fontWeight: 700 }}>+1.5%</span>
-              </div>
-            </div>
-
-            {/* Mock Chat input */}
-            <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.02)", border: `1px solid ${selectedTheme.border}`, borderRadius: 8, padding: "8px 12px" }}>
-              <Sparkles size={12} style={{ color: selectedTheme.accent }} />
-              <span style={{ fontSize: 11, color: selectedTheme.textMuted }}>Ask AI about the crypto market...</span>
-            </div>
-          </div>
-        </div>
-
-        {/* AI SIMULATOR TERMINAL */}
-        <div
-          style={{
-            background: "rgba(255, 255, 255, 0.01)",
-            border: "1px solid var(--border)",
-            borderRadius: 20,
-            padding: "40px",
-            marginBottom: 80
-          }}
-        >
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>
-              {t("pro_page.simulator_title")}
-            </h3>
-            <p style={{ fontSize: 14, color: "var(--text-secondary)" }}>
-              {t("pro_page.simulator_subtitle")}
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 2fr",
-              gap: 24,
-              alignItems: "stretch"
-            }}
-          >
-            {/* Command prompts list */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <button
-                onClick={() => startAISimulator("btc")}
-                disabled={typing}
-                style={{
-                  padding: "14px 18px",
-                  borderRadius: 12,
-                  background: activePrompt === "btc" ? "var(--accent-soft)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${activePrompt === "btc" ? "var(--accent-border)" : "var(--border)"}`,
-                  color: activePrompt === "btc" ? "var(--text-primary)" : "var(--text-secondary)",
-                  textAlign: "left",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: typing ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  transition: "all 0.2s"
-                }}
-              >
-                <span>📈 BTC Technical Analysis</span>
-                {activePrompt === "btc" && typing && <RefreshCw size={12} className="animate-spin" style={{ color: "var(--accent)" }} />}
-              </button>
-
-              <button
-                onClick={() => startAISimulator("sentiment")}
-                disabled={typing}
-                style={{
-                  padding: "14px 18px",
-                  borderRadius: 12,
-                  background: activePrompt === "sentiment" ? "var(--accent-soft)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${activePrompt === "sentiment" ? "var(--accent-border)" : "var(--border)"}`,
-                  color: activePrompt === "sentiment" ? "var(--text-primary)" : "var(--text-secondary)",
-                  textAlign: "left",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: typing ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  transition: "all 0.2s"
-                }}
-              >
-                <span>🧠 AI Sentiment Analyzer</span>
-                {activePrompt === "sentiment" && typing && <RefreshCw size={12} className="animate-spin" style={{ color: "var(--accent)" }} />}
-              </button>
-
-              <button
-                onClick={() => startAISimulator("anomalies")}
-                disabled={typing}
-                style={{
-                  padding: "14px 18px",
-                  borderRadius: 12,
-                  background: activePrompt === "anomalies" ? "var(--accent-soft)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${activePrompt === "anomalies" ? "var(--accent-border)" : "var(--border)"}`,
-                  color: activePrompt === "anomalies" ? "var(--text-primary)" : "var(--text-secondary)",
-                  textAlign: "left",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: typing ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  transition: "all 0.2s"
-                }}
-              >
-                <span>⚡ Volume Anomalies Radar</span>
-                {activePrompt === "anomalies" && typing && <RefreshCw size={12} className="animate-spin" style={{ color: "var(--accent)" }} />}
-              </button>
-            </div>
-
-            {/* Chat Simulator Console output */}
-            <div
-              style={{
-                background: "#000000",
-                border: "1px solid var(--border)",
-                borderRadius: 16,
-                padding: "24px",
-                fontFamily: "'Geist Mono', 'Fira Code', Courier, monospace",
-                fontSize: 13,
-                color: "#10b981",
-                minHeight: 200,
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 6, borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: 10, marginBottom: 12 }}>
-                <Terminal size={14} style={{ color: "#a855f7" }} />
-                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>cryptoneko-intelligence-shell</span>
-              </div>
-              <div style={{ flex: 1, whiteSpace: "pre-line", lineHeight: 1.6 }}>
-                {simulatedText}
-                {typing && <span style={{ display: "inline-block", width: 8, height: 14, background: "#10b981", marginLeft: 4, animation: "pulse 1s infinite" }}>|</span>}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* BOTTOM CALL TO ACTION */}
-        <div
-          style={{
             textAlign: "center",
-            padding: "48px 24px",
-            background: "linear-gradient(135deg, rgba(94, 106, 210, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)",
-            border: "1px solid var(--accent-border)",
-            borderRadius: 20
+            padding: "80px 40px",
+            background: "linear-gradient(180deg, rgba(20,20,20,0) 0%, rgba(20,20,20,0.8) 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 32,
+            position: "relative",
+            overflow: "hidden"
           }}
         >
-          <Crown size={32} style={{ color: "var(--accent)", marginBottom: 16 }} />
-          <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>
-            Ready to unleash precision trading?
-          </h3>
-          <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24 }}>
-            Join thousands of traders using Pro analytics. Try it free for 7 days.
+          {/* subtle glow in CTA */}
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 300, height: 300, background: "radial-gradient(circle, rgba(255,51,102,0.15), transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }} />
+          
+          <Lock size={40} style={{ color: "rgba(255,255,255,0.8)", margin: "0 auto 24px", display: "block" }} />
+          <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 16 }}>
+            Ready to become a Pro?
+          </h2>
+          <p style={{ fontSize: 18, color: "rgba(255,255,255,0.5)", marginBottom: 40, maxWidth: 500, margin: "0 auto 40px" }}>
+            Join thousands of traders leveraging our AI tools. Cancel anytime.
           </p>
           <button
             onClick={() => navigate("/pricing")}
             style={{
-              padding: "12px 28px",
-              borderRadius: 12,
-              background: "linear-gradient(135deg, var(--accent), #8b5cf6)",
-              color: "#ffffff",
+              padding: "16px 40px",
+              borderRadius: 999,
+              background: "#ffffff",
+              color: "#000000",
               fontWeight: 700,
-              fontSize: 14,
+              fontSize: 16,
               border: "none",
               cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(94, 106, 210, 0.15)"
+              transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+              boxShadow: "0 10px 30px rgba(255, 255, 255, 0.15)"
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            Start Your Free Trial
+            Start Free Trial
           </button>
-        </div>
+        </motion.div>
+
       </div>
     </div>
   );
