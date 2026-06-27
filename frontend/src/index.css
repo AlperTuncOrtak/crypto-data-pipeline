@@ -83,6 +83,23 @@
   background: #0d0d0d;
 }
 
+/* Card - Soft Glassmorphism (Apple-style) */
+.card-apple {
+  background: rgba(30, 30, 35, 0.6);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-apple:hover {
+  background: rgba(40, 40, 45, 0.7);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
 /* Panel — inner containers, sections */
 .glass-panel {
   background: var(--bg-surface);
