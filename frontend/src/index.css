@@ -70,6 +70,19 @@
   background: var(--bg-hover);
 }
 
+/* Card - Modern Clean Surface (Vercel/Linear ultra minimalist) */
+.card-clean {
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.card-clean:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #0d0d0d;
+}
+
 /* Panel — inner containers, sections */
 .glass-panel {
   background: var(--bg-surface);

@@ -31,13 +31,8 @@ function fmt(n: number) {
   return `$${n.toFixed(0)}`;
 }
 
-const GLASS = {
-  background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
-  backdropFilter: "blur(20px)",
-  border: "1px solid var(--border)",
-  borderRadius: 24,
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
-};
+// --- REMOVED GLASS CONSTANT ---
+// We will use className="card-clean" instead for a modern minimalist look.
 
 // ─── SPARKLINE ───────────────────────────────────────────────
 function MiniChart({ points, up, width = 120, height = 44 }: {
@@ -262,17 +257,11 @@ function GlowCard({ children, style = {}, onClick, glowColor = "94,106,210" }: {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       onMouseMove={handleMouseMove}
+      className="card-clean"
       style={{
         position: "relative",
-        background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
-        backdropFilter: "blur(20px)",
-        border: `1px solid ${hov ? `rgba(${glowColor},0.2)` : "var(--border)"}`,
-        borderRadius: 24,
+        border: `1px solid ${hov ? `rgba(${glowColor},0.2)` : "rgba(255,255,255,0.05)"}`,
         cursor: onClick ? "pointer" : "default",
-        transition: "border-color 200ms ease, box-shadow 200ms ease",
-        boxShadow: hov
-          ? `0 0 0 1px rgba(${glowColor},0.12), 0 20px 60px rgba(${glowColor},0.08), inset 0 1px 0 rgba(255,255,255,0.02)`
-          : "inset 0 1px 0 rgba(255,255,255,0.02)",
         overflow: "hidden",
         ...style,
       }}
@@ -364,17 +353,14 @@ export default function Dashboard() {
         @keyframes dash-grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
       `}</style>
 
-      {/* ── AURORA BACKGROUND ── */}
+      {/* ─── AURORA BACKGROUND (Minimalist) ─── */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -200, left: -150, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,106,210,0.08) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-a 16s ease-in-out infinite" }} />
-        <div style={{ position: "absolute", top: 100, right: -200, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 65%)", filter: "blur(80px)", animation: "aurora-b 20s ease-in-out infinite" }} />
         <div style={{
           position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
           maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-          opacity: 0.6
         }} />
       </div>
 
@@ -416,10 +402,10 @@ export default function Dashboard() {
         <LiveBadge />
       </div>
 
-      {/* ── MACRO STRIP ── */}
+      {/* ─── MACRO STRIP ─── */}
       <div
-        className="reveal"
-        style={{ ...GLASS, display: "grid", gridTemplateColumns: "repeat(5, 1fr)", marginBottom: 20, overflow: "hidden", '--reveal-delay': '60ms' } as any}
+        className="reveal card-clean"
+        style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", marginBottom: 24, overflow: "hidden", '--reveal-delay': '60ms' } as any}
       >
         {[
           { label: "BTC", value: btcCoin ? <PriceCell price={btcCoin.current_price} /> : "—", sub: `${btcCoin ? (Number(btcCoin.price_change_percentage_24h) >= 0 ? "+" : "") + Number(btcCoin.price_change_percentage_24h).toFixed(2) + "%" : ""}`, subColor: btcCoin && Number(btcCoin.price_change_percentage_24h) >= 0 ? "#22c55e" : "#ef4444" },
@@ -493,8 +479,8 @@ export default function Dashboard() {
         ))}
 
         {/* Fear & Greed */}
-        <div style={{ ...GLASS, padding: "20px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 4 }}>
+        <div className="card-clean" style={{ padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
             FEAR & GREED INDEX
           </div>
           {fngValue !== null
@@ -515,7 +501,7 @@ export default function Dashboard() {
         style={{ display: "grid", gridTemplateColumns: "1fr 280px 280px", gap: 16, marginBottom: 20, alignItems: "start", '--reveal-delay': '180ms' } as any}
       >
         {/* Top 10 */}
-        <div style={{ ...GLASS, padding: "20px 8px" }}>
+        <div className="card-clean" style={{ padding: "20px 8px" }}>
           <div style={{ padding: "0 8px" }}>
             <SectionHeader icon={BarChart2} title="Top 10" action="Tümü" onAction={() => navigate("/market")} />
           </div>
@@ -539,7 +525,7 @@ export default function Dashboard() {
         {/* Gainers & Losers stacked */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Gainers */}
-          <div style={{ ...GLASS, padding: "20px" }}>
+          <div className="card-clean" style={{ padding: "24px" }}>
             <SectionHeader icon={TrendingUp} title="Top Gainers" action="Market" onAction={() => navigate("/market?sort=gain")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(gainersData || []).slice(0, 5).map((coin: any) => (
@@ -564,7 +550,7 @@ export default function Dashboard() {
           </div>
 
           {/* Losers */}
-          <div style={{ ...GLASS, padding: "20px" }}>
+          <div className="card-clean" style={{ padding: "24px" }}>
             <SectionHeader icon={TrendingDown} title="Top Losers" action="Market" onAction={() => navigate("/market?sort=loss")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(losersData || []).slice(0, 5).map((coin: any) => (
@@ -592,7 +578,7 @@ export default function Dashboard() {
         {/* Alerts + Trending stacked */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Recent Alerts */}
-          <div style={{ ...GLASS, padding: "20px" }}>
+          <div className="card-clean" style={{ padding: "24px" }}>
             <SectionHeader icon={Bell} title="Son Uyarılar" action="Tümü" onAction={() => navigate("/alerts")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {recentAlerts.length === 0 && (
@@ -632,7 +618,7 @@ export default function Dashboard() {
           </div>
 
           {/* Trending */}
-          <div style={{ ...GLASS, padding: "20px" }}>
+          <div className="card-clean" style={{ padding: "24px" }}>
             <SectionHeader icon={Flame} title="Trending" />
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(trendingData || []).slice(0, 5).map((coin: any, i: number) => (
@@ -658,15 +644,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── ROW 4: AI Sinyal kartı ── */}
+      {/* ─── ROW 4: AI Sinyal kartı ─── */}
       <div
-        className="reveal"
-        onClick={() => navigate("/ai-analysis")}
+        className="reveal card-clean"
+        onClick={() => navigate("/analysis/ai")}
         style={{
-          ...GLASS,
-          padding: "24px 28px",
+          padding: "28px",
           cursor: "pointer",
-          transition: "border-color 200ms, box-shadow 200ms",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
