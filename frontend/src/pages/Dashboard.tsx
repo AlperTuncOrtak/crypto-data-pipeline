@@ -160,10 +160,9 @@ export default function Dashboard() {
 
   const { data: btcSparkline } = useSparklines(btcCoin?.id);
 
-  useScrollReveal();
+  const revealRef = useScrollReveal();
   const canvasRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
