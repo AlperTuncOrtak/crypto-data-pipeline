@@ -198,35 +198,6 @@ export default function Dashboard() {
   return (
     <div ref={canvasRef} style={{ position: "relative", color: "var(--text-primary)", overflow: "hidden", minHeight: "100vh" }}>
       
-      {/* ─── AURORA BACKGROUND (Minimalist) ─── */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-        }} />
-      </div>
-
-      {/* ─── CURSOR SPOTLIGHT ─── */}
-      <div
-        ref={spotRef}
-        style={{
-          position: "absolute",
-          width: 600,
-          height: 600,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(94,106,210,0.07) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0,
-          opacity: 0,
-          transition: "opacity 400ms ease",
-          filter: "blur(8px)",
-          top: 0, left: 0
-        }}
-      />
-
       {/* ─── ALL CONTENT ─── */}
       <div ref={revealRef} style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "40px 32px" }}>
 
@@ -256,7 +227,7 @@ export default function Dashboard() {
           
           {/* MACRO STRIP */}
           <div
-            className="reveal card-apple"
+            className="reveal card-aave"
             style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", overflow: "hidden", '--reveal-delay': '60ms' } as any}
           >
             {[
@@ -287,7 +258,7 @@ export default function Dashboard() {
           </div>
 
           {/* MAIN CHART */}
-          <div className="reveal card-apple" style={{ padding: "24px", '--reveal-delay': '120ms' } as any}>
+          <div className="reveal card-aave" style={{ padding: "24px", '--reveal-delay': '120ms' } as any}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -313,10 +284,24 @@ export default function Dashboard() {
           </div>
 
           {/* TOP 10 TABLE */}
-          <div className="reveal card-apple" style={{ padding: "20px 8px", '--reveal-delay': '180ms' } as any}>
-            <div style={{ padding: "0 16px" }}>
-              <SectionHeader icon={BarChart2} title="Top 10" action="Tümü" onAction={() => navigate("/market")} />
+          <div className="reveal card-aave" style={{ padding: "20px 8px", '--reveal-delay': '180ms' } as any}>
+            <div style={{ padding: "0 16px", marginBottom: 12 }}>
+              <SectionHeader icon={BarChart2} title="Top 10 Assets" action="View All" onAction={() => navigate("/market")} />
             </div>
+            
+            {/* Table Header */}
+            <div style={{
+              display: "grid", gridTemplateColumns: "30px 2fr 1fr 1fr", alignItems: "center",
+              padding: "0 12px 8px 12px", borderBottom: "1px solid var(--border)",
+              fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em",
+              marginBottom: 8, margin: "0 8px 8px 8px"
+            }}>
+              <span>#</span>
+              <span>Asset</span>
+              <span style={{ textAlign: "right" }}>Price</span>
+              <span style={{ textAlign: "right" }}>24h Change</span>
+            </div>
+
             <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "0 8px" }}>
               {top10.map((coin: any, i: number) => {
                 const isUp = Number(coin.price_change_percentage_24h) >= 0;
@@ -357,7 +342,7 @@ export default function Dashboard() {
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           
           {/* Fear & Greed */}
-          <div className="reveal card-apple" style={{ padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, '--reveal-delay': '200ms' } as any}>
+          <div className="reveal card-aave" style={{ padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, '--reveal-delay': '200ms' } as any}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
               FEAR & GREED INDEX
             </div>
@@ -368,7 +353,7 @@ export default function Dashboard() {
           </div>
 
           {/* Trending */}
-          <div className="reveal card-apple" style={{ padding: "20px", '--reveal-delay': '220ms' } as any}>
+          <div className="reveal card-aave" style={{ padding: "20px", '--reveal-delay': '220ms' } as any}>
             <SectionHeader icon={Flame} title="Trending" />
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(trendingData || []).slice(0, 4).map((coin: any, i: number) => (
@@ -389,7 +374,7 @@ export default function Dashboard() {
           </div>
 
           {/* Gainers */}
-          <div className="reveal card-apple" style={{ padding: "20px", '--reveal-delay': '240ms' } as any}>
+          <div className="reveal card-aave" style={{ padding: "20px", '--reveal-delay': '240ms' } as any}>
             <SectionHeader icon={TrendingUp} title="Top Gainers" action="Tümü" onAction={() => navigate("/market?sort=gain")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(gainersData || []).slice(0, 4).map((coin: any) => (
@@ -412,7 +397,7 @@ export default function Dashboard() {
 
           {/* AI Signal Card */}
           <div
-            className="reveal card-apple"
+            className="reveal card-aave"
             onClick={() => navigate("/analysis/ai")}
             style={{
               padding: "20px",
@@ -421,12 +406,14 @@ export default function Dashboard() {
               flexDirection: "column",
               gap: 12,
               '--reveal-delay': '260ms',
+              border: "1px solid var(--accent-border)",
+              background: "linear-gradient(180deg, var(--bg-card) 0%, rgba(182, 80, 158, 0.05) 100%)"
             } as any}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: "rgba(94,106,210,0.12)",
+                background: "var(--accent-soft)",
                 display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}>
                 <Brain size={18} color="var(--accent)" />

@@ -5,30 +5,30 @@
    Canvas: #0b0b12  |  Accent: #5e6ad2 (Indigo/Violet)
 ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Backgrounds (4-layer depth system) ── */
-  --bg-base:       #000000;   /* Canvas — deepest layer           */
-  --bg-surface:    #050505;   /* Elevated surfaces (cards, panels) */
-  --bg-elevated:   #0a0a0c;   /* Popovers, modals                  */
-  --bg-card:       #0a0a0a;   /* Standard card surface             */
-  --bg-hover:      #121212;   /* Hover state for rows/items        */
+  /* 🔹 Backgrounds (Aave V3 Dark Theme) 🔹 */
+  --bg-base:       #0f121d;   /* Canvas - deep blue/black          */
+  --bg-surface:    #1b2030;   /* Elevated surfaces (cards, panels) */
+  --bg-elevated:   #1b2030;   /* Popovers, modals                  */
+  --bg-card:       #1b2030;   /* Standard card surface             */
+  --bg-hover:      #23293d;   /* Hover state for rows/items        */
 
-  /* ── Hairline Borders ── */
-  --border:        rgba(255, 255, 255, 0.04);
-  --border-soft:   rgba(255, 255, 255, 0.02);
-  --border-mid:    rgba(255, 255, 255, 0.08);
-  --border-focus:  rgba(255, 255, 255, 0.15);
+  /* 🔹 Solid Borders 🔹 */
+  --border:        #2a2f45;
+  --border-soft:   #212538;
+  --border-mid:    #3a4059;
+  --border-focus:  #4f5878;
 
-  /* ── Text ── */
-  --text-primary:   rgba(255, 255, 255, 0.95);
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted:     rgba(255, 255, 255, 0.3);
+  /* 🔹 Text 🔹 */
+  --text-primary:   #ffffff;
+  --text-secondary: #aeb4c6;
+  --text-muted:     #6a7187;
 
-  /* ── Accent — Indigo/Violet #5e6ad2 ── */
-  --accent:         #5e6ad2;
-  --accent-hover:   #6e7ae2;
-  --accent-soft:    rgba(94, 106, 210, 0.12);
-  --accent-border:  rgba(94, 106, 210, 0.30);
-  --accent-glow:    rgba(94, 106, 210, 0.18);
+  /* 🔹 Accent - Aave Magenta/Purple 🔹 */
+  --accent:         #B6509E;
+  --accent-hover:   #c85bad;
+  --accent-soft:    rgba(182, 80, 158, 0.12);
+  --accent-border:  rgba(182, 80, 158, 0.30);
+  --accent-glow:    rgba(182, 80, 158, 0.18);
 
   /* ── Violet secondary ── */
   --secondary:      #7c3aed;
@@ -98,6 +98,19 @@
   border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Card - Aave (Solid, professional DeFi) */
+.card-aave {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+.card-aave:hover {
+  border-color: var(--border-mid);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 /* Panel — inner containers, sections */
