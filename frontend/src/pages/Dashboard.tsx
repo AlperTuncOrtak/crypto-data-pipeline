@@ -83,13 +83,10 @@ function ChangeBadge({ value }: { value: number }) {
 // ─── STAT CARD (top bar) ─────────────────────────────────────
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div style={{
+    <div className="linear-card" style={{
       padding: "20px 24px",
-      borderRadius: 12,
-      background: "var(--bg-surface)",
-      border: "1px solid var(--border)",
-      minWidth: 180,
       flex: 1,
+      minWidth: 220,
     }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
         {label}
@@ -118,11 +115,8 @@ function FearGreedBadge({ value }: { value: number }) {
     value <= 75 ? "Greed" : "Extreme Greed";
 
   return (
-    <div style={{
+    <div className="linear-card" style={{
       padding: "20px 24px",
-      borderRadius: 12,
-      background: "var(--bg-surface)",
-      border: "1px solid var(--border)",
       flex: 1,
     }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
@@ -254,6 +248,7 @@ export default function Dashboard() {
       background: "var(--bg-base)",
       fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
+      <div className="linear-bg-mesh" />
       {/* ─── CONTENT ─── */}
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "36px 32px" }}>
 
@@ -291,12 +286,10 @@ export default function Dashboard() {
         </div>
 
         {/* ─── SEARCH + FILTERS ─── */}
-        <div style={{
+        <div className="linear-card" style={{
           display: "flex", alignItems: "center", gap: 10, marginBottom: 0,
           padding: "12px 16px",
           borderRadius: "12px 12px 0 0",
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border)",
           borderBottom: "none",
         }}>
           {/* Search */}
@@ -336,8 +329,8 @@ export default function Dashboard() {
                   cursor: "pointer",
                   fontSize: 12, fontWeight: 600,
                   transition: "all 150ms",
-                  background: activeTab === tab.key ? "var(--text-primary)" : "transparent",
-                  color: activeTab === tab.key ? "#000" : "var(--text-muted)",
+                  background: activeTab === tab.key ? "rgba(255, 255, 255, 0.08)" : "transparent",
+                  color: activeTab === tab.key ? "var(--text-primary)" : "var(--text-secondary)",
                 }}
               >
                 {tab.label}
@@ -347,12 +340,11 @@ export default function Dashboard() {
 
           <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
             <button
+              className="linear-button"
               onClick={() => navigate("/analysis/ai")}
               style={{
                 display: "flex", alignItems: "center", gap: 6,
-                padding: "8px 14px", borderRadius: 8, border: "none",
-                background: "var(--accent)",
-                color: "#000", fontSize: 12, fontWeight: 700, cursor: "pointer",
+                padding: "8px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
               }}
             >
               <Brain size={14} /> AI Signal
@@ -361,9 +353,7 @@ export default function Dashboard() {
         </div>
 
         {/* ─── TABLE ─── */}
-        <div style={{
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border)",
+        <div className="linear-card" style={{
           borderRadius: "0 0 12px 12px",
           overflow: "hidden",
         }}>
