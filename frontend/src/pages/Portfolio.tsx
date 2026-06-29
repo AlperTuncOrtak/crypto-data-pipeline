@@ -816,11 +816,11 @@ function GuideModal({ exchange, onClose }) {
       >
         <div
           style={{
-            background: "#161616",
-            border: "1px solid #2a2a2a",
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-soft)",
             borderRadius: 20,
             overflow: "hidden",
-            boxShadow: "0 24px 80px rgba(0,0,0,0.8)",
+            boxShadow: "0 24px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)",
           }}
         >
           <div
@@ -1497,7 +1497,7 @@ export default function Portfolio() {
                   </Pie>
                   <RechartTooltip
                     formatter={(v) => fmtUSD(v)}
-                    contentStyle={{ backgroundColor: "#111", border: "1px solid var(--border)", borderRadius: "16px", color: "var(--text-primary)", fontSize: 13, fontWeight: 600 }}
+                    contentStyle={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", color: "var(--text-primary)", fontSize: 13, fontWeight: 600 }}
                     itemStyle={{ color: "var(--text-primary)" }}
                   />
                 </PieChart>
