@@ -1,7 +1,7 @@
 // ============================================================
-// pages/Dashboard.tsx
+// pages/Dashboard.tsx  –  Aave Pro Style
 // ============================================================
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useMarket,
@@ -18,7 +18,9 @@ import { useTranslation } from "react-i18next";
 import PriceCell from "../components/ui/PriceCell";
 import {
   TrendingUp, TrendingDown, Activity, Brain,
-  Bell, ArrowRight, Flame, BarChart2, Clock,
+  ArrowRight, Flame, BarChart2, Search,
+  ChevronUp, ChevronDown, Star, SlidersHorizontal,
+  ArrowUpRight, ArrowDownRight, Info,
 } from "lucide-react";
 
 // ─── HELPERS ────────────────────────────────────────────────
@@ -30,11 +32,16 @@ function fmt(n: number) {
   return `$${n.toFixed(0)}`;
 }
 
+function fmtPrice(n: number) {
+  if (!n || isNaN(n)) return "—";
+  if (n >= 1000) return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (n >= 1) return `$${n.toFixed(4)}`;
+  return `$${n.toFixed(6)}`;
+}
+
 // ─── SPARKLINE ───────────────────────────────────────────────
-function MiniChart({ points, up, width = 120, height = 44 }: {
-  points: number[]; up: boolean; width?: number | string; height?: number;
-}) {
-  if (!points || points.length < 2) return null;
+function MiniSparkline({ points, up }: { points: number[]; up: boolean }) {
+  if (!points || points.length < 2) return <div style={{ width: 80, height: 28 }} />;
   const min = Math.min(...points);
   const max = Math.max(...points);
   const range = max - min || 1;
@@ -43,109 +50,122 @@ function MiniChart({ points, up, width = 120, height = 44 }: {
     .join(" ");
   const color = up ? "#22c55e" : "#ef4444";
   return (
-    <svg width={width} height={height} viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: "visible", display: "block", width: "100%", height: "100%" }}>
+    <svg width="80" height="28" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: "visible" }}>
       <defs>
-        <linearGradient id={`sg-${up}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+        <linearGradient id={`sg-d-${up}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <polyline
-        points={`0,100 ${pts} 100,100`}
-        fill={`url(#sg-${up})`}
-        stroke="none"
-      />
-      <polyline
-        points={pts}
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
+      <polyline points={`0,100 ${pts} 100,100`} fill={`url(#sg-d-${up})`} stroke="none" />
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
 
-// ─── FEAR & GREED DIAL ─────────────────────────────────────────
-function FearGreedDial({ value }: { value: number }) {
-  const clamp = Math.min(100, Math.max(0, value));
-  const angle = -135 + (clamp / 100) * 270;
-  const color =
-    clamp <= 25  ? "#ef4444" :
-    clamp <= 45  ? "#f97316" :
-    clamp <= 55  ? "#eab308" :
-    clamp <= 75  ? "#22c55e" :
-                   "#10b981";
-  const label =
-    clamp <= 25  ? "Extreme Fear" :
-    clamp <= 45  ? "Fear" :
-    clamp <= 55  ? "Neutral" :
-    clamp <= 75  ? "Greed" :
-                   "Extreme Greed";
-
-  const r = 54;
-  const cx = 70, cy = 70;
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const pathData = [
-    `M ${cx - r * Math.sin(toRad(45))} ${cy + r * Math.cos(toRad(45))}`,
-    `A ${r} ${r} 0 1 1 ${cx + r * Math.sin(toRad(45))} ${cy + r * Math.cos(toRad(45))}`
-  ].join(" ");
-  const valX = cx + (r - 6) * Math.sin(toRad(angle));
-  const valY = cy - (r - 6) * Math.cos(toRad(angle));
-
+// ─── CHANGE BADGE ────────────────────────────────────────────
+function ChangeBadge({ value }: { value: number }) {
+  const isUp = value >= 0;
   return (
-    <div style={{ position: "relative", width: 140, height: 100 }}>
-      <svg width={140} height={140} style={{ position: "absolute", top: 0, left: 0 }}>
-        <path d={pathData} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" strokeLinecap="round" />
-        <path d={pathData} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round" strokeDasharray="300" strokeDashoffset={300 - (clamp / 100) * 255} style={{ transition: "stroke-dashoffset 1s ease-out" }} />
-        <circle cx={valX} cy={valY} r="4" fill="#fff" stroke={color} strokeWidth="2" style={{ transition: "all 1s ease-out" }} />
-      </svg>
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
-        <div style={{ fontSize: 24, fontWeight: 800, color: "#fff", letterSpacing: "-0.04em", fontFamily: "monospace" }}>{clamp}</div>
-        <div style={{ fontSize: 11, fontWeight: 700, color, marginTop: -2 }}>{label}</div>
-      </div>
+    <div style={{
+      display: "inline-flex", alignItems: "center", gap: 3,
+      padding: "4px 8px", borderRadius: 6,
+      background: isUp ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
+      color: isUp ? "#22c55e" : "#ef4444",
+      fontSize: 12, fontWeight: 700, fontFamily: "monospace",
+    }}>
+      {isUp ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+      {isUp ? "+" : ""}{value.toFixed(2)}%
     </div>
   );
 }
 
-// ─── SECTION HEADER ──────────────────────────────────────────
-function SectionHeader({ icon: Icon, title, action, onAction }: any) {
+// ─── STAT CARD (top bar) ─────────────────────────────────────
+function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 24, height: 24, borderRadius: 6, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Icon size={14} color="rgba(255,255,255,0.6)" />
-        </div>
-        <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{title}</span>
+    <div style={{
+      padding: "20px 24px",
+      borderRadius: 12,
+      background: "#1c1c1e",
+      border: "1px solid #2a2a2e",
+      minWidth: 180,
+      flex: 1,
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+        {label}
       </div>
-      {action && (
-        <span
-          onClick={onAction}
-          style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", cursor: "pointer", padding: "4px 8px", borderRadius: 6, background: "rgba(94,106,210,0.1)" }}
-        >
-          {action}
-        </span>
+      <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", fontFamily: "monospace" }}>
+        {value}
+      </div>
+      {sub && (
+        <div style={{ fontSize: 11, color: "#555", marginTop: 4, fontFamily: "monospace" }}>{sub}</div>
       )}
     </div>
   );
 }
 
-function LiveBadge() {
+// ─── FEAR & GREED ────────────────────────────────────────────
+function FearGreedBadge({ value }: { value: number }) {
+  const color =
+    value <= 25 ? "#ef4444" :
+    value <= 45 ? "#f97316" :
+    value <= 55 ? "#eab308" :
+    value <= 75 ? "#22c55e" : "#10b981";
+  const label =
+    value <= 25 ? "Extreme Fear" :
+    value <= 45 ? "Fear" :
+    value <= 55 ? "Neutral" :
+    value <= 75 ? "Greed" : "Extreme Greed";
+
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", padding: "4px 10px", borderRadius: 12 }}>
-      <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e", animation: "pulse 2s infinite" }} />
-      <span style={{ fontSize: 11, fontWeight: 700, color: "#22c55e", letterSpacing: "0.06em", textTransform: "uppercase" }}>Live</span>
-      <style>{`@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }`}</style>
+    <div style={{
+      padding: "20px 24px",
+      borderRadius: 12,
+      background: "#1c1c1e",
+      border: "1px solid #2a2a2e",
+      flex: 1,
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+        Fear & Greed
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: "50%",
+          background: `conic-gradient(${color} ${value}%, #2a2a2e ${value}%)`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          position: "relative",
+        }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: "50%",
+            background: "#1c1c1e",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", fontFamily: "monospace" }}>{value}</span>
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color, marginBottom: 2 }}>{label}</div>
+          <div style={{ fontSize: 11, color: "#555" }}>Market Sentiment</div>
+        </div>
+      </div>
     </div>
   );
 }
 
-// ─── DASHBOARD PAGE ──────────────────────────────────────────
+// ─── SORT ICON ───────────────────────────────────────────────
+function SortIcon({ active, dir }: { active: boolean; dir: "asc" | "desc" }) {
+  return (
+    <span style={{ color: active ? "#fff" : "#444", marginLeft: 4 }}>
+      {dir === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+    </span>
+  );
+}
+
+// ─── MAIN DASHBOARD ──────────────────────────────────────────
+type SortKey = "rank" | "price" | "change" | "volume" | "mcap";
+
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   const { data: coins } = useMarket();
   const { data: gainersData } = useGainers();
@@ -155,281 +175,370 @@ export default function Dashboard() {
   const { data: alertsData } = useAlerts();
   const { data: fng } = useFearAndGreed();
 
-  const btcCoin = coins?.find((c: any) => c.symbol.toLowerCase() === "btc");
-  const ethCoin = coins?.find((c: any) => c.symbol.toLowerCase() === "eth");
-
-  const { data: btcSparkline } = useSparklines(btcCoin?.id);
-
   const revealRef = useScrollReveal();
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const spotRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleMouse = (e: MouseEvent) => {
-      if (!spotRef.current || !canvasRef.current) return;
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      spotRef.current.style.transform = `translate(${x - 300}px, ${y - 300}px)`;
-      spotRef.current.style.opacity = "1";
-    };
-    const handleLeave = () => {
-      if (spotRef.current) spotRef.current.style.opacity = "0";
-    };
-    window.addEventListener("mousemove", handleMouse);
-    document.body.addEventListener("mouseleave", handleLeave);
-    return () => {
-      window.removeEventListener("mousemove", handleMouse);
-      document.body.removeEventListener("mouseleave", handleLeave);
-    };
-  }, []);
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("rank");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [activeTab, setActiveTab] = useState<"all" | "gainers" | "losers" | "trending">("all");
 
   const totalMcap = statsData?.total_market_cap?.usd || 0;
   const totalVolume = statsData?.total_volume?.usd || 0;
   const btcDom = statsData?.market_cap_percentage?.btc?.toFixed(1) || "0.0";
-  const top10 = (coins || []).slice(0, 10);
-
-  const btcPoints = btcSparkline || [0,0];
-  const btcUp = btcPoints.length > 1 ? btcPoints[btcPoints.length - 1] >= btcPoints[0] : true;
-
+  const ethDom = statsData?.market_cap_percentage?.eth?.toFixed(1) || "0.0";
   const fngValue = fng ? parseInt(fng.value) : null;
-  const recentAlerts = (alertsData || []).slice(0, 4);
+
+  // build display list based on tab
+  const baseList: any[] =
+    activeTab === "gainers" ? (gainersData || []) :
+    activeTab === "losers"  ? (losersData || []) :
+    activeTab === "trending"? (trendingData || []) :
+    (coins || []);
+
+  // filter + sort
+  const filtered = baseList
+    .filter((c: any) =>
+      !search ||
+      c.name?.toLowerCase().includes(search.toLowerCase()) ||
+      c.symbol?.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a: any, b: any) => {
+      let av = 0, bv = 0;
+      if (sortKey === "rank") { av = a.market_cap_rank || 9999; bv = b.market_cap_rank || 9999; }
+      else if (sortKey === "price") { av = a.current_price || 0; bv = b.current_price || 0; }
+      else if (sortKey === "change") { av = a.price_change_percentage_24h || 0; bv = b.price_change_percentage_24h || 0; }
+      else if (sortKey === "volume") { av = a.total_volume || 0; bv = b.total_volume || 0; }
+      else if (sortKey === "mcap") { av = a.market_cap || 0; bv = b.market_cap || 0; }
+      return sortDir === "asc" ? av - bv : bv - av;
+    });
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortKey(key); setSortDir("asc"); }
+  }
+
+  const TH = ({ k, label, align = "left" }: { k: SortKey; label: string; align?: string }) => (
+    <div
+      onClick={() => toggleSort(k)}
+      style={{
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: align === "right" ? "flex-end" : "flex-start",
+        gap: 2,
+        userSelect: "none",
+        color: sortKey === k ? "#fff" : "#555",
+        fontSize: 11,
+        fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        transition: "color 150ms",
+      }}
+    >
+      {label}
+      {sortKey === k && <SortIcon active dir={sortDir} />}
+    </div>
+  );
 
   return (
-    <div ref={canvasRef} style={{ position: "relative", color: "var(--text-primary)", overflow: "hidden", minHeight: "100vh" }}>
-      
-      {/* ─── ALL CONTENT ─── */}
-      <div ref={revealRef} style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "40px 32px" }}>
+    <div ref={revealRef} style={{
+      minHeight: "100vh",
+      color: "#fff",
+      background: "#111113",
+      fontFamily: "'Inter', -apple-system, sans-serif",
+    }}>
+      {/* ─── CONTENT ─── */}
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "36px 32px" }}>
 
-      {/* ─── HEADER ─── */}
-      <div className="reveal" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32 }}>
-        <div>
-          <h1 style={{
-            fontSize: 32, fontWeight: 700, letterSpacing: "-0.04em", margin: 0,
-            background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.4) 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+        {/* ─── PAGE TITLE ─── */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
+          <div>
+            <h1 style={{
+              fontSize: 28, fontWeight: 800, letterSpacing: "-0.04em", margin: 0,
+              color: "#fff",
+            }}>
+              Markets
+            </h1>
+            <p style={{ fontSize: 13, color: "#555", marginTop: 4, margin: "4px 0 0 0" }}>
+              Live crypto market data — sorted by market cap.
+            </p>
+          </div>
+          {/* Live badge */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            background: "#1c1c1e", border: "1px solid #2a2a2e",
+            padding: "6px 12px", borderRadius: 8,
           }}>
-            Dashboard
-          </h1>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
-            Piyasa özetini 30 saniyede kavra.
-          </p>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 6px #22c55e", animation: "pulse 2s infinite" }} />
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#22c55e", letterSpacing: "0.06em" }}>LIVE</span>
+            <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }`}</style>
+          </div>
         </div>
-        <LiveBadge />
-      </div>
 
-      {/* ─── NEW LAYOUT: LEFT MAIN + RIGHT SIDEBAR ─── */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 340px", gap: 24, alignItems: "start" }}>
-        
-        {/* ─── LEFT COLUMN: Main Content ─── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          
-          {/* MACRO STRIP */}
-          <div
-            className="reveal card-aave"
-            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", overflow: "hidden", '--reveal-delay': '60ms' } as any}
-          >
-            {[
-              { label: "Market Cap", value: fmt(totalMcap), sub: `${coins?.length || 0}+ asset` },
-              { label: "24h Volume", value: fmt(totalVolume), sub: "global" },
-              { label: "BTC Dominance", value: `${btcDom}%`, sub: "of total market" },
-            ].map((item, i) => (
-              <div
-                key={i}
+        {/* ─── STAT CARDS ─── */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap" }}>
+          <StatCard label="Global Market Cap" value={fmt(totalMcap)} sub={`${(coins || []).length}+ assets`} />
+          <StatCard label="24h Volume" value={fmt(totalVolume)} sub="across all markets" />
+          <StatCard label="BTC Dominance" value={`${btcDom}%`} sub={`ETH: ${ethDom}%`} />
+          {fngValue !== null && <FearGreedBadge value={fngValue} />}
+        </div>
+
+        {/* ─── SEARCH + FILTERS ─── */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10, marginBottom: 0,
+          padding: "12px 16px",
+          borderRadius: "12px 12px 0 0",
+          background: "#1c1c1e",
+          border: "1px solid #2a2a2e",
+          borderBottom: "none",
+        }}>
+          {/* Search */}
+          <div style={{ position: "relative", flex: 1, maxWidth: 320 }}>
+            <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#555" }} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search assets..."
+              style={{
+                width: "100%", boxSizing: "border-box",
+                background: "#141414",
+                border: "1px solid #2a2a2e",
+                borderRadius: 8,
+                padding: "8px 12px 8px 32px",
+                fontSize: 13, color: "#fff",
+                outline: "none",
+              }}
+            />
+          </div>
+
+          {/* Tabs */}
+          <div style={{ display: "flex", gap: 4, background: "#141414", padding: 4, borderRadius: 8, border: "1px solid #2a2a2e" }}>
+            {([
+              { key: "all",      label: "All Assets" },
+              { key: "gainers",  label: "🔥 Gainers" },
+              { key: "losers",   label: "📉 Losers" },
+              { key: "trending", label: "⚡ Trending" },
+            ] as const).map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 style={{
-                  padding: "20px 24px",
-                  borderRight: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                  padding: "6px 14px",
+                  borderRadius: 6,
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: 12, fontWeight: 600,
+                  transition: "all 150ms",
+                  background: activeTab === tab.key ? "#fff" : "transparent",
+                  color: activeTab === tab.key ? "#111" : "#555",
                 }}
               >
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
-                  {item.label}
-                </div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", letterSpacing: "-0.02em", fontFamily: "monospace" }}>
-                  {item.value}
-                </div>
-                {item.sub && (
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.35)", marginTop: 4, fontFamily: "monospace" }}>
-                    {item.sub}
-                  </div>
-                )}
-              </div>
+                {tab.label}
+              </button>
             ))}
           </div>
 
-          {/* MAIN CHART */}
-          <div className="reveal card-aave" style={{ padding: "24px", '--reveal-delay': '120ms' } as any}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  {btcCoin?.image_url && <img src={btcCoin.image_url} alt="BTC" style={{ width: 24, height: 24, borderRadius: "50%" }} />}
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>Bitcoin (BTC)</span>
-                </div>
-                <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "monospace", color: "#fff", letterSpacing: "-0.02em" }}>
-                  {btcCoin ? <PriceCell price={btcCoin.current_price} /> : "—"}
-                </div>
-              </div>
-              <span style={{
-                fontSize: 14, fontWeight: 700, fontFamily: "monospace",
-                color: btcUp ? "#22c55e" : "#ef4444",
-                background: btcUp ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
-                padding: "6px 12px", borderRadius: 8,
-              }}>
-                {btcCoin && (Number(btcCoin.price_change_percentage_24h) >= 0 ? "+" : "")}{btcCoin ? Number(btcCoin.price_change_percentage_24h).toFixed(2) : "0"}%
-              </span>
-            </div>
-            <div style={{ width: "100%", height: 160, position: "relative" }}>
-               <MiniChart points={btcPoints} up={btcUp} width="100%" height={160} />
-            </div>
-          </div>
-
-          {/* TOP 10 TABLE */}
-          <div className="reveal card-aave" style={{ padding: "20px 8px", '--reveal-delay': '180ms' } as any}>
-            <div style={{ padding: "0 16px", marginBottom: 12 }}>
-              <SectionHeader icon={BarChart2} title="Top 10 Assets" action="View All" onAction={() => navigate("/market")} />
-            </div>
-            
-            {/* Table Header */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "30px 2fr 1fr 1fr", alignItems: "center",
-              padding: "0 12px 8px 12px", borderBottom: "1px solid var(--border)",
-              fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em",
-              marginBottom: 8, margin: "0 8px 8px 8px"
-            }}>
-              <span>#</span>
-              <span>Asset</span>
-              <span style={{ textAlign: "right" }}>Price</span>
-              <span style={{ textAlign: "right" }}>24h Change</span>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "0 8px" }}>
-              {top10.map((coin: any, i: number) => {
-                const isUp = Number(coin.price_change_percentage_24h) >= 0;
-                return (
-                  <div
-                    key={coin.symbol}
-                    onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    style={{
-                      display: "grid", gridTemplateColumns: "30px 2fr 1fr 1fr", alignItems: "center",
-                      padding: "12px", borderRadius: 8, cursor: "pointer",
-                      transition: "background 200ms"
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                  >
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>{i + 1}</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      {coin.image_url && <img src={coin.image_url} alt={coin.symbol} style={{ width: 24, height: 24, borderRadius: "50%" }} />}
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{coin.name}</div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{coin.symbol?.toUpperCase()}</div>
-                      </div>
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "monospace", color: "#fff", textAlign: "right" }}>
-                      <PriceCell price={coin.current_price} />
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "monospace", textAlign: "right", color: isUp ? "#22c55e" : "#ef4444" }}>
-                      {isUp ? "+" : ""}{Number(coin.price_change_percentage_24h).toFixed(2)}%
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+            <button
+              onClick={() => navigate("/analysis/ai")}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 14px", borderRadius: 8, border: "none",
+                background: "linear-gradient(135deg, #B6509E 0%, #2EBAC6 100%)",
+                color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              <Brain size={14} /> AI Signal
+            </button>
           </div>
         </div>
 
-        {/* ─── RIGHT COLUMN: Sidebar ─── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          
-          {/* Fear & Greed */}
-          <div className="reveal card-aave" style={{ padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, '--reveal-delay': '200ms' } as any}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
-              FEAR & GREED INDEX
+        {/* ─── TABLE ─── */}
+        <div style={{
+          background: "#1c1c1e",
+          border: "1px solid #2a2a2e",
+          borderRadius: "0 0 12px 12px",
+          overflow: "hidden",
+        }}>
+
+          {/* Table Header */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "50px 2.5fr 140px 120px 150px 140px 90px",
+            padding: "12px 20px",
+            borderBottom: "1px solid #242428",
+            gap: 12,
+          }}>
+            <TH k="rank" label="#" />
+            <TH k="rank" label="Asset" />
+            <TH k="price" label="Price" align="right" />
+            <TH k="change" label="24h %" align="right" />
+            <TH k="volume" label="24h Volume" align="right" />
+            <TH k="mcap" label="Market Cap" align="right" />
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#555" }}>
+              7d Chart
             </div>
-            {fngValue !== null
-              ? <FearGreedDial value={fngValue} />
-              : <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", height: 74, display: "flex", alignItems: "center" }}>Yükleniyor...</div>
-            }
           </div>
 
+          {/* Table Rows */}
+          {filtered.slice(0, 50).map((coin: any, i: number) => {
+            const change = Number(coin.price_change_percentage_24h) || 0;
+            const isUp = change >= 0;
+            return (
+              <div
+                key={coin.symbol + i}
+                onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "50px 2.5fr 140px 120px 150px 140px 90px",
+                  padding: "14px 20px",
+                  borderBottom: "1px solid #1f1f22",
+                  cursor: "pointer",
+                  transition: "background 150ms",
+                  gap: 12,
+                  alignItems: "center",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#242428")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                {/* Rank */}
+                <span style={{ fontSize: 12, color: "#444", fontFamily: "monospace", textAlign: "center" }}>
+                  {coin.market_cap_rank || i + 1}
+                </span>
+
+                {/* Asset */}
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {coin.image_url
+                    ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 32, height: 32, borderRadius: "50%", background: "#2a2a2e" }} />
+                    : <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#2a2a2e", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{coin.symbol?.[0]}</div>
+                  }
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>{coin.name}</div>
+                    <div style={{ fontSize: 11, color: "#555", fontFamily: "monospace", marginTop: 1 }}>{coin.symbol?.toUpperCase()}</div>
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div style={{ textAlign: "right", fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "monospace" }}>
+                  <PriceCell price={coin.current_price} />
+                </div>
+
+                {/* 24h Change */}
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <ChangeBadge value={change} />
+                </div>
+
+                {/* Volume */}
+                <div style={{ textAlign: "right", fontSize: 13, color: "#888", fontFamily: "monospace" }}>
+                  {fmt(coin.total_volume)}
+                </div>
+
+                {/* Market Cap */}
+                <div style={{ textAlign: "right", fontSize: 13, color: "#888", fontFamily: "monospace" }}>
+                  {fmt(coin.market_cap)}
+                </div>
+
+                {/* Mini chart placeholder */}
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <MiniSparkline points={[0, isUp ? 1 : 0.8, isUp ? 0.9 : 0.6, isUp ? 1.2 : 0.4, isUp ? 1.1 : 0.3, isUp ? 1.3 : 0.2, isUp ? 1.5 : 0.1]} up={isUp} />
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Empty state */}
+          {filtered.length === 0 && (
+            <div style={{ padding: "60px 24px", textAlign: "center", color: "#444", fontSize: 14 }}>
+              No assets found matching "{search}"
+            </div>
+          )}
+        </div>
+
+        {/* ─── BOTTOM ROW: Trending + Recent Activity ─── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
+
           {/* Trending */}
-          <div className="reveal card-aave" style={{ padding: "20px", '--reveal-delay': '220ms' } as any}>
-            <SectionHeader icon={Flame} title="Trending" />
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {(trendingData || []).slice(0, 4).map((coin: any, i: number) => (
+          <div style={{ background: "#1c1c1e", border: "1px solid #2a2a2e", borderRadius: 12, padding: "20px 24px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Flame size={16} color="#f97316" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>Trending</span>
+              </div>
+              <span onClick={() => navigate("/market")} style={{ fontSize: 12, color: "#555", cursor: "pointer" }}>
+                View all →
+              </span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {(trendingData || []).slice(0, 6).map((coin: any, i: number) => (
                 <div
                   key={coin.symbol || i}
                   onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "10px 0",
+                    borderBottom: i < 5 ? "1px solid #1f1f22" : "none",
+                    cursor: "pointer",
+                  }}
                 >
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "monospace", width: 16 }}>{i + 1}</span>
-                  {coin.image_url && <img src={coin.image_url} alt={coin.symbol} style={{ width: 20, height: 20, borderRadius: "50%" }} />}
+                  <span style={{ fontSize: 11, color: "#333", fontFamily: "monospace", width: 16 }}>{i + 1}</span>
+                  {coin.image_url
+                    ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 24, height: 24, borderRadius: "50%" }} />
+                    : <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#2a2a2e" }} />
+                  }
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{coin.symbol?.toUpperCase()}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{coin.name}</div>
+                    <div style={{ fontSize: 11, color: "#444", fontFamily: "monospace" }}>{coin.symbol?.toUpperCase()}</div>
                   </div>
-                  <Activity size={12} color="rgba(255,255,255,0.2)" />
+                  {coin.price_change_percentage_24h != null && (
+                    <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
+                  )}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Gainers */}
-          <div className="reveal card-aave" style={{ padding: "20px", '--reveal-delay': '240ms' } as any}>
-            <SectionHeader icon={TrendingUp} title="Top Gainers" action="Tümü" onAction={() => navigate("/market?sort=gain")} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {(gainersData || []).slice(0, 4).map((coin: any) => (
-                <div
-                  key={coin.symbol}
-                  onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    {coin.image_url && <img src={coin.image_url} alt={coin.symbol} style={{ width: 20, height: 20, borderRadius: "50%" }} />}
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{coin.symbol?.toUpperCase()}</span>
+          {/* Top Gainers & Losers */}
+          <div style={{ background: "#1c1c1e", border: "1px solid #2a2a2e", borderRadius: 12, padding: "20px 24px" }}>
+            <div style={{ display: "flex", gap: 0, marginBottom: 16 }}>
+              {[
+                { key: "gainers", label: "Top Gainers", icon: <TrendingUp size={14} color="#22c55e" />, data: gainersData },
+                { key: "losers", label: "Top Losers", icon: <TrendingDown size={14} color="#ef4444" />, data: losersData },
+              ].map(({ key, label, icon, data }, si) => (
+                <div key={key} style={{ flex: 1, paddingRight: si === 0 ? 16 : 0, paddingLeft: si === 1 ? 16 : 0, borderLeft: si === 1 ? "1px solid #2a2a2e" : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+                    {icon}
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{label}</span>
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e", fontFamily: "monospace" }}>
-                    +{Number(coin.price_change_percentage_24h).toFixed(2)}%
-                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                    {(data || []).slice(0, 5).map((coin: any, ci: number) => (
+                      <div
+                        key={coin.symbol + ci}
+                        onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                        style={{
+                          display: "flex", alignItems: "center", justifyContent: "space-between",
+                          padding: "7px 0",
+                          borderBottom: ci < 4 ? "1px solid #1f1f22" : "none",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                          {coin.image_url
+                            ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 20, height: 20, borderRadius: "50%" }} />
+                            : <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#2a2a2e" }} />
+                          }
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "#ccc" }}>{coin.symbol?.toUpperCase()}</span>
+                        </div>
+                        <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* AI Signal Card */}
-          <div
-            className="reveal card-aave"
-            onClick={() => navigate("/analysis/ai")}
-            style={{
-              padding: "20px",
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              '--reveal-delay': '260ms',
-              border: "1px solid var(--accent-border)",
-              background: "linear-gradient(180deg, var(--bg-card) 0%, rgba(182, 80, 158, 0.05) 100%)"
-            } as any}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: "var(--accent-soft)",
-                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-              }}>
-                <Brain size={18} color="var(--accent)" />
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>AI Analiz — Sinyal</div>
-            </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
-              Gemini destekli detaylı kripto raporu ve günün fırsatları.
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: "var(--accent)" }}>
-              Hemen İncele <ArrowRight size={14} />
             </div>
           </div>
 
         </div>
-      </div>
+
       </div>
     </div>
   );
