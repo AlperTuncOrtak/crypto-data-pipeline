@@ -91,14 +91,14 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
       minWidth: 180,
       flex: 1,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
         {label}
       </div>
-      <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", fontFamily: "monospace" }}>
+      <div style={{ fontSize: 26, fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", fontFamily: "monospace" }}>
         {value}
       </div>
       {sub && (
-        <div style={{ fontSize: 11, color: "#555", marginTop: 4, fontFamily: "monospace" }}>{sub}</div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, fontFamily: "monospace" }}>{sub}</div>
       )}
     </div>
   );
@@ -125,7 +125,7 @@ function FearGreedBadge({ value }: { value: number }) {
       border: "1px solid var(--border)",
       flex: 1,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
         Fear & Greed
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -140,12 +140,12 @@ function FearGreedBadge({ value }: { value: number }) {
             background: "var(--bg-surface)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", fontFamily: "monospace" }}>{value}</span>
+            <span style={{ fontSize: 13, fontWeight: 800, color: "var(--text-primary)", fontFamily: "monospace" }}>{value}</span>
           </div>
         </div>
         <div>
           <div style={{ fontSize: 14, fontWeight: 700, color, marginBottom: 2 }}>{label}</div>
-          <div style={{ fontSize: 11, color: "#555" }}>Market Sentiment</div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Market Sentiment</div>
         </div>
       </div>
     </div>
@@ -155,7 +155,7 @@ function FearGreedBadge({ value }: { value: number }) {
 // ─── SORT ICON ───────────────────────────────────────────────
 function SortIcon({ active, dir }: { active: boolean; dir: "asc" | "desc" }) {
   return (
-    <span style={{ color: active ? "#fff" : "#444", marginLeft: 4 }}>
+    <span style={{ color: active ? "var(--text-primary)" : "var(--text-muted)", marginLeft: 4 }}>
       {dir === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
     </span>
   );
@@ -234,7 +234,7 @@ export default function Dashboard() {
         justifyContent: align === "right" ? "flex-end" : "flex-start",
         gap: 2,
         userSelect: "none",
-        color: sortKey === k ? "#fff" : "#555",
+        color: sortKey === k ? "var(--text-primary)" : "var(--text-muted)",
         fontSize: 11,
         fontWeight: 600,
         textTransform: "uppercase",
@@ -250,7 +250,7 @@ export default function Dashboard() {
   return (
     <div ref={revealRef} style={{
       minHeight: "100vh",
-      color: "#fff",
+      color: "var(--text-primary)",
       background: "var(--bg-base)",
       fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
@@ -262,11 +262,11 @@ export default function Dashboard() {
           <div>
             <h1 style={{
               fontSize: 28, fontWeight: 800, letterSpacing: "-0.04em", margin: 0,
-              color: "#fff",
+              color: "var(--text-primary)",
             }}>
               Markets
             </h1>
-            <p style={{ fontSize: 13, color: "#555", marginTop: 4, margin: "4px 0 0 0" }}>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4, margin: "4px 0 0 0" }}>
               Live crypto market data — sorted by market cap.
             </p>
           </div>
@@ -301,25 +301,25 @@ export default function Dashboard() {
         }}>
           {/* Search */}
           <div style={{ position: "relative", flex: 1, maxWidth: 320 }}>
-            <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#555" }} />
+            <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search assets..."
               style={{
                 width: "100%", boxSizing: "border-box",
-                background: "#141414",
+                background: "var(--bg-surface)",
                 border: "1px solid var(--border)",
                 borderRadius: 8,
                 padding: "8px 12px 8px 32px",
-                fontSize: 13, color: "#fff",
+                fontSize: 13, color: "var(--text-primary)",
                 outline: "none",
               }}
             />
           </div>
 
           {/* Tabs */}
-          <div style={{ display: "flex", gap: 4, background: "#141414", padding: 4, borderRadius: 8, border: "1px solid var(--border)" }}>
+          <div style={{ display: "flex", gap: 4, background: "var(--bg-surface)", padding: 4, borderRadius: 8, border: "1px solid var(--border)" }}>
             {([
               { key: "all",      label: "All Assets" },
               { key: "gainers",  label: "🔥 Gainers" },
@@ -336,8 +336,8 @@ export default function Dashboard() {
                   cursor: "pointer",
                   fontSize: 12, fontWeight: 600,
                   transition: "all 150ms",
-                  background: activeTab === tab.key ? "#fff" : "transparent",
-                  color: activeTab === tab.key ? "#111" : "#555",
+                  background: activeTab === tab.key ? "var(--text-primary)" : "transparent",
+                  color: activeTab === tab.key ? "#000" : "var(--text-muted)",
                 }}
               >
                 {tab.label}
@@ -351,8 +351,8 @@ export default function Dashboard() {
               style={{
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "8px 14px", borderRadius: 8, border: "none",
-                background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)",
-                color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer",
+                background: "var(--accent)",
+                color: "#000", fontSize: 12, fontWeight: 700, cursor: "pointer",
               }}
             >
               <Brain size={14} /> AI Signal
@@ -382,7 +382,7 @@ export default function Dashboard() {
             <TH k="change" label="24h %" align="right" />
             <TH k="volume" label="24h Volume" align="right" />
             <TH k="mcap" label="Market Cap" align="right" />
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#555" }}>
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)" }}>
               7d Chart
             </div>
           </div>
@@ -409,7 +409,7 @@ export default function Dashboard() {
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 {/* Rank */}
-                <span style={{ fontSize: 12, color: "#444", fontFamily: "monospace", textAlign: "center" }}>
+                <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "monospace", textAlign: "center" }}>
                   {coin.market_cap_rank || i + 1}
                 </span>
 
@@ -417,16 +417,16 @@ export default function Dashboard() {
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   {coin.image_url
                     ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--border)" }} />
-                    : <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{coin.symbol?.[0]}</div>
+                    : <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>{coin.symbol?.[0]}</div>
                   }
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>{coin.name}</div>
-                    <div style={{ fontSize: 11, color: "#555", fontFamily: "monospace", marginTop: 1 }}>{coin.symbol?.toUpperCase()}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>{coin.name}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "monospace", marginTop: 1 }}>{coin.symbol?.toUpperCase()}</div>
                   </div>
                 </div>
 
                 {/* Price */}
-                <div style={{ textAlign: "right", fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "monospace" }}>
+                <div style={{ textAlign: "right", fontSize: 14, fontWeight: 700, color: "var(--text-primary)", fontFamily: "monospace" }}>
                   <PriceCell price={coin.current_price} />
                 </div>
 
@@ -436,12 +436,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* Volume */}
-                <div style={{ textAlign: "right", fontSize: 13, color: "#888", fontFamily: "monospace" }}>
+                <div style={{ textAlign: "right", fontSize: 13, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {fmt(coin.total_volume)}
                 </div>
 
                 {/* Market Cap */}
-                <div style={{ textAlign: "right", fontSize: 13, color: "#888", fontFamily: "monospace" }}>
+                <div style={{ textAlign: "right", fontSize: 13, color: "var(--text-secondary)", fontFamily: "monospace" }}>
                   {fmt(coin.market_cap)}
                 </div>
 
@@ -455,7 +455,7 @@ export default function Dashboard() {
 
           {/* Empty state */}
           {filtered.length === 0 && (
-            <div style={{ padding: "60px 24px", textAlign: "center", color: "#444", fontSize: 14 }}>
+            <div style={{ padding: "60px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 14 }}>
               No assets found matching "{search}"
             </div>
           )}
@@ -469,9 +469,9 @@ export default function Dashboard() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Flame size={16} color="#f97316" />
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>Trending</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Trending</span>
               </div>
-              <span onClick={() => navigate("/market")} style={{ fontSize: 12, color: "#555", cursor: "pointer" }}>
+              <span onClick={() => navigate("/market")} style={{ fontSize: 12, color: "var(--text-muted)", cursor: "pointer" }}>
                 View all →
               </span>
             </div>
@@ -487,14 +487,14 @@ export default function Dashboard() {
                     cursor: "pointer",
                   }}
                 >
-                  <span style={{ fontSize: 11, color: "#333", fontFamily: "monospace", width: 16 }}>{i + 1}</span>
+                  <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "monospace", width: 16 }}>{i + 1}</span>
                   {coin.image_url
                     ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 24, height: 24, borderRadius: "50%" }} />
                     : <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--border)" }} />
                   }
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{coin.name}</div>
-                    <div style={{ fontSize: 11, color: "#444", fontFamily: "monospace" }}>{coin.symbol?.toUpperCase()}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{coin.name}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "monospace" }}>{coin.symbol?.toUpperCase()}</div>
                   </div>
                   {coin.price_change_percentage_24h != null && (
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
@@ -514,7 +514,7 @@ export default function Dashboard() {
                 <div key={key} style={{ flex: 1, paddingRight: si === 0 ? 16 : 0, paddingLeft: si === 1 ? 16 : 0, borderLeft: si === 1 ? "1px solid var(--border)" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
                     {icon}
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{label}</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                     {(data || []).slice(0, 5).map((coin: any, ci: number) => (
@@ -533,7 +533,7 @@ export default function Dashboard() {
                             ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 20, height: 20, borderRadius: "50%" }} />
                             : <div style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--border)" }} />
                           }
-                          <span style={{ fontSize: 12, fontWeight: 600, color: "#ccc" }}>{coin.symbol?.toUpperCase()}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>{coin.symbol?.toUpperCase()}</span>
                         </div>
                         <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
                       </div>
