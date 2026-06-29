@@ -83,20 +83,25 @@ function ChangeBadge({ value }: { value: number }) {
 // ─── STAT CARD (top bar) ─────────────────────────────────────
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="linear-card" style={{
-      padding: "20px 24px",
+    <div className="linear-card reveal" style={{
+      padding: "24px",
       flex: 1,
       minWidth: 220,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between"
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
         {label}
       </div>
-      <div style={{ fontSize: 26, fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", fontFamily: "monospace" }}>
-        {value}
+      <div>
+        <div style={{ fontSize: 28, fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", fontFamily: "monospace" }}>
+          {value}
+        </div>
+        {sub && (
+          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4, fontWeight: 500 }}>{sub}</div>
+        )}
       </div>
-      {sub && (
-        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, fontFamily: "monospace" }}>{sub}</div>
-      )}
     </div>
   );
 }
@@ -115,23 +120,25 @@ function FearGreedBadge({ value }: { value: number }) {
     value <= 75 ? "Greed" : "Extreme Greed";
 
   return (
-    <div className="linear-card" style={{
-      padding: "20px 24px",
+    <div className="linear-card reveal" style={{
+      padding: "24px",
       flex: 1,
+      minWidth: 260
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
         Fear & Greed
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{
-          width: 48, height: 48, borderRadius: "50%",
-          background: `conic-gradient(${color} ${value}%, var(--border) ${value}%)`,
+          width: 52, height: 52, borderRadius: "50%",
+          background: `conic-gradient(${color} 0%, ${color} ${value}%, var(--border-soft) ${value}%, var(--border-soft) 100%)`,
           display: "flex", alignItems: "center", justifyContent: "center",
           position: "relative",
+          boxShadow: `0 0 20px ${color}20`
         }}>
           <div style={{
-            width: 34, height: 34, borderRadius: "50%",
-            background: "var(--bg-surface)",
+            width: 38, height: 38, borderRadius: "50%",
+            background: "var(--bg-card)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <span style={{ fontSize: 13, fontWeight: 800, color: "var(--text-primary)", fontFamily: "monospace" }}>{value}</span>
@@ -139,7 +146,7 @@ function FearGreedBadge({ value }: { value: number }) {
         </div>
         <div>
           <div style={{ fontSize: 14, fontWeight: 700, color, marginBottom: 2 }}>{label}</div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Market Sentiment</div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 500 }}>Market Sentiment</div>
         </div>
       </div>
     </div>
@@ -285,13 +292,16 @@ export default function Dashboard() {
           {fngValue !== null && <FearGreedBadge value={fngValue} />}
         </div>
 
-        {/* ─── SEARCH + FILTERS ─── */}
-        <div className="linear-card" style={{
-          display: "flex", alignItems: "center", gap: 10, marginBottom: 0,
-          padding: "12px 16px",
-          borderRadius: "12px 12px 0 0",
-          borderBottom: "none",
-        }}>
+        {/* ─── MAIN LIST CONTAINER ─── */}
+        <div className="linear-card reveal" style={{ padding: 0, overflow: "hidden" }}>
+          
+          {/* ─── SEARCH + FILTERS ─── */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 12,
+            padding: "16px 24px",
+            borderBottom: "1px solid var(--border-soft)",
+            background: "rgba(255, 255, 255, 0.01)"
+          }}>
           {/* Search */}
           <div style={{ position: "relative", flex: 1, maxWidth: 320 }}>
             <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
@@ -353,12 +363,7 @@ export default function Dashboard() {
         </div>
 
         {/* ─── TABLE ─── */}
-        <div className="linear-card" style={{
-          borderRadius: "0 0 12px 12px",
-          overflow: "hidden",
-        }}>
-
-          {/* Table Header */}
+        <div style={{ overflowX: "auto", padding: "8px 0" }}>
           <div style={{
             display: "grid",
             gridTemplateColumns: "50px 2.5fr 140px 120px 150px 140px 90px",
@@ -449,6 +454,7 @@ export default function Dashboard() {
               No assets found matching "{search}"
             </div>
           )}
+          </div>
         </div>
 
         {/* ─── BOTTOM ROW: Trending + Recent Activity ─── */}
