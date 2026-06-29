@@ -86,8 +86,8 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
     <div style={{
       padding: "20px 24px",
       borderRadius: 12,
-      background: "#1c1c1e",
-      border: "1px solid #2a2a2e",
+      background: "var(--bg-surface)",
+      border: "1px solid var(--border)",
       minWidth: 180,
       flex: 1,
     }}>
@@ -121,8 +121,8 @@ function FearGreedBadge({ value }: { value: number }) {
     <div style={{
       padding: "20px 24px",
       borderRadius: 12,
-      background: "#1c1c1e",
-      border: "1px solid #2a2a2e",
+      background: "var(--bg-surface)",
+      border: "1px solid var(--border)",
       flex: 1,
     }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
@@ -131,13 +131,13 @@ function FearGreedBadge({ value }: { value: number }) {
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{
           width: 48, height: 48, borderRadius: "50%",
-          background: `conic-gradient(${color} ${value}%, #2a2a2e ${value}%)`,
+          background: `conic-gradient(${color} ${value}%, var(--border) ${value}%)`,
           display: "flex", alignItems: "center", justifyContent: "center",
           position: "relative",
         }}>
           <div style={{
             width: 34, height: 34, borderRadius: "50%",
-            background: "#1c1c1e",
+            background: "var(--bg-surface)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", fontFamily: "monospace" }}>{value}</span>
@@ -251,7 +251,7 @@ export default function Dashboard() {
     <div ref={revealRef} style={{
       minHeight: "100vh",
       color: "#fff",
-      background: "#111113",
+      background: "var(--bg-base)",
       fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
       {/* ─── CONTENT ─── */}
@@ -273,7 +273,7 @@ export default function Dashboard() {
           {/* Live badge */}
           <div style={{
             display: "flex", alignItems: "center", gap: 6,
-            background: "#1c1c1e", border: "1px solid #2a2a2e",
+            background: "var(--bg-surface)", border: "1px solid var(--border)",
             padding: "6px 12px", borderRadius: 8,
           }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 6px #22c55e", animation: "pulse 2s infinite" }} />
@@ -295,8 +295,8 @@ export default function Dashboard() {
           display: "flex", alignItems: "center", gap: 10, marginBottom: 0,
           padding: "12px 16px",
           borderRadius: "12px 12px 0 0",
-          background: "#1c1c1e",
-          border: "1px solid #2a2a2e",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border)",
           borderBottom: "none",
         }}>
           {/* Search */}
@@ -309,7 +309,7 @@ export default function Dashboard() {
               style={{
                 width: "100%", boxSizing: "border-box",
                 background: "#141414",
-                border: "1px solid #2a2a2e",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
                 padding: "8px 12px 8px 32px",
                 fontSize: 13, color: "#fff",
@@ -319,7 +319,7 @@ export default function Dashboard() {
           </div>
 
           {/* Tabs */}
-          <div style={{ display: "flex", gap: 4, background: "#141414", padding: 4, borderRadius: 8, border: "1px solid #2a2a2e" }}>
+          <div style={{ display: "flex", gap: 4, background: "#141414", padding: 4, borderRadius: 8, border: "1px solid var(--border)" }}>
             {([
               { key: "all",      label: "All Assets" },
               { key: "gainers",  label: "🔥 Gainers" },
@@ -351,7 +351,7 @@ export default function Dashboard() {
               style={{
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "8px 14px", borderRadius: 8, border: "none",
-                background: "linear-gradient(135deg, #B6509E 0%, #2EBAC6 100%)",
+                background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)",
                 color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer",
               }}
             >
@@ -362,8 +362,8 @@ export default function Dashboard() {
 
         {/* ─── TABLE ─── */}
         <div style={{
-          background: "#1c1c1e",
-          border: "1px solid #2a2a2e",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border)",
           borderRadius: "0 0 12px 12px",
           overflow: "hidden",
         }}>
@@ -373,7 +373,7 @@ export default function Dashboard() {
             display: "grid",
             gridTemplateColumns: "50px 2.5fr 140px 120px 150px 140px 90px",
             padding: "12px 20px",
-            borderBottom: "1px solid #242428",
+            borderBottom: "1px solid var(--border-soft)",
             gap: 12,
           }}>
             <TH k="rank" label="#" />
@@ -399,13 +399,13 @@ export default function Dashboard() {
                   display: "grid",
                   gridTemplateColumns: "50px 2.5fr 140px 120px 150px 140px 90px",
                   padding: "14px 20px",
-                  borderBottom: "1px solid #1f1f22",
+                  borderBottom: "1px solid var(--border-soft)",
                   cursor: "pointer",
                   transition: "background 150ms",
                   gap: 12,
                   alignItems: "center",
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = "#242428")}
+                onMouseEnter={e => (e.currentTarget.style.background = "var(--border-soft)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 {/* Rank */}
@@ -416,8 +416,8 @@ export default function Dashboard() {
                 {/* Asset */}
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   {coin.image_url
-                    ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 32, height: 32, borderRadius: "50%", background: "#2a2a2e" }} />
-                    : <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#2a2a2e", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{coin.symbol?.[0]}</div>
+                    ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--border)" }} />
+                    : <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{coin.symbol?.[0]}</div>
                   }
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>{coin.name}</div>
@@ -465,7 +465,7 @@ export default function Dashboard() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
 
           {/* Trending */}
-          <div style={{ background: "#1c1c1e", border: "1px solid #2a2a2e", borderRadius: 12, padding: "20px 24px" }}>
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Flame size={16} color="#f97316" />
@@ -483,14 +483,14 @@ export default function Dashboard() {
                   style={{
                     display: "flex", alignItems: "center", gap: 10,
                     padding: "10px 0",
-                    borderBottom: i < 5 ? "1px solid #1f1f22" : "none",
+                    borderBottom: i < 5 ? "1px solid var(--border-soft)" : "none",
                     cursor: "pointer",
                   }}
                 >
                   <span style={{ fontSize: 11, color: "#333", fontFamily: "monospace", width: 16 }}>{i + 1}</span>
                   {coin.image_url
                     ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 24, height: 24, borderRadius: "50%" }} />
-                    : <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#2a2a2e" }} />
+                    : <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--border)" }} />
                   }
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{coin.name}</div>
@@ -505,13 +505,13 @@ export default function Dashboard() {
           </div>
 
           {/* Top Gainers & Losers */}
-          <div style={{ background: "#1c1c1e", border: "1px solid #2a2a2e", borderRadius: 12, padding: "20px 24px" }}>
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px 24px" }}>
             <div style={{ display: "flex", gap: 0, marginBottom: 16 }}>
               {[
                 { key: "gainers", label: "Top Gainers", icon: <TrendingUp size={14} color="#22c55e" />, data: gainersData },
                 { key: "losers", label: "Top Losers", icon: <TrendingDown size={14} color="#ef4444" />, data: losersData },
               ].map(({ key, label, icon, data }, si) => (
-                <div key={key} style={{ flex: 1, paddingRight: si === 0 ? 16 : 0, paddingLeft: si === 1 ? 16 : 0, borderLeft: si === 1 ? "1px solid #2a2a2e" : "none" }}>
+                <div key={key} style={{ flex: 1, paddingRight: si === 0 ? 16 : 0, paddingLeft: si === 1 ? 16 : 0, borderLeft: si === 1 ? "1px solid var(--border)" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
                     {icon}
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{label}</span>
@@ -524,14 +524,14 @@ export default function Dashboard() {
                         style={{
                           display: "flex", alignItems: "center", justifyContent: "space-between",
                           padding: "7px 0",
-                          borderBottom: ci < 4 ? "1px solid #1f1f22" : "none",
+                          borderBottom: ci < 4 ? "1px solid var(--border-soft)" : "none",
                           cursor: "pointer",
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                           {coin.image_url
                             ? <img src={coin.image_url} alt={coin.symbol} style={{ width: 20, height: 20, borderRadius: "50%" }} />
-                            : <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#2a2a2e" }} />
+                            : <div style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--border)" }} />
                           }
                           <span style={{ fontSize: 12, fontWeight: 600, color: "#ccc" }}>{coin.symbol?.toUpperCase()}</span>
                         </div>

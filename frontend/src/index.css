@@ -5,30 +5,30 @@
    Canvas: #0b0b12  |  Accent: #5e6ad2 (Indigo/Violet)
 ═══════════════════════════════════════════════════════════ */
 :root {
-  /* 🔹 Backgrounds (Aave V3 Dark Theme) 🔹 */
-  --bg-base:       #111113;   /* Canvas - matches Dashboard exactly */
-  --bg-surface:    #1c1c1e;   /* Elevated surfaces (cards, panels)  */
-  --bg-elevated:   #1c1c1e;   /* Popovers, modals                   */
-  --bg-card:       #1c1c1e;   /* Standard card surface              */
-  --bg-hover:      #242428;   /* Hover state for rows/items         */
+  /* 🔹 Backgrounds (Aligned with Landing Page) 🔹 */
+  --bg-base:       #0d0d0f;   /* Matches Landing T.bg */
+  --bg-surface:    #19191c;   /* Matches Landing T.card */
+  --bg-elevated:   #19191c;
+  --bg-card:       #19191c;
+  --bg-hover:      #1c1c1f;   /* Matches Landing T.cardHov */
 
   /* 🔹 Solid Borders 🔹 */
-  --border:        #2a2f45;
-  --border-soft:   #212538;
-  --border-mid:    #3a4059;
-  --border-focus:  #4f5878;
+  --border:        rgba(255, 255, 255, 0.08); /* Matches Landing T.border */
+  --border-soft:   rgba(255, 255, 255, 0.04);
+  --border-mid:    rgba(59, 130, 246, 0.20);  /* Matches Landing T.borderFeat */
+  --border-focus:  rgba(59, 130, 246, 0.40);
 
   /* 🔹 Text 🔹 */
-  --text-primary:   #ffffff;
-  --text-secondary: #aeb4c6;
-  --text-muted:     #6a7187;
+  --text-primary:   #ffffff;  /* T.textPrimary */
+  --text-secondary: #a1a1aa;  /* T.textSecondary */
+  --text-muted:     #71717a;  /* T.textMuted */
 
-  /* 🔹 Accent - Aave Magenta/Purple 🔹 */
-  --accent:         #B6509E;
-  --accent-hover:   #c85bad;
-  --accent-soft:    rgba(182, 80, 158, 0.12);
-  --accent-border:  rgba(182, 80, 158, 0.30);
-  --accent-glow:    rgba(182, 80, 158, 0.18);
+  /* 🔹 Accent - Landing Page Professional Blue 🔹 */
+  --accent:         #3b82f6;  /* T.purple (blue) */
+  --accent-hover:   #60a5fa;  /* T.purpleLight */
+  --accent-soft:    rgba(59, 130, 246, 0.10); /* T.purpleDim */
+  --accent-border:  rgba(59, 130, 246, 0.30);
+  --accent-glow:    rgba(59, 130, 246, 0.18);
 
   /* ── Violet secondary ── */
   --secondary:      #7c3aed;
