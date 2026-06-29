@@ -182,10 +182,17 @@ export default function Dashboard() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [activeTab, setActiveTab] = useState<"all" | "gainers" | "losers" | "trending">("all");
 
-  const totalMcap = statsData?.total_market_cap?.usd || 0;
-  const totalVolume = statsData?.total_volume?.usd || 0;
-  const btcDom = statsData?.market_cap_percentage?.btc?.toFixed(1) || "0.0";
-  const ethDom = statsData?.market_cap_percentage?.eth?.toFixed(1) || "0.0";
+  const calcTotalVolume = coins?.reduce((s: number, c: any) => s + (Number(c.total_volume) || 0), 0) || 0;
+  const calcTotalMcap = coins?.reduce((s: number, c: any) => s + (Number(c.market_cap) || 0), 0) || 0;
+  const btc = coins?.find((c: any) => c.symbol?.toUpperCase() === "BTC");
+  const eth = coins?.find((c: any) => c.symbol?.toUpperCase() === "ETH");
+  const calcBtcDom = btc && calcTotalMcap ? ((Number(btc.market_cap) / calcTotalMcap) * 100).toFixed(1) : "0.0";
+  const calcEthDom = eth && calcTotalMcap ? ((Number(eth.market_cap) / calcTotalMcap) * 100).toFixed(1) : "0.0";
+
+  const totalMcap = statsData?.data?.total_market_cap?.usd || statsData?.total_market_cap?.usd || calcTotalMcap;
+  const totalVolume = statsData?.data?.total_volume?.usd || statsData?.total_volume?.usd || calcTotalVolume;
+  const btcDom = statsData?.data?.market_cap_percentage?.btc?.toFixed(1) || statsData?.market_cap_percentage?.btc?.toFixed(1) || calcBtcDom;
+  const ethDom = statsData?.data?.market_cap_percentage?.eth?.toFixed(1) || statsData?.market_cap_percentage?.eth?.toFixed(1) || calcEthDom;
   const fngValue = fng ? parseInt(fng.value) : null;
 
   // build display list based on tab
