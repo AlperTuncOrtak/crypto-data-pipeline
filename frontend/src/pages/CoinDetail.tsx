@@ -1,31 +1,16 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { useCoinDetail, useCoinHistory, useCoinStats } from "../hooks/useCoin";
 import {
-  ArrowLeft,
-  TrendingUp,
-  TrendingDown,
-  BarChart2,
-  Coins,
-  Award,
-  AlertCircle,
-  LineChart,
-  CandlestickChart,
-  Lock,
+  ArrowLeft, TrendingUp, TrendingDown,
+  LineChart, CandlestickChart, Lock,
 } from "lucide-react";
-import { AnimatedPrice } from "../components/ui/AnimatedPrice";
+// AnimatedPrice is defined inline below
 import LightweightCandleChart from "../components/market/LightweightCandleChart";
 import { useAuth } from "../hooks/useAuth";
-
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import AIAnalysisBox from "../components/market/AIAnalysisBox";
@@ -34,340 +19,101 @@ import HypeRealityWidget from "../components/market/HypeRealityWidget";
 import TokenomicsWidget from "../components/market/TokenomicsWidget";
 import { useTranslation } from "react-i18next";
 import { getCoinColor } from "../utils/colors";
-import { motion } from "framer-motion";
 
 const RANGES = [
   { label: "1H", value: "1h" },
   { label: "24H", value: "24h" },
-  { label: "7D", value: "7d" },
+  { label: "7D",  value: "7d"  },
   { label: "30D", value: "30d" },
   { label: "ALL", value: "all" },
 ];
 
-// ─── Formatters ───────────────────────────────────────────────
-function fmtPrice(n) {
+// ─── Formatters ─────────────────────────────────────────────
+function fmtPrice(n: any) {
   const v = Number(n);
-  if (isNaN(v) || n === null || n === undefined) return "—";
-  if (v >= 1000)
-    return `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-  if (v >= 1) return `$${v.toFixed(2)}`;
+  if (isNaN(v) || n == null) return "—";
+  if (v >= 1000) return `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+  if (v >= 1)    return `$${v.toFixed(2)}`;
   if (v >= 0.01) return `$${v.toFixed(4)}`;
   if (v >= 0.0001) return `$${v.toFixed(6)}`;
-  if (v >= 0.000001) return `$${v.toFixed(8)}`;
   return `<$0.000001`;
 }
 
-function fmtLarge(n, prefix = "$") {
+function fmtLarge(n: any, prefix = "$") {
   const v = Number(n);
-  if (isNaN(v) || n === null || n === undefined) return "—";
-  if (v === 0) return "—";
+  if (isNaN(v) || n == null || v === 0) return "—";
   if (v >= 1e12) return `${prefix}${(v / 1e12).toFixed(2)}T`;
-  if (v >= 1e9) return `${prefix}${(v / 1e9).toFixed(2)}B`;
-  if (v >= 1e6) return `${prefix}${(v / 1e6).toFixed(2)}M`;
-  if (v >= 1e3) return `${prefix}${(v / 1e3).toFixed(2)}K`;
+  if (v >= 1e9)  return `${prefix}${(v / 1e9).toFixed(2)}B`;
+  if (v >= 1e6)  return `${prefix}${(v / 1e6).toFixed(2)}M`;
   return `${prefix}${v.toFixed(2)}`;
 }
 
-function fmtSupply(n) {
+function fmtPct(n: any) {
   const v = Number(n);
-  if (isNaN(v) || n === null || n === undefined) return "—";
-  if (v >= 1e12) return `${(v / 1e12).toFixed(2)}T`;
-  if (v >= 1e9) return `${(v / 1e9).toFixed(2)}B`;
-  if (v >= 1e6) return `${(v / 1e6).toFixed(2)}M`;
-  if (v >= 1e3) return `${(v / 1e3).toFixed(2)}K`;
-  return v.toLocaleString();
-}
-
-function fmtPct(n) {
-  const v = Number(n);
-  if (isNaN(v) || n === null || n === undefined) return "—";
+  if (isNaN(v) || n == null) return "—";
   return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
 }
 
-function fmtDate(s) {
+function fmtDate(s: any) {
   if (!s) return "—";
-  try {
-    return new Date(s).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return s;
-  }
+  try { return new Date(s).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }); }
+  catch { return s; }
 }
 
-function fmtChartTime(iso, range) {
+function fmtChartTime(iso: any, range: string) {
   if (!iso) return "";
   const d = new Date(iso);
   const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   if (range === "1h" || range === "24h") return time;
-  return `${d.getMonth() + 1}/${d.getDate()} ${time}`;
+  return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-// ─── Animated price ───────────────────────────────────────────
-function AnimatedPrice({ current, prev, flash }) {
-  const str = fmtPrice(current);
-  const pstr = prev ? fmtPrice(prev) : str;
-
-  // Pad the shorter string with spaces on the left so they align perfectly
-  const maxLen = Math.max(str.length, pstr.length);
-  const curAligned = str.padStart(maxLen, " ");
-  const prvAligned = pstr.padStart(maxLen, " ");
-
-  const upColor   = "#2ecc71";
-  const downColor = "#e74c3c";
-  const flashColor = flash === "up" ? upColor : downColor;
-
-  return (
-    <span style={{ fontFamily: "'Inter', sans-serif" }}>
-      {curAligned.split("").map((char, i) => {
-        const changed = flash && char !== prvAligned[i] && char !== " " && char !== "." && char !== "$";
-        return (
-          <span
-            key={i}
-            style={{
-              color: changed ? flashColor : "inherit",
-              transition: "color 0.1s ease-out",
-            }}
-          >
-            {char}
-          </span>
-        );
-      })}
-      <style>{`
-        @keyframes pricePulse-up {
-          0%   { background-color: rgba(46,204,113,0.15); }
-          50%  { background-color: rgba(46,204,113,0.05); }
-          100% { background-color: transparent; }
-        }
-        @keyframes pricePulse-down {
-          0%   { background-color: rgba(231,76,60,0.15); }
-          50%  { background-color: rgba(231,76,60,0.05); }
-          100% { background-color: transparent; }
-        }
-      `}</style>
-    </span>
-  );
-}
-
-// ─── Stat card (Glassmorphic) ──────────────────────────────────
-function StatCard({ label, value, sub, highlight, icon: Icon }) {
-  return (
-    <motion.div
-      whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.06)" }}
-      style={{
-        background: "var(--bg-surface)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        border: `1px solid ${highlight ? "var(--accent-soft)" : "var(--border)"}`,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
-        borderRadius: 24,
-        padding: "24px 32px",
-        transition: "all 0.3s ease",
-        position: "relative",
-        overflow: "hidden"
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          marginBottom: 12,
-        }}
-      >
-        {Icon && <Icon size={14} style={{ color: "var(--text-muted)" }} />}
-        <span
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            color: "var(--text-muted)",
-          }}
-        >
-          {label}
-        </span>
-      </div>
-      <div
-        style={{
-          fontSize: 24,
-          fontWeight: 700,
-          fontFamily: "'Inter', sans-serif",
-          letterSpacing: "-0.02em",
-          color: highlight ? "var(--accent)" : "var(--text-primary)",
-          lineHeight: 1.2,
-        }}
-      >
-        {value}
-      </div>
-      {sub && (
-        <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6 }}>
-          {sub}
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-// ─── Section header ──────────────────────────────────────────
-function SectionTitle({ children }) {
-  return (
-    <h2
-      style={{
-        fontSize: 11,
-        fontWeight: 600,
-        textTransform: "uppercase",
-        letterSpacing: "0.1em",
-        color: "var(--text-muted)",
-        marginBottom: 12,
-      }}
-    >
-      {children}
-    </h2>
-  );
-}
-
-// ─── Chart tooltip ───────────────────────────────────────────
-function ChartTooltip({ active, payload, label }) {
+// ─── Sub-components ──────────────────────────────────────────
+function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div
-      style={{
-        background: "var(--bg-elevated)",
-        border: "1px solid var(--border)",
-        borderRadius: 10,
-        padding: "10px 14px",
-      }}
-    >
-      <div
-        style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}
-      >
-        {label ? new Date(label).toLocaleString() : ""}
+    <div style={{
+      background: "var(--bg-elevated)", border: "1px solid var(--border-soft)",
+      borderRadius: 10, padding: "10px 14px",
+    }}>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>
+        {payload[0]?.payload?.time ? new Date(payload[0].payload.time).toLocaleString() : ""}
       </div>
-      <div
-        style={{
-          fontFamily: "monospace",
-          fontWeight: 700,
-          color: "var(--accent)",
-        }}
-      >
+      <div style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--text-primary)", fontSize: 15 }}>
         {fmtPrice(payload[0]?.value)}
       </div>
     </div>
   );
 }
 
-
-// ─── ATH/ATL bar ─────────────────────────────────────────────
-function PriceRangeBar({ current, ath, atl, t }) {
-  const lo = Number(atl),
-    hi = Number(ath),
-    cur = Number(current);
-  if (!lo || !hi || !cur || hi <= lo) return null;
-  const pct = Math.min(
-    100,
-    Math.max(0, ((cur - lo) / (hi - lo)) * 100),
-  ).toFixed(1);
+function StatRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
   return (
-    <div
-      style={{
-        marginTop: 16,
-        padding: "24px 32px",
-        background: "var(--bg-surface)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        border: "1px solid var(--border)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
-        borderRadius: 24,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontSize: 11,
-          color: "var(--text-muted)",
-          marginBottom: 8,
-        }}
-      >
-        <span>ATL {fmtPrice(atl)}</span>
-        <span style={{ color: "var(--text-secondary)", fontWeight: 600 }}>
-          {t("coin_detail.current_position")}
-        </span>
-        <span>ATH {fmtPrice(ath)}</span>
-      </div>
-      <div
-        style={{
-          position: "relative",
-          height: 6,
-          borderRadius: 3,
-          background: "var(--border)",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            height: "100%",
-            width: `${pct}%`,
-            borderRadius: 3,
-            background: `linear-gradient(90deg, #e74c3c, var(--accent), #2ecc71)`,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            left: `${pct}%`,
-            width: 12,
-            height: 12,
-            borderRadius: "50%",
-            background: "var(--accent)",
-            border: "2px solid var(--bg-base)",
-            boxShadow: "none",
-          }}
-        />
-      </div>
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: 8,
-          fontSize: 11,
-          color: "var(--text-muted)",
-        }}
-      >
-        {pct}{t("coin_detail.above_atl")}
-      </div>
+    <div style={{
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "10px 0", borderBottom: "1px solid var(--border-soft)",
+    }}>
+      <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "monospace", color: valueColor || "var(--text-primary)" }}>{value}</span>
     </div>
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────
+// ─── MAIN ───────────────────────────────────────────────────
 export default function CoinDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isPro } = useAuth();
   const [range, setRange] = useState("24h");
   const [chartType, setChartType] = useState("simple");
 
-  const {
-    data: coin,
-    isLoading: coinLoading,
-    isError: coinError,
-  } = useCoinDetail(slug);
-  const { data: history, isLoading: historyLoading } = useCoinHistory(
-    slug,
-    range,
-  );
+  const { data: coin, isLoading, isError } = useCoinDetail(slug);
+  const { data: history, isLoading: historyLoading } = useCoinHistory(slug, range);
   const { data: stats } = useCoinStats(slug);
 
-  const prevRef = useRef(null);
-  const [prevPrice, setPrevPrice] = useState(null);
-  const [priceFlash, setPriceFlash] = useState(null);
+  const prevRef = useRef<any>(null);
+  const [prevPrice, setPrevPrice] = useState<any>(null);
+  const [priceFlash, setPriceFlash] = useState<any>(null);
 
   useEffect(() => {
     if (!coin?.current_price) return;
@@ -383,618 +129,383 @@ export default function CoinDetail() {
 
   const simpleChartData = useMemo(() => {
     const arr = history || [];
-    if (arr.length === 0 || !coin?.current_price) return arr;
-    const cur = Number(coin.current_price);
-    if (isNaN(cur)) return arr;
-    
+    if (!arr.length || !coin?.current_price) return arr;
     const cloned = [...arr];
-    const lastPoint = cloned[cloned.length - 1];
-    const lastTime = new Date(lastPoint.time).getTime();
-    const now = Date.now();
-    
-    // Eğer son veri 60 saniyeden eskiyse grafiğin sonuna anlık zamanla yeni nokta ekle (grafik uzasın)
-    // Değilse son noktayı güncelle
-    if (now - lastTime > 60000) {
-      cloned.push({
-        time: new Date(now).toISOString(),
-        price: cur
-      });
+    const last = cloned[cloned.length - 1];
+    const lastTime = new Date(last.time).getTime();
+    if (Date.now() - lastTime > 60000) {
+      cloned.push({ time: new Date().toISOString(), price: coin.current_price });
     } else {
-      cloned[cloned.length - 1] = {
-        ...lastPoint,
-        price: cur
-      };
+      cloned[cloned.length - 1] = { ...last, price: coin.current_price };
     }
     return cloned;
   }, [history, coin?.current_price]);
 
-  const chartData = history || [];
-  const change = Number(coin?.price_change_percentage_24h);
+  if (isLoading) return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300, color: "var(--text-muted)", fontSize: 15 }}>
+      Loading...
+    </div>
+  );
+
+  if (isError || !coin) return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 16 }}>
+      <div style={{ fontSize: 40 }}>🔍</div>
+      <div style={{ fontSize: 18, fontWeight: 700 }}>Coin not found</div>
+      <button onClick={() => navigate("/market")} style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg-surface)", color: "var(--text-primary)", cursor: "pointer" }}>
+        ← Back to Markets
+      </button>
+    </div>
+  );
+
+  const change = Number(coin.price_change_percentage_24h);
   const isPositive = change >= 0;
-  const chartTrend =
-    chartData.length >= 2
-      ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
-      : isPositive;
-  const chartColor = chartTrend ? "var(--positive)" : "var(--negative)";
+  const chartData = history || [];
+  const chartTrend = chartData.length >= 2
+    ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
+    : isPositive;
+  const chartColor = chartTrend ? "#22c55e" : "#ef4444";
+  const brandColor = getCoinColor(coin.symbol);
+  const athPct = coin.ath && coin.current_price
+    ? (((Number(coin.current_price) - Number(coin.ath)) / Number(coin.ath)) * 100).toFixed(1)
+    : null;
 
-  // ATH'den ne kadar uzakta
-  const athPct =
-    coin?.ath && coin?.current_price
-      ? (
-          ((Number(coin.current_price) - Number(coin.ath)) / Number(coin.ath)) *
-          100
-        ).toFixed(1)
-      : null;
-
-  const brandColor = getCoinColor(coin?.symbol);
-  
-  // Calculate Neko AI Score (Sofascore equivalent)
-  const nekoScore = coin ? Math.min(99, Math.max(1, Math.round(
-    50 + 
-    (Number(coin.price_change_percentage_24h) || 0) * 2 + 
-    (100 - (coin.market_cap_rank || 100)) / 5
-  ))) : 50;
-  const scoreColor = nekoScore >= 75 ? "#00ff66" : nekoScore >= 45 ? "#f5d300" : "#ff3333";
-
-  if (coinLoading)
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: 260,
-          color: "var(--text-muted)",
-        }}
-      >
-        {t("coin_detail.loading")}
-      </div>
-    );
-
-  if (coinError || !coin)
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: 260,
-          gap: 16,
-        }}
-      >
-        <div style={{ fontSize: 48 }}>🔍</div>
-        <div style={{ fontSize: 20, fontWeight: 600 }}>{t("coin_detail.not_found")}</div>
-        <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-          {t("coin_detail.not_found_desc", { slug })}
-        </div>
-        <button
-          onClick={() => navigate("/market")}
-          style={{
-            padding: "8px 18px",
-            borderRadius: 8,
-            border: "1px solid var(--accent-soft)",
-            background: "var(--accent-soft)",
-            color: "var(--accent)",
-            cursor: "pointer",
-            fontSize: 13,
-          }}
-        >
-          {t("coin_detail.back_to_market")}
-        </button>
-      </div>
-    );
+  // ATH-ATL range %
+  const lo = Number(coin.atl), hi = Number(coin.ath), cur = Number(coin.current_price);
+  const rangePct = (lo && hi && cur && hi > lo)
+    ? Math.min(100, Math.max(0, ((cur - lo) / (hi - lo)) * 100)).toFixed(1)
+    : null;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      style={{ color: "var(--text-primary)", maxWidth: 1100, position: "relative", zIndex: 1 }}
-    >
-      {/* ── HOLOGRAPHIC AMBIENT GLOW ── */}
-      <div style={{
-        position: "absolute", top: -250, left: "50%", transform: "translateX(-50%)",
-        width: "200%", height: 700,
-        background: `radial-gradient(ellipse at top, ${brandColor} 0%, transparent 60%)`,
-        opacity: 0.15, filter: "blur(80px)", pointerEvents: "none", zIndex: -1,
-        animation: "ambient-glow 6s ease-in-out infinite alternate"
-      }} />
-      <style>{`
-        @keyframes ambient-glow { 
-          0% { opacity: 0.08; transform: translateX(-50%) scale(0.95); } 
-          100% { opacity: 0.25; transform: translateX(-50%) scale(1.05); } 
-        }
-      `}</style>
-      {/* BACK */}
+    <div style={{ color: "var(--text-primary)", fontFamily: "'Inter', -apple-system, sans-serif", maxWidth: 1280, margin: "0 auto", padding: "32px 32px" }}>
+
+      {/* ── BACK ─────────────────────────────────────────── */}
       <button
         onClick={() => navigate(-1)}
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          fontSize: 13,
-          color: "var(--text-muted)",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          marginBottom: 24,
+          display: "inline-flex", alignItems: "center", gap: 6,
+          fontSize: 13, color: "var(--text-muted)", background: "none",
+          border: "none", cursor: "pointer", marginBottom: 28, padding: 0,
+          transition: "color 120ms",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "var(--text-muted)")
-        }
+        onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+        onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
       >
-        <ArrowLeft size={14} /> {t("coin_detail.back")}
+        <ArrowLeft size={15} /> Back
       </button>
 
-      {/* HERO */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 16,
-          marginBottom: 28,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {coin.image_url ? (
-            <img
-              src={coin.image_url}
-              alt={coin.name}
-              style={{ width: 56, height: 56, borderRadius: "50%" }}
-              onError={(e) => (e.target.style.display = "none")}
-            />
-          ) : (
-            <div
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: "50%",
-                background: "var(--bg-elevated)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 20,
-                fontWeight: 700,
-                color: "var(--accent)",
-              }}
-            >
-              {coin.symbol?.slice(0, 2)}
-            </div>
-          )}
+      {/* ── HERO HEADER ──────────────────────────────────── */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+        {/* Left: name + symbol */}
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          {coin.image_url
+            ? <img src={coin.image_url} alt={coin.name} style={{ width: 64, height: 64, borderRadius: "50%", flexShrink: 0 }} onError={(e: any) => (e.target.style.display = "none")} />
+            : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--bg-elevated)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 800, color: brandColor }}>{coin.symbol?.slice(0, 2)}</div>
+          }
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <h1 style={{ fontSize: 28, fontWeight: 800, color: brandColor, textShadow: "none" }}>{coin.name}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.04em", margin: 0, color: "var(--text-primary)" }}>{coin.name}</h1>
               {coin.market_cap_rank && (
-                <span
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    padding: "2px 8px",
-                    borderRadius: 6,
-                    background: "var(--accent-soft)",
-                    border: "1px solid var(--accent-border)",
-                    color: "var(--accent)",
-                  }}
-                >
+                <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "var(--bg-elevated)", border: "1px solid var(--border-soft)", color: "var(--text-secondary)" }}>
                   #{coin.market_cap_rank}
                 </span>
               )}
-                
-                {/* Neko AI Score Badge */}
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 6,
-                  padding: "4px 10px", borderRadius: 8,
-                  background: "var(--card-bg)",
-                  border: `1px solid ${scoreColor}55`,
-                  boxShadow: "none"
-                }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: scoreColor, boxShadow: `0 0 6px ${scoreColor}` }} />
-                  <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "monospace", color: scoreColor }}>
-                    {nekoScore}
-                  </span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>
-                    Neko Score
-                  </span>
-                </div>
-              </div>
-              <div
-                style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6 }}
-              >
-              {coin.symbol?.toUpperCase()} · {t("coin_detail.coingecko_id")} {coin.slug}
+            </div>
+            <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 5, fontFamily: "monospace" }}>
+              {coin.symbol?.toUpperCase()} · {coin.slug}
             </div>
           </div>
         </div>
 
+        {/* Right: price + change */}
         <div style={{ textAlign: "right" }}>
-        <div
-          style={{
-            fontSize: 48,
-            fontWeight: 800,
-            fontFamily: "'Inter', sans-serif",
-            letterSpacing: "-0.04em",
-            padding: "8px 14px",
-            borderRadius: 12,
-            display: "inline-block",
-            transition: "all 0.3s ease",
-          }}
-        >
-          <AnimatedPrice
-            current={coin.current_price}
-            prev={prevPrice}
-            flash={priceFlash}
-          />
-        </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              justifyContent: "flex-end",
-              marginTop: 4,
-            }}
-          >
-            {isPositive ? (
-              <TrendingUp size={16} color="var(--positive)" />
-            ) : (
-              <TrendingDown size={16} color="var(--negative)" />
-            )}
-            <span
-              style={{
-                fontSize: 17,
-                fontFamily: "monospace",
-                fontWeight: 600,
-                color: isPositive ? "var(--positive)" : "var(--negative)",
-              }}
-            >
+          <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.04em", color: "var(--text-primary)", fontFamily: "monospace", lineHeight: 1 }}>
+            {fmtPrice(coin.current_price)}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginTop: 8 }}>
+            {isPositive ? <TrendingUp size={16} color="#22c55e" /> : <TrendingDown size={16} color="#ef4444" />}
+            <span style={{ fontSize: 17, fontFamily: "monospace", fontWeight: 700, color: isPositive ? "#22c55e" : "#ef4444" }}>
               {fmtPct(change)}
             </span>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-              24h
-            </span>
+            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>24h</span>
           </div>
           {athPct !== null && (
-            <div
-              style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}
-            >
-              {Number(athPct) < 0 ? (
-                <span style={{ color: "#e74c3c" }}>{athPct}% {t("coin_detail.from_ath")}</span>
-              ) : (
-                <span style={{ color: "#2ecc71" }}>+{athPct}% {t("coin_detail.above_ath")}</span>
-              )}
+            <div style={{ fontSize: 12, color: Number(athPct) < 0 ? "#ef4444" : "#22c55e", marginTop: 4, fontFamily: "monospace" }}>
+              {athPct}% {Number(athPct) < 0 ? "from ATH" : "above ATH"}
             </div>
           )}
-          </div>
         </div>
-  
-        {isPro ? (
-          <>
-            <SectionTitle>Pro Crypto Analytics</SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
-              {/* AI ANALYSIS BOX */}
-              <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
+      </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                {/* ATTACK MOMENTUM */}
-                <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
-                
-                {/* HYPE VS REALITY WIDGET */}
-                <HypeRealityWidget symbol={coin.symbol} />
+      {/* ── TWO-COLUMN LAYOUT ─────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 20, alignItems: "start" }}>
+
+        {/* ── LEFT COLUMN ──────────────────────────────────── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+          {/* CHART CARD */}
+          <div style={{
+            background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+            borderRadius: 16, overflow: "hidden",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            {/* Chart toolbar */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "14px 20px", borderBottom: "1px solid var(--border-soft)",
+              flexWrap: "wrap",
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", marginRight: 4 }}>Price Chart</span>
+              
+              {/* Time range */}
+              <div style={{ display: "flex", gap: 2, background: "var(--bg-surface)", padding: 3, borderRadius: 8, border: "1px solid var(--border)" }}>
+                {RANGES.map(r => (
+                  <button key={r.value} onClick={() => setRange(r.value)} style={{
+                    padding: "4px 12px", borderRadius: 6, border: "none", cursor: "pointer",
+                    fontSize: 12, fontWeight: 600, transition: "all 120ms",
+                    background: range === r.value ? "rgba(255,255,255,0.09)" : "transparent",
+                    color: range === r.value ? "var(--text-primary)" : "var(--text-muted)",
+                  }}>{r.label}</button>
+                ))}
+              </div>
+
+              {/* Chart type */}
+              <div style={{ marginLeft: "auto", display: "flex", gap: 2, background: "var(--bg-surface)", padding: 3, borderRadius: 8, border: "1px solid var(--border)" }}>
+                <button onClick={() => setChartType("simple")} style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  padding: "4px 12px", borderRadius: 6, border: "none", cursor: "pointer",
+                  fontSize: 12, fontWeight: 600, transition: "all 120ms",
+                  background: chartType === "simple" ? "rgba(255,255,255,0.09)" : "transparent",
+                  color: chartType === "simple" ? "var(--text-primary)" : "var(--text-muted)",
+                }}>
+                  <LineChart size={13} /> Line
+                </button>
+                <button onClick={() => setChartType("pro")} style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  padding: "4px 12px", borderRadius: 6, border: "none", cursor: "pointer",
+                  fontSize: 12, fontWeight: 600, transition: "all 120ms",
+                  background: chartType === "pro" ? "rgba(34,197,94,0.10)" : "transparent",
+                  color: chartType === "pro" ? "#22c55e" : "var(--text-muted)",
+                }}>
+                  <CandlestickChart size={13} /> Candle
+                </button>
               </div>
             </div>
-      
-            <AIPulse slug={slug} />
-          </>
-        ) : (
-          <div style={{ marginBottom: 32 }}>
-            <SectionTitle>Pro Crypto Analytics</SectionTitle>
-            <div style={{ 
-              position: "relative", 
-              borderRadius: 24, 
-              overflow: "hidden", 
-              padding: 40,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              background: "var(--bg-surface)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-              border: "1px solid var(--border)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02), 0 24px 48px -12px rgba(0,0,0,0.5)"
+
+            {/* Chart body */}
+            <div style={{ padding: "16px 16px 8px" }}>
+              {historyLoading ? (
+                <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: 13 }}>
+                  Loading chart...
+                </div>
+              ) : chartData.length === 0 ? (
+                <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: 13 }}>
+                  No chart data available
+                </div>
+              ) : chartType === "pro" ? (
+                <div style={{ height: 300 }}>
+                  <LightweightCandleChart data={chartData} currentPrice={coin.current_price} />
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={simpleChartData}>
+                    <defs>
+                      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={chartColor} stopOpacity={0.20} />
+                        <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="time" tickFormatter={t => fmtChartTime(t, range)} stroke="transparent" tick={{ fill: "var(--text-muted)", fontSize: 11 }} />
+                    <YAxis
+                      tickFormatter={v => {
+                        const n = Number(v);
+                        if (n >= 1000) return `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                        if (n >= 1) return `$${n.toFixed(2)}`;
+                        return `$${n.toFixed(4)}`;
+                      }}
+                      stroke="transparent"
+                      tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                      width={80}
+                      domain={([min, max]: any) => { const p = (max - min) * 0.06 || min * 0.001; return [min - p, max + p]; }}
+                    />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Area type="natural" dataKey="price" stroke={chartColor} strokeWidth={2} fill="url(#cg)" dot={false}
+                      activeDot={{ r: 5, fill: chartColor, stroke: "var(--bg-card)", strokeWidth: 2 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          {/* PRO ANALYTICS */}
+          <div style={{
+            background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+            borderRadius: 16, overflow: "hidden",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border-soft)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>Pro Analytics</span>
+            </div>
+            <div style={{ padding: 20 }}>
+              {isPro ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
+                    <HypeRealityWidget symbol={coin.symbol} />
+                  </div>
+                  <AIPulse slug={slug} />
+                </div>
+              ) : (
+                <div style={{
+                  display: "flex", flexDirection: "column", alignItems: "center",
+                  padding: "40px 20px", textAlign: "center", gap: 16,
+                  background: "rgba(255,255,255,0.01)", borderRadius: 12,
+                  border: "1px solid var(--border-soft)",
+                }}>
+                  <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--bg-elevated)", border: "1px solid var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Lock size={24} color="var(--text-muted)" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 6 }}>Unlock AI Analyst</div>
+                    <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6, maxWidth: 360 }}>
+                      Get real-time AI-powered market sentiment, attack momentum, and advanced predictions.
+                    </div>
+                  </div>
+                  <Link to="/pricing" style={{
+                    padding: "10px 24px", borderRadius: 8, background: "var(--text-primary)",
+                    color: "var(--bg-base)", fontWeight: 700, fontSize: 14, textDecoration: "none",
+                    transition: "opacity 150ms",
+                  }}
+                    onMouseEnter={e => ((e.target as any).style.opacity = "0.85")}
+                    onMouseLeave={e => ((e.target as any).style.opacity = "1")}
+                  >
+                    Upgrade to Pro →
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* TOKENOMICS */}
+          <div style={{
+            background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+            borderRadius: 16, overflow: "hidden",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border-soft)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>Tokenomics</span>
+            </div>
+            <div style={{ padding: 20 }}>
+              <TokenomicsWidget coin={coin} />
+            </div>
+          </div>
+
+          {/* NEWS */}
+          <div style={{
+            background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+            borderRadius: 16, overflow: "hidden",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border-soft)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>Latest News</span>
+            </div>
+            <div style={{ padding: 20 }}>
+              <CryptoNews symbol={coin.symbol} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT SIDEBAR ─────────────────────────────────── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+          {/* Market Stats */}
+          <div style={{
+            background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+            borderRadius: 16, overflow: "hidden",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border-soft)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>Market Stats</span>
+            </div>
+            <div style={{ padding: "4px 20px 12px" }}>
+              <StatRow label="Market Cap" value={fmtLarge(coin.market_cap)} />
+              <StatRow label="24h Volume" value={fmtLarge(coin.total_volume)} />
+              <StatRow label="24h High" value={fmtPrice(stats?.high_24h)} valueColor="#22c55e" />
+              <StatRow label="24h Low" value={fmtPrice(stats?.low_24h)} valueColor="#ef4444" />
+              <StatRow label="ATH" value={fmtPrice(coin.ath)} />
+              <StatRow label="ATH Date" value={fmtDate(coin.ath_date)} />
+              <StatRow label="ATL" value={fmtPrice(coin.atl)} />
+              <StatRow label="ATL Date" value={fmtDate(coin.atl_date)} />
+              <StatRow label="Rank" value={coin.market_cap_rank ? `#${coin.market_cap_rank}` : "—"} />
+            </div>
+          </div>
+
+          {/* ATH-ATL Bar */}
+          {rangePct !== null && (
+            <div style={{
+              background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+              borderRadius: 16, padding: 20,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
             }}>
-              {/* Blurred background mockup */}
-              <div style={{ position: "absolute", inset: 0, filter: "blur(8px)", opacity: 0.4, pointerEvents: "none" }}>
-                <div style={{ padding: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                  <div style={{ height: 200, background: "rgba(255,255,255,0.05)", borderRadius: 16 }}></div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                    <div style={{ height: 90, background: "rgba(255,255,255,0.05)", borderRadius: 16 }}></div>
-                    <div style={{ height: 90, background: "rgba(255,255,255,0.05)", borderRadius: 16 }}></div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", marginBottom: 16 }}>Price Range (ATL → ATH)</div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
+                <span>ATL {fmtPrice(coin.atl)}</span>
+                <span>ATH {fmtPrice(coin.ath)}</span>
+              </div>
+              <div style={{ position: "relative", height: 6, borderRadius: 3, background: "var(--border-soft)" }}>
+                <div style={{
+                  position: "absolute", left: 0, height: "100%",
+                  width: `${rangePct}%`, borderRadius: 3,
+                  background: `linear-gradient(90deg, #ef4444, #eab308, #22c55e)`,
+                }} />
+                <div style={{
+                  position: "absolute", top: "50%", left: `${rangePct}%`,
+                  transform: "translate(-50%, -50%)",
+                  width: 12, height: 12, borderRadius: "50%",
+                  background: "white", border: "2px solid var(--bg-card)",
+                  boxShadow: "0 0 6px rgba(255,255,255,0.4)",
+                }} />
+              </div>
+              <div style={{ textAlign: "center", marginTop: 8, fontSize: 12, color: "var(--text-muted)" }}>
+                {rangePct}% above ATL
+              </div>
+            </div>
+          )}
+
+          {/* Supply Info */}
+          <div style={{
+            background: "var(--bg-card)", border: "1px solid var(--border-soft)",
+            borderRadius: 16, overflow: "hidden",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border-soft)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>Supply</span>
+            </div>
+            <div style={{ padding: "4px 20px 12px" }}>
+              <StatRow label="Circulating" value={fmtLarge(coin.circulating_supply, "")} />
+              <StatRow label="Total Supply" value={fmtLarge(coin.total_supply, "")} />
+              <StatRow label="Max Supply" value={fmtLarge(coin.max_supply, "")} />
+              {coin.circulating_supply && coin.total_supply && Number(coin.total_supply) > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-muted)", marginBottom: 5 }}>
+                    <span>Circulation rate</span>
+                    <span>{((Number(coin.circulating_supply) / Number(coin.total_supply)) * 100).toFixed(1)}%</span>
+                  </div>
+                  <div style={{ height: 4, borderRadius: 2, background: "var(--border-soft)" }}>
+                    <div style={{
+                      height: "100%", borderRadius: 2,
+                      width: `${Math.min(100, (Number(coin.circulating_supply) / Number(coin.total_supply)) * 100)}%`,
+                      background: "linear-gradient(90deg, var(--accent), #22c55e)",
+                    }} />
                   </div>
                 </div>
-              </div>
-              
-              {/* Lock CTA */}
-              <div style={{ position: "relative", zIndex: 2, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, border: "1px solid rgba(255,255,255,0.2)" }}>
-                  <Lock size={28} color="white" />
-                </div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: "white" }}>Unlock AI Analyst</h3>
-                <p style={{ color: "var(--text-muted)", marginBottom: 24, maxWidth: 400, lineHeight: 1.5 }}>Get real-time AI-powered market sentiment, attack momentum, and advanced predictions by upgrading to Pro.</p>
-                <Link to="/pricing" style={{ padding: "12px 24px", background: "white", color: "black", borderRadius: 100, fontWeight: 700, fontSize: 15, textDecoration: "none", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                  Upgrade to Pro
-                </Link>
-              </div>
+              )}
             </div>
           </div>
-        )}
 
-      {/* PRICE RANGE BAR */}
-      {coin.ath && coin.atl && (
-        <PriceRangeBar
-          current={coin.current_price}
-          ath={coin.ath}
-          atl={coin.atl}
-          t={t}
-        />
-      )}
-
-      {/* MARKET STATS */}
-      <div style={{ marginTop: 20, marginBottom: 8 }}>
-        <SectionTitle>{t("coin_detail.market_stats")}</SectionTitle>
-      </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 24,
-          marginBottom: 40,
-        }}
-      >
-        <StatCard
-          label={t("coin_detail.market_cap")}
-          value={fmtLarge(coin.market_cap)}
-          icon={BarChart2}
-        />
-        <StatCard
-          label={t("coin_detail.volume")}
-          value={fmtLarge(coin.total_volume)}
-          icon={BarChart2}
-        />
-        <StatCard
-          label={t("coin_detail.high_24h")}
-          value={fmtPrice(stats?.high_24h)}
-          icon={TrendingUp}
-        />
-        <StatCard
-          label={t("coin_detail.low_24h")}
-          value={fmtPrice(stats?.low_24h)}
-          icon={TrendingDown}
-        />
-      </div>
-
-      {/* ATH / ATL */}
-      <div style={{ marginBottom: 8 }}>
-        <SectionTitle>{t("coin_detail.all_time_records")}</SectionTitle>
-      </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 24,
-          marginBottom: 40,
-        }}
-      >
-        <StatCard
-          label={t("coin_detail.ath")}
-          value={fmtPrice(coin.ath)}
-          sub={coin.ath_date ? fmtDate(coin.ath_date) : undefined}
-          icon={Award}
-        />
-        <StatCard
-          label={t("coin_detail.atl")}
-          value={fmtPrice(coin.atl)}
-          sub={coin.atl_date ? fmtDate(coin.atl_date) : undefined}
-          icon={AlertCircle}
-        />
-        <StatCard
-          label={t("coin_detail.ath_change")}
-          value={athPct !== null ? `${athPct}%` : "—"}
-          sub={
-            Number(athPct) < 0 ? t("coin_detail.below_ath") : t("coin_detail.above_ath_long")
-          }
-          icon={TrendingDown}
-        />
-        <StatCard
-          label={t("coin_detail.rank")}
-          value={coin.market_cap_rank ? `#${coin.market_cap_rank}` : "—"}
-          icon={Award}
-          highlight
-        />
-      </div>
-
-      {/* TOKENOMICS WIDGET */}
-      <div style={{ marginBottom: 40 }}>
-        <TokenomicsWidget coin={coin} />
-      </div>
-
-      {/* CHART */}
-      <div
-        style={{
-          backgroundColor: "var(--bg-card)",
-          border: "1px solid var(--border)",
-          borderRadius: 24,
-          padding: 24,
-          marginTop: 24,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* ambient glow */}
-        <div style={{
-          position: "absolute", top: -40, right: -40, width: 220, height: 220,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${brandColor}15 0%, transparent 70%)`,
-          filter: "blur(20px)", pointerEvents: "none",
-        }} />
-
-        <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Header row */}
-        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
-          <SectionTitle>{t("coin_detail.price_chart")}</SectionTitle>
-
-          {/* Time range pills */}
-          <div style={{ display: "flex", gap: 4, background: "var(--bg-elevated)", borderRadius: 10, padding: 3 }}>
-            {RANGES.map((r) => (
-              <button
-                key={r.value}
-                onClick={() => setRange(r.value)}
-                style={{
-                  padding: "4px 12px",
-                  borderRadius: 7,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  background: range === r.value ? "var(--accent-soft)" : "transparent",
-                  border: range === r.value ? "1px solid var(--accent-soft)" : "1px solid transparent",
-                  color: range === r.value ? "var(--accent)" : "var(--text-muted)",
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                }}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Chart type toggle — pushed right */}
-          <div style={{ marginLeft: "auto", display: "flex", gap: 4, background: "var(--border-soft)", borderRadius: 10, padding: 3 }}>
-            <button
-              onClick={() => setChartType("simple")}
-              style={{
-                display: "flex", alignItems: "center", gap: 5,
-                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                background: chartType === "simple" ? "var(--bg-elevated)" : "transparent",
-                border: chartType === "simple" ? "1px solid var(--border)" : "1px solid transparent",
-                color: chartType === "simple" ? "var(--text-primary)" : "var(--text-muted)",
-                cursor: "pointer", transition: "all 0.15s",
-              }}
-            >
-              <LineChart size={13} /> {t("coin_detail.simple")}
-            </button>
-            <button
-              onClick={() => setChartType("pro")}
-              style={{
-                display: "flex", alignItems: "center", gap: 5,
-                padding: "4px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                background: chartType === "pro" ? "rgba(46,204,113,0.12)" : "transparent",
-                border: chartType === "pro" ? "1px solid rgba(46,204,113,0.25)" : "1px solid transparent",
-                color: chartType === "pro" ? "#2ecc71" : "var(--text-muted)",
-                cursor: "pointer", transition: "all 0.15s",
-              }}
-            >
-              <CandlestickChart size={13} /> {t("coin_detail.pro")} 🕯️
-            </button>
-
-
-          </div>
         </div>
-
-        {/* Pro chart always rendered when selected so chart mounts */}
-        {chartType === "pro" && (
-          <div style={{ width: "100%", height: 340, marginTop: 16 }}>
-            {historyLoading ? (
-              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-                {t("coin_detail.loading_chart")}
-              </div>
-            ) : chartData.length === 0 ? (
-              <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-                {t("coin_detail.no_chart_data")}
-              </div>
-            ) : (
-              <LightweightCandleChart data={chartData} currentPrice={coin?.current_price} />
-            )}
-          </div>
-        )}
-
-        {/* Simple chart */}
-        {chartType === "simple" && historyLoading && (
-          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-            {t("coin_detail.loading_chart")}
-          </div>
-        )}
-        {chartType === "simple" && !historyLoading && chartData.length === 0 && (
-          <div style={{ height: 340, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-            {t("coin_detail.no_chart_data")}
-          </div>
-        )}
-        {chartType === "simple" && !historyLoading && chartData.length > 0 && (
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={simpleChartData}>
-              <defs>
-                <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={chartColor} stopOpacity={0.25} />
-                  <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis
-                dataKey="time"
-                tickFormatter={(t) => fmtChartTime(t, range)}
-                stroke="var(--border)"
-                tick={{ fill: "var(--text-muted)", fontSize: 11 }}
-              />
-              <YAxis
-                tickFormatter={(v) => {
-                  const n = Number(v);
-                  if (n >= 1000)
-                    return `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-                  if (n >= 1) return `$${n.toFixed(2)}`;
-                  if (n >= 0.01) return `$${n.toFixed(4)}`;
-                  return `$${n.toFixed(6)}`;
-                }}
-                stroke="var(--border)"
-                tick={{ fill: "var(--text-muted)", fontSize: 11 }}
-                width={90}
-                domain={([min, max]) => {
-                  const p = (max - min) * 0.08 || min * 0.001;
-                  return [min - p, max + p];
-                }}
-              />
-              <Tooltip content={<ChartTooltip />} />
-              <Area
-                type="natural"
-                dataKey="price"
-                stroke={chartColor}
-                strokeWidth={2}
-                fill="url(#cg)"
-                dot={false}
-                activeDot={{
-                  r: 5,
-                  fill: "var(--accent)",
-                  stroke: "var(--bg-surface)",
-                  strokeWidth: 2,
-                }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        )}
-        {stats && (
-          <div style={{ textAlign: "right", marginTop: 10, fontSize: 11, color: "var(--text-muted)" }}>
-            {stats.data_points} {t("coin_detail.data_points")}
-          </div>
-        )}
-        </div>{/* end position:relative inner */}
       </div>
-
-
-
-      {/* LATEST NEWS */}
-      <div style={{ marginTop: 32 }}>
-        <SectionTitle>{t("coin_detail.latest_news")}</SectionTitle>
-        <CryptoNews symbol={coin.symbol} />
-      </div>
-    </motion.div>
+    </div>
   );
 }
