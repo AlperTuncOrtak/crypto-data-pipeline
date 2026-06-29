@@ -294,7 +294,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
       >
         <div
           className="flex items-center gap-2 px-4 py-2"
-          style={{ width: 320, transition: "var(--transition-smooth)", background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)" }}
+          className="linear-card" style={{ width: 320, transition: "var(--transition-smooth)" }}
           onFocusCapture={(e) => {
             e.currentTarget.style.boxShadow = "0 0 0 2px var(--accent-soft)";
             e.currentTarget.style.borderColor = "var(--accent-border)";
@@ -353,7 +353,7 @@ export default function Market({ isWatched, toggleWatchlist }) {
       {paginated.length > 0 && (
         <div
           className="reveal"
-          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)", borderRadius: 24, padding: "8px 0", '--reveal-delay': '160ms' }}
+          className="linear-card" style={{ padding: "8px 0", '--reveal-delay': '160ms' }}
         >
           <table className="w-full">
             <thead>

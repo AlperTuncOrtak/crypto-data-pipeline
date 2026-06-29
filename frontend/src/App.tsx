@@ -97,7 +97,7 @@ function AppInner() {
         position: "relative",
       }}
     >
-
+      
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Disclaimer — ilk girişte gösterilir, onaylanınca kaybolur */}
       {/* Disclaimer Modal */}

@@ -248,7 +248,7 @@ export default function Dashboard() {
       background: "var(--bg-base)",
       fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
-      <div className="linear-bg-mesh" />
+      
       {/* ─── CONTENT ─── */}
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "36px 32px" }}>
 
