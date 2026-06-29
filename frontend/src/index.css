@@ -6,11 +6,11 @@
 ═══════════════════════════════════════════════════════════ */
 :root {
   /* 🔹 Backgrounds (Aave V3 Dark Theme) 🔹 */
-  --bg-base:       #0f121d;   /* Canvas - deep blue/black          */
-  --bg-surface:    #1b2030;   /* Elevated surfaces (cards, panels) */
-  --bg-elevated:   #1b2030;   /* Popovers, modals                  */
-  --bg-card:       #1b2030;   /* Standard card surface             */
-  --bg-hover:      #23293d;   /* Hover state for rows/items        */
+  --bg-base:       #111113;   /* Canvas - matches Dashboard exactly */
+  --bg-surface:    #1c1c1e;   /* Elevated surfaces (cards, panels)  */
+  --bg-elevated:   #1c1c1e;   /* Popovers, modals                   */
+  --bg-card:       #1c1c1e;   /* Standard card surface              */
+  --bg-hover:      #242428;   /* Hover state for rows/items         */
 
   /* 🔹 Solid Borders 🔹 */
   --border:        #2a2f45;
@@ -310,9 +310,10 @@ h3 { font-weight: 600; letter-spacing: -0.02em; }
    LAYOUT UTILITIES
 ═══════════════════════════════════════════════════════════ */
 .main-content {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 40px 32px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 .bento-grid {
