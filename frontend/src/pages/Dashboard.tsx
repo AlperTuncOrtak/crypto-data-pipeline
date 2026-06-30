@@ -3,6 +3,7 @@
 // ============================================================
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   useMarket,
   useGainers,
@@ -97,6 +98,23 @@ function TH({
   );
 }
 
+// ─── ANIMATION VARIANTS ──────────────────────────────────────
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { 
+    opacity: 1, y: 0,
+    transition: { type: "spring", stiffness: 350, damping: 25 }
+  }
+};
+
 // ─── MAIN DASHBOARD ──────────────────────────────────────────
 type SortKey = "rank" | "price" | "change" | "volume" | "mcap";
 
@@ -185,44 +203,51 @@ export default function Dashboard() {
               <span className="live-dot" />
               <span className="live-text">LIVE</span>
             </div>
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
               onClick={() => navigate("/analysis/ai")}
               className="btn-ghost"
             >
               <Brain size={14} />
               AI Signals
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* ── STAT CARDS ──────────────────────────────────── */}
-        <div className="stat-grid">
+        <motion.div 
+          className="stat-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
 
           {/* Market Cap */}
-          <div className="stat-card">
+          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
             <div className="stat-label">Global Market Cap</div>
             <div className="stat-value font-mono">{fmt(totalMcap)}</div>
             <div className="stat-sub">
               {(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}
             </div>
-          </div>
+          </motion.div>
 
           {/* 24h Volume */}
-          <div className="stat-card">
+          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
             <div className="stat-label">24h Volume</div>
             <div className="stat-value font-mono">{fmt(totalVolume)}</div>
             <div className="stat-sub">Across all markets</div>
-          </div>
+          </motion.div>
 
           {/* Dominance */}
-          <div className="stat-card">
+          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
             <div className="stat-label">BTC Dominance</div>
             <div className="stat-value accent font-mono">{btcDom}%</div>
             <div className="stat-sub">ETH: <span className="font-mono">{ethDom}%</span></div>
-          </div>
+          </motion.div>
 
           {/* Fear & Greed */}
-          <div className="stat-card">
+          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
             <div className="stat-label">Fear & Greed</div>
             {fngValue !== null ? (
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -245,8 +270,8 @@ export default function Dashboard() {
             ) : (
               <div className="stat-value" style={{ color: "var(--text-muted)" }}>—</div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* ── TWO-COLUMN LAYOUT ────────────────────────────── */}
         <div className="dashboard-grid">
@@ -275,13 +300,14 @@ export default function Dashboard() {
                   { key: "losers",   label: "Losers" },
                   { key: "trending", label: "Trending" },
                 ] as const).map(tab => (
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
                     className={`tab-btn ${activeTab === tab.key ? "active" : ""}`}
                   >
                     {tab.label}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -338,7 +364,13 @@ export default function Dashboard() {
             </div>
 
             {/* Rows */}
-            <div className="table-body">
+            <motion.div 
+              className="table-body"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-20px" }}
+            >
               {filtered.length === 0 ? (
                 <div className="empty-state">
                   {search ? `No results for "${search}"` : "Loading markets..."}
@@ -348,7 +380,9 @@ export default function Dashboard() {
                   const change = Number(coin.price_change_percentage_24h) || 0;
                   const isUp = change >= 0;
                   return (
-                    <div
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover="hover"
                       key={coin.symbol + i}
                       onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                       className="table-row"
@@ -383,18 +417,24 @@ export default function Dashboard() {
                       <div className="sparkline-col">
                         <MiniSparkline up={isUp} />
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* ── RIGHT SIDEBAR ───────────────────────────────── */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <motion.div 
+            style={{ display: "flex", flexDirection: "column", gap: 16 }}
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-20px" }}
+          >
 
             {/* Trending */}
-            <div className="sidebar-card">
+            <motion.div className="sidebar-card" variants={itemVariants}>
               <div className="sidebar-header">
                 <div className="sidebar-title-group">
                   <Flame className="sidebar-icon" size={15} color="#f97316" />
@@ -429,10 +469,10 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Top Gainers */}
-            <div className="sidebar-card">
+            <motion.div className="sidebar-card" variants={itemVariants}>
               <div className="sidebar-header" style={{ borderBottom: "1px solid var(--border-soft)" }}>
                 <div className="sidebar-title-group">
                   <TrendingUp className="sidebar-icon" size={15} color="#22c55e" />
@@ -441,7 +481,8 @@ export default function Dashboard() {
               </div>
               <div className="sidebar-list">
                 {(gainersData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <div
+                  <motion.div
+                    whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 10 } }}
                     key={coin.symbol + i}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                     className="sidebar-item"
@@ -455,13 +496,13 @@ export default function Dashboard() {
                       <div className="sidebar-item-price">{fmt(coin.current_price)}</div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Top Losers */}
-            <div className="sidebar-card">
+            <motion.div className="sidebar-card" variants={itemVariants}>
               <div className="sidebar-header" style={{ borderBottom: "1px solid var(--border-soft)" }}>
                 <div className="sidebar-title-group">
                   <TrendingDown className="sidebar-icon" size={15} color="#ef4444" />
@@ -470,7 +511,8 @@ export default function Dashboard() {
               </div>
               <div className="sidebar-list">
                 {(losersData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <div
+                  <motion.div
+                    whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 10 } }}
                     key={coin.symbol + i}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                     className="sidebar-item"
@@ -484,12 +526,12 @@ export default function Dashboard() {
                       <div className="sidebar-item-price">{fmt(coin.current_price)}</div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
