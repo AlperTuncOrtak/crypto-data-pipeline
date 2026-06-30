@@ -25,7 +25,17 @@ export function useFearAndGreed() {
           return;
         }
       } catch (err: any) {
-        setError(err.message);
+        // Fallback to direct fetch if backend isn't deployed yet
+        try {
+          const directResponse = await fetch('https://api.alternative.me/fng/');
+          const directJson = await directResponse.json();
+          if (directJson && directJson.data && directJson.data.length > 0) {
+            setData(directJson.data[0]);
+            return;
+          }
+        } catch (directErr: any) {
+          setError(directErr.message || err.message);
+        }
       } finally {
         setLoading(false);
       }
