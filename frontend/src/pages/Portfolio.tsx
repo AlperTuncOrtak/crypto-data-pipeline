@@ -1418,8 +1418,7 @@ export default function Portfolio() {
               </button>
             )}
           </div>
-          </div>
-        )}
+        </div>
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 ? (
