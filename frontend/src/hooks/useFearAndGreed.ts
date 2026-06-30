@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import { apiClient } from '../api/client';
+
 export interface FearGreedData {
   value: string;
   value_classification: string;
@@ -15,29 +17,15 @@ export function useFearAndGreed() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Try direct fetch first
-        let response = await fetch('https://api.alternative.me/fng/');
-        let json = await response.json();
+        const response = await apiClient.get('/market/fear-and-greed');
+        const json = response.data;
         
         if (json && json.data && json.data.length > 0) {
           setData(json.data[0]);
           return;
         }
       } catch (err: any) {
-        // If CORS blocks or direct fetch fails, use a CORS proxy
-        try {
-          const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.alternative.me/fng/');
-          const response = await fetch(proxyUrl);
-          const wrapper = await response.json();
-          const json = JSON.parse(wrapper.contents);
-          
-          if (json && json.data && json.data.length > 0) {
-            setData(json.data[0]);
-            return;
-          }
-        } catch (proxyErr: any) {
-          setError(proxyErr.message);
-        }
+        setError(err.message);
       } finally {
         setLoading(false);
       }

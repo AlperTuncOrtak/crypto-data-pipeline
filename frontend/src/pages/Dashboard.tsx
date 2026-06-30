@@ -12,6 +12,7 @@ import {
   useTrending,
 } from "../hooks/useMarket";
 import { useFearAndGreed } from "../hooks/useFearAndGreed";
+import { useSparklines } from "../hooks/useSparklines";
 import PriceCell from "../components/ui/PriceCell";
 import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
@@ -28,11 +29,32 @@ function fmt(n: number) {
 }
 
 // ─── SPARKLINE ───────────────────────────────────────────────
-function MiniSparkline({ up }: { up: boolean }) {
+function MiniSparkline({ data, up }: { data?: any[], up: boolean }) {
   const color = up ? "#22c55e" : "#ef4444";
-  const points = up
-    ? "0,80 20,65 35,70 50,45 65,50 80,30 100,20"
-    : "0,20 20,35 35,30 50,55 65,50 80,70 100,80";
+  
+  if (!data || data.length < 2) {
+    // Fallback if no data
+    return (
+      <svg className="mini-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <polyline points="0,50 100,50" fill="none" stroke={color} strokeWidth="2" strokeDasharray="4 4" />
+      </svg>
+    );
+  }
+
+  // Calculate min and max prices to scale the SVG
+  const prices = data.map((d: any) => d.price);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = max - min || 1;
+
+  // Generate SVG path coordinates
+  const pts = data.map((d: any, i: number) => {
+    const x = (i / (data.length - 1)) * 100;
+    // Y is inverted (0 is top, 100 is bottom)
+    const y = 100 - ((d.price - min) / range) * 80 - 10; // 10 to 90 padding
+    return `${x},${y}`;
+  }).join(" ");
+
   return (
     <svg className="mini-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">
       <defs>
@@ -42,12 +64,12 @@ function MiniSparkline({ up }: { up: boolean }) {
         </linearGradient>
       </defs>
       <polyline
-        points={`0,100 ${points} 100,100`}
+        points={`0,100 ${pts} 100,100`}
         fill={`url(#g-${up})`} stroke="none"
       />
       <polyline
-        points={points}
-        fill="none" stroke={color} strokeWidth="3.5"
+        points={pts}
+        fill="none" stroke={color} strokeWidth="2.5"
         strokeLinejoin="round" strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
       />
@@ -179,6 +201,9 @@ export default function Dashboard() {
       if (sortKey === "mcap")   { av = a.market_cap || 0; bv = b.market_cap || 0; }
       return sortDir === "asc" ? av - bv : bv - av;
     });
+
+  const visibleSymbols = filtered.slice(0, 50).map((c: any) => c.symbol?.toUpperCase()).filter(Boolean);
+  const { data: sparklineData } = useSparklines(visibleSymbols, 24);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) setSortDir(d => d === "asc" ? "desc" : "asc");
@@ -415,7 +440,7 @@ export default function Dashboard() {
                       <div className="mcap-col font-mono">{fmt(coin.market_cap)}</div>
 
                       <div className="sparkline-col">
-                        <MiniSparkline up={isUp} />
+                        <MiniSparkline data={sparklineData?.[coin.symbol?.toUpperCase()]} up={isUp} />
                       </div>
                     </motion.div>
                   );

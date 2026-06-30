@@ -25,6 +25,7 @@ import Pricing from "./pages/Pricing";
 import Pro from "./pages/Pro";
 import Portfolio from "./pages/Portfolio";
 import CreateAlert from "./pages/CreateAlert";
+import SearchCommand from "./components/ui/SearchCommand";
 import DisclaimerModal from "./components/DisclaimerModal";
 import Settings from "./pages/Settings";
 import Landing from "./pages/Landing";
@@ -68,6 +69,20 @@ function AppInner() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [addToast]);
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Global CMD+K shortcut to open search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const {
     watchlist,
@@ -249,6 +264,8 @@ function AppInner() {
       <Footer />
 
       <AIChatWidget />
+
+      <SearchCommand isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       <RightSidebar
         isOpen={sidebarOpen}

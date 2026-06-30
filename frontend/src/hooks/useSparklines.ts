@@ -1,55 +1,24 @@
-// ============================================================
-// hooks/useSparklines.js
-// ============================================================
-// Birden fazla coin icin sparkline (mini chart) verisi ceker.
-// Tek bir endpoint cagrisiyla tum coinlerin son N saatlik
-// fiyat noktalarini alir.
-//
-// Donen yapi:
-//   { "BTC": [{price, time}, ...], "ETH": [...] }
-//
-// Kullanim:
-//   const { data } = useSparklines(['BTC', 'ETH'], 24)
-//   data?.BTC // [{price, time}, ...]
-//
-// NOT: symbols dizisi bos ise hook hic istek atmaz (enabled: false)
-// ============================================================
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../api/client";
 
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { apiClient } from '../api/client'
-
-
-async function fetchSparklines(symbols, hours) {
-  const response = await apiClient.get('/market/sparklines', {
-    params: {
-      // axios array'i otomatik olarak ?symbols=A&symbols=B seklinde serialize eder
-      symbols,
-      hours,
-    },
-    // Buyuk istekleri brackets formatinda gondermesin diye serializer
-    paramsSerializer: {
-      indexes: null,   // symbols=A&symbols=B (symbols[]=A degil)
-    },
-  })
-  return response.data
-}
-
-
-export function useSparklines(symbols = [], hours = 24) {
+export function useSparklines(symbols: string[], hours: number = 24) {
+  // We use queryKey to cache based on the joined symbols string
+  const key = symbols.length > 0 ? symbols.slice().sort().join(",") : "none";
+  
   return useQuery({
-    // queryKey'de symbols dizisi var - degisirse cache yenilenir.
-    // Sirali tutuyoruz ki ['BTC','ETH'] ile ['ETH','BTC'] ayni cache'e dussun.
-    queryKey: ['sparklines', [...symbols].sort().join(','), hours],
-
-    queryFn: () => fetchSparklines(symbols, hours),
-
-    // symbols bos ise istek atma
+    queryKey: ["sparklines", key, hours],
+    queryFn: async () => {
+      if (!symbols || symbols.length === 0) return {};
+      
+      const searchParams = new URLSearchParams();
+      symbols.forEach(s => searchParams.append("symbols", s));
+      searchParams.append("hours", hours.toString());
+      
+      const response = await apiClient.get(`/market/sparklines?${searchParams.toString()}`);
+      return response.data; // Expected format: { "BTC": [{price, time}, ...], "ETH": [...] }
+    },
     enabled: symbols.length > 0,
-
-    // Eski veriyi ekranda tut (siralama degisse bile yanip sonmeyi onler)
-    placeholderData: keepPreviousData,
-
-    // Sparkline verisi sik degismesine gerek yok - 60 saniye yeterli
-    refetchInterval: 60 * 1000,
-  })
+    staleTime: 60 * 1000,
+    refetchInterval: 5 * 60 * 1000, // refresh every 5 minutes
+  });
 }

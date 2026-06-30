@@ -116,6 +116,20 @@ def sparklines(symbols: list[str] = Query(...), hours: int = 24):
     """
     return get_sparklines(symbols, hours)
 
+@app.get("/market/fear-and-greed")
+def fear_and_greed():
+    """
+    Fetch Fear & Greed index from alternative.me
+    Acts as a proxy to avoid frontend CORS issues.
+    """
+    import httpx
+    try:
+        resp = httpx.get("https://api.alternative.me/fng/", timeout=10.0)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Failed to fetch Fear & Greed: {str(e)}")
+
 
 # -----------------------
 # ALERTS
