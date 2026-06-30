@@ -15,13 +15,29 @@ export function useFearAndGreed() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://api.alternative.me/fng/');
-        const json = await response.json();
+        // Try direct fetch first
+        let response = await fetch('https://api.alternative.me/fng/');
+        let json = await response.json();
+        
         if (json && json.data && json.data.length > 0) {
           setData(json.data[0]);
+          return;
         }
       } catch (err: any) {
-        setError(err.message);
+        // If CORS blocks or direct fetch fails, use a CORS proxy
+        try {
+          const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.alternative.me/fng/');
+          const response = await fetch(proxyUrl);
+          const wrapper = await response.json();
+          const json = JSON.parse(wrapper.contents);
+          
+          if (json && json.data && json.data.length > 0) {
+            setData(json.data[0]);
+            return;
+          }
+        } catch (proxyErr: any) {
+          setError(proxyErr.message);
+        }
       } finally {
         setLoading(false);
       }
