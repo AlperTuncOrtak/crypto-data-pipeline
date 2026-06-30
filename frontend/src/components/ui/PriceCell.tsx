@@ -27,5 +27,5 @@ export default function PriceCell({ price, className = "" }: { price: any, class
     }
   }, [price]);
 
-  return <span className={`${flashClass} ${className}`.trim()}>{formatPrice(price)}</span>;
+  return <span className={`font-mono ${flashClass} ${className}`.trim()}>{formatPrice(price)}</span>;
 }

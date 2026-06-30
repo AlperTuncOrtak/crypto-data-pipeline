@@ -210,7 +210,7 @@ export default function CoinDetail() {
                 </span>
               )}
             </div>
-            <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 5, fontFamily: "monospace" }}>
+            <div className="font-mono" style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 5 }}>
               {coin.symbol?.toUpperCase()} · {coin.slug}
             </div>
           </div>
@@ -218,18 +218,18 @@ export default function CoinDetail() {
 
         {/* Right: price + change */}
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.04em", color: "var(--text-primary)", fontFamily: "monospace", lineHeight: 1 }}>
+          <div className="font-mono" style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.04em", color: "var(--text-primary)", lineHeight: 1 }}>
             {fmtPrice(coin.current_price)}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginTop: 8 }}>
             {isPositive ? <TrendingUp size={16} color="#22c55e" /> : <TrendingDown size={16} color="#ef4444" />}
-            <span style={{ fontSize: 17, fontFamily: "monospace", fontWeight: 700, color: isPositive ? "#22c55e" : "#ef4444" }}>
+            <span className="font-mono" style={{ fontSize: 17, fontWeight: 700, color: isPositive ? "#22c55e" : "#ef4444" }}>
               {fmtPct(change)}
             </span>
             <span style={{ fontSize: 12, color: "var(--text-muted)" }}>24h</span>
           </div>
           {athPct !== null && (
-            <div style={{ fontSize: 12, color: Number(athPct) < 0 ? "#ef4444" : "#22c55e", marginTop: 4, fontFamily: "monospace" }}>
+            <div className="font-mono" style={{ fontSize: 12, color: Number(athPct) < 0 ? "#ef4444" : "#22c55e", marginTop: 4 }}>
               {athPct}% {Number(athPct) < 0 ? "from ATH" : "above ATH"}
             </div>
           )}

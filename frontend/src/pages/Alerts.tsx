@@ -183,12 +183,12 @@ export default function Alerts() {
                     <Icon size={13} color={color} />
                     <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{label}</span>
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 700, fontFamily: 'monospace', color }}>{count}</span>
+                  <span className="font-mono" style={{ fontSize: 14, fontWeight: 700, color }}>{count}</span>
                 </div>
               ))}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 }}>
                 <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>Total</span>
-                <span style={{ fontSize: 14, fontWeight: 800, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{summary.total}</span>
+                <span className="font-mono" style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)' }}>{summary.total}</span>
               </div>
             </div>
           </SidebarCard>
@@ -203,8 +203,8 @@ export default function Alerts() {
             ].map(f => (
               <FilterBtn key={f.key} active={filter === f.key} onClick={() => setFilter(f.key)}>
                 <span>{f.label}</span>
-                <span style={{
-                  fontSize: 11, fontFamily: 'monospace', fontWeight: 700,
+                <span className="font-mono" style={{
+                  fontSize: 11, fontWeight: 700,
                   padding: '2px 8px', borderRadius: 4,
                   background: filter === f.key ? 'rgba(255,255,255,0.10)' : 'var(--bg-elevated)',
                   color: filter === f.key ? 'var(--text-primary)' : 'var(--text-muted)',
@@ -321,7 +321,7 @@ export default function Alerts() {
 
                     {/* Coin name + message */}
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, fontFamily: 'monospace', color: 'var(--text-primary)' }}>
+                      <div className="font-mono" style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
                         {alert.symbol?.toUpperCase()}
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -330,21 +330,21 @@ export default function Alerts() {
                     </div>
 
                     {/* Price */}
-                    <div style={{ textAlign: 'right', fontFamily: 'monospace', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>
+                    <div className="font-mono" style={{ textAlign: 'right', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>
                       <PriceCell price={price} />
                     </div>
 
                     {/* % Change */}
-                    <div style={{ textAlign: 'right', fontFamily: 'monospace', fontSize: 14, fontWeight: 700, color: pctColor }}>
+                    <div className="font-mono" style={{ textAlign: 'right', fontSize: 14, fontWeight: 700, color: pctColor }}>
                       {pct > 0 ? '+' : ''}{pct.toFixed(2)}%
                     </div>
 
                     {/* Badge */}
                     <div style={{ textAlign: 'right' }}>
-                      <span style={{
+                      <span className="font-mono" style={{
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                         fontSize: 10, fontWeight: 700, padding: '3px 8px',
-                        borderRadius: 5, fontFamily: 'monospace',
+                        borderRadius: 5,
                         background: config.bg, color: config.color,
                         border: `1px solid ${config.border}`,
                         letterSpacing: '0.04em',

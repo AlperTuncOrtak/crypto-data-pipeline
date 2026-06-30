@@ -318,7 +318,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
               </div>
 
               {/* Rank */}
-              <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "monospace" }}>
+              <span className="font-mono" style={{ fontSize: 12, color: "var(--text-muted)" }}>
                 {rank}
               </span>
 
@@ -330,20 +330,20 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                 }
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{coin.name}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "monospace", marginTop: 1 }}>{coin.symbol?.toUpperCase()}</div>
+                  <div className="font-mono" style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>{coin.symbol?.toUpperCase()}</div>
                 </div>
               </div>
 
               {/* Price */}
-              <div style={{ textAlign: "right", fontSize: 13, fontWeight: 600, color: "var(--text-primary)", fontFamily: "monospace" }}>
+              <div className="font-mono" style={{ textAlign: "right", fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>
                 <PriceCell price={coin.current_price} />
               </div>
 
               {/* 24h % */}
               <div style={{ textAlign: "right" }}>
-                <span style={{
+                <span className="font-mono" style={{
                   display: "inline-flex", alignItems: "center", gap: 2,
-                  fontSize: 12, fontWeight: 700, fontFamily: "monospace",
+                  fontSize: 12, fontWeight: 700,
                   padding: "3px 7px", borderRadius: 5,
                   background: isUp ? "rgba(34,197,94,0.10)" : "rgba(239,68,68,0.10)",
                   color: changeColor,
@@ -353,12 +353,12 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
               </div>
 
               {/* Volume */}
-              <div style={{ textAlign: "right", fontSize: 12, color: "var(--text-secondary)", fontFamily: "monospace" }}>
+              <div className="font-mono" style={{ textAlign: "right", fontSize: 12, color: "var(--text-secondary)" }}>
                 {fmt(coin.total_volume)}
               </div>
 
               {/* Market Cap */}
-              <div style={{ textAlign: "right", fontSize: 12, color: "var(--text-secondary)", fontFamily: "monospace" }}>
+              <div className="font-mono" style={{ textAlign: "right", fontSize: 12, color: "var(--text-secondary)" }}>
                 {fmt(coin.market_cap)}
               </div>
 
