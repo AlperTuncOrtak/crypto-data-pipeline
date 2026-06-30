@@ -14,7 +14,6 @@ import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
 import AIAnalysisBox from "../components/market/AIAnalysisBox";
-import AttackMomentum from "../components/market/AttackMomentum";
 import HypeRealityWidget from "../components/market/HypeRealityWidget";
 import TokenomicsWidget from "../components/market/TokenomicsWidget";
 import { useTranslation } from "react-i18next";
@@ -350,8 +349,7 @@ export default function CoinDetail() {
               {isPro ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                    <AttackMomentum symbol={coin.symbol} brandColor={brandColor} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
                     <HypeRealityWidget symbol={coin.symbol} />
                   </div>
                   <AIPulse slug={slug} />
