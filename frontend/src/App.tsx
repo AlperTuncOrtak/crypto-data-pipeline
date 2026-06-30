@@ -9,8 +9,6 @@ import { useState, useEffect } from "react";
 import { ToastProvider, useAlertMonitor, useToast } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
-import LinearDashboardLayout from "./components/layout/LinearDashboardLayout";
-import { Outlet } from "react-router-dom";
 import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistSidebar";
 import Footer from "./components/layout/Footer";
@@ -108,26 +106,28 @@ function AppInner() {
       {/* Global Ticker */}
       <CoinTicker />
 
-      <Routes>
-        {/* Public Routes (with old Navbar and Footer) */}
-        <Route element={
-          <>
-            <Navbar
-              onWatchlistOpen={() => openPanel("watchlist")}
-              watchlistCount={watchlist.length}
-              onAuthOpen={(mode = "login") => {
-                setAuthMode(mode);
-                setAuthOpen(true);
-              }}
-              authOpen={authOpen}
-              setAuthOpen={setAuthOpen}
-            />
-            <main style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}>
-              <Outlet />
-            </main>
-            <Footer />
-          </>
-        }>
+      <>
+        <Navbar
+          onWatchlistOpen={() => openPanel("watchlist")}
+          watchlistCount={watchlist.length}
+          onAuthOpen={(mode = "login") => {
+            setAuthMode(mode);
+            setAuthOpen(true);
+          }}
+          authOpen={authOpen}
+          setAuthOpen={setAuthOpen}
+        />
+      </>
+      <main
+        className={
+          location.pathname === "/"
+            ? ""
+            : "main-content"
+        }
+        style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
+      >
+        <Routes>
+          {/* Public */}
           <Route
             path="/"
             element={
@@ -137,29 +137,6 @@ function AppInner() {
               }} />
             }
           />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/docs" element={<Documentation />} />
-          <Route
-            path="/pricing"
-            element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}
-          />
-          <Route path="/pro" element={<Pro />} />
-        </Route>
-
-        {/* App Routes (with new LinearDashboardLayout) */}
-        <Route element={
-          <LinearDashboardLayout
-            onAuthOpen={() => {
-              setAuthMode("login");
-              setAuthOpen(true);
-            }}
-            onWatchlistOpen={() => openPanel("watchlist")}
-            isLoggedIn={isLoggedIn}
-          >
-            <Outlet />
-          </LinearDashboardLayout>
-        }>
           <Route
             path="/dashboard"
             element={
@@ -178,6 +155,15 @@ function AppInner() {
           <Route path="/coin/:slug" element={<CoinDetail />} />
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analysis" element={<Analysis />} />
+
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/docs" element={<Documentation />} />
+          <Route
+            path="/pricing"
+            element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}
+          />
+          <Route path="/pro" element={<Pro />} />
 
           {/* Login gerekli */}
           <Route
@@ -257,8 +243,10 @@ function AppInner() {
               </ProtectedRoute>
             }
           />
-        </Route>
-      </Routes>
+        </Routes>
+      </main>
+
+      <Footer />
 
       <AIChatWidget />
 
