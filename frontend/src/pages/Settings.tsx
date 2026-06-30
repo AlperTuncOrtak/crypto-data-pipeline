@@ -124,7 +124,7 @@ function SaveButton({ loading, onClick, label = "Save Changes" }) {
 // ── Main ──────────────────────────────────────────────────────────
 export default function Settings() {
   const { user, displayName, email, avatar, plan, isPro, isEnterprise } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme, accent, setAccent, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -531,77 +531,126 @@ export default function Settings() {
       </Section>
 
       {/* ── APPEARANCE ── */}
-      <Section title={t("settings.appearance")} icon={theme === 'dark' ? Moon : Sun}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>
-            {t("settings.appearance_desc")}
+      <Section title={t("settings.appearance")} icon={theme === 'light' ? Sun : Moon}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          
+          {/* Accent Color Picker */}
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 12 }}>
+              {t("settings.accent_color") || "Accent Color"}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              {[
+                { id: "zinc", color: "#71717a" },
+                { id: "purple", color: "#7c3aed" },
+                { id: "blue", color: "#2563eb" },
+                { id: "emerald", color: "#10b981" },
+                { id: "rose", color: "#e11d48" },
+                { id: "amber", color: "#d97706" },
+              ].map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => setAccent(c.id)}
+                  style={{
+                    width: 32, height: 32, borderRadius: "50%",
+                    background: c.color, border: "none", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: accent === c.id ? `0 0 0 2px var(--bg-card), 0 0 0 4px ${c.color}` : "none",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  {accent === c.id && <CheckCircle size={16} color="#fff" />}
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {/* Dark Mode Card */}
-            <button
-              onClick={() => theme !== 'dark' && toggleTheme()}
-              style={{
-                padding: "16px",
-                borderRadius: 14,
-                border: theme === 'dark' ? "2px solid var(--accent)" : "2px solid var(--border)",
-                background: theme === 'dark' ? "var(--accent-soft)" : "var(--bg-elevated)",
-                cursor: theme === 'dark' ? "default" : "pointer",
-                textAlign: "left",
-                transition: "all 0.2s ease",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Moon size={16} style={{ color: theme === 'dark' ? "var(--accent)" : "var(--text-muted)" }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'dark' ? "var(--accent)" : "var(--text-secondary)" }}>{t("settings.dark")}</span>
-                </div>
-                {theme === 'dark' && (
-                  <CheckCircle size={14} style={{ color: "var(--accent)" }} />
-                )}
-              </div>
-              {/* Dark preview */}
-              <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
-                <div style={{ background: "#020617", height: 8, borderBottom: "1px solid var(--accent-soft)" }} />
-                <div style={{ background: "#0b1227", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
-                  {["#2dd4bf", "var(--accent)", "rgba(255,255,255,0.1)"].map((c, i) => (
-                    <div key={i} style={{ height: 6, borderRadius: 3, background: c, width: i === 2 ? 20 : 12 }} />
-                  ))}
-                </div>
-              </div>
-            </button>
 
-            {/* Light Mode Card */}
-            <button
-              onClick={() => theme !== 'light' && toggleTheme()}
-              style={{
-                padding: "16px",
-                borderRadius: 14,
-                border: theme === 'light' ? "2px solid var(--accent)" : "2px solid var(--border)",
-                background: theme === 'light' ? "var(--accent-soft)" : "var(--bg-elevated)",
-                cursor: theme === 'light' ? "default" : "pointer",
-                textAlign: "left",
-                transition: "all 0.2s ease",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Sun size={16} style={{ color: theme === 'light' ? "var(--accent)" : "var(--text-muted)" }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'light' ? "var(--accent)" : "var(--text-secondary)" }}>{t("settings.light")}</span>
+          {/* Theme Mode Picker */}
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 12 }}>
+              {t("settings.theme_mode") || "Theme Mode"}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+              
+              {/* Midnight Mode Card */}
+              <button
+                onClick={() => setTheme('midnight')}
+                style={{
+                  padding: "16px", borderRadius: 14,
+                  border: theme === 'midnight' ? "2px solid var(--accent)" : "2px solid var(--border)",
+                  background: theme === 'midnight' ? "var(--accent-soft)" : "var(--bg-elevated)",
+                  cursor: "pointer", textAlign: "left", transition: "all 0.2s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Moon size={16} style={{ color: theme === 'midnight' ? "var(--accent)" : "var(--text-muted)" }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'midnight' ? "var(--accent)" : "var(--text-secondary)" }}>Midnight</span>
+                  </div>
+                  {theme === 'midnight' && <CheckCircle size={14} style={{ color: "var(--accent)" }} />}
                 </div>
-                {theme === 'light' && (
-                  <CheckCircle size={14} style={{ color: "var(--accent)" }} />
-                )}
-              </div>
-              {/* Light preview */}
-              <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(15,23,42,0.1)" }}>
-                <div style={{ background: "#f1f5f9", height: 8, borderBottom: "1px solid rgba(15,23,42,0.08)" }} />
-                <div style={{ background: "#ffffff", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
-                  {["#047857", "#007a8a", "rgba(15,23,42,0.08)"].map((c, i) => (
-                    <div key={i} style={{ height: 6, borderRadius: 3, background: c, width: i === 2 ? 20 : 12 }} />
-                  ))}
+                <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ background: "#000000", height: 8, borderBottom: "1px solid rgba(255,255,255,0.03)" }} />
+                  <div style={{ background: "#0C0C0E", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
+                    <div style={{ height: 6, borderRadius: 3, background: "var(--accent)", width: 12 }} />
+                    <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.1)", width: 20 }} />
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+
+              {/* Dark Mode Card */}
+              <button
+                onClick={() => setTheme('dark')}
+                style={{
+                  padding: "16px", borderRadius: 14,
+                  border: theme === 'dark' ? "2px solid var(--accent)" : "2px solid var(--border)",
+                  background: theme === 'dark' ? "var(--accent-soft)" : "var(--bg-elevated)",
+                  cursor: "pointer", textAlign: "left", transition: "all 0.2s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Moon size={16} style={{ color: theme === 'dark' ? "var(--accent)" : "var(--text-muted)" }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'dark' ? "var(--accent)" : "var(--text-secondary)" }}>Dark</span>
+                  </div>
+                  {theme === 'dark' && <CheckCircle size={14} style={{ color: "var(--accent)" }} />}
+                </div>
+                <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ background: "#111113", height: 8, borderBottom: "1px solid rgba(255,255,255,0.05)" }} />
+                  <div style={{ background: "#18181b", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
+                    <div style={{ height: 6, borderRadius: 3, background: "var(--accent)", width: 12 }} />
+                    <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.1)", width: 20 }} />
+                  </div>
+                </div>
+              </button>
+
+              {/* Light Mode Card */}
+              <button
+                onClick={() => setTheme('light')}
+                style={{
+                  padding: "16px", borderRadius: 14,
+                  border: theme === 'light' ? "2px solid var(--accent)" : "2px solid var(--border)",
+                  background: theme === 'light' ? "var(--accent-soft)" : "var(--bg-elevated)",
+                  cursor: "pointer", textAlign: "left", transition: "all 0.2s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Sun size={16} style={{ color: theme === 'light' ? "var(--accent)" : "var(--text-muted)" }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: theme === 'light' ? "var(--accent)" : "var(--text-secondary)" }}>Light</span>
+                  </div>
+                  {theme === 'light' && <CheckCircle size={14} style={{ color: "var(--accent)" }} />}
+                </div>
+                <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(0,0,0,0.1)" }}>
+                  <div style={{ background: "#f7f7f9", height: 8, borderBottom: "1px solid rgba(0,0,0,0.05)" }} />
+                  <div style={{ background: "#ffffff", height: 32, display: "flex", alignItems: "center", gap: 4, padding: "0 8px" }}>
+                    <div style={{ height: 6, borderRadius: 3, background: "var(--accent)", width: 12 }} />
+                    <div style={{ height: 6, borderRadius: 3, background: "rgba(0,0,0,0.1)", width: 20 }} />
+                  </div>
+                </div>
+              </button>
+
+            </div>
           </div>
         </div>
       </Section>

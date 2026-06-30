@@ -1,54 +1,104 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════
-   DARK THEME — Linear.app design system
-   Canvas: #0b0b12  |  Accent: #5e6ad2 (Indigo/Violet)
+   THEME SYSTEM
 ═══════════════════════════════════════════════════════════ */
+
+/* ── DEFAULT / FALLBACK (Midnight + Zinc) ── */
 :root {
-  /* 🔹 Backgrounds (Linear.app Premium Theme) 🔹 */
-  --bg-base:       #000000;   /* Deep true black for maximum contrast */
-  --bg-surface:    #0C0C0E;   /* Very subtle raised surface */
-  --bg-elevated:   #131316;   /* Hover state */
-  --bg-card:       #09090B;   /* Standard card */
-  --bg-hover:      rgba(255, 255, 255, 0.04);   /* Rows hover */
-
-  /* 🔹 Solid & Subtle Borders 🔹 */
-  --border:        rgba(255, 255, 255, 0.06);
-  --border-soft:   rgba(255, 255, 255, 0.03);
-  --border-mid:    rgba(255, 255, 255, 0.10);
-  --border-focus:  rgba(255, 255, 255, 0.15);
-
-  /* 🔹 Text 🔹 */
   --text-primary:   rgba(255, 255, 255, 0.95);
   --text-secondary: rgba(255, 255, 255, 0.65);
   --text-muted:     rgba(255, 255, 255, 0.40);
 
-  /* 🔹 Accent - Linear Indigo / Premium Glow 🔹 */
-  --accent:         #6b7280; /* Subtle grey as default accent, will pop with brand colors */
-  --accent-hover:   #9ca3af;
-  --accent-soft:    rgba(255, 255, 255, 0.06);
-  --accent-border:  rgba(255, 255, 255, 0.12);
-  --accent-glow:    rgba(255, 255, 255, 0.15);
-
-  /* ── Violet secondary ── */
-  --secondary:      #7c3aed;
-  --secondary-soft: rgba(124, 58, 237, 0.10);
-
-  /* ── Semantic colors ── */
-  --positive:       #10b981; /* Emerald green */
+  /* Semantic colors */
+  --positive:       #10b981;
   --positive-soft:  rgba(16, 185, 129, 0.10);
-  --negative:       #f43f5e; /* Rose red */
+  --negative:       #f43f5e;
   --negative-soft:  rgba(244, 63, 94, 0.10);
   --warning:        #f59e0b;
   --warning-soft:   rgba(245, 158, 11, 0.10);
 
-  /* ── Mobile nav overlay ── */
   --nav-overlay: rgba(0, 0, 0, 0.95);
-
-  /* ── Transitions ── */
+  
   --transition-fast:   all 0.15s ease;
   --transition-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-slow:   all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── BASE THEMES ── */
+:root, [data-theme="midnight"] {
+  --bg-base:       #000000;
+  --bg-surface:    #0C0C0E;
+  --bg-elevated:   #131316;
+  --bg-card:       #09090B;
+  --bg-hover:      rgba(255, 255, 255, 0.04);
+
+  --border:        rgba(255, 255, 255, 0.06);
+  --border-soft:   rgba(255, 255, 255, 0.03);
+  --border-mid:    rgba(255, 255, 255, 0.10);
+  --border-focus:  rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] {
+  --bg-base:       #111113;
+  --bg-surface:    #18181b;
+  --bg-elevated:   #27272a;
+  --bg-card:       #18181b;
+  --bg-hover:      rgba(255, 255, 255, 0.06);
+
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-soft:   rgba(255, 255, 255, 0.04);
+  --border-mid:    rgba(255, 255, 255, 0.12);
+  --border-focus:  rgba(255, 255, 255, 0.20);
+}
+
+/* ── ACCENT COLORS ── */
+:root, [data-accent="zinc"] {
+  --accent:         #71717a;
+  --accent-hover:   #a1a1aa;
+  --accent-soft:    rgba(255, 255, 255, 0.06);
+  --accent-border:  rgba(255, 255, 255, 0.12);
+  --accent-glow:    rgba(255, 255, 255, 0.10);
+}
+
+[data-accent="purple"] {
+  --accent:         #7c3aed;
+  --accent-hover:   #8b5cf6;
+  --accent-soft:    rgba(124, 58, 237, 0.10);
+  --accent-border:  rgba(124, 58, 237, 0.30);
+  --accent-glow:    rgba(124, 58, 237, 0.25);
+}
+
+[data-accent="blue"] {
+  --accent:         #2563eb;
+  --accent-hover:   #3b82f6;
+  --accent-soft:    rgba(37, 99, 235, 0.10);
+  --accent-border:  rgba(37, 99, 235, 0.30);
+  --accent-glow:    rgba(37, 99, 235, 0.25);
+}
+
+[data-accent="emerald"] {
+  --accent:         #10b981;
+  --accent-hover:   #34d399;
+  --accent-soft:    rgba(16, 185, 129, 0.10);
+  --accent-border:  rgba(16, 185, 129, 0.30);
+  --accent-glow:    rgba(16, 185, 129, 0.25);
+}
+
+[data-accent="rose"] {
+  --accent:         #e11d48;
+  --accent-hover:   #f43f5e;
+  --accent-soft:    rgba(225, 29, 72, 0.10);
+  --accent-border:  rgba(225, 29, 72, 0.30);
+  --accent-glow:    rgba(225, 29, 72, 0.25);
+}
+
+[data-accent="amber"] {
+  --accent:         #d97706;
+  --accent-hover:   #f59e0b;
+  --accent-soft:    rgba(217, 119, 6, 0.10);
+  --accent-border:  rgba(217, 119, 6, 0.30);
+  --accent-glow:    rgba(217, 119, 6, 0.25);
 }
 
 /* ═══════════════════════════════════════════════════════════
