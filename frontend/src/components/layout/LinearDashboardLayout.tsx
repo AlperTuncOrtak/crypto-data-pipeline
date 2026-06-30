@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { 
   BarChart2, 
   Activity, 
@@ -13,9 +13,17 @@ import {
 
 interface LayoutProps {
   children: React.ReactNode;
+  onAuthOpen?: () => void;
+  onWatchlistOpen?: () => void;
+  isLoggedIn?: boolean;
 }
 
-export default function LinearDashboardLayout({ children }: LayoutProps) {
+export default function LinearDashboardLayout({ children, onAuthOpen, onWatchlistOpen, isLoggedIn }: LayoutProps) {
+  const location = useLocation();
+  
+  // Format pathname for breadcrumbs (e.g. /dashboard -> Dashboard)
+  const pathName = location.pathname === "/" ? "Overview" : location.pathname.slice(1).charAt(0).toUpperCase() + location.pathname.slice(2);
+  
   return (
     <div className="flex h-screen w-full bg-[#0A0A0A] text-zinc-400 font-sans antialiased overflow-hidden selection:bg-white/[0.1] selection:text-zinc-100">
       
@@ -88,12 +96,22 @@ export default function LinearDashboardLayout({ children }: LayoutProps) {
             
             {/* Icons */}
             <div className="flex items-center gap-3">
+              <button 
+                onClick={onWatchlistOpen}
+                className="hover:text-zinc-100 transition-colors"
+                title="Watchlist"
+              >
+                <Target size={14} />
+              </button>
               <button className="hover:text-zinc-100 transition-colors">
                 <Bell size={14} />
               </button>
               <div className="w-[1px] h-4 bg-white/[0.08]"></div>
-              <button className="w-6 h-6 rounded-full bg-white/[0.08] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
-                <User size={12} className="text-zinc-100" />
+              <button 
+                onClick={onAuthOpen}
+                className="w-6 h-6 rounded-full bg-white/[0.08] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"
+              >
+                <User size={12} className={isLoggedIn ? "text-emerald-400" : "text-zinc-100"} />
               </button>
             </div>
           </div>
