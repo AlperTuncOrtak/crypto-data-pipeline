@@ -148,16 +148,37 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        {/* ── BENTO BOX FEATURES ── */}
+        {/* ── BENTO BOX FEATURES (gettrade.ai style) ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-32">
           
-          <FadeIn delay={0.1} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.1} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-[var(--accent)]/20 rounded-full blur-[80px] pointer-events-none"></div>
             
-            <div className="relative z-10">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                <Brain className="text-white" size={24} />
+            {/* UI Preview: AI Dashboard */}
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-6 shadow-2xl flex items-center justify-center">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--accent)]/30 rounded-full blur-[50px] pointer-events-none"></div>
+              <div className="flex items-center gap-8 w-full max-w-sm">
+                <div className="relative w-32 h-32 shrink-0">
+                  <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_var(--accent-soft)]">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset="60" strokeLinecap="round" className="animate-pulse" />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-black text-white">76</span>
+                    <span className="text-[10px] text-[var(--accent)] font-bold tracking-widest uppercase">Greed</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 w-full">
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-green-500 w-[80%]"></div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[var(--accent)] w-[60%]"></div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-red-500 w-[30%]"></div></div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative z-10 mt-auto">
+              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-5">
+                <Brain className="text-[var(--accent)]" size={20} />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight text-white">AI Market Analysis</h3>
               <p className="text-gray-400 max-w-md text-base leading-relaxed">
@@ -166,40 +187,81 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.2} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
-            <div className="relative z-10">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                <Activity className="text-white" size={24} />
+            {/* UI Preview: Orderbook/Sparkline */}
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-4 shadow-2xl flex flex-col justify-end gap-2">
+               <div className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
+                 <span className="text-[10px] font-mono text-green-400">BTC-PERP</span>
+                 <span className="text-xs font-bold text-green-400">+2.4%</span>
+               </div>
+               <div className="flex justify-between items-center px-2 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
+                 <span className="text-[10px] font-mono text-red-400">ETH-PERP</span>
+                 <span className="text-xs font-bold text-red-400">-1.2%</span>
+               </div>
+               <div className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
+                 <span className="text-[10px] font-mono text-green-400">SOL-PERP</span>
+                 <span className="text-xs font-bold text-green-400">+5.8%</span>
+               </div>
+            </div>
+
+            <div className="relative z-10 mt-auto">
+              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+                <Activity className="text-gray-300" size={20} />
               </div>
               <h3 className="text-2xl font-bold mb-3 tracking-tight text-white">Real-Time Data</h3>
               <p className="text-gray-400 text-base leading-relaxed">
-                Millisecond-precision websocket feeds straight to your dashboard. No delays, no refreshing.
+                Millisecond-precision websocket feeds straight to your dashboard. No delays.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.3} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.3} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
             <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
-            <div className="relative z-10">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                <Wallet className="text-white" size={24} />
+            {/* UI Preview: Wallet Sync */}
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-5 shadow-2xl flex flex-col items-center justify-center relative">
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+               <div className="w-16 h-16 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-4 z-10 relative">
+                 <Wallet className="text-[var(--accent)]" size={24} />
+                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#19191c]"></div>
+               </div>
+               <div className="text-xl font-black text-white z-10 font-mono">$124,592.00</div>
+               <div className="text-xs font-bold text-gray-500 z-10 mt-1 uppercase tracking-widest">Total Balance</div>
+            </div>
+
+            <div className="relative z-10 mt-auto">
+              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+                <Wallet className="text-gray-300" size={20} />
               </div>
               <h3 className="text-2xl font-bold mb-3 tracking-tight text-white">Portfolio Sync</h3>
               <p className="text-gray-400 text-base leading-relaxed">
-                Automatically import trades via CSV or connect on-chain wallets for unified net worth tracking.
+                Automatically import trades via CSV or connect on-chain wallets for tracking.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.4} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.4} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
              <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
-            <div className="relative z-10">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                <Cpu className="text-white" size={24} />
+            {/* UI Preview: Algo Code */}
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-[#0a0a0c] overflow-hidden group-hover:border-white/10 transition-colors p-6 shadow-2xl flex flex-col justify-center font-mono text-xs md:text-sm text-gray-500 relative">
+               <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-[60px] pointer-events-none"></div>
+               <div className="text-purple-400">import <span className="text-white">{' { MarketMaker } '}</span> from <span className="text-green-400">'@crypto/algo'</span>;</div>
+               <br/>
+               <div><span className="text-blue-400">const</span> <span className="text-white">strategy</span> = <span className="text-blue-400">new</span> <span className="text-yellow-200">MarketMaker</span>({'{'}</div>
+               <div className="pl-4">pair: <span className="text-green-400">'BTC/USDT'</span>,</div>
+               <div className="pl-4">riskFactor: <span className="text-orange-400">0.05</span>,</div>
+               <div className="pl-4">leverage: <span className="text-orange-400">10</span>,</div>
+               <div>{'}'});</div>
+               <br/>
+               <div><span className="text-white">strategy</span>.<span className="text-yellow-200">execute</span>(); <span className="text-green-500 font-bold ml-2 animate-pulse">// Running...</span></div>
+            </div>
+
+            <div className="relative z-10 mt-auto">
+              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-5">
+                <Cpu className="text-[var(--accent)]" size={20} />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight text-white">Algorithmic Edge</h3>
               <p className="text-gray-400 max-w-md text-base leading-relaxed">
