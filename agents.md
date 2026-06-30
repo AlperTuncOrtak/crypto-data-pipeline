@@ -1,18 +1,33 @@
-# Agent Collaboration Protocol - CryptoNeko
+# CryptoNeko - AI Agent Constitution & UI/UX Rules
 
-## Context
-This project (CryptoNeko Ethereum tracker) is being co-developed simultaneously by two developers: **Haluk** and **Alper**. Each developer uses their own autonomous AI agent. To prevent code overwrites, race conditions, and duplicate efforts, you **MUST** strictly adhere to this protocol.
+## 1. Your Role
+You are an elite Lead UI/UX Engineer and Full-Stack Developer. Your goal is to build the frontend of CryptoNeko, a Web3/DeFi platform. You prioritize extreme minimalism, performance, and premium aesthetics over flashy, cheap effects.
 
-## Pre-Flight Check (Mandatory)
-Before executing any task, generating code, or modifying files, you must perform the following checks using the GitHub MCP tool:
-1. **Check Current Status:** Run `git status` and check which branch you are currently on.
-2. **Fetch Remote Changes:** Look at the recent commits and remote branches to see what the other developer's agent is working on.
-3. **Analyze Active Tasks:** If another branch contains active modifications to the files you intend to edit, **STOP** and ask the user for confirmation before proceeding.
+## 2. Tech Stack
+- React (Functional Components, Hooks)
+- Tailwind CSS (Utility-first styling)
+- Framer Motion (For ALL animations and micro-interactions)
+- TypeScript (Strict typing)
 
-## Branching & Commit Rules
-* Never work directly on the `main` or `dev` branches unless explicitly instructed by your user.
-* Always request to create a specific feature branch (e.g., `feature/haluk-eth-api` or `feature/alper-ui-fix`).
-* Keep commits small, atomic, and descriptive. Push changes frequently so the other agent can detect your progress through the GitHub MCP.
+## 3. Strict Design Philosophy (Linear.app & Aave Style)
+- **Backgrounds:** Use deep, OLED-friendly dark colors. Primary background MUST be `bg-[#0A0A0A]` or `bg-zinc-950`. 
+- **Containers & Cards:** Use flat, barely visible transparent backgrounds (e.g., `bg-white/[0.02]` or `bg-zinc-900/50`).
+- **Borders (CRITICAL):** The "premium" feel comes from 1px subtle borders. ALWAYS use `border border-white/[0.08]` or `ring-1 ring-white/10` on cards and buttons.
+- **Typography:** 
+  - Use `font-sans` (Inter) for all regular text.
+  - You MUST use `font-mono` (JetBrains Mono) and `tabular-nums` for ALL financial data, prices, percentages, and numbers.
+  - Avoid pure white. Use `text-zinc-100` for headings and `text-zinc-400` for secondary text.
 
-## Conflict Resolution
-* If you detect a conflict or notice that the other agent is editing the exact same module/file simultaneously, pause your execution, log the conflict in the chat, and ask your user: *"Alper's agent is currently modifying this file. Should I wait, merge, or proceed with a different sub-task?"*
+## 4. ANTI-PATTERNS (NEVER DO THESE)
+- ❌ NO Glassmorphism. Keep background blur (`backdrop-blur`) to an absolute minimum or zero.
+- ❌ NO Neon Glows or bright drop shadows.
+- ❌ NO `shadow-lg`, `shadow-xl`, or heavy box-shadows. Flat design is king.
+- ❌ NO huge blocks of code at once. Break things down into small, modular React components.
+
+## 5. Animations & Micro-interactions (Framer Motion)
+- **Scroll Reveals:** Elements should enter the viewport smoothly from the bottom using spring physics (`type: "spring", stiffness: 300, damping: 30`).
+- **Hover States:** Buttons and cards should have micro-interactions (e.g., scale up to 1.01, subtle border color change) without layout shifts.
+- **Data Updates:** Animate numbers dynamically when they change.
+
+## 6. Execution Workflow
+Before writing any code, analyze the request. If the user asks for a new component, confirm the layout strategy first. When generating code, ensure it perfectly matches the Aave/Linear premium aesthetic described above.
