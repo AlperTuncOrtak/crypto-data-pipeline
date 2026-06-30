@@ -61,17 +61,17 @@ export default function Landing() {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#0d0d0f] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden">
       
       {/* ── BACKGROUND MESH / GLOW ── */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
         <motion.div style={{ y, opacity }} className="absolute w-[800px] h-[800px] bg-[var(--accent)]/5 rounded-full blur-[120px] top-[-200px] mix-blend-screen" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-[#050505]/60 backdrop-blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[#0d0d0f]/60 backdrop-blur-[100px]"></div>
       </div>
 
       {/* ── HEADER ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-6 flex items-center justify-between border-b border-white/[0.02] bg-[#050505]/50 backdrop-blur-md">
+      <header className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-6 flex items-center justify-between border-b border-white/[0.02] bg-[#0d0d0f]/50 backdrop-blur-md">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-white to-gray-500 flex items-center justify-center text-black font-black text-xl shadow-[0_0_15px_rgba(255,255,255,0.2)]">
             C
@@ -151,7 +151,7 @@ export default function Landing() {
         {/* ── BENTO BOX FEATURES ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-32">
           
-          <FadeIn delay={0.1} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.1} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             <div className="absolute -top-20 -right-20 w-64 h-64 bg-[var(--accent)]/20 rounded-full blur-[80px] pointer-events-none"></div>
             
@@ -166,7 +166,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} className="relative group overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.2} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             <div className="relative z-10">
@@ -180,7 +180,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.3} className="relative group overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.3} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
             <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             <div className="relative z-10">
@@ -194,7 +194,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.4} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
+          <FadeIn delay={0.4} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[350px] flex flex-col justify-end">
              <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             <div className="relative z-10">
@@ -211,7 +211,7 @@ export default function Landing() {
 
         {/* ── CALL TO ACTION ── */}
         <FadeIn delay={0.1}>
-          <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-b from-[#111] to-[#050505] border border-white/10 px-8 py-24 text-center">
+          <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-b from-[#19191c] to-[#0d0d0f] border border-white/10 px-8 py-24 text-center">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none"></div>
             
             <h2 className="relative z-10 text-4xl md:text-5xl font-black tracking-tight text-white mb-6">
@@ -231,7 +231,7 @@ export default function Landing() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-white/5 bg-[#050505] py-12 px-6 lg:px-12 relative z-10">
+      <footer className="border-t border-white/5 bg-[#0d0d0f] py-12 px-6 lg:px-12 relative z-10">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center text-black font-black text-xs">C</div>
