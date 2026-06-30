@@ -1316,21 +1316,25 @@ export default function Portfolio() {
       {/* TWO-COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10 mt-8">
         
-        {/* LEFT COLUMN: Data Sources + Table */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
-        {/* Data Sources */}
-        <SoftCard className="w-full flex flex-col gap-5">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('portfolio.data_sources')}</h3>
+        {/* LEFT COLUMN: Table */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+        
+        {/* Data Sources (Collapsible) */}
+        <div className="w-full">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black text-[var(--text-primary)]">{t('portfolio.your_holdings')}</h2>
             <button
               onClick={() => setShowAddSource(v => !v)}
-              className="text-xs font-bold px-4 py-2.5 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
+              className="text-xs font-bold px-4 py-2 rounded-lg bg-white/[0.03] text-gray-300 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white transition-all duration-300 flex items-center gap-2"
             >
-              {showAddSource ? t('portfolio.close_options') : t('portfolio.add_source')}
+              <Wallet size={14} />
+              {showAddSource ? t('portfolio.close_options') : "Manage Sources"}
             </button>
           </div>
 
           {showAddSource && (
+            <div className="mb-6 bg-white/[0.02] border border-white/[0.05] rounded-2xl p-5 shadow-inner">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Import Data</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-4 mb-2 rounded-2xl bg-white/[0.01] border border-white/[0.03]">
               {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
                 <button
@@ -1343,6 +1347,7 @@ export default function Portfolio() {
                 </button>
               ))}
               <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
+            </div>
             </div>
           )}
 
@@ -1407,20 +1412,19 @@ export default function Portfolio() {
             {trades.length > 0 && (
               <button 
                 onClick={handleClearTrades} 
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] ml-auto"
-                title="Clear all imported CSV data"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 ml-auto uppercase tracking-wider"
               >
                 {t('portfolio.clear_csv')}
               </button>
             )}
           </div>
-        </SoftCard>
+          </div>
+        )}
 
       {/* HOLDINGS TABLE */}
-      {holdings.length > 0 && (
-        <SoftCard>
-          <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">{t('portfolio.your_holdings')}</h3>
-          <div className="overflow-x-auto w-full pb-4">
+      {holdings.length > 0 ? (
+        <div className="bg-[#121212] border border-white/[0.05] rounded-3xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto w-full">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
                 <tr className="border-b border-white/[0.05] bg-white/[0.02]">
@@ -1472,17 +1476,31 @@ export default function Portfolio() {
               </tbody>
             </table>
           </div>
-        </SoftCard>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center p-12 bg-white/[0.02] border border-white/[0.05] rounded-3xl text-center">
+          <Wallet size={48} className="text-gray-600 mb-4" />
+          <h3 className="text-lg font-bold text-gray-300 mb-2">No Assets Found</h3>
+          <p className="text-sm text-gray-500 max-w-sm">Connect a wallet or import a CSV from your exchange to start tracking your portfolio.</p>
+          {!showAddSource && (
+            <button
+              onClick={() => setShowAddSource(true)}
+              className="mt-6 text-sm font-bold px-6 py-3 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300"
+            >
+              Add Data Source
+            </button>
+          )}
+        </div>
       )}
 
 
         </div>
 
         {/* RIGHT COLUMN: Donut + AI Insights + Tax Summary */}
-        <div className="lg:col-span-4 flex flex-col gap-8">
+        <div className="lg:col-span-4 flex flex-col gap-6">
         {/* Donut */}
-        <SoftCard className="w-full flex flex-col min-h-[380px]">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 shrink-0">
+        <div className="w-full flex flex-col min-h-[380px] bg-[#121212] border border-white/[0.05] rounded-3xl p-6 shadow-2xl">
+          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] mb-4 shrink-0">
             {t('portfolio.asset_allocation')}
           </h3>
           
@@ -1515,11 +1533,11 @@ export default function Portfolio() {
               ))}
             </div>
           )}
-        </SoftCard>
+        </div>
 
       {/* AI PORTFOLIO INSIGHTS */}
       {holdings.length > 0 && (
-        <SoftCard className="mb-10 border-[var(--accent)]/20 relative overflow-hidden">
+        <div className="mb-6 border border-[var(--accent)]/20 bg-[#121212] rounded-3xl p-6 shadow-2xl relative overflow-hidden">
           <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
@@ -1622,16 +1640,16 @@ export default function Portfolio() {
               </div>
             </div>
           )}
-        </SoftCard>
+        </div>
       )}
 
 
       {/* TAX SUMMARY */}
       {trades.length > 0 && taxData && (
-        <SoftCard className="mb-10">
+        <div className="mb-10 bg-[#121212] border border-white/[0.05] rounded-3xl p-6 shadow-2xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">{t('portfolio.tax.title')}</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] mb-1">{t('portfolio.tax.title')}</h3>
               <p className="text-sm text-gray-400">{t('portfolio.tax.desc')}</p>
             </div>
             <button 
@@ -1659,7 +1677,7 @@ export default function Portfolio() {
               <div className="text-3xl font-black font-mono text-[var(--accent)] relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
             </div>
           </div>
-        </SoftCard>
+        </div>
       )}
 
 
