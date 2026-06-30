@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   BarChart2, 
@@ -10,6 +10,7 @@ import {
   User,
   Command
 } from "lucide-react";
+import SearchCommand from "../ui/SearchCommand";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,12 +21,26 @@ interface LayoutProps {
 
 export default function LinearDashboardLayout({ children, onAuthOpen, onWatchlistOpen, isLoggedIn }: LayoutProps) {
   const location = useLocation();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   
   // Format pathname for breadcrumbs (e.g. /dashboard -> Dashboard)
   const pathName = location.pathname === "/" ? "Overview" : location.pathname.slice(1).charAt(0).toUpperCase() + location.pathname.slice(2);
+
+  // Global CMD+K shortcut to open from layout
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   
   return (
     <div className="flex h-screen w-full bg-[#0A0A0A] text-zinc-400 font-sans antialiased overflow-hidden selection:bg-white/[0.1] selection:text-zinc-100">
+      <SearchCommand isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       
       {/* ─── LEFT SIDEBAR ─────────────────────────────────────── */}
       <aside className="w-[240px] flex-shrink-0 border-r border-white/[0.08] flex flex-col justify-between">
@@ -88,7 +103,10 @@ export default function LinearDashboardLayout({ children, onAuthOpen, onWatchlis
           {/* Right Actions */}
           <div className="flex items-center gap-4">
             {/* Search */}
-            <button className="flex items-center gap-2 text-[12px] border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 rounded-md hover:border-white/[0.15] hover:text-zinc-100 transition-all">
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-2 text-[12px] border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 rounded-md hover:border-white/[0.15] hover:text-zinc-100 transition-all"
+            >
               <Search size={12} />
               <span>Search...</span>
               <span className="text-zinc-600 ml-2">⌘K</span>

@@ -13,6 +13,7 @@ import {
 } from "../hooks/useMarket";
 import { useFearAndGreed } from "../hooks/useFearAndGreed";
 import PriceCell from "../components/ui/PriceCell";
+import { FadeIn } from "../components/ui/FadeIn";
 import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
   ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight,
@@ -98,23 +99,6 @@ function TH({
   );
 }
 
-// ─── ANIMATION VARIANTS ──────────────────────────────────────
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  show: { 
-    opacity: 1, y: 0,
-    transition: { type: "spring", stiffness: 350, damping: 25 }
-  }
-};
-
 // ─── MAIN DASHBOARD ──────────────────────────────────────────
 type SortKey = "rank" | "price" | "change" | "volume" | "mcap";
 
@@ -193,7 +177,7 @@ export default function Dashboard() {
       <div className="dashboard-container">
 
         {/* ── PAGE HEADER ─────────────────────────────────── */}
-        <div className="dashboard-header">
+        <FadeIn className="dashboard-header" delay={0}>
           <div>
             <h1 className="dashboard-title">Markets</h1>
             <p className="dashboard-subtitle">Real-time crypto market data</p>
@@ -213,42 +197,37 @@ export default function Dashboard() {
               AI Signals
             </motion.button>
           </div>
-        </div>
+        </FadeIn>
 
         {/* ── STAT CARDS ──────────────────────────────────── */}
-        <motion.div 
-          className="stat-grid"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
+        <div className="stat-grid">
 
           {/* Market Cap */}
-          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
-            <div className="stat-label">Global Market Cap</div>
-            <div className="stat-value font-mono">{fmt(totalMcap)}</div>
-            <div className="stat-sub">
+          <FadeIn className="aave-card px-6 py-5" delay={0.1} whileHover="hover">
+            <div className="stat-label text-zinc-400">Global Market Cap</div>
+            <div className="stat-value font-mono text-zinc-100">{fmt(totalMcap)}</div>
+            <div className="stat-sub text-zinc-500">
               {(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}
             </div>
-          </motion.div>
+          </FadeIn>
 
           {/* 24h Volume */}
-          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
-            <div className="stat-label">24h Volume</div>
-            <div className="stat-value font-mono">{fmt(totalVolume)}</div>
-            <div className="stat-sub">Across all markets</div>
-          </motion.div>
+          <FadeIn className="aave-card px-6 py-5" delay={0.2} whileHover="hover">
+            <div className="stat-label text-zinc-400">24h Volume</div>
+            <div className="stat-value font-mono text-zinc-100">{fmt(totalVolume)}</div>
+            <div className="stat-sub text-zinc-500">Across all markets</div>
+          </FadeIn>
 
           {/* Dominance */}
-          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
-            <div className="stat-label">BTC Dominance</div>
-            <div className="stat-value accent font-mono">{btcDom}%</div>
-            <div className="stat-sub">ETH: <span className="font-mono">{ethDom}%</span></div>
-          </motion.div>
+          <FadeIn className="aave-card px-6 py-5" delay={0.3} whileHover="hover">
+            <div className="stat-label text-zinc-400">BTC Dominance</div>
+            <div className="stat-value accent font-mono text-[#F59E0B]">{btcDom}%</div>
+            <div className="stat-sub text-zinc-500">ETH: <span className="font-mono text-zinc-300">{ethDom}%</span></div>
+          </FadeIn>
 
           {/* Fear & Greed */}
-          <motion.div className="stat-card" variants={itemVariants} whileHover="hover">
-            <div className="stat-label">Fear & Greed</div>
+          <FadeIn className="aave-card px-6 py-5" delay={0.4} whileHover="hover">
+            <div className="stat-label text-zinc-400">Fear & Greed</div>
             {fngValue !== null ? (
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div
@@ -258,26 +237,26 @@ export default function Dashboard() {
                     "--fng-glow": `${fngColor}30`,
                   }}
                 >
-                  <div className="fng-circle-inner">
-                    <span className="fng-value font-mono">{fngValue}</span>
+                  <div className="fng-circle-inner bg-[#0A0A0A]">
+                    <span className="fng-value font-mono text-zinc-100">{fngValue}</span>
                   </div>
                 </div>
                 <div>
                   <div className="fng-label" style={{ color: fngColor }}>{fngLabel}</div>
-                  <div className="fng-desc">Market Sentiment</div>
+                  <div className="fng-desc text-zinc-500">Market Sentiment</div>
                 </div>
               </div>
             ) : (
-              <div className="stat-value" style={{ color: "var(--text-muted)" }}>—</div>
+              <div className="stat-value text-zinc-500">—</div>
             )}
-          </motion.div>
-        </motion.div>
+          </FadeIn>
+        </div>
 
         {/* ── TWO-COLUMN LAYOUT ────────────────────────────── */}
         <div className="dashboard-grid">
 
           {/* ── MAIN TABLE ─────────────────────────────────── */}
-          <div className="table-card">
+          <div className="aave-card flex flex-col overflow-hidden h-[700px]">
             {/* Toolbar */}
             <div className="table-toolbar">
               {/* Search */}
@@ -293,7 +272,7 @@ export default function Dashboard() {
               </div>
 
               {/* Tabs */}
-              <div className="tab-group">
+              <div className="tab-group flex-shrink-0">
                 {([
                   { key: "all",      label: "All" },
                   { key: "gainers",  label: "Gainers" },
@@ -313,7 +292,7 @@ export default function Dashboard() {
             </div>
 
             {/* Table Header */}
-            <div className="table-header">
+            <div className="table-header flex-shrink-0 bg-white/[0.02]">
               <TH
                 key="rank"
                 label="#"
@@ -360,17 +339,11 @@ export default function Dashboard() {
                 direction={sortDir}
                 onClick={() => toggleSort("mcap")}
               />
-              <div className="th-label">7d</div>
+              <div className="th-label text-[11px] text-zinc-500 font-semibold uppercase tracking-wider text-right pr-4">7d</div>
             </div>
 
-            {/* Rows */}
-            <motion.div 
-              className="table-body"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-20px" }}
-            >
+            {/* Rows (Scrollable Area) */}
+            <div className="table-body flex-1 overflow-y-auto">
               {filtered.length === 0 ? (
                 <div className="empty-state">
                   {search ? `No results for "${search}"` : "Loading markets..."}
@@ -380,158 +353,154 @@ export default function Dashboard() {
                   const change = Number(coin.price_change_percentage_24h) || 0;
                   const isUp = change >= 0;
                   return (
-                    <motion.div
-                      variants={itemVariants}
-                      whileHover="hover"
+                    <FadeIn
+                      delay={0.1 + (i * 0.05)}
                       key={coin.symbol + i}
                       onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                      className="table-row"
+                      className="table-row grid grid-cols-[56px_2.2fr_130px_110px_140px_130px_80px] items-center gap-2 px-5 py-3 border-b border-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer group"
                     >
-                      <span className="rank-col font-mono">
+                      <span className="rank-col font-mono text-zinc-600 text-[12px] group-hover:text-zinc-400 transition-colors">
                         {coin.market_cap_rank || i + 1}
                       </span>
 
-                      <div className="asset-col">
+                      <div className="asset-col flex items-center gap-3">
                         {coin.image_url
-                          ? <img src={coin.image_url} alt={coin.symbol} className="asset-icon" />
-                          : <div className="asset-icon-placeholder">{coin.symbol?.[0]}</div>
+                          ? <img src={coin.image_url} alt={coin.symbol} className="asset-icon w-8 h-8 rounded-full shadow-sm" />
+                          : <div className="asset-icon-placeholder w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center font-bold text-zinc-500">{coin.symbol?.[0]}</div>
                         }
-                        <div className="asset-info">
-                          <div className="asset-name">{coin.name}</div>
-                          <div className="asset-symbol font-mono">{coin.symbol?.toUpperCase()}</div>
+                        <div className="asset-info flex flex-col justify-center">
+                          <div className="asset-name text-[14px] font-semibold text-zinc-100 group-hover:text-white transition-colors">{coin.name}</div>
+                          <div className="asset-symbol font-mono text-[11px] text-zinc-500 uppercase">{coin.symbol?.toUpperCase()}</div>
                         </div>
                       </div>
 
-                      <div className="price-col">
+                      <div className="price-col font-mono text-[14px] text-zinc-100 text-right pr-4">
                         <PriceCell price={coin.current_price} />
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                      <div className="text-right pr-4">
                         <ChangeBadge value={change} />
                       </div>
 
-                      <div className="volume-col font-mono">{fmt(coin.total_volume)}</div>
+                      <div className="volume-col font-mono text-[13px] text-zinc-400 text-right pr-4">{fmt(coin.total_volume)}</div>
 
-                      <div className="mcap-col font-mono">{fmt(coin.market_cap)}</div>
+                      <div className="mcap-col font-mono text-[13px] text-zinc-400 text-right pr-4">{fmt(coin.market_cap)}</div>
 
-                      <div className="sparkline-col">
+                      <div className="sparkline-col pr-4">
                         <MiniSparkline up={isUp} />
                       </div>
-                    </motion.div>
+                    </FadeIn>
                   );
                 })
               )}
-            </motion.div>
+            </div>
           </div>
 
           {/* ── RIGHT SIDEBAR ───────────────────────────────── */}
-          <motion.div 
-            style={{ display: "flex", flexDirection: "column", gap: 16 }}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-20px" }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
             {/* Trending */}
-            <motion.div className="sidebar-card" variants={itemVariants}>
-              <div className="sidebar-header">
-                <div className="sidebar-title-group">
+            <FadeIn className="aave-card p-4" delay={0.1}>
+              <div className="sidebar-header flex items-center justify-between pb-3 border-b border-white/[0.04]">
+                <div className="sidebar-title-group flex items-center gap-2">
                   <Flame className="sidebar-icon" size={15} color="#f97316" />
-                  <span className="sidebar-title">Trending</span>
+                  <span className="sidebar-title text-[13px] font-semibold text-zinc-200">Trending</span>
                 </div>
                 <span
                   onClick={() => navigate("/market")}
-                  className="sidebar-link"
+                  className="sidebar-link text-[11px] text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors"
                 >
                   View all →
                 </span>
               </div>
-              <div className="sidebar-list">
+              <div className="sidebar-list flex flex-col gap-1 pt-2">
                 {(trendingData || []).slice(0, 7).map((coin: any, i: number) => (
-                  <div
+                  <FadeIn
+                    delay={0.1 + i * 0.05}
                     key={coin.symbol || i}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    className="sidebar-item"
+                    className="sidebar-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer"
                   >
-                    <span className="sidebar-rank">{i + 1}</span>
+                    <span className="sidebar-rank text-[11px] font-mono text-zinc-600 w-3">{i + 1}</span>
                     {coin.image_url
-                      ? <img src={coin.image_url} alt={coin.symbol} className="sidebar-item-icon" />
-                      : <div className="sidebar-item-icon-placeholder" />
+                      ? <img src={coin.image_url} alt={coin.symbol} className="sidebar-item-icon w-6 h-6 rounded-full" />
+                      : <div className="sidebar-item-icon-placeholder w-6 h-6 rounded-full bg-white/[0.08]" />
                     }
-                    <div className="sidebar-item-info">
-                      <div className="sidebar-item-name">{coin.name}</div>
-                      <div className="sidebar-item-symbol">{coin.symbol?.toUpperCase()}</div>
+                    <div className="sidebar-item-info flex-1">
+                      <div className="sidebar-item-name text-[13px] font-medium text-zinc-200">{coin.name}</div>
+                      <div className="sidebar-item-symbol text-[11px] text-zinc-500 uppercase">{coin.symbol?.toUpperCase()}</div>
                     </div>
                     {coin.price_change_percentage_24h != null && (
                       <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
                     )}
-                  </div>
+                  </FadeIn>
                 ))}
               </div>
-            </motion.div>
+            </FadeIn>
 
             {/* Top Gainers */}
-            <motion.div className="sidebar-card" variants={itemVariants}>
-              <div className="sidebar-header" style={{ borderBottom: "1px solid var(--border-soft)" }}>
-                <div className="sidebar-title-group">
+            <FadeIn className="aave-card p-4" delay={0.2}>
+              <div className="sidebar-header pb-3 border-b border-white/[0.04]">
+                <div className="sidebar-title-group flex items-center gap-2">
                   <TrendingUp className="sidebar-icon" size={15} color="#22c55e" />
-                  <span className="sidebar-title">Top Gainers</span>
+                  <span className="sidebar-title text-[13px] font-semibold text-zinc-200">Top Gainers</span>
                 </div>
               </div>
-              <div className="sidebar-list">
+              <div className="sidebar-list flex flex-col gap-1 pt-2">
                 {(gainersData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <motion.div
+                  <FadeIn
+                    delay={0.2 + i * 0.05}
                     whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 10 } }}
                     key={coin.symbol + i}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    className="sidebar-item"
+                    className="sidebar-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer"
                   >
                     {coin.image_url
-                      ? <img src={coin.image_url} alt={coin.symbol} className="sidebar-item-icon-lg" />
-                      : <div className="sidebar-item-icon-placeholder" style={{ width: 26, height: 26 }} />
+                      ? <img src={coin.image_url} alt={coin.symbol} className="sidebar-item-icon-lg w-7 h-7 rounded-full" />
+                      : <div className="sidebar-item-icon-placeholder w-7 h-7 rounded-full bg-white/[0.08]" />
                     }
-                    <div className="sidebar-item-info">
-                      <div className="sidebar-item-name">{coin.name}</div>
-                      <div className="sidebar-item-price">{fmt(coin.current_price)}</div>
+                    <div className="sidebar-item-info flex-1">
+                      <div className="sidebar-item-name text-[13px] font-medium text-zinc-200">{coin.name}</div>
+                      <div className="sidebar-item-price text-[11px] font-mono text-zinc-400">{fmt(coin.current_price)}</div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
-                  </motion.div>
+                  </FadeIn>
                 ))}
               </div>
-            </motion.div>
+            </FadeIn>
 
             {/* Top Losers */}
-            <motion.div className="sidebar-card" variants={itemVariants}>
-              <div className="sidebar-header" style={{ borderBottom: "1px solid var(--border-soft)" }}>
-                <div className="sidebar-title-group">
+            <FadeIn className="aave-card p-4" delay={0.3}>
+              <div className="sidebar-header pb-3 border-b border-white/[0.04]">
+                <div className="sidebar-title-group flex items-center gap-2">
                   <TrendingDown className="sidebar-icon" size={15} color="#ef4444" />
-                  <span className="sidebar-title">Top Losers</span>
+                  <span className="sidebar-title text-[13px] font-semibold text-zinc-200">Top Losers</span>
                 </div>
               </div>
-              <div className="sidebar-list">
+              <div className="sidebar-list flex flex-col gap-1 pt-2">
                 {(losersData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <motion.div
+                  <FadeIn
+                    delay={0.3 + i * 0.05}
                     whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 10 } }}
                     key={coin.symbol + i}
                     onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    className="sidebar-item"
+                    className="sidebar-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer"
                   >
                     {coin.image_url
-                      ? <img src={coin.image_url} alt={coin.symbol} className="sidebar-item-icon-lg" />
-                      : <div className="sidebar-item-icon-placeholder" style={{ width: 26, height: 26 }} />
+                      ? <img src={coin.image_url} alt={coin.symbol} className="sidebar-item-icon-lg w-7 h-7 rounded-full" />
+                      : <div className="sidebar-item-icon-placeholder w-7 h-7 rounded-full bg-white/[0.08]" />
                     }
-                    <div className="sidebar-item-info">
-                      <div className="sidebar-item-name">{coin.name}</div>
-                      <div className="sidebar-item-price">{fmt(coin.current_price)}</div>
+                    <div className="sidebar-item-info flex-1">
+                      <div className="sidebar-item-name text-[13px] font-medium text-zinc-200">{coin.name}</div>
+                      <div className="sidebar-item-price text-[11px] font-mono text-zinc-400">{fmt(coin.current_price)}</div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
-                  </motion.div>
+                  </FadeIn>
                 ))}
               </div>
-            </motion.div>
+            </FadeIn>
 
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
