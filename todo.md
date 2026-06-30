@@ -1,16 +1,20 @@
-# CryptoNeko TODO List (Aave Estetiği & Web3 DeFi Ağırlığı)
+# CryptoNeko TODO List
 
-## Acil Düzeltilecekler (High Priority)
-- [ ] **Arama (Search):** CMD + K kısayolu ile arama menüsünün açılması işlevi çalışmıyor, düzeltilecek.
-- [ ] **Dashboard Tablo Revizyonu:** Top 50 coin listesi şu an gereksiz fazla yer kaplıyor ve göz yoruyor. Çok daha kompakt, okunabilir ve ağırlığı olan bir yapıya (Mini tablolar veya widget tarzı) geçirilecek.
+## Completed Recently
 
-## UI/UX Tasarım Yönü (Aave Tarzı "Ağırlıklı" Minimalizm)
-- [ ] **Genel Estetik Güncellemesi:** "Ultra raw/çıplak" görünüm yerine, Aave.com gibi Web3 DeFi ağırlığına sahip bir yapı kurulacak.
-  - Daha dolgun kart yapıları, hafif soft zemin tonları veya çok ince "premium" gradient dokunuşları eklenecek.
-  - Sadece çizgilerden ibaret olan yapının içerisine, karta "ağırlık" ve "derinlik" kazandıracak dolgular ve hover efektleri yerleştirilecek.
+## High Priority
+- [x] **Fix all localhost references:** Ensure no `localhost:3000` or `localhost:5173` links remain in production (check Supabase email confirmations, API endpoints).
+- [] **Fix Light Theme:** Overhaul the light color palette and shadows (drop-shadows instead of glow) for better contrast.
 
-## Tamamlananlar
-- [x] Yeni Layout iskeleti (LinearDashboardLayout) ve sol/üst navigasyon mimarisi oturtuldu.
-- [x] Font ailesi JetBrains Mono (tabular-nums) finansal veriler için uygulandı.
-- [x] Framer Motion mikro etkileşimleri eklendi.
-- [x] Fear & Greed API'si CORS Proxy ile onarıldı.
+## Upcoming Ideas & Features
+- [ ] **Stripe/Paywall Integration:** Implement Pro/Enterprise tier paywalls.
+- [x] **Portfolio Performance Chart:** Added interactive Recharts area chart plotting total historical value of current holdings (24H/7D/30D).
+- [ ] **On-Chain Transactions Feed:** Live feed of recent large swaps/whale movements.
+- [x] **Tokenomics & Unlocks Widget:** Add upcoming token unlocks to CoinDetail page.
+
+## UI/UX Overhaul Roadmap
+- [ ] **Dashboard:** Tasarimi bastan düzenlenecek. (Not: Asiri "glassmorphism" ve her karta glow ekleme denemesi begenilmedi. Daha temiz, simetrik, minimal ve premium bir yapi uzerine dusunulecek).
+- [ ] **Market:** Liste tasarimlari, filtreler ve genel sayfa yapisi premium hisse gore bastan tasarlanacak.
+- [ ] **Portfolio:** Varlik kutulari ve grafikler goz yormayan, ultra-premium duzene gecirilecek.
+- [ ] **Alerts:** Eski uyari sayfalari ve pop-up'lar yeni sade/siyah estetigine uygun olacak sekilde yeniden yapilacak.
+- [ ] **Analysis:** AI destekli analiz sayfasi, CoinDetail kalitesinde surukleyici bir deneyime donusturulecek.
