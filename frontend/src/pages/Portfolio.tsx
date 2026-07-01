@@ -3,6 +3,7 @@
 // ============================================================
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import NumberFlow from "@number-flow/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { getCoinColor } from "../utils/colors";
@@ -1215,13 +1216,19 @@ export default function Portfolio() {
         <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
           {t('portfolio.title')}
         </p>
-        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-[var(--text-primary)] drop-shadow-sm break-words max-w-full px-4">
-          {fmtUSD(totalValue)}
+        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white drop-shadow-sm break-words max-w-full px-4 flex items-baseline justify-center gap-2 font-mono">
+          <span className="text-gray-400 text-4xl">$</span>
+          <NumberFlow value={totalValue} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
         </h1>
-        <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-red-500/5"}`}>
+        <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.1)]" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]"}`}>
           {isPos ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
-          <span>{isPos ? "+" : ""}{fmtUSD(totalPnl)}</span>
-          <span className="text-sm opacity-70">({fmtPct(pnlPct)})</span>
+          <span className="flex items-center gap-1 font-mono">
+            {isPos ? "+" : "-"}$
+            <NumberFlow value={Math.abs(totalPnl)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
+          </span>
+          <span className="text-sm opacity-70 font-mono ml-1 flex items-center">
+            (<NumberFlow value={Math.abs(pnlPct)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%)
+          </span>
         </div>
 
         {/* PERFORMANCE CHART */}
@@ -1422,7 +1429,7 @@ export default function Portfolio() {
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 ? (
-        <div className="bg-[#121212] border border-white/[0.05] rounded-3xl overflow-hidden shadow-2xl">
+        <div className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
           <div className="overflow-x-auto w-full">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
@@ -1435,11 +1442,16 @@ export default function Portfolio() {
                 </tr>
               </thead>
               <tbody>
-                {holdings.map((h) => {
+                {holdings.map((h, i) => {
                   const p = h.pnl >= 0;
                   return (
-                    <tr key={h.symbol} onClick={() => navigate("/coin/" + h.slug)}
-                      className="transition-colors cursor-pointer group border-b border-white/[0.02] hover:bg-white/[0.025]"
+                    <motion.tr 
+                      key={h.symbol} 
+                      onClick={() => navigate("/coin/" + h.slug)}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: i * 0.02 }}
+                      className="transition-colors cursor-pointer group border-b border-white/5 hover:bg-white/[0.03]"
                     >
                       <td className="px-5 py-5">
                         <div className="flex items-center gap-3">
@@ -1450,26 +1462,34 @@ export default function Portfolio() {
                               </div>
                           }
                           <div>
-                            <div className="text-sm font-bold transition-colors" style={{ color: getCoinColor(h.symbol), textShadow: "none" }}>{h.symbol}</div>
-                            <div className="text-xs text-gray-500">{h.name}</div>
+                            <div className="text-sm font-bold text-white group-hover:text-gray-200 transition-colors">{h.symbol}</div>
+                            <div className="text-xs font-bold tracking-widest uppercase text-gray-500 mt-0.5">{h.name}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-5 text-right font-mono text-sm font-semibold text-gray-400">{fmtUSD(h.current_price)}</td>
-                      <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">{fmtNum(h.quantity)}</td>
-                      <td className="px-5 py-5 text-right font-mono text-sm font-bold text-gray-200">{fmtUSD(h.value)}</td>
-                      <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">{h.avg_cost > 0 ? fmtUSD(h.avg_cost) : "—"}</td>
+                      <td className="px-5 py-5 text-right font-mono text-sm font-semibold text-gray-400">
+                        <NumberFlow value={h.current_price || 0} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.current_price < 1 ? 4 : 2, maximumFractionDigits: h.current_price < 0.01 ? 6 : 2 }} />
+                      </td>
+                      <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">
+                        <NumberFlow value={h.quantity || 0} format={{ maximumFractionDigits: 6 }} />
+                      </td>
+                      <td className="px-5 py-5 text-right font-mono text-sm font-bold text-white">
+                        <NumberFlow value={h.value || 0} format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
+                      </td>
+                      <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">
+                        {h.avg_cost > 0 ? <NumberFlow value={h.avg_cost} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.avg_cost < 1 ? 4 : 2, maximumFractionDigits: h.avg_cost < 0.01 ? 6 : 2 }} /> : "—"}
+                      </td>
                       <td className="px-5 py-5 text-right">
                         <div className="flex flex-col items-end gap-1">
-                          <span className={`font-mono text-sm font-bold ${p ? "text-emerald-400" : "text-red-400"}`}>
-                            {p ? "+" : ""}{fmtUSD(h.pnl)}
+                          <span className={`font-mono text-sm font-bold flex items-center gap-0.5 ${p ? "text-green-400" : "text-red-400"}`}>
+                            {p ? "+" : "-"}$<NumberFlow value={Math.abs(h.pnl) || 0} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
                           </span>
-                          <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg ${p ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
-                            {p ? "▲" : "▼"} {Math.abs(h.pnl_pct).toFixed(2)}%
+                          <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-md flex items-center gap-1 ${p ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
+                            {p ? "▲" : "▼"} <NumberFlow value={Math.abs(h.pnl_pct) || 0} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                           </span>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
               </tbody>
