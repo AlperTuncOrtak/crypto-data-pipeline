@@ -24,7 +24,7 @@ const fadeUp = {
 // COMPONENTS
 // ============================================================================
 
-function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
+function FadeIn({ children, delay = 0, className = "", whileHover }: { children: React.ReactNode, delay?: number, className?: string, whileHover?: any }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   return (
@@ -32,6 +32,7 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
       ref={ref}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
+      whileHover={whileHover}
       variants={{
         hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
         visible: { 
@@ -75,9 +76,13 @@ export default function Landing() {
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-6 flex items-center justify-between border-b border-white/[0.02] bg-[#0d0d0f]/50 backdrop-blur-md">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-white to-gray-500 flex items-center justify-center text-black font-black text-xl shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+          <motion.div 
+            whileHover={{ rotate: 180, scale: 1.1 }} 
+            transition={{ type: "spring", stiffness: 200, damping: 10 }}
+            className="w-8 h-8 rounded-xl bg-gradient-to-br from-white to-gray-500 flex items-center justify-center text-black font-black text-xl shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+          >
             C
-          </div>
+          </motion.div>
           <span className="text-xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">
             CryptoNeko
           </span>
@@ -153,7 +158,7 @@ export default function Landing() {
         {/* ── BENTO BOX FEATURES (gettrade.ai style) ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-32">
           
-          <FadeIn delay={0.1} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.1} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: AI Dashboard */}
@@ -171,9 +176,9 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-3 w-full">
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-green-500 w-[80%]"></div></div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[var(--accent)] w-[60%]"></div></div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-red-500 w-[30%]"></div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: "80%" }} transition={{ duration: 1, delay: 0.3 }} className="h-full bg-green-500"></motion.div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: "60%" }} transition={{ duration: 1, delay: 0.5 }} className="h-full bg-[var(--accent)]"></motion.div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: "30%" }} transition={{ duration: 1, delay: 0.7 }} className="h-full bg-red-500"></motion.div></div>
                 </div>
               </div>
             </div>
@@ -189,23 +194,23 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.2} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Orderbook/Sparkline */}
             <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-4 shadow-2xl flex flex-col justify-end gap-2">
-               <div className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
+               <motion.div initial={{ x: -20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
                  <span className="text-[10px] font-mono text-green-400">BTC-PERP</span>
                  <span className="text-xs font-bold text-green-400">+2.4%</span>
-               </div>
-               <div className="flex justify-between items-center px-2 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
+               </motion.div>
+               <motion.div initial={{ x: -20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="flex justify-between items-center px-2 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
                  <span className="text-[10px] font-mono text-red-400">ETH-PERP</span>
                  <span className="text-xs font-bold text-red-400">-1.2%</span>
-               </div>
-               <div className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
+               </motion.div>
+               <motion.div initial={{ x: -20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
                  <span className="text-[10px] font-mono text-green-400">SOL-PERP</span>
                  <span className="text-xs font-bold text-green-400">+5.8%</span>
-               </div>
+               </motion.div>
             </div>
 
             <div className="relative z-10 mt-auto">
@@ -219,18 +224,18 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.3} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.3} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
             <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Wallet Sync */}
             <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-5 shadow-2xl flex flex-col items-center justify-center relative">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-               <div className="w-16 h-16 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-4 z-10 relative">
+               <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ type: "spring", delay: 0.4 }} className="w-16 h-16 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-4 z-10 relative">
                  <Wallet className="text-[var(--accent)]" size={24} />
                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#19191c]"></div>
-               </div>
-               <div className="text-xl font-black text-white z-10 font-mono">$124,592.00</div>
-               <div className="text-xs font-bold text-gray-500 z-10 mt-1 uppercase tracking-widest">Total Balance</div>
+               </motion.div>
+               <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="text-xl font-black text-white z-10 font-mono">$124,592.00</motion.div>
+               <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="text-xs font-bold text-gray-500 z-10 mt-1 uppercase tracking-widest">Total Balance</motion.div>
             </div>
 
             <div className="relative z-10 mt-auto">
@@ -244,21 +249,21 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.4} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.4} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
              <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Algo Code */}
             <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-[#0a0a0c] overflow-hidden group-hover:border-white/10 transition-colors p-6 shadow-2xl flex flex-col justify-center font-mono text-xs md:text-sm text-gray-500 relative">
                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-[60px] pointer-events-none"></div>
-               <div className="text-purple-400">import <span className="text-white">{' { MarketMaker } '}</span> from <span className="text-green-400">'@crypto/algo'</span>;</div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-purple-400">import <span className="text-white">{' { MarketMaker } '}</span> from <span className="text-green-400">'@crypto/algo'</span>;</motion.div>
                <br/>
-               <div><span className="text-blue-400">const</span> <span className="text-white">strategy</span> = <span className="text-blue-400">new</span> <span className="text-yellow-200">MarketMaker</span>({'{'}</div>
-               <div className="pl-4">pair: <span className="text-green-400">'BTC/USDT'</span>,</div>
-               <div className="pl-4">riskFactor: <span className="text-orange-400">0.05</span>,</div>
-               <div className="pl-4">leverage: <span className="text-orange-400">10</span>,</div>
-               <div>{'}'});</div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.8 }}><span className="text-blue-400">const</span> <span className="text-white">strategy</span> = <span className="text-blue-400">new</span> <span className="text-yellow-200">MarketMaker</span>({'{'}</motion.div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.2 }} className="pl-4">pair: <span className="text-green-400">'BTC/USDT'</span>,</motion.div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.6 }} className="pl-4">riskFactor: <span className="text-orange-400">0.05</span>,</motion.div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.0 }} className="pl-4">leverage: <span className="text-orange-400">10</span>,</motion.div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.4 }}>{'}'});</motion.div>
                <br/>
-               <div><span className="text-white">strategy</span>.<span className="text-yellow-200">execute</span>(); <span className="text-green-500 font-bold ml-2 animate-pulse">// Running...</span></div>
+               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.8 }}><span className="text-white">strategy</span>.<span className="text-yellow-200">execute</span>(); <span className="text-green-500 font-bold ml-2 animate-pulse">// Running...</span></motion.div>
             </div>
 
             <div className="relative z-10 mt-auto">
