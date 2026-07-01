@@ -1468,7 +1468,7 @@ export default function Portfolio() {
                         </div>
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm font-semibold text-gray-400">
-                        <NumberFlow value={Number.isNaN(Number(h.current_price)) ? 0 : Number(h.current_price)} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.current_price < 1 ? 4 : 2, maximumFractionDigits: h.current_price < 0.01 ? 6 : 2 }} />
+                        <NumberFlow value={Number.isNaN(Number(h.current_price)) ? 0 : Number(h.current_price)} format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: h.current_price < 0.01 ? 6 : (h.current_price < 1 ? 4 : 2) }} />
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">
                         <NumberFlow value={Number.isNaN(Number(h.quantity)) ? 0 : Number(h.quantity)} format={{ maximumFractionDigits: 6 }} />
@@ -1477,7 +1477,7 @@ export default function Portfolio() {
                         <NumberFlow value={Number.isNaN(Number(h.value)) ? 0 : Number(h.value)} format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">
-                        {h.avg_cost > 0 ? <NumberFlow value={Number.isNaN(Number(h.avg_cost)) ? 0 : Number(h.avg_cost)} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.avg_cost < 1 ? 4 : 2, maximumFractionDigits: h.avg_cost < 0.01 ? 6 : 2 }} /> : "—"}
+                        {h.avg_cost > 0 ? <NumberFlow value={Number.isNaN(Number(h.avg_cost)) ? 0 : Number(h.avg_cost)} format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: h.avg_cost < 0.01 ? 6 : (h.avg_cost < 1 ? 4 : 2) }} /> : "—"}
                       </td>
                       <td className="px-5 py-5 text-right">
                         <div className="flex flex-col items-end gap-1">

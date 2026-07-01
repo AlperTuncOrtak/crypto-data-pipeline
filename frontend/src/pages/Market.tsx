@@ -281,7 +281,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                   <div className="text-right font-mono text-sm font-bold text-white">
                     <NumberFlow 
                       value={Number.isNaN(Number(coin.current_price)) ? 0 : Number(coin.current_price)} 
-                      format={{ style: "currency", currency: "USD", minimumFractionDigits: coin.current_price < 1 ? 4 : 2, maximumFractionDigits: coin.current_price < 0.01 ? 6 : 2 }} 
+                      format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: coin.current_price < 0.01 ? 6 : (coin.current_price < 1 ? 4 : 2) }} 
                     />
                   </div>
 
