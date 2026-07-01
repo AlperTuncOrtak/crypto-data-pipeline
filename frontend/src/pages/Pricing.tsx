@@ -78,28 +78,21 @@ const PLANS = [
 ];
 
 // ─── SWITCH COMPONENT ──────────────────────────────────────
-const PricingSwitch = ({ onSwitch }: { onSwitch: (value: string) => void }) => {
-  const [selected, setSelected] = useState("0");
-
-  const handleSwitch = (value: string) => {
-    setSelected(value);
-    onSwitch(value);
-  };
-
+const PricingSwitch = ({ isYearly, onSwitch }: { isYearly: boolean, onSwitch: (val: boolean) => void }) => {
   return (
     <div className="flex justify-center">
-      <div className="relative z-10 mx-auto flex w-fit rounded-full bg-[#19191c] border border-white/10 p-1 shadow-2xl">
+      <div className="relative z-10 mx-auto flex w-fit rounded-full bg-black/60 backdrop-blur-xl border border-white/10 p-1.5 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
         <button
-          onClick={() => handleSwitch("0")}
+          onClick={() => onSwitch(false)}
           className={cn(
-            "relative z-10 w-fit h-10 rounded-full px-6 py-2 font-bold transition-colors text-sm",
-            selected === "0" ? "text-white" : "text-gray-400 hover:text-white",
+            "relative z-10 w-fit h-10 rounded-full px-8 py-2 font-black tracking-widest uppercase transition-colors text-xs",
+            !isYearly ? "text-white" : "text-gray-500 hover:text-white",
           )}
         >
-          {selected === "0" && (
+          {!isYearly && (
             <motion.span
               layoutId="pricing-switch"
-              className="absolute inset-0 rounded-full bg-white/10 border border-white/20 shadow-sm"
+              className="absolute inset-0 rounded-full bg-white/10 border border-white/20 shadow-md backdrop-blur-md"
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
           )}
@@ -107,16 +100,16 @@ const PricingSwitch = ({ onSwitch }: { onSwitch: (value: string) => void }) => {
         </button>
 
         <button
-          onClick={() => handleSwitch("1")}
+          onClick={() => onSwitch(true)}
           className={cn(
-            "relative z-10 w-fit h-10 flex-shrink-0 rounded-full px-6 py-2 font-bold transition-colors text-sm",
-            selected === "1" ? "text-white" : "text-gray-400 hover:text-white",
+            "relative z-10 w-fit h-10 flex-shrink-0 rounded-full px-8 py-2 font-black tracking-widest uppercase transition-colors text-xs",
+            isYearly ? "text-white" : "text-gray-500 hover:text-white",
           )}
         >
-          {selected === "1" && (
+          {isYearly && (
             <motion.span
               layoutId="pricing-switch"
-              className="absolute inset-0 rounded-full bg-white/10 border border-white/20 shadow-sm"
+              className="absolute inset-0 rounded-full bg-white/10 border border-white/20 shadow-md backdrop-blur-md"
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
           )}
@@ -147,21 +140,26 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
     hidden: { filter: "blur(10px)", y: -20, opacity: 0 },
   };
 
-  const togglePricingPeriod = (value: string) => {
-    setIsYearly(Number.parseInt(value) === 1);
-  };
-
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-white overflow-x-hidden pt-24 pb-32" ref={pricingRef}>
+    <div className="relative min-h-screen bg-[#0d0d0f] text-white overflow-x-hidden pt-24 pb-32" ref={pricingRef}>
       
+      {/* ── CINEMATIC GLOW BACKGROUND ── */}
+      <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
+        <div 
+          className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.25] mix-blend-screen transition-colors duration-1000"
+          style={{ background: `radial-gradient(ellipse at top, var(--accent), transparent 70%)` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
+      </div>
+
       {/* Background & Particles */}
       <TimelineContent
         animationNum={0}
         timelineRef={pricingRef}
         customVariants={revealVariants}
-        className="absolute top-0 h-96 w-screen overflow-hidden [mask-image:radial-gradient(50%_50%,white,transparent)] pointer-events-none"
+        className="absolute top-0 h-[600px] w-screen overflow-hidden [mask-image:radial-gradient(50%_50%,white,transparent)] pointer-events-none z-10"
       >
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:80px_80px]"></div>
         <SparklesComp
           density={1200}
           direction="bottom"
@@ -171,11 +169,11 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
         />
       </TimelineContent>
 
-      <div className="max-w-[1200px] mx-auto px-6 relative z-10">
+      <div className="max-w-[1200px] mx-auto px-6 relative z-20">
         
         {/* Header Section */}
         <article className="text-center mb-16 pt-16 max-w-2xl mx-auto space-y-4">
-          <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight">
+          <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-xl">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.1}
@@ -188,17 +186,17 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
             </VerticalCutReveal>
           </h1>
           
-          <TimelineContent as="p" animationNum={1} timelineRef={pricingRef} customVariants={revealVariants} className="text-gray-400 text-lg md:text-xl font-medium">
+          <TimelineContent as="p" animationNum={1} timelineRef={pricingRef} customVariants={revealVariants} className="text-gray-400 text-lg md:text-xl font-medium drop-shadow-sm">
             Join the top 1% of traders with algorithmic signals, portfolio insights, and zero-delay execution.
           </TimelineContent>
 
-          <TimelineContent as="div" animationNum={2} timelineRef={pricingRef} customVariants={revealVariants} className="pt-6">
-            <PricingSwitch onSwitch={togglePricingPeriod} />
+          <TimelineContent as="div" animationNum={2} timelineRef={pricingRef} customVariants={revealVariants} className="pt-8">
+            <PricingSwitch isYearly={isYearly} onSwitch={setIsYearly} />
           </TimelineContent>
         </article>
 
         {/* Pricing Cards Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-32">
+        <div className="grid md:grid-cols-3 gap-6 mb-32 relative z-30">
           {PLANS.map((plan, index) => {
             const Icon = plan.icon;
             const price = isYearly ? plan.price.yearly : plan.price.monthly;
@@ -207,51 +205,51 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
             return (
               <TimelineContent key={plan.id} as="div" animationNum={3 + index} timelineRef={pricingRef} customVariants={revealVariants}>
                 <div className={cn(
-                  "relative overflow-hidden rounded-[2rem] bg-[#19191c] border p-8 flex flex-col h-full group transition-all duration-500",
-                  isPrimary ? "border-[var(--accent)] shadow-[0_0_80px_-20px_var(--accent)]" : "border-white/5 hover:border-white/20 shadow-2xl"
+                  "relative overflow-hidden rounded-[2.5rem] bg-[#19191c]/80 backdrop-blur-xl border p-8 flex flex-col h-full group transition-all duration-700",
+                  isPrimary ? "border-[var(--accent)] shadow-[0_0_80px_-20px_var(--accent)]" : "border-white/5 hover:border-white/20 shadow-2xl hover:shadow-[0_0_50px_rgba(255,255,255,0.05)]"
                 )}>
                   {/* Subtle hover gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
                   {/* Badge */}
                   {plan.badge_key && (
-                    <div className="absolute top-0 inset-x-0 mx-auto w-fit bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-b-xl shadow-lg">
+                    <div className="absolute top-0 inset-x-0 mx-auto w-fit bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest px-6 py-1.5 rounded-b-2xl shadow-lg drop-shadow-md">
                       {t(`pricing.badge.${plan.badge_key}`)}
                     </div>
                   )}
 
                   {/* Card Header */}
-                  <div className="flex items-center gap-4 mb-8 mt-2">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center border" style={{ backgroundColor: `${plan.accent}15`, borderColor: `${plan.accent}30` }}>
-                      <Icon size={24} style={{ color: plan.accent }} />
+                  <div className="flex items-center gap-4 mb-8 mt-4">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center border shadow-inner" style={{ backgroundColor: `${plan.accent}15`, borderColor: `${plan.accent}30` }}>
+                      <Icon size={26} style={{ color: plan.accent }} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black">{t(`pricing.${plan.id}.name`)}</h3>
-                      {currentPlan === plan.id && <div className="text-[11px] font-bold uppercase tracking-widest text-green-400 mt-1">Current Plan</div>}
+                      <h3 className="text-2xl font-black drop-shadow-sm">{t(`pricing.${plan.id}.name`)}</h3>
+                      {currentPlan === plan.id && <div className="text-[11px] font-black uppercase tracking-widest text-green-400 mt-1 drop-shadow-sm">Current Plan</div>}
                     </div>
                   </div>
 
                   {/* Price */}
-                  <div className="mb-6">
+                  <div className="mb-8">
                     {price === 0 ? (
-                      <div className="text-5xl font-black tracking-tighter">Free</div>
+                      <div className="text-6xl font-black tracking-tighter drop-shadow-md">Free</div>
                     ) : (
                       <div className="flex items-baseline gap-1">
-                        <span className="text-gray-400 text-xl font-bold">$</span>
-                        <NumberFlow value={price} className="text-5xl font-black font-mono tracking-tighter" />
-                        <span className="text-gray-500 text-sm font-bold ml-1">/ mo</span>
+                        <span className="text-gray-400 text-3xl font-bold">$</span>
+                        <NumberFlow value={price} className="text-6xl font-black font-mono tracking-tighter drop-shadow-md" />
+                        <span className="text-gray-500 text-sm font-bold ml-1 tracking-widest uppercase">/ mo</span>
                       </div>
                     )}
-                    <div className="h-6 mt-2">
+                    <div className="h-6 mt-3">
                       {isYearly && price > 0 && (
-                        <span className="text-green-400 text-sm font-bold bg-green-400/10 px-3 py-1 rounded-full">
+                        <span className="text-green-400 text-xs font-black uppercase tracking-widest bg-green-500/10 border border-green-500/20 px-4 py-1.5 rounded-full shadow-sm">
                           Save ${(plan.price.monthly - price) * 12} a year
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-400 font-medium mb-8 leading-relaxed flex-1">
+                  <p className="text-sm text-gray-400 font-medium mb-10 leading-relaxed flex-1">
                     {t(`pricing.${plan.id}.desc`)}
                   </p>
 
@@ -259,10 +257,10 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
                   <button
                     disabled={currentPlan === plan.id}
                     className={cn(
-                      "w-full py-4 rounded-xl font-black text-[13px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 mb-8",
+                      "w-full py-4 rounded-2xl font-black text-xs tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 mb-10",
                       currentPlan === plan.id ? "bg-white/5 text-gray-500 cursor-not-allowed border border-white/5" :
-                      isPrimary ? "bg-[var(--accent)] hover:bg-[#6f42c1] text-white shadow-[0_0_30px_-10px_var(--accent)] hover:scale-[1.02]" :
-                      "bg-white text-black hover:bg-gray-200 hover:scale-[1.02]"
+                      isPrimary ? "bg-[var(--accent)] hover:bg-[#6f42c1] text-white shadow-[0_0_30px_-10px_var(--accent)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-[1.02]" :
+                      "bg-white text-black hover:bg-gray-200 hover:scale-[1.02] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                     )}
                   >
                     {currentPlan === plan.id ? "Active" : "Upgrade Now"}
@@ -271,15 +269,15 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
 
                   {/* Features List */}
                   <div className="space-y-4">
-                    <div className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-2">Includes</div>
+                    <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-white/5 pb-3">Includes</div>
                     {plan.features.map((f, i) => (
                       <div key={i} className="flex items-start gap-3">
                         {f.included ? (
-                          <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                          <Check size={16} className="text-[var(--accent)] shrink-0 mt-0.5 drop-shadow-sm" />
                         ) : (
                           <X size={16} className="text-gray-600 shrink-0 mt-0.5" />
                         )}
-                        <span className={cn("text-sm font-medium", f.included ? "text-gray-300" : "text-gray-600")}>
+                        <span className={cn("text-sm font-medium", f.included ? "text-gray-200" : "text-gray-600")}>
                           {t(`pricing.features.${f.key}`)}
                         </span>
                       </div>
@@ -346,16 +344,16 @@ function ComparisonMatrix() {
   ];
 
   const renderVal = (val: string, isPro?: boolean, isTeams?: boolean) => {
-    if (val === "Check") return <Check size={16} className={isPro ? "text-[var(--accent)]" : isTeams ? "text-purple-400" : "text-green-400"} />;
-    if (val === "X") return <X size={16} className="text-gray-600" />;
-    return <span className="text-xs font-bold text-gray-300">{val}</span>;
+    if (val === "Check") return <Check size={18} className={isPro ? "text-[var(--accent)]" : isTeams ? "text-purple-400" : "text-green-400"} />;
+    if (val === "X") return <X size={18} className="text-gray-600" />;
+    return <span className="text-xs font-black tracking-widest uppercase text-gray-300">{val}</span>;
   };
 
   return (
-    <div className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
-      <div className="p-8 border-b border-white/5 text-center bg-black/20">
-        <h3 className="text-2xl font-black text-white tracking-tight">{t("pricing.matrix.title")}</h3>
-        <p className="text-gray-400 text-sm mt-2 font-medium">Detailed feature breakdown</p>
+    <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+      <div className="p-10 border-b border-white/5 text-center bg-black/20">
+        <h3 className="text-3xl font-black text-white tracking-tight drop-shadow-md">{t("pricing.matrix.title")}</h3>
+        <p className="text-gray-400 text-sm mt-3 font-medium">Detailed feature breakdown</p>
       </div>
       
       <div className="grid grid-cols-[3fr_1fr_1fr_1fr] p-6 border-b border-white/5 bg-black/40 text-[11px] font-black uppercase tracking-widest text-gray-500">
@@ -367,12 +365,12 @@ function ComparisonMatrix() {
 
       {categories.map((cat, catIdx) => (
         <div key={catIdx}>
-          <div className="bg-white/[0.02] px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-white/5">
+          <div className="bg-white/[0.02] px-8 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-white/5">
             {cat.title}
           </div>
           {cat.items.map((item, itemIdx) => (
-            <div key={itemIdx} className="grid grid-cols-[3fr_1fr_1fr_1fr] px-6 py-4 border-b border-white/5 text-sm items-center hover:bg-white/[0.02] transition-colors">
-              <div className="text-gray-300 font-medium">{item.name}</div>
+            <div key={itemIdx} className="grid grid-cols-[3fr_1fr_1fr_1fr] px-8 py-5 border-b border-white/5 text-sm items-center hover:bg-white/[0.03] transition-colors">
+              <div className="text-gray-300 font-bold">{item.name}</div>
               <div className="flex justify-center">{renderVal(item.free)}</div>
               <div className="flex justify-center">{renderVal(item.pro, true)}</div>
               <div className="flex justify-center">{renderVal(item.teams, false, true)}</div>
