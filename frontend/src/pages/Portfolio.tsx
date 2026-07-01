@@ -1288,7 +1288,7 @@ export default function Portfolio() {
                                 {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </p>
                               <p className="text-[var(--text-primary)] font-black text-lg">
-                                {fmtUSD(data.value)}
+                                <NumberFlow value={Number(data.value) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} />
                               </p>
                             </div>
                           );
@@ -1331,7 +1331,7 @@ export default function Portfolio() {
         {/* TOP MOVERS WIDGETS */}
         {topPerformer && worstPerformer && topPerformer.symbol !== worstPerformer.symbol && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[#19191c] border border-white/5 rounded-[2rem] p-5 shadow-xl relative overflow-hidden group">
+            <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-5 shadow-xl relative overflow-hidden group">
               <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-green-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp size={14} className="text-green-400" /> Top Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
@@ -1345,7 +1345,7 @@ export default function Portfolio() {
               </div>
             </div>
             
-            <div className="bg-[#19191c] border border-white/5 rounded-[2rem] p-5 shadow-xl relative overflow-hidden group">
+            <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-5 shadow-xl relative overflow-hidden group">
               <div className="absolute right-0 top-0 w-32 h-32 bg-red-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-red-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingDown size={14} className="text-red-400" /> Worst Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
@@ -1395,7 +1395,7 @@ export default function Portfolio() {
             </div>
           )}
 
-          <div className="bg-[#19191c] border border-white/5 rounded-[2rem] p-6 shadow-xl mb-6">
+          <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6 shadow-xl mb-6">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
               <RefreshCw size={14} className="text-[var(--accent)]" /> {t('portfolio.eth_wallet')}
             </p>
@@ -1468,7 +1468,7 @@ export default function Portfolio() {
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 ? (
-        <div className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
+        <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden shadow-2xl">
           <div className="overflow-x-auto w-full">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
@@ -1722,18 +1722,18 @@ export default function Portfolio() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
               <div className="text-xs font-bold text-gray-500 uppercase mb-2">{t('portfolio.tax.short_term')}</div>
-              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estShortTax)}</div>
+              <div className="text-2xl font-black font-mono text-gray-200"><NumberFlow value={Number(taxData.estShortTax) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} /></div>
               <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_short')}</div>
             </div>
             <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
               <div className="text-xs font-bold text-gray-500 uppercase mb-2">{t('portfolio.tax.long_term')}</div>
-              <div className="text-2xl font-black font-mono text-gray-200">{fmtUSD(taxData.estLongTax)}</div>
+              <div className="text-2xl font-black font-mono text-gray-200"><NumberFlow value={Number(taxData.estLongTax) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} /></div>
               <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_long')}</div>
             </div>
             <div className="p-5 rounded-2xl bg-[var(--accent)]/5 border border-[var(--accent)]/20 relative overflow-hidden">
               <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-[var(--accent)]/10 rounded-full blur-2xl"></div>
               <div className="text-xs font-bold text-[var(--accent)]/70 uppercase mb-2 relative z-10">{t('portfolio.tax.total')}</div>
-              <div className="text-3xl font-black font-mono text-[var(--accent)] relative z-10">{fmtUSD(taxData.estTotalTax)}</div>
+              <div className="text-3xl font-black font-mono text-[var(--accent)] relative z-10"><NumberFlow value={Number(taxData.estTotalTax) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} /></div>
             </div>
           </div>
         </div>
