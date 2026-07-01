@@ -21,7 +21,7 @@ export function TimelineContent({
   const ref = timelineRef || localRef;
   const isInView = useInView(ref as React.RefObject<Element>, { once: true, margin: "-50px" });
 
-  const MotionComponent = motion(Component as any);
+  const MotionComponent = React.useMemo(() => motion(Component as any), [Component]);
 
   return (
     <MotionComponent

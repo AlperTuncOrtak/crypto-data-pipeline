@@ -4,7 +4,8 @@
 
 ## High Priority
 - [x] **Fix all localhost references:** Ensure no `localhost:3000` or `localhost:5173` links remain in production (check Supabase email confirmations, API endpoints).
-- [] **Fix Light Theme:** Overhaul the light color palette and shadows (drop-shadows instead of glow) for better contrast.
+- [ ] **Fix Light Theme:** Overhaul the light color palette and shadows (drop-shadows instead of glow) for better contrast.
+- [ ] **Fix Pricing Page Bugs:** The Pricing tab keeps resetting automatically and the 'year' toggle is unclickable. The design also needs to be tweaked to seamlessly match the current global aesthetic.
 
 ## Upcoming Ideas & Features
 - [ ] **Stripe/Paywall Integration:** Implement Pro/Enterprise tier paywalls.
@@ -13,7 +14,7 @@
 - [x] **Tokenomics & Unlocks Widget:** Add upcoming token unlocks to CoinDetail page.
 
 ## UI/UX Overhaul Roadmap
-- [ ] **Dashboard:** Tasarimi bastan düzenlenecek. (Not: Asiri "glassmorphism" ve her karta glow ekleme denemesi begenilmedi. Daha temiz, simetrik, minimal ve premium bir yapi uzerine dusunulecek).
+- [x] **Dashboard:** Premium Bento Box arayüzü eklendi, framer-motion ve NumberFlow kuruldu.
 - [ ] **Market:** Liste tasarimlari, filtreler ve genel sayfa yapisi premium hisse gore bastan tasarlanacak.
 - [ ] **Portfolio:** Varlik kutulari ve grafikler goz yormayan, ultra-premium duzene gecirilecek.
 - [ ] **Alerts:** Eski uyari sayfalari ve pop-up'lar yeni sade/siyah estetigine uygun olacak sekilde yeniden yapilacak.

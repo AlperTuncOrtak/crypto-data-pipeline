@@ -181,7 +181,7 @@ export default function Dashboard() {
       return sortDir === "asc" ? av - bv : bv - av;
     });
 
-  const visibleSymbols = filtered.slice(0, 50).map((c: any) => c.symbol?.toUpperCase()).filter(Boolean);
+  const visibleSymbols = filtered.slice(0, 15).map((c: any) => c.symbol?.toUpperCase()).filter(Boolean);
   const { data: sparklineData } = useSparklines(visibleSymbols, 24);
 
   function toggleSort(key: SortKey) {
@@ -309,7 +309,7 @@ export default function Dashboard() {
                   {filtered.length === 0 ? (
                     <div className="p-12 text-center text-gray-500 font-medium">No results found.</div>
                   ) : (
-                    filtered.slice(0, 50).map((coin: any, i: number) => {
+                    filtered.slice(0, 15).map((coin: any, i: number) => {
                       const change = Number(coin.price_change_percentage_24h) || 0;
                       const isUp = change >= 0;
                       return (
