@@ -1218,16 +1218,16 @@ export default function Portfolio() {
         </p>
         <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white drop-shadow-sm break-words max-w-full px-4 flex items-baseline justify-center gap-2 font-mono">
           <span className="text-gray-400 text-4xl">$</span>
-          <NumberFlow value={totalValue} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
+          <NumberFlow value={Number.isNaN(Number(totalValue)) ? 0 : Number(totalValue)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
         </h1>
         <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.1)]" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]"}`}>
           {isPos ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
           <span className="flex items-center gap-1 font-mono">
             {isPos ? "+" : "-"}$
-            <NumberFlow value={Math.abs(totalPnl)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
+            <NumberFlow value={Number.isNaN(Number(totalPnl)) ? 0 : Math.abs(Number(totalPnl))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
           </span>
           <span className="text-sm opacity-70 font-mono ml-1 flex items-center">
-            (<NumberFlow value={Math.abs(pnlPct)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%)
+            (<NumberFlow value={Number.isNaN(Number(pnlPct)) ? 0 : Math.abs(Number(pnlPct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%)
           </span>
         </div>
 
@@ -1468,24 +1468,24 @@ export default function Portfolio() {
                         </div>
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm font-semibold text-gray-400">
-                        <NumberFlow value={h.current_price || 0} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.current_price < 1 ? 4 : 2, maximumFractionDigits: h.current_price < 0.01 ? 6 : 2 }} />
+                        <NumberFlow value={Number.isNaN(Number(h.current_price)) ? 0 : Number(h.current_price)} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.current_price < 1 ? 4 : 2, maximumFractionDigits: h.current_price < 0.01 ? 6 : 2 }} />
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">
-                        <NumberFlow value={h.quantity || 0} format={{ maximumFractionDigits: 6 }} />
+                        <NumberFlow value={Number.isNaN(Number(h.quantity)) ? 0 : Number(h.quantity)} format={{ maximumFractionDigits: 6 }} />
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm font-bold text-white">
-                        <NumberFlow value={h.value || 0} format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
+                        <NumberFlow value={Number.isNaN(Number(h.value)) ? 0 : Number(h.value)} format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
                       </td>
                       <td className="px-5 py-5 text-right font-mono text-sm text-gray-500">
-                        {h.avg_cost > 0 ? <NumberFlow value={h.avg_cost} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.avg_cost < 1 ? 4 : 2, maximumFractionDigits: h.avg_cost < 0.01 ? 6 : 2 }} /> : "—"}
+                        {h.avg_cost > 0 ? <NumberFlow value={Number.isNaN(Number(h.avg_cost)) ? 0 : Number(h.avg_cost)} format={{ style: "currency", currency: "USD", minimumFractionDigits: h.avg_cost < 1 ? 4 : 2, maximumFractionDigits: h.avg_cost < 0.01 ? 6 : 2 }} /> : "—"}
                       </td>
                       <td className="px-5 py-5 text-right">
                         <div className="flex flex-col items-end gap-1">
                           <span className={`font-mono text-sm font-bold flex items-center gap-0.5 ${p ? "text-green-400" : "text-red-400"}`}>
-                            {p ? "+" : "-"}$<NumberFlow value={Math.abs(h.pnl) || 0} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
+                            {p ? "+" : "-"}$<NumberFlow value={Number.isNaN(Number(h.pnl)) ? 0 : Math.abs(Number(h.pnl))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
                           </span>
                           <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-md flex items-center gap-1 ${p ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
-                            {p ? "▲" : "▼"} <NumberFlow value={Math.abs(h.pnl_pct) || 0} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
+                            {p ? "▲" : "▼"} <NumberFlow value={Number.isNaN(Number(h.pnl_pct)) ? 0 : Math.abs(Number(h.pnl_pct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                           </span>
                         </div>
                       </td>

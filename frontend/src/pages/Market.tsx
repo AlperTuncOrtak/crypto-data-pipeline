@@ -280,7 +280,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                   {/* Price */}
                   <div className="text-right font-mono text-sm font-bold text-white">
                     <NumberFlow 
-                      value={coin.current_price || 0} 
+                      value={Number.isNaN(Number(coin.current_price)) ? 0 : Number(coin.current_price)} 
                       format={{ style: "currency", currency: "USD", minimumFractionDigits: coin.current_price < 1 ? 4 : 2, maximumFractionDigits: coin.current_price < 0.01 ? 6 : 2 }} 
                     />
                   </div>
@@ -289,7 +289,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                   <div className="text-right">
                     <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${isUp ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
                       {isUp ? "▲" : "▼"} 
-                      <NumberFlow value={Math.abs(change)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
+                      <NumberFlow value={Number.isNaN(Number(change)) ? 0 : Math.abs(Number(change))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                     </span>
                   </div>
 
