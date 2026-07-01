@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { TrendingDown, TrendingUp, Zap, Bell, RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PriceCell from '../components/ui/PriceCell'
+import { motion } from 'framer-motion'
+import NumberFlow from '@number-flow/react'
 
 const TYPE_CONFIG = {
   'Sharp Drop': {
@@ -41,15 +43,11 @@ const TYPE_CONFIG = {
 
 function SidebarCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border-soft)',
-      borderRadius: 16, overflow: 'hidden',
-      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
-    }}>
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border-soft)' }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{title}</span>
+    <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden">
+      <div className="px-5 py-4 border-b border-white/5">
+        <span className="text-[13px] font-bold text-white tracking-wide">{title}</span>
       </div>
-      <div style={{ padding: '8px 0' }}>{children}</div>
+      <div className="py-2">{children}</div>
     </div>
   )
 }
@@ -58,22 +56,28 @@ function FilterBtn({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      style={{
-        width: '100%', textAlign: 'left',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '9px 20px', border: 'none',
-        background: active ? 'rgba(255,255,255,0.06)' : 'transparent',
-        color: active ? 'var(--text-primary)' : 'var(--text-muted)',
-        fontSize: 13, fontWeight: active ? 600 : 400,
-        cursor: 'pointer', transition: 'all 120ms',
-        borderLeft: active ? '2px solid var(--text-primary)' : '2px solid transparent',
-      }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)' }}
-      onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+      className={`w-full text-left flex items-center justify-between px-5 py-2.5 transition-all duration-200 border-l-2 ${
+        active 
+          ? 'bg-white/5 text-white border-white/40' 
+          : 'bg-transparent text-white/50 border-transparent hover:bg-white/[0.03] hover:text-white/80'
+      }`}
     >
-      {children}
+      <div className="text-[13px] font-medium w-full flex justify-between items-center">{children}</div>
     </button>
   )
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
 }
 
 export default function Alerts() {
@@ -135,229 +139,218 @@ export default function Alerts() {
     return rows
   }, [data, filter, sortBy])
 
-  return (
-    <div style={{ color: 'var(--text-primary)', fontFamily: "'Inter', -apple-system, sans-serif", maxWidth: 1280, margin: '0 auto', padding: '40px 32px' }}>
-      <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+  // Determine glow color based on the most dominant or recent alert type
+  const dominantAlert = filtered.length > 0 ? filtered[0].type : 'Rapid Movement'
+  const glowColor = TYPE_CONFIG[dominantAlert as keyof typeof TYPE_CONFIG]?.color || '#8b5cf6'
 
-      {/* ── HEADER ──────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32 }}>
-        <div>
-          <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.05em', margin: 0 }}>
-            Alerts
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '6px 0 0', fontWeight: 400 }}>
-            {summary.total} active signal{summary.total !== 1 ? 's' : ''} detected
-          </p>
-        </div>
-        <button
-          onClick={() => refetch()}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '8px 16px', borderRadius: 8,
-            border: '1px solid var(--border)', background: 'var(--bg-surface)',
-            color: isFetching ? '#22c55e' : 'var(--text-muted)',
-            fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 150ms',
-          }}
-        >
-          <RefreshCw size={13} style={{ animation: isFetching ? 'spin 1s linear infinite' : 'none' }} />
-          Refresh
-        </button>
+  return (
+    <div className="relative min-h-screen bg-[#0d0d0f] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
+      {/* ── CINEMATIC GLOW BACKGROUND ── */}
+      <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
+        <div 
+          className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.15] mix-blend-screen transition-colors duration-1000"
+          style={{ background: `radial-gradient(ellipse at top, ${glowColor}, transparent 70%)` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
       </div>
 
-      {/* ── TWO-COLUMN LAYOUT ─────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 20, alignItems: 'start' }}>
+      <div className="max-w-[1280px] mx-auto relative z-20">
+        <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
 
-        {/* ── LEFT SIDEBAR ────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-          {/* Summary */}
-          <SidebarCard title="Summary">
-            <div style={{ padding: '4px 20px 12px' }}>
-              {[
-                { label: 'Sharp Drops',    count: summary.drop,  color: '#ef4444', Icon: TrendingDown },
-                { label: 'Strong Pumps',   count: summary.pump,  color: '#22c55e', Icon: TrendingUp },
-                { label: 'Rapid Moves',    count: summary.rapid, color: '#8b5cf6', Icon: Zap },
-              ].map(({ label, count, color, Icon }) => (
-                <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 0', borderBottom: '1px solid var(--border-soft)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <Icon size={13} color={color} />
-                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{label}</span>
-                  </div>
-                  <span className="font-mono" style={{ fontSize: 14, fontWeight: 700, color }}>{count}</span>
-                </div>
-              ))}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 }}>
-                <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>Total</span>
-                <span className="font-mono" style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)' }}>{summary.total}</span>
-              </div>
-            </div>
-          </SidebarCard>
-
-          {/* Filter */}
-          <SidebarCard title="Filter">
-            {[
-              { key: 'all',   label: 'All Alerts',    count: summary.total },
-              { key: 'drop',  label: 'Sharp Drops',   count: summary.drop  },
-              { key: 'pump',  label: 'Strong Pumps',  count: summary.pump  },
-              { key: 'rapid', label: 'Rapid Moves',   count: summary.rapid },
-            ].map(f => (
-              <FilterBtn key={f.key} active={filter === f.key} onClick={() => setFilter(f.key)}>
-                <span>{f.label}</span>
-                <span className="font-mono" style={{
-                  fontSize: 11, fontWeight: 700,
-                  padding: '2px 8px', borderRadius: 4,
-                  background: filter === f.key ? 'rgba(255,255,255,0.10)' : 'var(--bg-elevated)',
-                  color: filter === f.key ? 'var(--text-primary)' : 'var(--text-muted)',
-                }}>{f.count}</span>
-              </FilterBtn>
-            ))}
-          </SidebarCard>
-
-          {/* Sort */}
-          <SidebarCard title="Sort By">
-            {[
-              { key: 'severity', label: 'Severity' },
-              { key: 'pct',      label: '% Change' },
-            ].map(s => (
-              <FilterBtn key={s.key} active={sortBy === s.key} onClick={() => setSortBy(s.key)}>
-                {s.label}
-              </FilterBtn>
-            ))}
-          </SidebarCard>
+        {/* ── HEADER ──────────────────────────────────────────── */}
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-black tracking-tight m-0 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+              Alerts
+            </h1>
+            <p className="text-sm text-white/50 mt-2 font-medium">
+              {summary.total} active signal{summary.total !== 1 ? 's' : ''} detected
+            </p>
+          </div>
+          <button
+            onClick={() => refetch()}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-200 text-xs font-bold ${
+              isFetching ? 'bg-white/10 border-white/20 text-[#22c55e]' : 'bg-[#19191c]/80 backdrop-blur-md border-white/10 text-white/60 hover:text-white hover:border-white/30'
+            }`}
+          >
+            <RefreshCw size={14} style={{ animation: isFetching ? 'spin 1s linear infinite' : 'none' }} />
+            Refresh
+          </button>
         </div>
 
-        {/* ── MAIN FEED ───────────────────────────────────── */}
-        <div>
-          {/* Loading skeleton */}
-          {isLoading && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} style={{ height: 64, borderRadius: 12, background: 'var(--bg-surface)', border: '1px solid var(--border-soft)', opacity: 1 - i * 0.1 }} />
+        {/* ── TWO-COLUMN LAYOUT ─────────────────────────────── */}
+        <div className="grid grid-cols-[240px_1fr] gap-6 items-start">
+
+          {/* ── LEFT SIDEBAR ────────────────────────────────── */}
+          <div className="flex flex-col gap-6 sticky top-24">
+            {/* Summary */}
+            <SidebarCard title="Summary">
+              <div className="px-5 pt-1 pb-3">
+                {[
+                  { label: 'Sharp Drops',    count: summary.drop,  color: '#ef4444', Icon: TrendingDown },
+                  { label: 'Strong Pumps',   count: summary.pump,  color: '#22c55e', Icon: TrendingUp },
+                  { label: 'Rapid Moves',    count: summary.rapid, color: '#8b5cf6', Icon: Zap },
+                ].map(({ label, count, color, Icon }) => (
+                  <div key={label} className="flex items-center justify-between py-2.5 border-b border-white/5">
+                    <div className="flex items-center gap-2.5">
+                      <Icon size={14} color={color} />
+                      <span className="text-[13px] text-white/60 font-medium">{label}</span>
+                    </div>
+                    <span className="font-mono text-sm font-bold" style={{ color }}>{count}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center pt-3">
+                  <span className="text-[13px] text-white/50 font-semibold">Total</span>
+                  <span className="font-mono text-[15px] font-black text-white">{summary.total}</span>
+                </div>
+              </div>
+            </SidebarCard>
+
+            {/* Filter */}
+            <SidebarCard title="Filter">
+              {[
+                { key: 'all',   label: 'All Alerts',    count: summary.total },
+                { key: 'drop',  label: 'Sharp Drops',   count: summary.drop  },
+                { key: 'pump',  label: 'Strong Pumps',  count: summary.pump  },
+                { key: 'rapid', label: 'Rapid Moves',   count: summary.rapid },
+              ].map(f => (
+                <FilterBtn key={f.key} active={filter === f.key} onClick={() => setFilter(f.key)}>
+                  <span>{f.label}</span>
+                  <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded-md ${
+                    filter === f.key ? 'bg-white/20 text-white' : 'bg-white/5 text-white/40'
+                  }`}>
+                    {f.count}
+                  </span>
+                </FilterBtn>
               ))}
-            </div>
-          )}
+            </SidebarCard>
 
-          {/* Error */}
-          {isError && (
-            <div style={{ padding: '16px 20px', borderRadius: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', color: '#ef4444', fontSize: 13 }}>
-              Failed to load alerts. Please try refreshing.
-            </div>
-          )}
+            {/* Sort */}
+            <SidebarCard title="Sort By">
+              {[
+                { key: 'severity', label: 'Severity' },
+                { key: 'pct',      label: '% Change' },
+              ].map(s => (
+                <FilterBtn key={s.key} active={sortBy === s.key} onClick={() => setSortBy(s.key)}>
+                  {s.label}
+                </FilterBtn>
+              ))}
+            </SidebarCard>
+          </div>
 
-          {/* Empty state */}
-          {data && filtered.length === 0 && (
-            <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              padding: '80px 24px', textAlign: 'center',
-              background: 'var(--bg-card)', border: '1px solid var(--border-soft)', borderRadius: 16,
-            }}>
-              <Bell size={32} color="var(--text-muted)" style={{ marginBottom: 14 }} />
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>No alerts here</div>
-              <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>No signals matched this filter</div>
-            </div>
-          )}
-
-          {/* Alert table */}
-          {filtered.length > 0 && (
-            <div style={{
-              background: 'var(--bg-card)', border: '1px solid var(--border-soft)',
-              borderRadius: 16, overflow: 'hidden',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}>
-              {/* Table header */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '48px 1fr 110px 110px 80px',
-                padding: '10px 20px', gap: 8,
-                borderBottom: '1px solid var(--border-soft)',
-                background: 'rgba(255,255,255,0.01)',
-              }}>
-                {['', 'Coin', 'Price', '% Change', 'Type'].map((h, i) => (
-                  <div key={i} style={{
-                    fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-                    letterSpacing: '0.08em', color: 'var(--text-muted)',
-                    textAlign: i >= 2 ? 'right' : 'left',
-                  }}>{h}</div>
+          {/* ── MAIN FEED ───────────────────────────────────── */}
+          <div>
+            {/* Loading skeleton */}
+            {isLoading && (
+              <div className="flex flex-col gap-2">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="h-16 rounded-[1rem] bg-[#19191c]/80 backdrop-blur-md border border-white/5" style={{ opacity: 1 - i * 0.1 }} />
                 ))}
               </div>
+            )}
 
-              {/* Rows */}
-              {filtered.map((alert: any, idx: number) => {
-                const config = TYPE_CONFIG[alert.type as keyof typeof TYPE_CONFIG] || TYPE_CONFIG['Rapid Movement']
-                const Icon = config.icon
-                const coin = coinMap[alert.symbol?.toUpperCase()] || {}
-                const pct = alert.change_pct ?? 0
-                const price = alert.current_price || coin.current_price
-                const isDown = alert.type === 'Sharp Drop'
-                const isUp = alert.type === 'Strong Increase'
-                const pctColor = isDown ? '#ef4444' : isUp ? '#22c55e' : '#8b5cf6'
+            {/* Error */}
+            {isError && (
+              <div className="px-5 py-4 rounded-[1rem] bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">
+                Failed to load alerts. Please try refreshing.
+              </div>
+            )}
 
-                return (
-                  <div
-                    key={`${alert.symbol}-${alert.type}-${idx}`}
-                    onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '48px 1fr 110px 110px 80px',
-                      alignItems: 'center', gap: 8,
-                      padding: '13px 20px',
-                      borderBottom: '1px solid var(--border-soft)',
-                      borderLeft: `3px solid ${config.dot}`,
-                      cursor: coin.slug ? 'pointer' : 'default',
-                      transition: 'background 100ms',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.025)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    {/* Logo */}
-                    <div>
-                      {coin.image_url
-                        ? <img src={coin.image_url} alt={alert.symbol} style={{ width: 30, height: 30, borderRadius: '50%' }} />
-                        : <div style={{ width: 30, height: 30, borderRadius: '50%', background: config.bg, border: `1px solid ${config.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, fontFamily: 'monospace', color: config.color }}>
-                            {alert.symbol?.slice(0, 2)}
+            {/* Empty state */}
+            {data && filtered.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-24 text-center bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-[1.5rem] shadow-2xl">
+                <Bell size={36} className="text-white/20 mb-4" />
+                <div className="text-lg font-bold text-white mb-1">No alerts here</div>
+                <div className="text-sm text-white/50">No signals matched this filter</div>
+              </div>
+            )}
+
+            {/* Alert table */}
+            {filtered.length > 0 && (
+              <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                {/* Table header */}
+                <div className="grid grid-cols-[48px_1fr_110px_110px_80px] px-5 py-3 gap-2 border-b border-white/5 bg-white/[0.02]">
+                  {['', 'Coin', 'Price', '% Change', 'Type'].map((h, i) => (
+                    <div key={i} className={`text-[11px] font-bold uppercase tracking-wider text-white/40 ${i >= 2 ? 'text-right' : 'text-left'}`}>
+                      {h}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Rows with Framer Motion */}
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {filtered.map((alert: any, idx: number) => {
+                    const config = TYPE_CONFIG[alert.type as keyof typeof TYPE_CONFIG] || TYPE_CONFIG['Rapid Movement']
+                    const Icon = config.icon
+                    const coin = coinMap[alert.symbol?.toUpperCase()] || {}
+                    const pct = alert.change_pct ?? 0
+                    const price = alert.current_price || coin.current_price
+                    const isDown = alert.type === 'Sharp Drop'
+                    const isUp = alert.type === 'Strong Increase'
+                    const pctColor = isDown ? '#ef4444' : isUp ? '#22c55e' : '#8b5cf6'
+
+                    return (
+                      <motion.div
+                        variants={itemVariants}
+                        key={`${alert.symbol}-${alert.type}-${idx}`}
+                        onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.04]"
+                        style={{
+                          borderLeft: `3px solid ${config.dot}`,
+                          cursor: coin.slug ? 'pointer' : 'default',
+                        }}
+                      >
+                        {/* Logo */}
+                        <div>
+                          {coin.image_url
+                            ? <img src={coin.image_url} alt={alert.symbol} className="w-8 h-8 rounded-full border border-white/10" />
+                            : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold font-mono" style={{ background: config.bg, border: `1px solid ${config.border}`, color: config.color }}>
+                                {alert.symbol?.slice(0, 2)}
+                              </div>
+                          }
+                        </div>
+
+                        {/* Coin name + message */}
+                        <div className="min-w-0 pr-4">
+                          <div className="font-mono text-[14px] font-bold text-white">
+                            {alert.symbol?.toUpperCase()}
                           </div>
-                      }
-                    </div>
+                          <div className="text-[12px] text-white/50 mt-0.5 truncate">
+                            {alert.message}
+                          </div>
+                        </div>
 
-                    {/* Coin name + message */}
-                    <div style={{ minWidth: 0 }}>
-                      <div className="font-mono" style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
-                        {alert.symbol?.toUpperCase()}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {alert.message}
-                      </div>
-                    </div>
+                        {/* Price */}
+                        <div className="font-mono text-right text-[13px] text-white/80 font-bold">
+                          <PriceCell price={price} />
+                        </div>
 
-                    {/* Price */}
-                    <div className="font-mono" style={{ textAlign: 'right', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>
-                      <PriceCell price={price} />
-                    </div>
+                        {/* % Change */}
+                        <div className="font-mono text-right text-[14px] font-black" style={{ color: pctColor }}>
+                          {pct > 0 ? '+' : ''}
+                          <NumberFlow value={Number(pct) || 0} format={{ maximumFractionDigits: 2, minimumFractionDigits: 2 }} />%
+                        </div>
 
-                    {/* % Change */}
-                    <div className="font-mono" style={{ textAlign: 'right', fontSize: 14, fontWeight: 700, color: pctColor }}>
-                      {pct > 0 ? '+' : ''}{pct.toFixed(2)}%
-                    </div>
-
-                    {/* Badge */}
-                    <div style={{ textAlign: 'right' }}>
-                      <span className="font-mono" style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 4,
-                        fontSize: 10, fontWeight: 700, padding: '3px 8px',
-                        borderRadius: 5,
-                        background: config.bg, color: config.color,
-                        border: `1px solid ${config.border}`,
-                        letterSpacing: '0.04em',
-                      }}>
-                        <Icon size={9} />
-                        {config.label}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+                        {/* Badge */}
+                        <div className="text-right">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md tracking-wider uppercase" style={{
+                            background: config.bg, color: config.color, border: `1px solid ${config.border}`
+                          }}>
+                            <Icon size={10} />
+                            {config.label}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </motion.div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
