@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import {
-  Brain, BarChart2, Wallet, ArrowRight, Activity, Cpu, Shield, Zap, RefreshCw, Layers
+  Brain, BarChart2, Wallet, ArrowRight, Activity, Cpu, Shield, Zap, RefreshCw, Layers, Sparkles
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ThreeDHero } from "../components/ThreeDHero";
@@ -57,24 +57,64 @@ export default function Landing() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [0.5, 0.8]);
+  const headerBlur = useTransform(scrollYProgress, [0, 0.1], ["10px", "20px"]);
   const { t } = useTranslation();
+
+  const PARTNERS = ["BINANCE", "COINBASE", "KRAKEN", "OKX", "BYBIT", "BITGET", "KUCOIN", "METAMASK", "PHANTOM", "TRUST WALLET"];
+
+  // Live Simulation State
+  const [fearGreed, setFearGreed] = useState(76);
+  const [balance, setBalance] = useState(124592.00);
+  const [orderbook, setOrderbook] = useState([
+    { pair: "BTC-PERP", pnl: "+2.4", color: "green" },
+    { pair: "ETH-PERP", pnl: "-1.2", color: "red" },
+    { pair: "SOL-PERP", pnl: "+5.8", color: "green" }
+  ]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFearGreed(prev => Math.max(10, Math.min(90, prev + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3))));
+      setBalance(prev => prev + (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 50));
+      setOrderbook(prev => prev.map(o => {
+        const val = parseFloat(o.pnl) + (Math.random() > 0.5 ? 0.2 : -0.2);
+        return {
+          ...o,
+          pnl: (val > 0 ? "+" : "") + val.toFixed(1),
+          color: val >= 0 ? "green" : "red"
+        };
+      }));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0d0d0f] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden">
       
-      {/* ── BACKGROUND MESH / GLOW ── */}
+      {/* ── BACKGROUND AURORA MESH ── */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
+        <motion.div 
+          animate={{ rotate: 360, scale: [1, 1.2, 1] }} 
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-[var(--accent)]/10 rounded-full blur-[120px] mix-blend-screen"
+        />
+        <motion.div 
+          animate={{ rotate: -360, scale: [1, 1.5, 1] }} 
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] mix-blend-screen"
+        />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay z-10"></div>
-        <div className="absolute inset-0 bg-[#0d0d0f]/70 backdrop-blur-[50px] z-10"></div>
+        <div className="absolute inset-0 bg-[#0d0d0f]/60 backdrop-blur-[80px] z-10"></div>
       </div>
 
       {/* ── 3D HERO CANVAS ── */}
       <ThreeDHero />
 
       {/* ── HEADER ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-6 flex items-center justify-between border-b border-white/[0.02] bg-[#0d0d0f]/50 backdrop-blur-md">
+      <motion.header 
+        style={{ opacity: headerOpacity, backdropFilter: `blur(20px)` }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex items-center justify-between border-b border-white/[0.05] bg-[#0d0d0f]/50 transition-all duration-300"
+      >
         <Link to="/" className="flex items-center gap-3 group">
           <motion.div 
             whileHover={{ rotate: 180, scale: 1.1 }} 
@@ -106,7 +146,7 @@ export default function Landing() {
             </button>
           )}
         </div>
-      </header>
+      </motion.header>
 
       {/* ── HERO SECTION ── */}
       <main className="relative z-10 pt-40 pb-20 px-6 lg:px-12 max-w-[1400px] mx-auto">
@@ -155,6 +195,25 @@ export default function Landing() {
           </motion.div>
         </div>
 
+        {/* ── INFINITE MARQUEE ── */}
+        <div className="w-full overflow-hidden mb-32 py-10 border-y border-white/5 relative bg-white/[0.01]">
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
+          <motion.div 
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            className="flex items-center gap-16 whitespace-nowrap"
+            style={{ width: "max-content" }}
+          >
+            {[...PARTNERS, ...PARTNERS].map((partner, i) => (
+              <div key={i} className="text-xl md:text-2xl font-black text-gray-600/50 hover:text-white/80 transition-colors flex items-center gap-3">
+                <Sparkles size={16} className="text-[var(--accent)]/30" />
+                {partner}
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
         {/* ── BENTO BOX FEATURES (gettrade.ai style) ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-32">
           
@@ -168,17 +227,17 @@ export default function Landing() {
                 <div className="relative w-32 h-32 shrink-0">
                   <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_var(--accent-soft)]">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset="60" strokeLinecap="round" className="animate-pulse" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * fearGreed / 100)} strokeLinecap="round" className="transition-all duration-1000 ease-out" />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-black text-white">76</span>
-                    <span className="text-[10px] text-[var(--accent)] font-bold tracking-widest uppercase">Greed</span>
+                    <span className="text-2xl font-black text-white">{fearGreed}</span>
+                    <span className="text-[10px] text-[var(--accent)] font-bold tracking-widest uppercase">{fearGreed > 75 ? "Extr. Greed" : fearGreed > 55 ? "Greed" : fearGreed > 45 ? "Neutral" : "Fear"}</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-3 w-full">
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: "80%" }} transition={{ duration: 1, delay: 0.3 }} className="h-full bg-green-500"></motion.div></div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: "60%" }} transition={{ duration: 1, delay: 0.5 }} className="h-full bg-[var(--accent)]"></motion.div></div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: "30%" }} transition={{ duration: 1, delay: 0.7 }} className="h-full bg-red-500"></motion.div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div style={{ width: `${Math.min(100, fearGreed + 10)}%` }} className="h-full bg-green-500 transition-all duration-1000"></div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div style={{ width: `${fearGreed}%` }} className="h-full bg-[var(--accent)] transition-all duration-1000"></div></div>
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div style={{ width: `${Math.max(0, fearGreed - 20)}%` }} className="h-full bg-red-500 transition-all duration-1000"></div></div>
                 </div>
               </div>
             </div>
@@ -199,18 +258,12 @@ export default function Landing() {
             
             {/* UI Preview: Orderbook/Sparkline */}
             <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-4 shadow-2xl flex flex-col justify-end gap-2">
-               <motion.div initial={{ x: -20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
-                 <span className="text-[10px] font-mono text-green-400">BTC-PERP</span>
-                 <span className="text-xs font-bold text-green-400">+2.4%</span>
-               </motion.div>
-               <motion.div initial={{ x: -20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="flex justify-between items-center px-2 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
-                 <span className="text-[10px] font-mono text-red-400">ETH-PERP</span>
-                 <span className="text-xs font-bold text-red-400">-1.2%</span>
-               </motion.div>
-               <motion.div initial={{ x: -20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="flex justify-between items-center px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
-                 <span className="text-[10px] font-mono text-green-400">SOL-PERP</span>
-                 <span className="text-xs font-bold text-green-400">+5.8%</span>
-               </motion.div>
+              {orderbook.map((o, i) => (
+                <div key={i} className={`flex justify-between items-center px-2 py-1.5 rounded-md bg-${o.color}-500/10 border border-${o.color}-500/20 transition-all duration-300`}>
+                  <span className={`text-[10px] font-mono text-${o.color}-400`}>{o.pair}</span>
+                  <span className={`text-xs font-bold text-${o.color}-400`}>{o.pnl}%</span>
+                </div>
+              ))}
             </div>
 
             <div className="relative z-10 mt-auto">
@@ -234,7 +287,7 @@ export default function Landing() {
                  <Wallet className="text-[var(--accent)]" size={24} />
                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#19191c]"></div>
                </motion.div>
-               <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="text-xl font-black text-white z-10 font-mono">$124,592.00</motion.div>
+               <div className="text-xl font-black text-white z-10 font-mono transition-all duration-500">${balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="text-xs font-bold text-gray-500 z-10 mt-1 uppercase tracking-widest">Total Balance</motion.div>
             </div>
 
