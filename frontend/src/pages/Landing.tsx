@@ -6,7 +6,7 @@ import {
   Brain, BarChart2, Wallet, ArrowRight, Activity, Cpu, Shield, Zap, RefreshCw, Layers
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
+import { ThreeDHero } from "../components/ThreeDHero";
 // ============================================================================
 // ANIMATION VARIANTS
 // ============================================================================
@@ -65,10 +65,12 @@ export default function Landing() {
       
       {/* ── BACKGROUND MESH / GLOW ── */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <motion.div style={{ y, opacity }} className="absolute w-[800px] h-[800px] bg-[var(--accent)]/5 rounded-full blur-[120px] top-[-200px] mix-blend-screen" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-[#0d0d0f]/60 backdrop-blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay z-10"></div>
+        <div className="absolute inset-0 bg-[#0d0d0f]/70 backdrop-blur-[50px] z-10"></div>
       </div>
+
+      {/* ── 3D HERO CANVAS ── */}
+      <ThreeDHero />
 
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-6 flex items-center justify-between border-b border-white/[0.02] bg-[#0d0d0f]/50 backdrop-blur-md">

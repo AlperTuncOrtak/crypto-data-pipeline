@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "21st.dev": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@21st-dev/mcp-server"
+      ]
+    },
+    "stitch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@_davideast/stitch-mcp"
+      ]
+    },
+    "nano-banana-2": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "nano-banana-2-mcp"
+      ]
+    }
+  }
+}
