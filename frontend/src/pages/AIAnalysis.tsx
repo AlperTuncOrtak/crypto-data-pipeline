@@ -1,4 +1,5 @@
 import { useState } from "react";
+import NumberFlow from "@number-flow/react";
 import { useTranslation } from "react-i18next";
 import { useMarket } from "../hooks/useMarket";
 import {
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 import { apiClient } from "../api/client";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { motion } from "framer-motion";
 
 function formatPrice(n) {
   const num = Number(n);
@@ -357,12 +359,7 @@ function MarketContextCard({ marketContext }) {
 
   return (
     <div
-      style={{
-        background: "rgba(255, 255, 255, 0.02)",
-        border: "1px solid rgba(255, 255, 255, 0.06)",
-        borderRadius: 24,
-        padding: "24px",
-      }}
+      className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
     >
       <div className="flex items-center gap-2 mb-5">
         <Activity size={14} style={{ color: "var(--accent)" }} />
@@ -656,12 +653,7 @@ function BullishnessGauge({ score }) {
 
   return (
     <div
-      style={{
-        background: "rgba(255, 255, 255, 0.02)",
-        border: "1px solid rgba(255, 255, 255, 0.06)",
-        borderRadius: 24,
-        padding: "24px",
-      }}
+      className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
     >
       <div className="flex items-center gap-2 mb-4">
         <span style={{ fontSize: 16 }}>📊</span>
@@ -839,12 +831,7 @@ function ActionTagsCard({ tags }) {
   if (!tags || tags.length === 0) return null;
   return (
     <div
-      style={{
-        background: "rgba(255, 255, 255, 0.02)",
-        border: "1px solid rgba(255, 255, 255, 0.06)",
-        borderRadius: 24,
-        padding: "24px",
-      }}
+      className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
     >
       <div className="flex items-center gap-2 mb-4">
         <Zap size={14} style={{ color: "var(--accent)" }} />
@@ -932,12 +919,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
 
   return (
     <div
-      style={{
-        background: "rgba(255, 255, 255, 0.02)",
-        border: "1px solid rgba(255, 255, 255, 0.06)",
-        borderRadius: 24,
-        padding: "24px",
-      }}
+      className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
     >
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
@@ -1102,8 +1084,17 @@ export default function AIAnalysis() {
   return (
     <div
       ref={revealRef}
-      style={{ color: "var(--text-primary)", maxWidth: 1100, margin: "0 auto" }}
+      className="relative min-h-screen text-white pt-24 pb-32 px-6"
     >
+      <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
+        <div 
+          className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.25] mix-blend-screen transition-colors duration-1000"
+          style={{ background: `radial-gradient(ellipse at top, ${signalConfig?.color || 'var(--accent)'}, transparent 70%)` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
+      </div>
+
+      <div className="max-w-[1200px] mx-auto relative z-20">
       {/* MODAL */}
       {showModal && (
         <>
@@ -1704,7 +1695,7 @@ export default function AIAnalysis() {
                   }}
                 >
                   {selected.symbol?.toUpperCase()} ·{" "}
-                  {formatPrice(selected.current_price)}
+                  <NumberFlow value={Number(selected.current_price) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                   <span
                     style={{
                       marginLeft: 6,
@@ -1937,7 +1928,7 @@ export default function AIAnalysis() {
                         color: "var(--text-secondary)",
                       }}
                     >
-                      {formatPrice(coin.current_price)}
+                      <NumberFlow value={Number(coin.current_price) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                     </div>
                     <div
                       style={{
@@ -2093,7 +2084,7 @@ export default function AIAnalysis() {
                         color: "var(--text-primary)",
                       }}
                     >
-                      {formatPrice(result.coin?.current_price)}
+                      <NumberFlow value={Number(result.coin?.current_price) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                     </span>
                     <span
                       style={{
@@ -2259,7 +2250,7 @@ export default function AIAnalysis() {
                         className="text-sm font-bold font-mono"
                         style={{ color: "#e74c3c" }}
                       >
-                        {formatPrice(result.stop_loss)}
+                        <NumberFlow value={Number(result.stop_loss) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                       </div>
                     </div>
                   )}
@@ -2275,7 +2266,7 @@ export default function AIAnalysis() {
                         className="text-sm font-bold font-mono"
                         style={{ color: "#2ecc71" }}
                       >
-                        {formatPrice(result.take_profit)}
+                        <NumberFlow value={Number(result.take_profit) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                       </div>
                     </div>
                   )}
@@ -2288,12 +2279,7 @@ export default function AIAnalysis() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
             {/* Technical Indicators */}
             <div
-              style={{
-                background: "rgba(255, 255, 255, 0.02)",
-                border: "1px solid rgba(255, 255, 255, 0.06)",
-                borderRadius: 24,
-                padding: "24px",
-              }}
+              className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
             >
               <div className="flex items-center gap-2 mb-5">
                 <Zap size={14} style={{ color: "var(--accent)" }} />
@@ -2395,12 +2381,7 @@ export default function AIAnalysis() {
 
             {/* AI Summary */}
             <div
-              style={{
-                background: "rgba(255, 255, 255, 0.02)",
-                border: "1px solid rgba(255, 255, 255, 0.06)",
-                borderRadius: 24,
-                padding: "24px",
-              }}
+              className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
             >
               <div className="flex items-center gap-2 mb-5">
                 <Brain size={14} style={{ color: "var(--accent)" }} />
@@ -2463,12 +2444,7 @@ export default function AIAnalysis() {
             {/* Risk + Key Levels */}
             <div className="flex flex-col gap-4">
               <div
-                style={{
-                  background: "rgba(255, 255, 255, 0.02)",
-                  border: "1px solid rgba(255, 255, 255, 0.06)",
-                  borderRadius: 24,
-                  padding: "24px",
-                }}
+                className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Shield size={14} style={{ color: "var(--accent)" }} />
@@ -2520,12 +2496,7 @@ export default function AIAnalysis() {
 
               <div
                 className="flex-1"
-                style={{
-                  background: "rgba(255, 255, 255, 0.02)",
-                  border: "1px solid rgba(255, 255, 255, 0.06)",
-                  borderRadius: 24,
-                  padding: "24px",
-                }}
+                className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Target size={14} style={{ color: "var(--accent)" }} />
@@ -2622,6 +2593,7 @@ export default function AIAnalysis() {
       )}
 
       <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+      </div>
     </div>
   );
 }
