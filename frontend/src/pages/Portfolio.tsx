@@ -1204,6 +1204,8 @@ export default function Portfolio() {
   }, [user]);
 
 
+  const topPerformer = holdings.length > 0 ? [...holdings].sort((a, b) => b.pnl_pct - a.pnl_pct)[0] : null;
+  const worstPerformer = holdings.length > 0 ? [...holdings].sort((a, b) => a.pnl_pct - b.pnl_pct)[0] : null;
 
   return (
     <div className="max-w-[1600px] mx-auto pb-16 px-4 sm:px-6">
@@ -1325,6 +1327,39 @@ export default function Portfolio() {
         
         {/* LEFT COLUMN: Table */}
         <div className="lg:col-span-8 flex flex-col gap-6">
+
+        {/* TOP MOVERS WIDGETS */}
+        {topPerformer && worstPerformer && topPerformer.symbol !== worstPerformer.symbol && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-[#19191c] border border-white/5 rounded-[2rem] p-5 shadow-xl relative overflow-hidden group">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-green-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp size={14} className="text-green-400" /> Top Performer</h3>
+              <div className="flex items-center gap-4 relative z-10">
+                {topPerformer.image_url ? <img src={topPerformer.image_url} alt={topPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-300">{topPerformer.symbol[0]}</div>}
+                <div>
+                  <div className="text-xl font-black text-white">{topPerformer.symbol}</div>
+                  <div className="text-sm font-bold text-green-400 flex items-center gap-1">
+                    ▲ <NumberFlow value={Number.isNaN(Number(topPerformer.pnl_pct)) ? 0 : Math.abs(Number(topPerformer.pnl_pct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-[#19191c] border border-white/5 rounded-[2rem] p-5 shadow-xl relative overflow-hidden group">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-red-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-red-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingDown size={14} className="text-red-400" /> Worst Performer</h3>
+              <div className="flex items-center gap-4 relative z-10">
+                {worstPerformer.image_url ? <img src={worstPerformer.image_url} alt={worstPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-300">{worstPerformer.symbol[0]}</div>}
+                <div>
+                  <div className="text-xl font-black text-white">{worstPerformer.symbol}</div>
+                  <div className="text-sm font-bold text-red-400 flex items-center gap-1">
+                    ▼ <NumberFlow value={Number.isNaN(Number(worstPerformer.pnl_pct)) ? 0 : Math.abs(Number(worstPerformer.pnl_pct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Data Sources (Collapsible) */}
         <div className="w-full">
@@ -1340,36 +1375,40 @@ export default function Portfolio() {
           </div>
 
           {showAddSource && (
-            <div className="mb-6 bg-white/[0.02] border border-white/[0.05] rounded-2xl p-5 shadow-inner">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Import Data</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-4 mb-2 rounded-2xl bg-white/[0.01] border border-white/[0.03]">
-              {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
-                <button
-                  key={key}
-                  onClick={() => fileRef.current?.click()}
-                  className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
-                >
-                  <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">{ex.logo}</span>
-                  <span className="text-[10px] sm:text-xs font-bold text-gray-400 group-hover:text-gray-200 transition-colors text-center truncate w-full">{ex.name}</span>
-                </button>
-              ))}
-              <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
-            </div>
+            <div className="mb-6 bg-[#19191c] border border-white/5 rounded-[2rem] p-6 shadow-xl relative overflow-hidden">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Wallet size={14} className="text-[var(--accent)]" /> Import Data
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-2xl bg-white/[0.02] border border-white/5">
+                {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
+                  <button
+                    key={key}
+                    onClick={() => fileRef.current?.click()}
+                    className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-2xl bg-[#19191c] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 hover:-translate-y-1 transition-all duration-300 group overflow-hidden shadow-lg"
+                  >
+                    <span className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-2xl">{ex.logo}</span>
+                    <span className="text-xs font-bold text-gray-400 group-hover:text-white transition-colors text-center truncate w-full">{ex.name}</span>
+                  </button>
+                ))}
+                <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
+              </div>
             </div>
           )}
 
-          <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">{t('portfolio.eth_wallet')}</p>
-            <div className="flex gap-3">
+          <div className="bg-[#19191c] border border-white/5 rounded-[2rem] p-6 shadow-xl mb-6">
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <RefreshCw size={14} className="text-[var(--accent)]" /> {t('portfolio.eth_wallet')}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
               <input 
                 value={walletInput} 
                 onChange={e => setWalletInput(e.target.value)} 
                 placeholder="0x..."
-                className="flex-1 min-w-0 bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[var(--accent)]/40 focus:bg-white/[0.04] transition-all duration-300" 
+                className="flex-1 min-w-0 bg-[#121212] border border-white/10 rounded-xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[var(--accent)]/50 focus:bg-[#121212] transition-all duration-300" 
               />
               <button 
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
-                className="px-6 py-3 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
+                className="px-6 py-3 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
               >
                 {isFetchingWallet ? t('portfolio.fetching') : t('portfolio.add_wallet')}
               </button>
@@ -1518,8 +1557,9 @@ export default function Portfolio() {
         {/* RIGHT COLUMN: Donut + AI Insights + Tax Summary */}
         <div className="lg:col-span-4 flex flex-col gap-6">
         {/* Donut */}
-        <div className="w-full flex flex-col min-h-[380px] bg-[#121212] border border-white/[0.05] rounded-3xl p-6 shadow-2xl">
-          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] mb-4 shrink-0">
+        <div className="w-full flex flex-col min-h-[380px] bg-[#19191c] border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
+          <div className="absolute left-1/2 top-1/2 w-[300px] h-[300px] bg-[var(--accent)]/5 rounded-full blur-[80px] pointer-events-none transform -translate-x-1/2 -translate-y-1/2 group-hover:bg-[var(--accent)]/10 transition-all duration-700"></div>
+          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] mb-4 shrink-0 relative z-10 flex items-center justify-center">
             {t('portfolio.asset_allocation')}
           </h3>
           
@@ -1529,7 +1569,7 @@ export default function Portfolio() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius="60%" outerRadius="80%" paddingAngle={4} dataKey="value" stroke="none">
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius="70%" outerRadius="90%" paddingAngle={4} dataKey="value" stroke="none" cornerRadius={4}>
                     {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                   </Pie>
                   <RechartTooltip
@@ -1556,7 +1596,7 @@ export default function Portfolio() {
 
       {/* AI PORTFOLIO INSIGHTS */}
       {holdings.length > 0 && (
-        <div className="mb-6 border border-[var(--accent)]/20 bg-[#121212] rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+        <div className="mb-6 border border-[var(--accent)]/20 bg-[#19191c] rounded-[2rem] p-6 shadow-2xl relative overflow-hidden">
           <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
