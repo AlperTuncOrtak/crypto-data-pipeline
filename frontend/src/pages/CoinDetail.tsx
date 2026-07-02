@@ -184,13 +184,10 @@ export default function CoinDetail() {
   return (
     <div className="relative min-h-screen pb-24 overflow-x-hidden">
       
-      {/* ── CINEMATIC GLOW BACKGROUND ── */}
-      <div className="absolute top-0 left-0 w-full h-[600px] overflow-hidden pointer-events-none z-0">
-        <div 
-          className="absolute top-[-150px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-[100%] blur-[120px] opacity-[0.15] mix-blend-screen transition-colors duration-1000"
-          style={{ background: `radial-gradient(ellipse at top, ${brandColor}, transparent 70%)` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/80 to-[#0d0d0f] z-10" />
+      {/* BACKGROUND GLOWS (Stripe inspired mesh at the top) */}
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
+        <div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 pt-10">
@@ -490,4 +487,5 @@ export default function CoinDetail() {
     </div>
   );
 }
+
 

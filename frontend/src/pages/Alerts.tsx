@@ -145,14 +145,7 @@ export default function Alerts() {
 
   return (
     <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
-      {/* ── CINEMATIC GLOW BACKGROUND ── */}
-      <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
-        <div 
-          className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.15] mix-blend-screen transition-colors duration-1000"
-          style={{ background: `radial-gradient(ellipse at top, ${glowColor}, transparent 70%)` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
-      </div>
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       <div className="max-w-[1280px] mx-auto relative z-20">
         <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
@@ -356,3 +349,4 @@ export default function Alerts() {
     </div>
   )
 }
+

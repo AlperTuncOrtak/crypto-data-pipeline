@@ -217,53 +217,77 @@ export default function Dashboard() {
         {/* BENTO STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           
-          <FadeIn delay={0.2} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
-             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-             <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Global Market Cap</div>
-             <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
-               <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
-             </div>
-             <div className="text-sm text-gray-400 mt-2 font-medium">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
-          </FadeIn>
-
-          <FadeIn delay={0.3} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
-             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-             <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">24h Volume</div>
-             <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
-               <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
-             </div>
-             <div className="text-sm text-gray-400 mt-2 font-medium">Across all markets</div>
-          </FadeIn>
-
-          <FadeIn delay={0.4} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
-             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-             <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Dominance</div>
-             <div className="flex items-end gap-2">
-               <div className="text-3xl md:text-4xl font-black font-mono text-orange-400 tracking-tighter">{btcDom}%</div>
-               <div className="text-sm font-bold text-gray-500 mb-1">BTC</div>
-             </div>
-             <div className="text-sm text-gray-400 mt-2 font-medium">ETH: <span className="text-white font-mono">{ethDom}%</span></div>
-          </FadeIn>
-
-          <FadeIn delay={0.5} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
-             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-             <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Fear & Greed</div>
-             {fngValue !== null ? (
-               <div className="flex items-center gap-4">
-                 <div className="relative w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.05) ${fngValue}% 100%)`, boxShadow: `0 0 20px ${fngColor}30` }}>
-                   <div className="absolute inset-[3px] rounded-full bg-[#16181c] flex items-center justify-center">
-                     <span className="text-lg font-black font-mono text-white">{fngValue}</span>
-                   </div>
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.2} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(16,185,129,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#10b981] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#10b981] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Global Market Cap</div>
+                 <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
+                   <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
                  </div>
-                 <div>
-                   <div className="text-lg font-bold" style={{ color: fngColor }}>{fngLabel}</div>
-                   <div className="text-xs text-gray-400 mt-1 font-medium">Market Sentiment</div>
-                 </div>
+                 <div className="text-sm text-gray-400 mt-2 font-medium">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
                </div>
-             ) : (
-               <div className="text-3xl font-black text-gray-600">—</div>
-             )}
-          </FadeIn>
+            </FadeIn>
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.3} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(59,130,246,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#3b82f6] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3b82f6] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">24h Volume</div>
+                 <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
+                   <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
+                 </div>
+                 <div className="text-sm text-gray-400 mt-2 font-medium">Across all markets</div>
+               </div>
+            </FadeIn>
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.4} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(245,158,11,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#f59e0b] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#f59e0b] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Dominance</div>
+                 <div className="flex items-end gap-2">
+                   <div className="text-3xl md:text-4xl font-black font-mono text-orange-400 tracking-tighter">{btcDom}%</div>
+                   <div className="text-sm font-bold text-gray-500 mb-1">BTC</div>
+                 </div>
+                 <div className="text-sm text-gray-400 mt-2 font-medium">ETH: <span className="text-white font-mono">{ethDom}%</span></div>
+               </div>
+            </FadeIn>
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.5} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(139,92,246,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#8b5cf6] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#8b5cf6] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Fear & Greed</div>
+                 {fngValue !== null ? (
+                   <div className="flex items-center gap-4">
+                     <div className="relative w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.05) ${fngValue}% 100%)`, boxShadow: `0 0 20px ${fngColor}30` }}>
+                       <div className="absolute inset-[3px] rounded-full bg-[#16181c] flex items-center justify-center">
+                         <span className="text-lg font-black font-mono text-white">{fngValue}</span>
+                       </div>
+                     </div>
+                     <div>
+                       <div className="text-lg font-bold" style={{ color: fngColor }}>{fngLabel}</div>
+                       <div className="text-xs text-gray-400 mt-1 font-medium">Market Sentiment</div>
+                     </div>
+                   </div>
+                 ) : (
+                   <div className="text-3xl font-black text-gray-600">—</div>
+                 )}
+               </div>
+            </FadeIn>
+          </motion.div>
         </div>
 
         {/* MAIN TWO-COLUMN LAYOUT */}
