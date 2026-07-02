@@ -35,3 +35,4 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 ---
 **Tasarım Notu:** Yeni eklenecek tüm özelliklerde g-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl cam efekti ve Framer Motion geçişleri kullanılması zorunludur.
+- [ ] Onboarding wizard will be developed/improved further in the future.

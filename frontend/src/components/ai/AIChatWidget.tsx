@@ -130,16 +130,11 @@ export default function AIChatWidget() {
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
     } catch (err: any) {
-      // Fake response to simulate working widget on Hetzner during migration
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: `I'm currently running in demo mode while our Hetzner servers are synchronizing. But answering your question: "${msg}" - Currently the market metrics are stable, and whale activity is normal.`,
-          isError: false,
-        }]);
-        setIsLoading(false);
-      }, 1000);
-      return;
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'I am unable to reach the AI servers at the moment. Please ensure the Hetzner backend is running and reachable.',
+        isError: true,
+      }]);
     } 
     setIsLoading(false);
   };

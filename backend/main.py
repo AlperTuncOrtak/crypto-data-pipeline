@@ -595,10 +595,22 @@ def ai_chat(payload: dict):
 
     def try_gemini():
         from google import genai
+        from google.genai import types
 
-        full_ctx = system_prompt + "\n\nUser: " + message
+        contents = []
+        for h in recent_history:
+            role = "user" if h["role"] == "user" else "model"
+            contents.append(types.Content(role=role, parts=[types.Part.from_text(h["content"])]))
+        contents.append(types.Content(role="user", parts=[types.Part.from_text(message)]))
+
         client = genai.Client(api_key=GEMINI_KEY)
-        resp = client.models.generate_content(model="gemini-2.0-flash", contents=full_ctx)
+        resp = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt
+            )
+        )
         return resp.text.strip()
 
     reply = None
