@@ -142,7 +142,17 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
   );
 
   return (
-    <div className="max-w-[1320px] mx-auto px-8 py-10 font-sans text-white min-h-screen">
+    <div className="relative min-h-screen bg-[#0d0d0f] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
+      {/* ── CINEMATIC GLOW BACKGROUND ── */}
+      <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
+        <div 
+          className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.25] mix-blend-screen transition-colors duration-1000"
+          style={{ background: "radial-gradient(ellipse at top, var(--accent), transparent 70%)" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
+      </div>
+
+      <div className="max-w-[1320px] mx-auto relative z-20">
       {/* HEADER */}
       <FadeIn>
         <div className="flex items-end justify-between mb-8">
@@ -170,17 +180,17 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
       {/* MAIN TABLE BENTO BOX */}
       <FadeIn delay={0.2}>
-        <div className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
+        <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden">
           
           {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-white/5 bg-black/20">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-white/5 bg-white/[0.02]">
             <div className="relative w-[300px]">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               <input
                 value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t("market.search_placeholder")}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 text-sm font-medium text-white placeholder-gray-500 outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                className="w-full bg-[#111113] border border-white/10 rounded-xl py-2 pl-9 pr-4 text-[13px] font-medium text-white placeholder-white/30 outline-none focus:border-[var(--accent)] transition-all"
               />
             </div>
             <Pagination />
@@ -328,6 +338,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
           )}
         </div>
       </FadeIn>
+      </div>
     </div>
   );
 }

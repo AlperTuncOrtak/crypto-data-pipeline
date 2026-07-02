@@ -143,13 +143,15 @@ function Tooltip({ coin, pos }) {
         left,
         top,
         zIndex: 9999,
-        background: "#1a1a1a",
+        background: "rgba(25, 25, 28, 0.8)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
         border: `1px solid ${colors.border}`,
-        borderRadius: 12,
-        padding: "12px 14px",
+        borderRadius: "1.2rem",
+        padding: "16px",
         pointerEvents: "none",
         width: TW,
-        boxShadow: `0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px ${colors.border}33`,
+        boxShadow: `0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px ${colors.border}44`,
       }}
     >
       {/* Header: logo + isim */}
@@ -450,16 +452,16 @@ export default function Heatmap() {
                 key={l}
                 onClick={() => setLimit(l)}
                 style={{
-                  padding: "5px 12px",
-                  borderRadius: 6,
-                  border: `1px solid ${limit === l ? "var(--accent)" : "var(--border)"}`,
-                  background:
-                    limit === l ? "var(--accent-soft)" : "var(--bg-surface)",
-                  color: limit === l ? "var(--accent)" : "var(--text-muted)",
+                  padding: "6px 14px",
+                  borderRadius: 8,
+                  border: `1px solid ${limit === l ? "var(--accent)" : "rgba(255,255,255,0.05)"}`,
+                  background: limit === l ? "var(--accent)" : "rgba(255,255,255,0.02)",
+                  color: limit === l ? "#111" : "rgba(255,255,255,0.6)",
                   fontSize: 12,
-                  fontWeight: limit === l ? 600 : 400,
+                  fontWeight: 700,
                   cursor: "pointer",
-                  transition: "all 0.15s",
+                  transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                  boxShadow: limit === l ? "0 0 15px var(--accent-soft)" : "none",
                 }}
               >
                 {t("heatmap.top", { count: l })}
@@ -527,10 +529,12 @@ export default function Heatmap() {
           position: "relative",
           width: "100%",
           paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%`,
-          backgroundColor: "var(--border-soft)",
-          border: "1px solid var(--border)",
+          backgroundColor: "rgba(25, 25, 28, 0.5)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.05)",
           borderRadius: 24,
           overflow: "hidden",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
         }}
       >
         <div
