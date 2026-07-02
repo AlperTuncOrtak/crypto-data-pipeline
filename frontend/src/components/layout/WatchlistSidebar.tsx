@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
+import WatchlistPanel from "./WatchlistPanel";
+
 import { supabase } from "../../lib/supabase";
 import {
   X,
@@ -36,7 +38,7 @@ const SORT_OPTIONS = [
 ];
 
 // ── Mini Sparkline ────────────────────────────────────────────
-function Sparkline({ symbol }) {
+function OldSparkline({ symbol }) {
   const { data: market } = useMarket(500);
   const coin = market?.find((c) => c.symbol === symbol);
   // Recharts yerine basit SVG sparkline — daha hızlı
@@ -72,7 +74,7 @@ function Sparkline({ symbol }) {
 }
 
 // ── Watchlist Panel ───────────────────────────────────────────
-function WatchlistPanel({
+function OldWatchlistPanel({
   watchlist,
   removeFromWatchlist,
   marketData,
