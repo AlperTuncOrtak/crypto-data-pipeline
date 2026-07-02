@@ -154,7 +154,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="w-full max-w-2xl bg-[#0d0d0d] border border-[#242728] rounded-xl shadow-2xl overflow-hidden flex flex-col pointer-events-auto"
+              className="w-full max-w-2xl bg-[#0d0d0d] border border-[#242728] rounded-[24px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto"
               style={{ fontFamily: "Inter, sans-serif" }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -232,7 +232,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                         >
                           <div className="flex items-center gap-3">
                             {item.image_url ? (
-                              <img src={item.image_url} alt={item.name} className="w-6 h-6 rounded-full border border-white/5" />
+                              <img src={item.image_url} alt={item.name} className="w-6 h-6 rounded-full border border-[#273951]/50" />
                             ) : (
                               <div className="w-6 h-6 rounded-full bg-[#121212] border border-[#242728] flex items-center justify-center text-[10px] text-zinc-400">
                                 {item.symbol?.charAt(0)}
@@ -298,3 +298,4 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
     </AnimatePresence>
   );
 }
+

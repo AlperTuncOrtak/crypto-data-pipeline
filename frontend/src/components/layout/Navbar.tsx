@@ -260,7 +260,7 @@ function NavItem({ item, isActive }) {
             top: "calc(100% + 8px)",
             left: 0,
             zIndex: 1000,
-            borderRadius: 12,
+            borderRadius: 16,
             overflow: "hidden",
             minWidth: 272,
             background: "rgba(5, 5, 5, 0.85)",
@@ -758,7 +758,7 @@ export default function Navbar({
                     position: "absolute",
                     top: "calc(100% + 8px)",
                     right: 0,
-                    background: "rgba(10,10,12,0.95)",
+                    background: "#16181c",
                     backdropFilter: "blur(20px)",
                     border: "1px solid var(--border)",
                     borderRadius: 14,
@@ -882,10 +882,10 @@ export default function Navbar({
                     position: "absolute",
                     top: "calc(100% + 8px)",
                     right: 0,
-                    background: "rgba(10,10,12,0.95)",
+                    background: "#16181c",
                     backdropFilter: "blur(20px)",
                     border: "1px solid var(--border)",
-                    borderRadius: 12,
+                    borderRadius: 16,
                     boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
                     minWidth: 120,
                     overflow: "hidden",
@@ -1073,7 +1073,7 @@ export default function Navbar({
                       background: "rgba(10,10,12,0.96)",
                       backdropFilter: "blur(24px)",
                       border: "1px solid var(--border)",
-                      borderRadius: 16,
+                      borderRadius: 24,
                       boxShadow:
                         "0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 var(--border)",
                       overflow: "hidden",
@@ -1543,7 +1543,7 @@ export default function Navbar({
               right: 0,
               width: "min(320px, 90vw)",
               height: "100vh",
-              background: "var(--bg-elevated)",
+              background: "#16181c",
               borderLeft: "1px solid var(--border)",
               boxShadow: "-20px 0 60px rgba(0,0,0,0.6)",
               display: "flex",
@@ -1583,7 +1583,7 @@ export default function Navbar({
                         alignItems: "center",
                         gap: 12,
                         padding: "12px 14px",
-                        borderRadius: 12,
+                        borderRadius: 16,
                         cursor: "pointer",
                         background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
                         color: isActive ? "#fff" : "var(--text-secondary)",
@@ -1656,4 +1656,5 @@ export default function Navbar({
     </>
   );
 }
+
 
