@@ -337,17 +337,17 @@ export default function Landing() {
             <div className="relative z-10 flex-1 mb-8 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors shadow-2xl flex items-center justify-center p-8">
                <div className="relative w-full h-full min-h-[160px] flex items-center justify-center gap-6">
                  {/* Orb 1 */}
-                 <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(225,29,72,0.4)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #e11d48dd, #e11d4844, rgba(0,0,0,0.8))" }}>
+                 <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0 }} className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(225,29,72,0.4)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #e11d48dd, #e11d4844, rgba(0,0,0,0.8))" }}>
                    <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                    <span className="text-white font-black text-xs">Memecoins</span>
                  </motion.div>
                  {/* Orb 2 */}
-                 <div className="w-32 h-32 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_40px_rgba(124,58,237,0.5)] relative -mt-8" style={{ background: "radial-gradient(circle at 30% 30%, #7c3aeddd, #7c3aed44, rgba(0,0,0,0.8))" }}>
+                 <motion.div animate={{ y: [0, -15, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }} className="w-32 h-32 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_40px_rgba(124,58,237,0.5)] relative -mt-8" style={{ background: "radial-gradient(circle at 30% 30%, #7c3aeddd, #7c3aed44, rgba(0,0,0,0.8))" }}>
                    <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                    <span className="text-white font-black text-sm">AI</span>
                  </motion.div>
                  {/* Orb 3 */}
-                 <div className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #10b981dd, #10b98144, rgba(0,0,0,0.8))" }}>
+                 <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 1 }} className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #10b981dd, #10b98144, rgba(0,0,0,0.8))" }}>
                    <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                    <span className="text-white font-black text-[10px]">RWA</span>
                  </motion.div>
@@ -389,22 +389,7 @@ export default function Landing() {
         </FadeIn>
       </main>
 
-      {/* ── FOOTER ── */}
-      <footer className="border-t border-white/5 bg-[#0d0d0f] py-12 px-6 lg:px-12 relative z-10">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center text-black font-black text-xs">C</div>
-            <span className="font-bold text-sm text-gray-300">CryptoNeko</span>
-          </div>
-          <div className="text-sm text-gray-500 font-medium">
-            © {new Date().getFullYear()} CryptoNeko. All rights reserved.
-          </div>
-          <div className="flex gap-6">
-            <Link to="/terms" className="text-sm text-gray-500 hover:text-white transition-colors">Terms</Link>
-            <Link to="/privacy" className="text-sm text-gray-500 hover:text-white transition-colors">Privacy</Link>
-          </div>
-        </div>
-      </footer>
+      
 
     </div>
   );
