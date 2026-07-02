@@ -208,9 +208,9 @@ export default function Dashboard() {
             <p className="text-gray-400 font-medium text-sm md:text-base">Real-time algorithmic data and sentiment.</p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/10 border border-green-500/20">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-xs font-bold tracking-widest text-green-400 uppercase">Live Connect</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/5 border border-green-500/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+              <span className="text-[10px] font-bold tracking-widest text-green-400/80 uppercase">Live</span>
             </div>
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("/analysis/ai")} className="px-5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-2 text-sm font-bold shadow-xl">
               <Brain size={16} className="text-[var(--accent)]" /> AI Signals
