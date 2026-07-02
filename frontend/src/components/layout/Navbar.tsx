@@ -76,6 +76,13 @@ const NAV_ITEMS = [
         soon: false,
       },
       {
+        to: "/narratives",
+        label: "AI Narratives",
+        Icon: Brain,
+        desc: "Live Market Hype Map",
+        soon: false,
+      },
+      {
         to: "#",
         label: "Categories",
         Icon: Network,
