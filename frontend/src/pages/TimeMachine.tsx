@@ -42,7 +42,7 @@ export default function TimeMachine() {
   }, [monthsAgo, selectedCoin, investment]);
 
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-white pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0a0b0d] text-white pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
       
       {/* Background Cinematic Glow */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
@@ -56,7 +56,7 @@ export default function TimeMachine() {
           transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
           className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] mix-blend-screen"
         />
-        <div className="absolute inset-0 bg-[#0d0d0f]/50 backdrop-blur-[40px] z-10"></div>
+        <div className="absolute inset-0 bg-[#0a0b0d]/50 backdrop-blur-[40px] z-10"></div>
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">
@@ -66,7 +66,7 @@ export default function TimeMachine() {
           <motion.div 
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+            className="w-16 h-16 rounded-[32px] bg-white/5 border border-[#273951]/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)]"
           >
             <History className="text-white" size={32} />
           </motion.div>
@@ -92,9 +92,9 @@ export default function TimeMachine() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-[2rem] bg-[#19191c]/80 backdrop-blur-2xl border border-white/10 p-8 mb-12 shadow-2xl relative z-20 group"
+          className="rounded-[32px] bg-[#16181c]/80 backdrop-blur-2xl border border-[#273951]/50 p-8 mb-12 shadow-2xl relative z-20 group"
         >
-           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-[2rem] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-[32px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
              
@@ -123,7 +123,7 @@ export default function TimeMachine() {
                    type="number" 
                    value={investment}
                    onChange={e => setInvestment(Number(e.target.value))}
-                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-8 pr-4 text-white font-mono outline-none focus:border-purple-500/50 transition-colors"
+                   className="w-full bg-black/40 border border-[#273951]/50 rounded-xl py-3 pl-8 pr-4 text-white font-mono outline-none focus:border-purple-500/50 transition-colors"
                  />
                </div>
              </div>
@@ -159,7 +159,7 @@ export default function TimeMachine() {
           {/* Main ROI Card */}
           <motion.div 
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="md:col-span-2 rounded-[2rem] bg-[#19191c]/60 backdrop-blur-xl border border-white/5 p-8 relative overflow-hidden group min-h-[300px] flex flex-col justify-center"
+            className="md:col-span-2 rounded-[32px] bg-[#16181c]/60 backdrop-blur-xl border border-[#273951]/50 p-8 relative overflow-hidden group min-h-[300px] flex flex-col justify-center"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-500"></div>
             
@@ -206,7 +206,7 @@ export default function TimeMachine() {
           {/* AI Hindsight Card */}
           <motion.div 
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="rounded-[2rem] bg-[#19191c]/60 backdrop-blur-xl border border-white/5 p-8 relative overflow-hidden group flex flex-col"
+            className="rounded-[32px] bg-[#16181c]/60 backdrop-blur-xl border border-[#273951]/50 p-8 relative overflow-hidden group flex flex-col"
           >
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none group-hover:from-blue-500/10 transition-colors duration-500"></div>
             
@@ -242,3 +242,4 @@ export default function TimeMachine() {
     </div>
   );
 }
+

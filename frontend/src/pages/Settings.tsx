@@ -30,9 +30,9 @@ function Section({ title, icon: Icon, children }: any) {
   return (
     <motion.div 
       variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} 
-      className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden mb-6"
+      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden mb-6"
     >
-      <div className="flex items-center gap-2.5 px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+      <div className="flex items-center gap-2.5 px-6 py-4 border-b border-[#273951]/50 bg-white/[0.02]">
         <Icon size={15} style={{ color: "var(--accent)" }} />
         <span className="text-[13px] font-bold text-white/70 uppercase tracking-[0.06em]">
           {title}
@@ -70,7 +70,7 @@ function Input({ value, onChange, placeholder, type = "text", disabled, readOnly
         className={`w-full px-4 py-2.5 rounded-xl border text-[13px] outline-none transition-colors ${
           readOnly || disabled 
             ? "bg-white/5 border-transparent text-white/40 cursor-not-allowed" 
-            : "bg-[#111113] border-white/10 text-white focus:border-[var(--accent)]"
+            : "bg-[#111113] border-[#273951]/50 text-white focus:border-[var(--accent)]"
         }`}
         style={{ paddingRight: isPassword || suffix ? 44 : 16 }}
       />
@@ -289,7 +289,7 @@ export default function Settings() {
 
   // ── Render ───────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen bg-[#0d0d0f] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
       {/* ── CINEMATIC GLOW BACKGROUND ── */}
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
         <div 
@@ -327,7 +327,7 @@ export default function Settings() {
                 }
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#19191c] border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors shadow-lg"
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#16181c] border border-[#273951]/50 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors shadow-lg"
                 >
                   {avatarLoading ? <Loader size={12} className="animate-spin text-[var(--accent)]" /> : <Camera size={12} className="text-[var(--accent)]" />}
                 </button>
@@ -339,7 +339,7 @@ export default function Settings() {
                 <div className={`mt-2 flex items-center gap-1.5 px-2.5 py-1 rounded-md w-fit border text-[11px] font-bold ${
                   isPro || isEnterprise 
                     ? "bg-[var(--accent-soft)] border-[var(--accent)]/30 text-[var(--accent)]" 
-                    : "bg-white/5 border-white/10 text-white/50"
+                    : "bg-white/5 border-[#273951]/50 text-white/50"
                 }`}>
                   <Crown size={12} />
                   {t("settings.plan_active", { plan: isEnterprise ? "Enterprise" : isPro ? "Pro" : "Free" })}
@@ -399,7 +399,7 @@ export default function Settings() {
                   className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl whitespace-nowrap text-xs font-bold transition-colors border shrink-0 ${
                     passSent 
                       ? "bg-green-500/10 border-green-500/30 text-green-500 cursor-default" 
-                      : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white cursor-pointer"
+                      : "bg-white/5 border-[#273951]/50 text-white/70 hover:bg-white/10 hover:text-white cursor-pointer"
                   }`}
                 >
                   {passLoading ? <Loader size={12} className="animate-spin" /> : passSent ? <CheckCircle size={12} /> : null}
@@ -408,7 +408,7 @@ export default function Settings() {
               </div>
             </Field>
 
-            <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between mt-2">
+            <div className="p-3.5 rounded-xl bg-white/[0.03] border border-[#273951]/50 flex items-center justify-between mt-2">
               <div>
                 <div className="text-[13px] font-bold text-white/80 mb-1">{t("settings.2fa")}</div>
                 <div className="text-[11px] font-medium text-white/40">{t("settings.2fa_desc")}</div>
@@ -435,13 +435,13 @@ export default function Settings() {
                   <button
                     onClick={handlePhoneSend}
                     disabled={phoneLoading}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl whitespace-nowrap bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white text-xs font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl whitespace-nowrap bg-white/5 border border-[#273951]/50 text-white/70 hover:bg-white/10 hover:text-white text-xs font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                   >
                     {phoneLoading && <Loader size={12} className="animate-spin" />}
                     {user?.phone ? t("settings.update") : t("settings.add_phone")}
                   </button>
                 ) : (
-                  <button onClick={() => setOtpSent(false)} className="px-4 py-2.5 rounded-xl bg-transparent border border-white/10 text-white/50 hover:text-white text-xs font-bold transition-colors cursor-pointer shrink-0">
+                  <button onClick={() => setOtpSent(false)} className="px-4 py-2.5 rounded-xl bg-transparent border border-[#273951]/50 text-white/50 hover:text-white text-xs font-bold transition-colors cursor-pointer shrink-0">
                     {t("settings.cancel")}
                   </button>
                 )}
@@ -487,7 +487,7 @@ export default function Settings() {
               ].map(({ key, label, desc }, i, arr) => (
                 <div
                   key={key}
-                  className={`flex items-center justify-between py-4 ${i < arr.length - 1 ? "border-b border-white/5" : ""}`}
+                  className={`flex items-center justify-between py-4 ${i < arr.length - 1 ? "border-b border-[#273951]/50" : ""}`}
                 >
                   <div>
                     <div className="text-[13px] font-bold text-white/80 mb-1">{label}</div>
@@ -551,8 +551,8 @@ export default function Settings() {
                   {/* Midnight Mode Card */}
                   <button
                     onClick={() => setTheme('midnight')}
-                    className={`p-4 rounded-2xl text-left transition-all duration-200 border-2 ${
-                      theme === 'midnight' ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[0_0_15px_var(--accent-soft)]" : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
+                    className={`p-4 rounded-[32px] text-left transition-all duration-200 border-2 ${
+                      theme === 'midnight' ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[0_0_15px_var(--accent-soft)]" : "border-[#273951]/50 bg-white/[0.02] hover:bg-white/[0.04]"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -562,8 +562,8 @@ export default function Settings() {
                       </div>
                       {theme === 'midnight' && <CheckCircle size={14} className="text-[var(--accent)]" />}
                     </div>
-                    <div className="rounded-lg overflow-hidden border border-white/5">
-                      <div className="bg-[#000000] h-2 border-b border-white/5" />
+                    <div className="rounded-lg overflow-hidden border border-[#273951]/50">
+                      <div className="bg-[#000000] h-2 border-b border-[#273951]/50" />
                       <div className="bg-[#0C0C0E] h-8 flex items-center gap-1.5 px-2">
                         <div className="h-1.5 rounded-full bg-[var(--accent)] w-3" />
                         <div className="h-1.5 rounded-full bg-white/10 w-5" />
@@ -574,8 +574,8 @@ export default function Settings() {
                   {/* Dark Mode Card */}
                   <button
                     onClick={() => setTheme('dark')}
-                    className={`p-4 rounded-2xl text-left transition-all duration-200 border-2 ${
-                      theme === 'dark' ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[0_0_15px_var(--accent-soft)]" : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
+                    className={`p-4 rounded-[32px] text-left transition-all duration-200 border-2 ${
+                      theme === 'dark' ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[0_0_15px_var(--accent-soft)]" : "border-[#273951]/50 bg-white/[0.02] hover:bg-white/[0.04]"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -585,8 +585,8 @@ export default function Settings() {
                       </div>
                       {theme === 'dark' && <CheckCircle size={14} className="text-[var(--accent)]" />}
                     </div>
-                    <div className="rounded-lg overflow-hidden border border-white/10">
-                      <div className="bg-[#111113] h-2 border-b border-white/5" />
+                    <div className="rounded-lg overflow-hidden border border-[#273951]/50">
+                      <div className="bg-[#111113] h-2 border-b border-[#273951]/50" />
                       <div className="bg-[#18181b] h-8 flex items-center gap-1.5 px-2">
                         <div className="h-1.5 rounded-full bg-[var(--accent)] w-3" />
                         <div className="h-1.5 rounded-full bg-white/10 w-5" />
@@ -597,8 +597,8 @@ export default function Settings() {
                   {/* Light Mode Card */}
                   <button
                     onClick={() => setTheme('light')}
-                    className={`p-4 rounded-2xl text-left transition-all duration-200 border-2 ${
-                      theme === 'light' ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[0_0_15px_var(--accent-soft)]" : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
+                    className={`p-4 rounded-[32px] text-left transition-all duration-200 border-2 ${
+                      theme === 'light' ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[0_0_15px_var(--accent-soft)]" : "border-[#273951]/50 bg-white/[0.02] hover:bg-white/[0.04]"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">

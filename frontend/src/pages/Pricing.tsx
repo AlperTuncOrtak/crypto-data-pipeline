@@ -81,7 +81,7 @@ const PLANS = [
 const PricingSwitch = ({ isYearly, onSwitch }: { isYearly: boolean, onSwitch: (val: boolean) => void }) => {
   return (
     <div className="flex justify-center">
-      <div className="relative z-10 mx-auto flex w-fit rounded-full bg-black/60 backdrop-blur-xl border border-white/10 p-1.5 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+      <div className="relative z-10 mx-auto flex w-fit rounded-full bg-black/60 backdrop-blur-xl border border-[#273951]/50 p-1.5 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
         <button
           onClick={() => onSwitch(false)}
           className={cn(
@@ -141,7 +141,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0d0d0f] text-white overflow-x-hidden pt-24 pb-32" ref={pricingRef}>
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white overflow-x-hidden pt-24 pb-32" ref={pricingRef}>
       
       {/* ── CINEMATIC GLOW BACKGROUND ── */}
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
@@ -205,8 +205,8 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
             return (
               <TimelineContent key={plan.id} as="div" animationNum={3 + index} timelineRef={pricingRef} customVariants={revealVariants}>
                 <div className={cn(
-                  "relative overflow-hidden rounded-[2.5rem] bg-[#19191c]/80 backdrop-blur-xl border p-8 flex flex-col h-full group transition-all duration-700",
-                  isPrimary ? "border-[var(--accent)] shadow-[0_0_80px_-20px_var(--accent)]" : "border-white/5 hover:border-white/20 shadow-2xl hover:shadow-[0_0_50px_rgba(255,255,255,0.05)]"
+                  "relative overflow-hidden rounded-[2.5rem] bg-[#16181c]/80 backdrop-blur-xl border p-8 flex flex-col h-full group transition-all duration-700",
+                  isPrimary ? "border-[var(--accent)] shadow-[0_0_80px_-20px_var(--accent)]" : "border-[#273951]/50 hover:border-white/20 shadow-2xl hover:shadow-[0_0_50px_rgba(255,255,255,0.05)]"
                 )}>
                   {/* Subtle hover gradient */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -220,7 +220,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
 
                   {/* Card Header */}
                   <div className="flex items-center gap-4 mb-8 mt-4">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center border shadow-inner" style={{ backgroundColor: `${plan.accent}15`, borderColor: `${plan.accent}30` }}>
+                    <div className="w-14 h-14 rounded-[32px] flex items-center justify-center border shadow-inner" style={{ backgroundColor: `${plan.accent}15`, borderColor: `${plan.accent}30` }}>
                       <Icon size={26} style={{ color: plan.accent }} />
                     </div>
                     <div>
@@ -257,8 +257,8 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
                   <button
                     disabled={currentPlan === plan.id}
                     className={cn(
-                      "w-full py-4 rounded-2xl font-black text-xs tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 mb-10",
-                      currentPlan === plan.id ? "bg-white/5 text-gray-500 cursor-not-allowed border border-white/5" :
+                      "w-full py-4 rounded-[32px] font-black text-xs tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 mb-10",
+                      currentPlan === plan.id ? "bg-white/5 text-gray-500 cursor-not-allowed border border-[#273951]/50" :
                       isPrimary ? "bg-[var(--accent)] hover:bg-[#6f42c1] text-white shadow-[0_0_30px_-10px_var(--accent)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-[1.02]" :
                       "bg-white text-black hover:bg-gray-200 hover:scale-[1.02] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                     )}
@@ -269,7 +269,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
 
                   {/* Features List */}
                   <div className="space-y-4">
-                    <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-white/5 pb-3">Includes</div>
+                    <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-[#273951]/50 pb-3">Includes</div>
                     {plan.features.map((f, i) => (
                       <div key={i} className="flex items-start gap-3">
                         {f.included ? (
@@ -350,13 +350,13 @@ function ComparisonMatrix() {
   };
 
   return (
-    <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
-      <div className="p-10 border-b border-white/5 text-center bg-black/20">
+    <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-[2.5rem] overflow-hidden shadow-2xl">
+      <div className="p-10 border-b border-[#273951]/50 text-center bg-black/20">
         <h3 className="text-3xl font-black text-white tracking-tight drop-shadow-md">{t("pricing.matrix.title")}</h3>
         <p className="text-gray-400 text-sm mt-3 font-medium">Detailed feature breakdown</p>
       </div>
       
-      <div className="grid grid-cols-[3fr_1fr_1fr_1fr] p-6 border-b border-white/5 bg-black/40 text-[11px] font-black uppercase tracking-widest text-gray-500">
+      <div className="grid grid-cols-[3fr_1fr_1fr_1fr] p-6 border-b border-[#273951]/50 bg-black/40 text-[11px] font-black uppercase tracking-widest text-gray-500">
         <div>Feature</div>
         <div className="text-center">Free</div>
         <div className="text-center text-[var(--accent)]">Pro</div>
@@ -365,11 +365,11 @@ function ComparisonMatrix() {
 
       {categories.map((cat, catIdx) => (
         <div key={catIdx}>
-          <div className="bg-white/[0.02] px-8 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-white/5">
+          <div className="bg-white/[0.02] px-8 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-[#273951]/50">
             {cat.title}
           </div>
           {cat.items.map((item, itemIdx) => (
-            <div key={itemIdx} className="grid grid-cols-[3fr_1fr_1fr_1fr] px-8 py-5 border-b border-white/5 text-sm items-center hover:bg-white/[0.03] transition-colors">
+            <div key={itemIdx} className="grid grid-cols-[3fr_1fr_1fr_1fr] px-8 py-5 border-b border-[#273951]/50 text-sm items-center hover:bg-white/[0.03] transition-colors">
               <div className="text-gray-300 font-bold">{item.name}</div>
               <div className="flex justify-center">{renderVal(item.free)}</div>
               <div className="flex justify-center">{renderVal(item.pro, true)}</div>
@@ -381,3 +381,4 @@ function ComparisonMatrix() {
     </div>
   );
 }
+

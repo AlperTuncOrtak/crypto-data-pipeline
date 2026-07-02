@@ -73,7 +73,7 @@ function fmtChartTime(iso: any, range: string) {
 function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#19191c]/90 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-3 shadow-2xl">
+    <div className="bg-[#16181c]/90 backdrop-blur-xl border border-[#273951]/50 rounded-xl px-4 py-3 shadow-2xl">
       <div className="text-xs text-gray-400 mb-1 font-medium">
         {payload[0]?.payload?.time ? new Date(payload[0].payload.time).toLocaleString() : ""}
       </div>
@@ -86,7 +86,7 @@ function ChartTooltip({ active, payload }: any) {
 
 function StatRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
   return (
-    <div className="flex justify-between items-center py-3 border-b border-white/5 last:border-0">
+    <div className="flex justify-between items-center py-3 border-b border-[#273951]/50 last:border-0">
       <span className="text-sm text-gray-400 font-medium">{label}</span>
       <span className="text-sm font-bold font-mono" style={{ color: valueColor || "var(--text-primary)" }}>{value}</span>
     </div>
@@ -146,7 +146,7 @@ export default function CoinDetail() {
     <div className="flex flex-col items-center justify-center min-h-[500px] gap-5">
       <div className="text-6xl drop-shadow-2xl">🔍</div>
       <div className="text-2xl font-black text-white tracking-tight">Coin not found</div>
-      <button onClick={() => navigate("/market")} className="px-6 py-2.5 rounded-full border border-white/10 bg-white/5 text-white font-bold hover:bg-white/10 transition-colors shadow-lg">
+      <button onClick={() => navigate("/market")} className="px-6 py-2.5 rounded-full border border-[#273951]/50 bg-white/5 text-white font-bold hover:bg-white/10 transition-colors shadow-lg">
         ← Back to Markets
       </button>
     </div>
@@ -217,7 +217,7 @@ export default function CoinDetail() {
               <div className="absolute inset-0 blur-xl opacity-40 rounded-full" style={{ background: brandColor }}></div>
               {coin.image_url
                 ? <img src={coin.image_url} alt={coin.name} className="relative w-24 h-24 rounded-full shadow-2xl ring-4 ring-white/5 object-cover" onError={(e: any) => (e.target.style.display = "none")} />
-                : <div className="relative w-24 h-24 rounded-full bg-[#19191c] ring-4 ring-white/5 flex items-center justify-center text-4xl font-black shadow-2xl" style={{ color: brandColor }}>{coin.symbol?.slice(0, 2)}</div>
+                : <div className="relative w-24 h-24 rounded-full bg-[#16181c] ring-4 ring-white/5 flex items-center justify-center text-4xl font-black shadow-2xl" style={{ color: brandColor }}>{coin.symbol?.slice(0, 2)}</div>
               }
             </div>
             
@@ -225,7 +225,7 @@ export default function CoinDetail() {
               <div className="flex items-center gap-4 flex-wrap mb-2">
                 <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white m-0 drop-shadow-lg">{coin.name}</h1>
                 {coin.market_cap_rank && (
-                  <span className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-gray-200 shadow-sm backdrop-blur-md">
+                  <span className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 border border-[#273951]/50 text-gray-200 shadow-sm backdrop-blur-md">
                     Rank #{coin.market_cap_rank}
                   </span>
                 )}
@@ -251,7 +251,7 @@ export default function CoinDetail() {
                 {isPositive ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
                 {fmtPct(change)}
               </div>
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-2 rounded-xl border border-white/5">24H Range</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-2 rounded-xl border border-[#273951]/50">24H Range</span>
             </div>
             
             {athPct !== null && (
@@ -272,18 +272,18 @@ export default function CoinDetail() {
           <div className="flex flex-col gap-6">
 
             {/* CHART CARD */}
-            <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl relative group">
+            <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl relative group">
               <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0"></div>
               
               {/* Chart toolbar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-6 border-b border-white/5 relative z-10 bg-black/20">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-6 border-b border-[#273951]/50 relative z-10 bg-black/20">
                 <span className="text-xl font-black text-white tracking-tight flex items-center gap-2">
                   <LineChart size={24} className="text-[var(--accent)]" /> Price Action
                 </span>
                 
                 <div className="flex flex-wrap items-center gap-4">
                   {/* Time range */}
-                  <div className="flex gap-1 bg-black/40 p-1.5 rounded-xl border border-white/5 shadow-inner">
+                  <div className="flex gap-1 bg-black/40 p-1.5 rounded-xl border border-[#273951]/50 shadow-inner">
                     {RANGES.map(r => (
                       <button key={r.value} onClick={() => setRange(r.value)} className={`
                         px-4 py-1.5 rounded-lg text-xs font-bold transition-all
@@ -295,7 +295,7 @@ export default function CoinDetail() {
                   </div>
 
                   {/* Chart type */}
-                  <div className="flex gap-1 bg-black/40 p-1.5 rounded-xl border border-white/5 shadow-inner">
+                  <div className="flex gap-1 bg-black/40 p-1.5 rounded-xl border border-[#273951]/50 shadow-inner">
                     <button onClick={() => setChartType("simple")} className={`
                       flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all
                       ${chartType === "simple" ? 'bg-white/10 text-white shadow-md' : 'text-gray-500 hover:text-gray-300'}
@@ -359,9 +359,9 @@ export default function CoinDetail() {
             </motion.div>
 
             {/* PRO ANALYTICS */}
-            <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl relative">
+            <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl relative">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
-              <div className="p-5 md:p-6 border-b border-white/5 bg-black/20">
+              <div className="p-5 md:p-6 border-b border-[#273951]/50 bg-black/20">
                 <span className="text-xl font-black text-white tracking-tight flex items-center gap-3">
                   <Brain size={24} className="text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]" /> Pro Analytics
                 </span>
@@ -374,9 +374,9 @@ export default function CoinDetail() {
                     <AIPulse slug={slug} />
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-center bg-white/[0.02] rounded-2xl border border-white/5 relative overflow-hidden group">
+                  <div className="flex flex-col items-center justify-center py-16 text-center bg-white/[0.02] rounded-[32px] border border-[#273951]/50 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-20 h-20 rounded-full bg-black/60 border border-white/10 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(168,85,247,0.15)] relative overflow-hidden">
+                    <div className="w-20 h-20 rounded-full bg-black/60 border border-[#273951]/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(168,85,247,0.15)] relative overflow-hidden">
                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent"></div>
                        <Lock size={32} className="text-purple-400 relative z-10" />
                     </div>
@@ -394,13 +394,13 @@ export default function CoinDetail() {
 
             {/* TOKENOMICS & NEWS GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                  <div className="p-5 border-b border-white/5 bg-black/20"><span className="text-lg font-black text-white">Tokenomics</span></div>
+               <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+                  <div className="p-5 border-b border-[#273951]/50 bg-black/20"><span className="text-lg font-black text-white">Tokenomics</span></div>
                   <div className="p-6 flex-1"><TokenomicsWidget coin={coin} /></div>
                </motion.div>
 
-               <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                  <div className="p-5 border-b border-white/5 bg-black/20"><span className="text-lg font-black text-white">Latest News</span></div>
+               <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+                  <div className="p-5 border-b border-[#273951]/50 bg-black/20"><span className="text-lg font-black text-white">Latest News</span></div>
                   <div className="p-6 flex-1"><CryptoNews symbol={coin.symbol} /></div>
                </motion.div>
             </div>
@@ -411,8 +411,8 @@ export default function CoinDetail() {
           <div className="flex flex-col gap-6">
 
             {/* Market Stats */}
-            <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
-              <div className="p-5 border-b border-white/5 bg-black/20">
+            <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="p-5 border-b border-[#273951]/50 bg-black/20">
                 <span className="text-lg font-black text-white tracking-tight">Market Stats</span>
               </div>
               <div className="p-6 flex flex-col gap-2">
@@ -430,7 +430,7 @@ export default function CoinDetail() {
 
             {/* ATH-ATL Range Bar */}
             {rangePct !== null && (
-              <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl p-6 relative group">
+              <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl p-6 relative group">
                  <div className="absolute top-0 right-0 w-40 h-40 bg-[var(--accent)]/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-[var(--accent)]/20 transition-colors duration-700"></div>
                  <div className="text-base font-black text-white mb-5 relative z-10">Price Range (ATL → ATH)</div>
                  <div className="flex justify-between text-xs text-gray-400 font-mono font-bold mb-3 relative z-10 uppercase tracking-widest">
@@ -438,7 +438,7 @@ export default function CoinDetail() {
                    <span>ATH {fmtPrice(coin.ath)}</span>
                  </div>
                  
-                 <div className="relative h-3 rounded-full bg-black/50 border border-white/5 overflow-hidden shadow-inner relative z-10">
+                 <div className="relative h-3 rounded-full bg-black/50 border border-[#273951]/50 overflow-hidden shadow-inner relative z-10">
                    <div 
                      className="absolute left-0 h-full rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" 
                      style={{ width: `${rangePct}%` }}
@@ -449,15 +449,15 @@ export default function CoinDetail() {
                    />
                  </div>
                  
-                 <div className="text-center mt-6 text-sm font-bold text-gray-400 bg-white/5 py-3 rounded-xl border border-white/5 relative z-10 shadow-sm">
+                 <div className="text-center mt-6 text-sm font-bold text-gray-400 bg-white/5 py-3 rounded-xl border border-[#273951]/50 relative z-10 shadow-sm">
                    <span className="text-white font-black text-base mr-1">{rangePct}%</span> above All-Time Low
                  </div>
               </motion.div>
             )}
 
             {/* Supply Info */}
-            <motion.div variants={itemVariants} className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
-              <div className="p-5 border-b border-white/5 bg-black/20">
+            <motion.div variants={itemVariants} className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="p-5 border-b border-[#273951]/50 bg-black/20">
                 <span className="text-lg font-black text-white tracking-tight">Supply Dynamics</span>
               </div>
               <div className="p-6">
@@ -468,7 +468,7 @@ export default function CoinDetail() {
                 </div>
                 
                 {coin.circulating_supply && coin.total_supply && Number(coin.total_supply) > 0 && (
-                  <div className="mt-8 bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner">
+                  <div className="mt-8 bg-black/40 p-5 rounded-[32px] border border-[#273951]/50 shadow-inner">
                     <div className="flex justify-between items-center text-xs text-gray-400 mb-3 uppercase tracking-widest font-bold">
                       <span>Circulation Progress</span>
                       <span className="text-white text-sm">{((Number(coin.circulating_supply) / Number(coin.total_supply)) * 100).toFixed(1)}%</span>
@@ -490,3 +490,4 @@ export default function CoinDetail() {
     </div>
   );
 }
+

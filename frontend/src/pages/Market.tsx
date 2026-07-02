@@ -108,7 +108,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
       <button
         onClick={() => setPage(p => Math.max(1, p - 1))}
         disabled={page === 1}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#273951]/50 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
       >
         <ChevronLeft size={13} /> Prev
       </button>
@@ -123,7 +123,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
             className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
               p === page 
                 ? "bg-white text-black border-white" 
-                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white"
+                : "bg-white/5 text-gray-400 border-[#273951]/50 hover:bg-white/10 hover:text-white"
             }`}
           >
             {p}
@@ -134,7 +134,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
       <button
         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
         disabled={page === totalPages}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#273951]/50 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
       >
         Next <ChevronRight size={13} />
       </button>
@@ -142,7 +142,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
   );
 
   return (
-    <div className="relative min-h-screen bg-[#0d0d0f] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
       {/* ── CINEMATIC GLOW BACKGROUND ── */}
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
         <div 
@@ -180,24 +180,24 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
       {/* MAIN TABLE BENTO BOX */}
       <FadeIn delay={0.2}>
-        <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden">
+        <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden">
           
           {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-white/5 bg-white/[0.02]">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-[#273951]/50 bg-white/[0.02]">
             <div className="relative w-[300px]">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               <input
                 value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t("market.search_placeholder")}
-                className="w-full bg-[#111113] border border-white/10 rounded-xl py-2 pl-9 pr-4 text-[13px] font-medium text-white placeholder-white/30 outline-none focus:border-[var(--accent)] transition-all"
+                className="w-full bg-[#111113] border border-[#273951]/50 rounded-xl py-2 pl-9 pr-4 text-[13px] font-medium text-white placeholder-white/30 outline-none focus:border-[var(--accent)] transition-all"
               />
             </div>
             <Pagination />
           </div>
 
           {/* Column Headers */}
-          <div className="grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 border-b border-white/5 bg-white/[0.02] items-center gap-2">
+          <div className="grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 border-b border-[#273951]/50 bg-white/[0.02] items-center gap-2">
             <div />
             <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500">#</div>
             <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500">{t("market.table.name")}</div>
@@ -332,7 +332,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
           {/* Bottom Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center p-4 border-t border-white/5 bg-black/20">
+            <div className="flex justify-center p-4 border-t border-[#273951]/50 bg-black/20">
               <Pagination />
             </div>
           )}
@@ -342,3 +342,4 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
     </div>
   );
 }
+

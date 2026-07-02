@@ -193,7 +193,7 @@ export default function Analysis() {
       </div>
 
       {/* COIN SEÇİCİ */}
-      <div className="rounded-2xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '20px', marginBottom: 24 }}>
+      <div className="rounded-[32px]" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '20px', marginBottom: 24 }}>
         <div className="flex items-center gap-3 flex-wrap">
           <CoinSearchDropdown allCoins={allCoins || []} selected={selected} onAdd={addCoin} />
           {selected.map((sym, i) => {
@@ -221,7 +221,7 @@ export default function Analysis() {
 
       {/* EMPTY STATE */}
       {selected.length < 2 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl" style={{
+        <div className="flex flex-col items-center justify-center rounded-[32px]" style={{
           backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)',
           padding: '64px 24px', textAlign: 'center',
         }}>
@@ -246,7 +246,7 @@ export default function Analysis() {
                 const colorIdx = selected.indexOf(row.symbol)
                 const color = CHART_COLORS[colorIdx >= 0 ? colorIdx : i]
                 return (
-                  <div key={row.symbol} className="rounded-2xl" style={{
+                  <div key={row.symbol} className="rounded-[32px]" style={{
                     backgroundColor: 'var(--bg-surface)',
                     border: `1px solid ${color}30`,
                     padding: '20px',
@@ -293,7 +293,7 @@ export default function Analysis() {
           )}
 
           {/* CHART */}
-          <div className="rounded-2xl" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '24px' }}>
+          <div className="rounded-[32px]" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '24px' }}>
             {/* Chart header */}
             <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
               <div>

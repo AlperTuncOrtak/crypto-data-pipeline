@@ -98,7 +98,7 @@ export default function Narratives() {
   const [selected, setSelected] = useState<any>(null);
 
   return (
-    <div className="relative min-h-screen bg-[#0d0d0f] text-white pt-24 pb-10 px-6 lg:px-12 overflow-hidden font-sans">
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-10 px-6 lg:px-12 overflow-hidden font-sans">
       
       {/* ── BACKGROUND GLOW ── */}
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
@@ -129,7 +129,7 @@ export default function Narratives() {
         </motion.div>
 
         {/* ORBS CANVAS */}
-        <div className="relative w-full h-[600px] md:h-[700px] rounded-[2rem] border border-white/5 bg-[#19191c]/40 backdrop-blur-3xl shadow-2xl overflow-hidden">
+        <div className="relative w-full h-[600px] md:h-[700px] rounded-[32px] border border-[#273951]/50 bg-[#16181c]/40 backdrop-blur-3xl shadow-2xl overflow-hidden">
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
           <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)", backgroundSize: "30px 30px" }}></div>
@@ -161,7 +161,7 @@ export default function Narratives() {
                   },
                   layout: { type: "spring", stiffness: 300, damping: 30 }
                 }}
-                className={`absolute cursor-pointer flex flex-col items-center justify-center rounded-full border border-white/20 shadow-2xl overflow-hidden transition-all duration-300 hover:border-white/50 ${isSelected ? "z-50" : "z-10"}`}
+                className={`absolute cursor-pointer flex flex-col items-center justify-center rounded-full border border-white/20 shadow-2xl overflow-hidden transition-all duration-300 hover:border-[#273951]/500 ${isSelected ? "z-50" : "z-10"}`}
                 style={{
                   width: orb.size,
                   height: orb.size,
@@ -204,7 +204,7 @@ export default function Narratives() {
                 <motion.div
                   layoutId={`orb-${selected.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-[#19191c]/90 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden relative"
+                  className="w-full max-w-lg rounded-[32px] border border-[#273951]/50 bg-[#16181c]/90 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden relative"
                   style={{
                     boxShadow: `0 0 100px ${selected.color}44`
                   }}
@@ -215,13 +215,13 @@ export default function Narratives() {
                   <div className="relative p-8 pt-10">
                     <button 
                       onClick={() => setSelected(null)}
-                      className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                      className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-[#273951]/50 hover:bg-white/10 transition-colors"
                     >
                       <X size={16} />
                     </button>
 
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: `linear-gradient(135deg, ${selected.color}, #111)` }}>
+                      <div className="w-12 h-12 rounded-[32px] flex items-center justify-center shadow-lg" style={{ background: `linear-gradient(135deg, ${selected.color}, #111)` }}>
                         <Activity className="text-white" size={24} />
                       </div>
                       <div>
@@ -235,7 +235,7 @@ export default function Narratives() {
                       </div>
                     </div>
 
-                    <div className="mb-6 p-5 rounded-2xl bg-black/40 border border-white/5 text-sm text-gray-300 leading-relaxed font-medium">
+                    <div className="mb-6 p-5 rounded-[32px] bg-black/40 border border-[#273951]/50 text-sm text-gray-300 leading-relaxed font-medium">
                       <Sparkles size={14} className="inline-block mr-2 text-[var(--accent)] -mt-0.5" />
                       {selected.summary}
                     </div>
@@ -247,7 +247,7 @@ export default function Narratives() {
                           <button
                             key={coin}
                             onClick={() => navigate(`/coin/${coin.toLowerCase()}`)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all group"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#273951]/50 bg-white/5 hover:bg-white/10 transition-all group"
                           >
                             <span className="font-black text-white">{coin}</span>
                             <ArrowRight size={14} className="text-white/30 group-hover:text-white transition-colors" />
@@ -266,3 +266,4 @@ export default function Narratives() {
     </div>
   );
 }
+

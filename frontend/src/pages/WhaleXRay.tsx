@@ -38,7 +38,7 @@ export default function WhaleXRay() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-white pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0a0b0d] text-white pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
       
       {/* Background Cinematic Glow */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
@@ -52,7 +52,7 @@ export default function WhaleXRay() {
           transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
           className="absolute bottom-0 -left-1/4 w-[600px] h-[600px] bg-[var(--accent)]/10 rounded-full blur-[120px] mix-blend-screen"
         />
-        <div className="absolute inset-0 bg-[#0d0d0f]/60 backdrop-blur-[50px] z-10"></div>
+        <div className="absolute inset-0 bg-[#0a0b0d]/60 backdrop-blur-[50px] z-10"></div>
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">
@@ -62,7 +62,7 @@ export default function WhaleXRay() {
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+            className="w-16 h-16 rounded-[32px] bg-white/5 border border-[#273951]/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)]"
           >
             <Eye className="text-white" size={32} />
           </motion.div>
@@ -92,7 +92,7 @@ export default function WhaleXRay() {
             {/* Search Glow */}
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-white/10 to-emerald-500/20 rounded-full blur-lg opacity-50 group-hover:opacity-100 transition duration-500 group-hover:duration-200"></div>
             
-            <div className="relative flex items-center bg-[#19191c]/80 backdrop-blur-2xl border border-white/10 rounded-full p-2 overflow-hidden shadow-2xl transition-colors hover:border-emerald-500/30">
+            <div className="relative flex items-center bg-[#16181c]/80 backdrop-blur-2xl border border-[#273951]/50 rounded-full p-2 overflow-hidden shadow-2xl transition-colors hover:border-emerald-500/30">
               <div className="pl-4 pr-2 flex items-center justify-center">
                 <Search size={20} className="text-gray-400 group-focus-within:text-emerald-400 transition-colors" />
               </div>
@@ -129,7 +129,7 @@ export default function WhaleXRay() {
             >
               
               {/* Portfolio Net Worth */}
-              <motion.div whileHover={{ y: -4 }} className="md:col-span-2 rounded-[2rem] bg-[#19191c]/60 backdrop-blur-xl border border-white/5 p-8 relative overflow-hidden group">
+              <motion.div whileHover={{ y: -4 }} className="md:col-span-2 rounded-[32px] bg-[#16181c]/60 backdrop-blur-xl border border-[#273951]/50 p-8 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-emerald-500/20 transition-colors duration-500"></div>
                 <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-6">
@@ -165,7 +165,7 @@ export default function WhaleXRay() {
               </motion.div>
 
               {/* AI Risk Score */}
-              <motion.div whileHover={{ y: -4 }} className="rounded-[2rem] bg-[#19191c]/60 backdrop-blur-xl border border-white/5 p-8 relative overflow-hidden group">
+              <motion.div whileHover={{ y: -4 }} className="rounded-[32px] bg-[#16181c]/60 backdrop-blur-xl border border-[#273951]/50 p-8 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none group-hover:from-red-500/10 transition-colors duration-500"></div>
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-6">
@@ -187,7 +187,7 @@ export default function WhaleXRay() {
               </motion.div>
 
               {/* Recent Moves */}
-              <motion.div whileHover={{ y: -4 }} className="md:col-span-3 rounded-[2rem] bg-[#19191c]/60 backdrop-blur-xl border border-white/5 p-8 relative overflow-hidden group">
+              <motion.div whileHover={{ y: -4 }} className="md:col-span-3 rounded-[32px] bg-[#16181c]/60 backdrop-blur-xl border border-[#273951]/50 p-8 relative overflow-hidden group">
                  <div className="relative z-10">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
@@ -227,3 +227,4 @@ export default function WhaleXRay() {
     </div>
   );
 }
+

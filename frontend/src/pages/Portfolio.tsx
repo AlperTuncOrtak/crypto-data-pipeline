@@ -1222,7 +1222,7 @@ export default function Portfolio() {
           <span className="text-gray-400 text-4xl">$</span>
           <NumberFlow value={Number.isNaN(Number(totalValue)) ? 0 : Number(totalValue)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
         </h1>
-        <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-2xl border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.1)]" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]"}`}>
+        <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-[32px] border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.1)]" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]"}`}>
           {isPos ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
           <span className="flex items-center gap-1 font-mono">
             {isPos ? "+" : "-"}$
@@ -1316,7 +1316,7 @@ export default function Portfolio() {
 
       {/* Import message */}
       {importMsg && (
-        <div className={`flex items-center gap-3 mb-6 px-5 py-3 rounded-2xl border text-sm font-semibold ${importMsg.ok ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" : "text-red-400 bg-red-500/10 border-red-500/20"}`}>
+        <div className={`flex items-center gap-3 mb-6 px-5 py-3 rounded-[32px] border text-sm font-semibold ${importMsg.ok ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" : "text-red-400 bg-red-500/10 border-red-500/20"}`}>
           {importMsg.text}
           <button onClick={() => setImportMsg(null)} className="ml-auto opacity-60 hover:opacity-100 transition-opacity">✕</button>
         </div>
@@ -1331,7 +1331,7 @@ export default function Portfolio() {
         {/* TOP MOVERS WIDGETS */}
         {topPerformer && worstPerformer && topPerformer.symbol !== worstPerformer.symbol && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-5 shadow-xl relative overflow-hidden group">
+            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
               <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-green-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp size={14} className="text-green-400" /> Top Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
@@ -1345,7 +1345,7 @@ export default function Portfolio() {
               </div>
             </div>
             
-            <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-5 shadow-xl relative overflow-hidden group">
+            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
               <div className="absolute right-0 top-0 w-32 h-32 bg-red-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-red-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingDown size={14} className="text-red-400" /> Worst Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
@@ -1375,16 +1375,16 @@ export default function Portfolio() {
           </div>
 
           {showAddSource && (
-            <div className="mb-6 bg-[#19191c] border border-white/5 rounded-[2rem] p-6 shadow-xl relative overflow-hidden">
+            <div className="mb-6 bg-[#16181c] border border-[#273951]/50 rounded-[32px] p-6 shadow-xl relative overflow-hidden">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <Wallet size={14} className="text-[var(--accent)]" /> Import Data
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-[32px] bg-white/[0.02] border border-[#273951]/50">
                 {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
                   <button
                     key={key}
                     onClick={() => fileRef.current?.click()}
-                    className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-2xl bg-[#19191c] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 hover:-translate-y-1 transition-all duration-300 group overflow-hidden shadow-lg"
+                    className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] bg-[#16181c] border border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98] transition-transform duration-300 transition-all duration-300 group overflow-hidden shadow-lg"
                   >
                     <span className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-2xl">{ex.logo}</span>
                     <span className="text-xs font-bold text-gray-400 group-hover:text-white transition-colors text-center truncate w-full">{ex.name}</span>
@@ -1395,7 +1395,7 @@ export default function Portfolio() {
             </div>
           )}
 
-          <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] p-6 shadow-xl mb-6">
+          <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6 shadow-xl mb-6">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
               <RefreshCw size={14} className="text-[var(--accent)]" /> {t('portfolio.eth_wallet')}
             </p>
@@ -1404,7 +1404,7 @@ export default function Portfolio() {
                 value={walletInput} 
                 onChange={e => setWalletInput(e.target.value)} 
                 placeholder="0x..."
-                className="flex-1 min-w-0 bg-[#121212] border border-white/10 rounded-xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[var(--accent)]/50 focus:bg-[#121212] transition-all duration-300" 
+                className="flex-1 min-w-0 bg-[#121212] border border-[#273951]/50 rounded-xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[var(--accent)]/50 focus:bg-[#121212] transition-all duration-300" 
               />
               <button 
                 onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
@@ -1468,7 +1468,7 @@ export default function Portfolio() {
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 ? (
-        <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden shadow-2xl">
+        <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden shadow-2xl">
           <div className="overflow-x-auto w-full">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
@@ -1490,7 +1490,7 @@ export default function Portfolio() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: i * 0.02 }}
-                      className="transition-colors cursor-pointer group border-b border-white/5 hover:bg-white/[0.03]"
+                      className="transition-colors cursor-pointer group border-b border-[#273951]/50 hover:bg-white/[0.03]"
                     >
                       <td className="px-5 py-5">
                         <div className="flex items-center gap-3">
@@ -1557,7 +1557,7 @@ export default function Portfolio() {
         {/* RIGHT COLUMN: Donut + AI Insights + Tax Summary */}
         <div className="lg:col-span-4 flex flex-col gap-6">
         {/* Donut */}
-        <div className="w-full flex flex-col min-h-[380px] bg-[#19191c] border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
+        <div className="w-full flex flex-col min-h-[380px] bg-[#16181c] border border-[#273951]/50 rounded-[32px] p-6 shadow-2xl relative overflow-hidden group">
           <div className="absolute left-1/2 top-1/2 w-[300px] h-[300px] bg-[var(--accent)]/5 rounded-full blur-[80px] pointer-events-none transform -translate-x-1/2 -translate-y-1/2 group-hover:bg-[var(--accent)]/10 transition-all duration-700"></div>
           <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] mb-4 shrink-0 relative z-10 flex items-center justify-center">
             {t('portfolio.asset_allocation')}
@@ -1596,7 +1596,7 @@ export default function Portfolio() {
 
       {/* AI PORTFOLIO INSIGHTS */}
       {holdings.length > 0 && (
-        <div className="mb-6 border border-[var(--accent)]/20 bg-[#19191c] rounded-[2rem] p-6 shadow-2xl relative overflow-hidden">
+        <div className="mb-6 border border-[var(--accent)]/20 bg-[#16181c] rounded-[32px] p-6 shadow-2xl relative overflow-hidden">
           <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 relative z-10">
@@ -1629,7 +1629,7 @@ export default function Portfolio() {
             {aiInsights && (
               <div className="space-y-8 relative z-10 animate-fadeInDown mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="p-6 rounded-[32px] bg-white/[0.02] border border-white/[0.05]">
                     <div className="text-xs font-bold text-gray-500 uppercase mb-4">{t('portfolio.ai_analysis.risk')}</div>
                     <div className="flex items-center gap-5">
                       <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl shadow-lg shrink-0" style={{
@@ -1646,7 +1646,7 @@ export default function Portfolio() {
                     </div>
                   </div>
 
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                  <div className="p-6 rounded-[32px] bg-white/[0.02] border border-white/[0.05]">
                     <div className="text-xs font-bold text-gray-500 uppercase mb-4">{t('portfolio.ai_analysis.diversification')}</div>
                     <div className="flex items-center gap-5">
                        <div className="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-lg shrink-0">
@@ -1659,13 +1659,13 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+              <div className="p-6 rounded-[32px] bg-white/[0.02] border border-white/[0.05]">
                 <div className="text-xs font-bold text-gray-500 uppercase mb-3">{t('portfolio.ai_analysis.summary')}</div>
                 <p className="text-base text-gray-300 leading-relaxed">{aiInsights.summary}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                <div className="p-6 rounded-[32px] bg-emerald-500/5 border border-emerald-500/10">
                   <div className="text-xs font-bold text-emerald-500/70 uppercase mb-4">{t('portfolio.ai_analysis.strengths')}</div>
                   <ul className="space-y-3">
                     {aiInsights.strengths?.map((s, i) => (
@@ -1675,7 +1675,7 @@ export default function Portfolio() {
                     ))}
                   </ul>
                 </div>
-                <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
+                <div className="p-6 rounded-[32px] bg-red-500/5 border border-red-500/10">
                   <div className="text-xs font-bold text-red-500/70 uppercase mb-4">{t('portfolio.ai_analysis.risks')}</div>
                    <ul className="space-y-3">
                     {aiInsights.risks?.map((r, i) => (
@@ -1687,7 +1687,7 @@ export default function Portfolio() {
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-[var(--accent)]/5 border border-[var(--accent)]/20">
+              <div className="p-6 rounded-[32px] bg-[var(--accent)]/5 border border-[var(--accent)]/20">
                 <div className="text-xs font-bold text-[var(--accent)] uppercase mb-4">{t('portfolio.ai_analysis.recommendations')}</div>
                 <ul className="space-y-4">
                   {aiInsights.recommendations?.map((r, i) => (
@@ -1720,17 +1720,17 @@ export default function Portfolio() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+            <div className="p-5 rounded-[32px] bg-white/[0.02] border border-white/[0.05]">
               <div className="text-xs font-bold text-gray-500 uppercase mb-2">{t('portfolio.tax.short_term')}</div>
               <div className="text-2xl font-black font-mono text-gray-200"><NumberFlow value={Number(taxData.estShortTax) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} /></div>
               <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_short')}</div>
             </div>
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+            <div className="p-5 rounded-[32px] bg-white/[0.02] border border-white/[0.05]">
               <div className="text-xs font-bold text-gray-500 uppercase mb-2">{t('portfolio.tax.long_term')}</div>
               <div className="text-2xl font-black font-mono text-gray-200"><NumberFlow value={Number(taxData.estLongTax) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} /></div>
               <div className="text-xs text-gray-500 mt-1">{t('portfolio.tax.held_long')}</div>
             </div>
-            <div className="p-5 rounded-2xl bg-[var(--accent)]/5 border border-[var(--accent)]/20 relative overflow-hidden">
+            <div className="p-5 rounded-[32px] bg-[var(--accent)]/5 border border-[var(--accent)]/20 relative overflow-hidden">
               <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-[var(--accent)]/10 rounded-full blur-2xl"></div>
               <div className="text-xs font-bold text-[var(--accent)]/70 uppercase mb-2 relative z-10">{t('portfolio.tax.total')}</div>
               <div className="text-3xl font-black font-mono text-[var(--accent)] relative z-10"><NumberFlow value={Number(taxData.estTotalTax) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} /></div>
@@ -1750,7 +1750,7 @@ export default function Portfolio() {
           <p className="font-semibold text-base mb-2 text-gray-400">{t('portfolio.empty.title')}</p>
           <p className="text-sm mb-6 text-gray-500">{t('portfolio.empty.desc')}</p>
           <button onClick={() => setShowAddSource(true)} 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-[32px] font-bold text-sm bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
           >
             {t('portfolio.empty.btn')}
           </button>
@@ -1761,3 +1761,4 @@ export default function Portfolio() {
     </div>
   );
 }
+

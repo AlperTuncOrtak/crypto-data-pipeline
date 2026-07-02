@@ -43,8 +43,8 @@ const TYPE_CONFIG = {
 
 function SidebarCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[1.5rem] overflow-hidden">
-      <div className="px-5 py-4 border-b border-white/5">
+    <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#273951]/50">
         <span className="text-[13px] font-bold text-white tracking-wide">{title}</span>
       </div>
       <div className="py-2">{children}</div>
@@ -144,7 +144,7 @@ export default function Alerts() {
   const glowColor = TYPE_CONFIG[dominantAlert as keyof typeof TYPE_CONFIG]?.color || '#8b5cf6'
 
   return (
-    <div className="relative min-h-screen bg-[#0d0d0f] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
       {/* ── CINEMATIC GLOW BACKGROUND ── */}
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
         <div 
@@ -170,7 +170,7 @@ export default function Alerts() {
           <button
             onClick={() => refetch()}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-200 text-xs font-bold ${
-              isFetching ? 'bg-white/10 border-white/20 text-[#22c55e]' : 'bg-[#19191c]/80 backdrop-blur-md border-white/10 text-white/60 hover:text-white hover:border-white/30'
+              isFetching ? 'bg-white/10 border-white/20 text-[#22c55e]' : 'bg-[#16181c]/80 backdrop-blur-md border-[#273951]/50 text-white/60 hover:text-white hover:border-white/30'
             }`}
           >
             <RefreshCw size={14} style={{ animation: isFetching ? 'spin 1s linear infinite' : 'none' }} />
@@ -191,7 +191,7 @@ export default function Alerts() {
                   { label: 'Strong Pumps',   count: summary.pump,  color: '#22c55e', Icon: TrendingUp },
                   { label: 'Rapid Moves',    count: summary.rapid, color: '#8b5cf6', Icon: Zap },
                 ].map(({ label, count, color, Icon }) => (
-                  <div key={label} className="flex items-center justify-between py-2.5 border-b border-white/5">
+                  <div key={label} className="flex items-center justify-between py-2.5 border-b border-[#273951]/50">
                     <div className="flex items-center gap-2.5">
                       <Icon size={14} color={color} />
                       <span className="text-[13px] text-white/60 font-medium">{label}</span>
@@ -244,7 +244,7 @@ export default function Alerts() {
             {isLoading && (
               <div className="flex flex-col gap-2">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="h-16 rounded-[1rem] bg-[#19191c]/80 backdrop-blur-md border border-white/5" style={{ opacity: 1 - i * 0.1 }} />
+                  <div key={i} className="h-16 rounded-[1rem] bg-[#16181c]/80 backdrop-blur-md border border-[#273951]/50" style={{ opacity: 1 - i * 0.1 }} />
                 ))}
               </div>
             )}
@@ -258,7 +258,7 @@ export default function Alerts() {
 
             {/* Empty state */}
             {data && filtered.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-24 text-center bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-[1.5rem] shadow-2xl">
+              <div className="flex flex-col items-center justify-center py-24 text-center bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-[32px] shadow-2xl">
                 <Bell size={36} className="text-white/20 mb-4" />
                 <div className="text-lg font-bold text-white mb-1">No alerts here</div>
                 <div className="text-sm text-white/50">No signals matched this filter</div>
@@ -267,9 +267,9 @@ export default function Alerts() {
 
             {/* Alert table */}
             {filtered.length > 0 && (
-              <div className="bg-[#19191c]/80 backdrop-blur-xl border border-white/5 rounded-[1.5rem] overflow-hidden shadow-2xl">
+              <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-2xl">
                 {/* Table header */}
-                <div className="grid grid-cols-[48px_1fr_110px_110px_80px] px-5 py-3 gap-2 border-b border-white/5 bg-white/[0.02]">
+                <div className="grid grid-cols-[48px_1fr_110px_110px_80px] px-5 py-3 gap-2 border-b border-[#273951]/50 bg-white/[0.02]">
                   {['', 'Coin', 'Price', '% Change', 'Type'].map((h, i) => (
                     <div key={i} className={`text-[11px] font-bold uppercase tracking-wider text-white/40 ${i >= 2 ? 'text-right' : 'text-left'}`}>
                       {h}
@@ -298,7 +298,7 @@ export default function Alerts() {
                         variants={itemVariants}
                         key={`${alert.symbol}-${alert.type}-${idx}`}
                         onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.04]"
+                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-[#273951]/50 transition-colors duration-200 hover:bg-white/[0.04]"
                         style={{
                           borderLeft: `3px solid ${config.dot}`,
                           cursor: coin.slug ? 'pointer' : 'default',
@@ -307,7 +307,7 @@ export default function Alerts() {
                         {/* Logo */}
                         <div>
                           {coin.image_url
-                            ? <img src={coin.image_url} alt={alert.symbol} className="w-8 h-8 rounded-full border border-white/10" />
+                            ? <img src={coin.image_url} alt={alert.symbol} className="w-8 h-8 rounded-full border border-[#273951]/50" />
                             : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold font-mono" style={{ background: config.bg, border: `1px solid ${config.border}`, color: config.color }}>
                                 {alert.symbol?.slice(0, 2)}
                               </div>
