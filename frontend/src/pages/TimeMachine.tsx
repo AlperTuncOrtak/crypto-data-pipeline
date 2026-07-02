@@ -1,45 +1,76 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { History, Brain, TrendingUp, TrendingDown, Clock, Activity, Target } from "lucide-react";
+import { History, Brain, TrendingUp, TrendingDown, Target, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-const COINS = [
-  { id: "SOL", name: "Solana", color: "text-purple-500", bg: "bg-purple-500", basePrice: 20 },
-  { id: "PEPE", name: "Pepe", color: "text-green-500", bg: "bg-green-500", basePrice: 0.000001 },
-  { id: "WIF", name: "dogwifhat", color: "text-orange-500", bg: "bg-orange-500", basePrice: 0.1 },
-];
+import NumberFlow from "@number-flow/react";
+import { useMarket } from "../hooks/useMarket";
+import { useTimeMachine } from "../hooks/useTimeMachine";
 
 export default function TimeMachine() {
   const { t } = useTranslation();
-  const [monthsAgo, setMonthsAgo] = useState(6);
-  const [selectedCoin, setSelectedCoin] = useState(COINS[0]);
+  const { data: marketData, isLoading: isMarketLoading } = useMarket();
+  
+  const [daysAgo, setDaysAgo] = useState(30);
   const [investment, setInvestment] = useState(1000);
+  const [search, setSearch] = useState("");
+  
+  // Default to bitcoin if available
+  const [selectedCoinId, setSelectedCoinId] = useState<string>("bitcoin");
+  
+  // Find full coin object from market data
+  const selectedCoin = useMemo(() => {
+    if (!marketData) return null;
+    return marketData.find((c) => c.id === selectedCoinId) || marketData[0];
+  }, [marketData, selectedCoinId]);
 
-  // Simulation State
-  const [simulatedPnl, setSimulatedPnl] = useState(0);
-  const [simulatedValue, setSimulatedValue] = useState(0);
-  const [isSimulating, setIsSimulating] = useState(false);
+  // Fetch history for the selected coin
+  const { history, isLoading: isHistoryLoading, error } = useTimeMachine(selectedCoin?.id || null);
 
-  useEffect(() => {
-    // Run simulation whenever inputs change
-    setIsSimulating(true);
-    const timeout = setTimeout(() => {
-      // Fake math to make it look realistic based on time and coin
-      let multiplier = 1;
-      if (selectedCoin.id === "SOL") multiplier = (monthsAgo / 12) * 5 + 1; // e.g. 6 months = 3.5x
-      if (selectedCoin.id === "PEPE") multiplier = (monthsAgo / 12) * 20 - 2; // e.g. 6 months = 8x
-      if (selectedCoin.id === "WIF") multiplier = (monthsAgo / 12) * 50 - 5; // highly volatile
-      
-      multiplier = Math.max(0.1, multiplier + (Math.random() * 0.5)); // add jitter
-      
-      const val = investment * multiplier;
-      setSimulatedValue(val);
-      setSimulatedPnl(((val - investment) / investment) * 100);
-      setIsSimulating(false);
-    }, 400); // quick simulation delay
+  // Search filter
+  const filteredCoins = useMemo(() => {
+    if (!marketData) return [];
+    return marketData.filter(c => 
+      c.name.toLowerCase().includes(search.toLowerCase()) || 
+      c.symbol.toLowerCase().includes(search.toLowerCase())
+    ).slice(0, 12);
+  }, [marketData, search]);
 
-    return () => clearTimeout(timeout);
-  }, [monthsAgo, selectedCoin, investment]);
+  // Simulation Math
+  const simulation = useMemo(() => {
+    if (!history || history.length === 0 || !selectedCoin) return null;
+    
+    // Find the closest data point to 'daysAgo'
+    const targetTime = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
+    
+    // The history array from CoinGecko is sorted by timestamp ascending
+    let closestPoint = history[0];
+    let minDiff = Infinity;
+    
+    for (const point of history) {
+      const diff = Math.abs(point.timestamp - targetTime);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestPoint = point;
+      }
+    }
+
+    const oldPrice = closestPoint.price;
+    const currentPrice = selectedCoin.current_price;
+    
+    const coinsBought = investment / oldPrice;
+    const simulatedValue = coinsBought * currentPrice;
+    const pnl = ((simulatedValue - investment) / investment) * 100;
+    
+    return {
+      oldPrice,
+      currentPrice,
+      simulatedValue,
+      pnl,
+      date: new Date(closestPoint.timestamp).toLocaleDateString()
+    };
+  }, [history, selectedCoin, daysAgo, investment]);
+
+  const isSimulating = isHistoryLoading || isMarketLoading || !simulation;
 
   return (
     <div className="min-h-screen bg-[#0a0b0d] text-white pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
@@ -83,7 +114,7 @@ export default function TimeMachine() {
             transition={{ delay: 0.1 }}
             className="text-gray-400 max-w-lg text-lg"
           >
-            Simulate historical backtests. "What if I invested $1,000 into SOL 6 months ago?"
+            Real historical backtesting. "What if I invested $1,000 into {selectedCoin?.name || 'Bitcoin'} {daysAgo} days ago?"
           </motion.p>
         </div>
 
@@ -101,14 +132,25 @@ export default function TimeMachine() {
              {/* Coin Selector */}
              <div className="flex flex-col gap-3">
                <label className="text-sm font-bold text-gray-400 uppercase tracking-wider">Asset</label>
-               <div className="flex gap-2">
-                 {COINS.map(c => (
+               <div className="relative">
+                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                 <input 
+                   type="text" 
+                   placeholder="Search coins..."
+                   value={search}
+                   onChange={e => setSearch(e.target.value)}
+                   className="w-full bg-black/40 border border-[#273951]/50 rounded-xl py-3 pl-10 pr-4 text-white font-medium outline-none focus:border-purple-500/50 transition-colors mb-3"
+                 />
+               </div>
+               <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto custom-scrollbar">
+                 {filteredCoins.map(c => (
                    <button
                      key={c.id}
-                     onClick={() => setSelectedCoin(c)}
-                     className={`flex-1 py-3 px-2 rounded-xl font-bold text-sm transition-all ${selectedCoin.id === c.id ? `bg-white/10 border-white/20 text-white shadow-lg` : `bg-transparent border-transparent text-gray-500 hover:bg-white/5 border`} `}
+                     onClick={() => setSelectedCoinId(c.id)}
+                     className={`flex items-center gap-2 py-2 px-3 rounded-xl font-bold text-xs transition-all ${selectedCoinId === c.id ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 shadow-lg' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/5 border'} `}
                    >
-                     {c.id}
+                     <img src={c.image} alt={c.name} className="w-4 h-4 rounded-full" />
+                     {c.symbol.toUpperCase()}
                    </button>
                  ))}
                </div>
@@ -116,14 +158,14 @@ export default function TimeMachine() {
 
              {/* Investment */}
              <div className="flex flex-col gap-3">
-               <label className="text-sm font-bold text-gray-400 uppercase tracking-wider">Investment ($)</label>
+               <label className="text-sm font-bold text-gray-400 uppercase tracking-wider">Initial Investment ($)</label>
                <div className="relative">
                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
                  <input 
                    type="number" 
                    value={investment}
                    onChange={e => setInvestment(Number(e.target.value))}
-                   className="w-full bg-black/40 border border-[#273951]/50 rounded-xl py-3 pl-8 pr-4 text-white font-mono outline-none focus:border-purple-500/50 transition-colors"
+                   className="w-full bg-black/40 border border-[#273951]/50 rounded-xl py-4 pl-8 pr-4 text-white font-mono text-xl outline-none focus:border-purple-500/50 transition-colors"
                  />
                </div>
              </div>
@@ -132,20 +174,20 @@ export default function TimeMachine() {
              <div className="flex flex-col gap-3">
                <div className="flex justify-between items-center">
                  <label className="text-sm font-bold text-gray-400 uppercase tracking-wider">Time Travel</label>
-                 <span className="text-purple-400 font-bold bg-purple-400/10 px-2 py-0.5 rounded text-xs">{monthsAgo} Months Ago</span>
+                 <span className="text-purple-400 font-bold bg-purple-400/10 px-3 py-1 rounded-lg text-sm">{daysAgo} Days Ago</span>
                </div>
-               <div className="relative pt-2">
+               <div className="relative pt-4">
                  <input 
                    type="range" 
-                   min="1" max="24" 
-                   value={monthsAgo}
-                   onChange={e => setMonthsAgo(Number(e.target.value))}
+                   min="1" max="365" 
+                   value={daysAgo}
+                   onChange={e => setDaysAgo(Number(e.target.value))}
                    className="w-full h-2 bg-black/50 rounded-lg appearance-none cursor-pointer accent-purple-500"
                  />
                  <div className="flex justify-between mt-2 text-[10px] font-mono text-gray-500 uppercase">
-                   <span>1m</span>
-                   <span>12m</span>
-                   <span>24m</span>
+                   <span>Yesterday</span>
+                   <span>6 Months</span>
+                   <span>1 Year</span>
                  </div>
                </div>
              </div>
@@ -163,9 +205,16 @@ export default function TimeMachine() {
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-500"></div>
             
-            <div className="relative z-10 flex items-center gap-3 mb-6">
-              <Target size={20} className={selectedCoin.color} />
-              <h3 className="text-gray-400 font-semibold uppercase tracking-wider text-sm">Simulated Return</h3>
+            <div className="relative z-10 flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Target size={20} className="text-purple-400" />
+                <h3 className="text-gray-400 font-semibold uppercase tracking-wider text-sm">Simulated Return</h3>
+              </div>
+              {simulation && (
+                <div className="text-xs text-gray-500 font-mono">
+                  Entry Date: {simulation.date}
+                </div>
+              )}
             </div>
 
             <AnimatePresence mode="wait">
@@ -185,17 +234,17 @@ export default function TimeMachine() {
                 >
                   <div className="flex items-end gap-6 mb-4">
                     <h2 className="text-6xl md:text-7xl font-black text-white tracking-tight font-mono">
-                      ${simulatedValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                      $<NumberFlow value={simulation.simulatedValue} format={{ maximumFractionDigits: 0 }} />
                     </h2>
                   </div>
                   
                   <div className="flex items-center gap-4">
-                    <div className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-bold text-lg border ${simulatedPnl >= 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
-                      {simulatedPnl >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
-                      {simulatedPnl > 0 ? '+' : ''}{simulatedPnl.toLocaleString("en-US", { maximumFractionDigits: 2 })}%
+                    <div className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-bold text-lg border ${simulation.pnl >= 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                      {simulation.pnl >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                      {simulation.pnl > 0 ? '+' : ''}<NumberFlow value={simulation.pnl} format={{ maximumFractionDigits: 2 }} />%
                     </div>
-                    <p className="text-gray-500 font-medium">
-                      If you bought ${investment} of <span className="text-white">{selectedCoin.name}</span> {monthsAgo} months ago.
+                    <p className="text-gray-500 font-medium text-sm md:text-base">
+                      If you bought ${investment} of <span className="text-white font-bold">{selectedCoin?.name}</span> at <span className="text-white">${simulation.oldPrice.toLocaleString(undefined, { maximumFractionDigits: 6 })}</span>.
                     </p>
                   </div>
                 </motion.div>
@@ -216,7 +265,7 @@ export default function TimeMachine() {
             </div>
             
             <div className="relative z-10 flex-1 flex flex-col justify-center">
-              {isSimulating ? (
+              {isSimulating || !simulation ? (
                  <div className="space-y-3 animate-pulse">
                    <div className="h-4 bg-white/5 rounded w-3/4"></div>
                    <div className="h-4 bg-white/5 rounded w-full"></div>
@@ -225,7 +274,7 @@ export default function TimeMachine() {
               ) : (
                 <>
                   <p className="text-gray-300 leading-relaxed italic mb-4">
-                    "{simulatedPnl > 500 ? "Masterclass execution. Entering the ecosystem right before the major liquidity rotation was the perfect play." : simulatedPnl > 0 ? "A solid, defensive entry. Capital preservation combined with steady upside." : "Caught the top of the local narrative bubble. Classic retail trap."}"
+                    "{simulation.pnl > 500 ? "Masterclass execution. Entering the ecosystem right before the major liquidity rotation was the perfect play." : simulation.pnl > 0 ? "A solid, defensive entry. Capital preservation combined with steady upside." : "Caught the top of the local narrative bubble. Classic retail trap."}"
                   </p>
                   <div className="mt-auto flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
@@ -242,4 +291,3 @@ export default function TimeMachine() {
     </div>
   );
 }
-
