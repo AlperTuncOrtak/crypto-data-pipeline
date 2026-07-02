@@ -164,14 +164,14 @@ export default function Landing() {
 
           <motion.h1 
             initial="hidden" animate="visible" variants={fadeUp}
-            className="text-6xl md:text-8xl font-black tracking-tighter leading-[1.1] mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500"
+            className="text-5xl md:text-7xl font-black tracking-tighter leading-[1.1] mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500"
           >
             Algorithmic <br /> Crypto Trading.
           </motion.h1>
 
           <motion.p 
             initial="hidden" animate="visible" variants={fadeUp} custom={1}
-            className="text-lg md:text-xl text-gray-400 font-medium max-w-2xl leading-relaxed mb-10"
+            className="text-base md:text-lg text-gray-400 font-medium max-w-2xl leading-relaxed mb-8"
           >
             Advanced portfolio tracking, real-time AI sentiment analysis, and professional-grade algorithmic indicators in one sleek, unified terminal.
           </motion.p>
@@ -182,13 +182,13 @@ export default function Landing() {
           >
             <button 
               onClick={() => navigate(user ? "/dashboard" : "/login")}
-              className="px-8 py-4 rounded-full bg-white text-black font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-2 group"
+              className="px-6 py-3 rounded-full bg-white text-black font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-2 group"
             >
-              Start Trading <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              Start Trading <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <button 
               onClick={() => navigate("/pricing")}
-              className="px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 transition-colors"
+              className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-base hover:bg-white/10 transition-colors"
             >
               View Pricing
             </button>
@@ -196,7 +196,7 @@ export default function Landing() {
         </div>
 
         {/* ── INFINITE MARQUEE ── */}
-        <div className="w-full overflow-hidden mb-32 py-10 border-y border-white/5 relative bg-white/[0.01]">
+        <div className="w-full overflow-hidden mb-24 py-8 border-y border-white/5 relative bg-white/[0.01]">
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
           <motion.div 
@@ -206,7 +206,7 @@ export default function Landing() {
             style={{ width: "max-content" }}
           >
             {[...PARTNERS, ...PARTNERS].map((partner, i) => (
-              <div key={i} className="text-xl md:text-2xl font-black text-gray-600/50 hover:text-white/80 transition-colors flex items-center gap-3">
+              <div key={i} className="text-lg md:text-xl font-black text-gray-600/50 hover:text-white/80 transition-colors flex items-center gap-3">
                 <Sparkles size={16} className="text-[var(--accent)]/30" />
                 {partner}
               </div>
@@ -215,9 +215,9 @@ export default function Landing() {
         </div>
 
         {/* ── BENTO BOX FEATURES (gettrade.ai style) ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-24">
           
-          <FadeIn delay={0.1} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.1} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: AI Dashboard */}
@@ -246,14 +246,14 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-5">
                 <Brain className="text-[var(--accent)]" size={20} />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight text-white">AI Market Analysis</h3>
-              <p className="text-gray-400 max-w-md text-base leading-relaxed">
+              <h3 className="text-xl md:text-2xl font-bold mb-2 tracking-tight text-white">AI Market Analysis</h3>
+              <p className="text-gray-400 max-w-md text-sm leading-relaxed">
                 Our proprietary AI analyzes sentiment across millions of data points, giving you an edge with real-time Fear & Greed indices and predictive modeling.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.2} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Orderbook/Sparkline */}
@@ -270,24 +270,24 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
                 <Activity className="text-gray-300" size={20} />
               </div>
-              <h3 className="text-2xl font-bold mb-3 tracking-tight text-white">Real-Time Data</h3>
-              <p className="text-gray-400 text-base leading-relaxed">
+              <h3 className="text-xl font-bold mb-2 tracking-tight text-white">Real-Time Data</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
                 Millisecond-precision websocket feeds straight to your dashboard. No delays.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.3} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.3} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
             <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Wallet Sync */}
             <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-5 shadow-2xl flex flex-col items-center justify-center relative">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-               <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ type: "spring", delay: 0.4 }} className="w-16 h-16 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-4 z-10 relative">
-                 <Wallet className="text-[var(--accent)]" size={24} />
-                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#19191c]"></div>
+               <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ type: "spring", delay: 0.4 }} className="w-12 h-12 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-3 z-10 relative">
+                 <Wallet className="text-[var(--accent)]" size={20} />
+                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#19191c]"></div>
                </motion.div>
-               <div className="text-xl font-black text-white z-10 font-mono transition-all duration-500">${balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+               <div className="text-lg font-black text-white z-10 font-mono transition-all duration-500">${balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="text-xs font-bold text-gray-500 z-10 mt-1 uppercase tracking-widest">Total Balance</motion.div>
             </div>
 
@@ -295,14 +295,14 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
                 <Wallet className="text-gray-300" size={20} />
               </div>
-              <h3 className="text-2xl font-bold mb-3 tracking-tight text-white">Portfolio Sync</h3>
-              <p className="text-gray-400 text-base leading-relaxed">
+              <h3 className="text-xl font-bold mb-2 tracking-tight text-white">Portfolio Sync</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
                 Automatically import trades via CSV or connect on-chain wallets for tracking.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.4} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <FadeIn delay={0.4} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
              <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Algo Code */}
@@ -323,8 +323,8 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-5">
                 <Cpu className="text-[var(--accent)]" size={20} />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight text-white">Algorithmic Edge</h3>
-              <p className="text-gray-400 max-w-md text-base leading-relaxed">
+              <h3 className="text-xl md:text-2xl font-bold mb-2 tracking-tight text-white">Algorithmic Edge</h3>
+              <p className="text-gray-400 max-w-md text-sm leading-relaxed">
                 Utilize advanced quantitative metrics typically reserved for institutional trading desks, simplified into an elegant UI.
               </p>
             </div>
@@ -333,18 +333,18 @@ export default function Landing() {
 
         {/* ── CALL TO ACTION ── */}
         <FadeIn delay={0.1}>
-          <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-b from-[#19191c] to-[#0d0d0f] border border-white/10 px-8 py-24 text-center">
+          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#19191c] to-[#0d0d0f] border border-white/10 px-8 py-16 text-center">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none"></div>
             
-            <h2 className="relative z-10 text-4xl md:text-5xl font-black tracking-tight text-white mb-6">
+            <h2 className="relative z-10 text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
               Ready to trade smarter?
             </h2>
-            <p className="relative z-10 text-gray-400 text-lg mb-10 max-w-xl mx-auto">
+            <p className="relative z-10 text-gray-400 text-base mb-8 max-w-xl mx-auto">
               Join elite traders who rely on CryptoNeko's intelligence layer to navigate the markets.
             </p>
             <button 
               onClick={() => navigate(user ? "/dashboard" : "/login")}
-              className="relative z-10 px-10 py-5 rounded-full bg-white text-black font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)]"
+              className="relative z-10 px-8 py-4 rounded-full bg-white text-black font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)]"
             >
               {user ? "Go to Dashboard" : "Create Free Account"}
             </button>
