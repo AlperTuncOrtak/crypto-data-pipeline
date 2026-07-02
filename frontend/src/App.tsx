@@ -18,6 +18,7 @@ import Market from "./pages/Market";
 import Alerts from "./pages/Alerts";
 import Analysis from "./pages/Analysis";
 import Narratives from "./pages/Narratives";
+import WhaleXRay from "./pages/WhaleXRay";
 import TimeMachine from "./pages/TimeMachine";
 import Leaderboard from "./pages/Leaderboard";
 
