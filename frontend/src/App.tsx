@@ -28,6 +28,7 @@ import AIAnalysis from "./pages/AIAnalysis";
 import Pricing from "./pages/Pricing";
 import Pro from "./pages/Pro";
 import Portfolio from "./pages/Portfolio";
+import Onboarding from "./pages/Onboarding";
 import CreateAlert from "./pages/CreateAlert";
 import SearchCommand from "./components/ui/SearchCommand";
 import DisclaimerModal from "./components/DisclaimerModal";
@@ -123,30 +124,14 @@ function AppInner() {
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
 
       {/* Global Ticker */}
-      <CoinTicker />
+      {location.pathname !== "/onboarding" && <CoinTicker />}
 
-      <>
-        <Navbar
-          onWatchlistOpen={() => openPanel("watchlist")}
-          watchlistCount={watchlist.length}
-          onAuthOpen={(mode = "login") => {
-            setAuthMode(mode);
-            setAuthOpen(true);
-          }}
-          authOpen={authOpen}
-          setAuthOpen={setAuthOpen}
-        />
-      </>
+      {location.pathname !== "/onboarding" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
       <main
-        className={
-          location.pathname === "/"
-            ? ""
-            : "main-content"
-        }
+        className={location.pathname === "/" || location.pathname === "/onboarding" ? "" : "main-content"}
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
-        <Routes>
-          <Route path="/leaderboard" element={<Leaderboard />} />
+        <Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} />
           {/* Public */}
           <Route
             path="/"
@@ -266,10 +251,7 @@ function AppInner() {
               </ProtectedRoute>
             }
           />
-        </Routes>
-      </main>
-
-      <Footer />
+        </Routes></main>{location.pathname !== "/onboarding" && <Footer />}
 
       <AIChatWidget />
 
@@ -315,3 +297,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
