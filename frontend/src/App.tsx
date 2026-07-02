@@ -5,7 +5,7 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { ToastProvider, useAlertMonitor, useToast } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
@@ -13,27 +13,27 @@ import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistSidebar";
 import Footer from "./components/layout/Footer";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
-import Market from "./pages/Market";
-import Alerts from "./pages/Alerts";
-import Analysis from "./pages/Analysis";
-import Narratives from "./pages/Narratives";
-import WhaleXRay from "./pages/WhaleXRay";
-import TimeMachine from "./pages/TimeMachine";
-import Leaderboard from "./pages/Leaderboard";
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Market = lazy(() => import("./pages/Market"));
+const Alerts = lazy(() => import("./pages/Alerts"));
+const Analysis = lazy(() => import("./pages/Analysis"));
+const Narratives = lazy(() => import("./pages/Narratives"));
+const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
+const TimeMachine = lazy(() => import("./pages/TimeMachine"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 
-import CoinDetail from "./pages/CoinDetail";
-import Heatmap from "./pages/Heatmap";
-import AIAnalysis from "./pages/AIAnalysis";
-import Pricing from "./pages/Pricing";
-import Pro from "./pages/Pro";
-import Portfolio from "./pages/Portfolio";
-import Onboarding from "./pages/Onboarding";
-import CreateAlert from "./pages/CreateAlert";
+const CoinDetail = lazy(() => import("./pages/CoinDetail"));
+const Heatmap = lazy(() => import("./pages/Heatmap"));
+const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Pro = lazy(() => import("./pages/Pro"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const CreateAlert = lazy(() => import("./pages/CreateAlert"));
 import SearchCommand from "./components/ui/SearchCommand";
 import DisclaimerModal from "./components/DisclaimerModal";
-import Settings from "./pages/Settings";
-import Landing from "./pages/Landing";
+const Settings = lazy(() => import("./pages/Settings"));
+const Landing = lazy(() => import("./pages/Landing"));
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Documentation from "./pages/Documentation";
@@ -137,7 +137,7 @@ function AppInner() {
         className={location.pathname === "/" || location.pathname === "/onboarding" ? "" : "main-content"}
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
-        <Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} />
+        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} />
           {/* Public */}
           <Route
             path="/"
@@ -257,7 +257,7 @@ function AppInner() {
               </ProtectedRoute>
             }
           />
-        </Routes></main>{location.pathname !== "/onboarding" && <Footer />}
+        </Routes></Suspense></main>{location.pathname !== "/onboarding" && <Footer />}
 
       <AIChatWidget />
 
@@ -303,5 +303,6 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 

@@ -175,7 +175,7 @@ export default function Landing() {
             </button>
             <button 
               onClick={() => navigate("/pricing")}
-              className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-base hover:bg-white/10 transition-colors"
+              className="px-6 py-3 rounded-full bg-[#16181c] border border-[#273951]/50 text-white font-bold text-base hover:bg-white/10 transition-colors"
             >
               View Pricing
             </button>
@@ -208,7 +208,7 @@ export default function Landing() {
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: AI Dashboard */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-6 shadow-2xl flex items-center justify-center">
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-[#273951]/50 bg-[#0a0b0d]/50 overflow-hidden group-hover:border-[#273951] transition-colors p-6 shadow-2xl flex items-center justify-center">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--accent)]/30 rounded-full blur-[50px] pointer-events-none"></div>
               <div className="flex items-center gap-8 w-full max-w-sm">
                 <div className="relative w-32 h-32 shrink-0">
@@ -244,7 +244,7 @@ export default function Landing() {
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Orderbook/Sparkline */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-4 shadow-2xl flex flex-col justify-end gap-2">
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-[#273951]/50 bg-[#0a0b0d]/50 overflow-hidden group-hover:border-[#273951] transition-colors p-4 shadow-2xl flex flex-col justify-end gap-2">
               {orderbook.map((o, i) => (
                 <div key={i} className={`flex justify-between items-center px-2 py-1.5 rounded-md bg-${o.color}-500/10 border border-${o.color}-500/20 transition-all duration-300`}>
                   <span className={`text-[10px] font-mono text-${o.color}-400`}>{o.pair}</span>
@@ -254,7 +254,7 @@ export default function Landing() {
             </div>
 
             <div className="relative z-10 mt-auto">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+              <div className="w-10 h-10 rounded-xl bg-[#16181c] border border-[#273951]/50 flex items-center justify-center mb-5">
                 <Activity className="text-gray-300" size={20} />
               </div>
               <h3 className="text-xl font-bold mb-2 tracking-tight text-white">Real-Time Data</h3>
@@ -268,7 +268,7 @@ export default function Landing() {
             <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Wallet Sync */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-5 shadow-2xl flex flex-col items-center justify-center relative">
+            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-[#273951]/50 bg-[#0a0b0d]/50 overflow-hidden group-hover:border-[#273951] transition-colors p-5 shadow-2xl flex flex-col items-center justify-center relative">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ type: "spring", delay: 0.4 }} className="w-12 h-12 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-3 z-10 relative">
                  <Wallet className="text-[var(--accent)]" size={20} />
@@ -279,7 +279,7 @@ export default function Landing() {
             </div>
 
             <div className="relative z-10 mt-auto">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+              <div className="w-10 h-10 rounded-xl bg-[#16181c] border border-[#273951]/50 flex items-center justify-center mb-5">
                 <Wallet className="text-gray-300" size={20} />
               </div>
               <h3 className="text-xl font-bold mb-2 tracking-tight text-white">Portfolio Sync</h3>
@@ -321,7 +321,7 @@ export default function Landing() {
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none group-hover:bg-[var(--accent)]/20 transition-colors duration-700"></div>
             
             {/* UI Preview: Orbs */}
-            <div className="relative z-10 flex-1 mb-8 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors shadow-2xl flex items-center justify-center p-8">
+            <div className="relative z-10 flex-1 mb-8 w-full rounded-2xl border border-[#273951]/50 bg-[#0a0b0d]/50 overflow-hidden group-hover:border-[#273951] transition-colors shadow-2xl flex items-center justify-center p-8">
                <div className="relative w-full h-full min-h-[160px] flex items-center justify-center gap-6">
                  {/* Orb 1 */}
                  <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0 }} className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(225,29,72,0.4)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #e11d48dd, #e11d4844, rgba(0,0,0,0.8))" }}>
@@ -357,7 +357,7 @@ export default function Landing() {
 
         {/* ── CALL TO ACTION ── */}
         <FadeIn delay={0.1}>
-          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-b from-[#19191c] to-[#0a0b0d] border border-white/10 px-8 py-16 text-center">
+          <div className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] px-8 py-16 text-center">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none"></div>
             
             <h2 className="relative z-10 text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
@@ -381,4 +381,6 @@ export default function Landing() {
     </div>
   );
 }
+
+
 
