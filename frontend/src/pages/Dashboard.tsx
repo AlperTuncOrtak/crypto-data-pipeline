@@ -190,14 +190,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden pt-24 pb-20 px-6 lg:px-12 relative">
+    <div className="min-h-screen bg-[#0a0b0d] text-white selection:bg-[#533afd] selection:text-white font-sans overflow-x-hidden pt-24 pb-20 px-6 lg:px-12 relative">
       
       {/* Background Mesh */}
-      <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay z-10"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--accent)]/10 blur-[120px] rounded-full pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"></div>
-      </div>
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto">
         
@@ -221,7 +217,7 @@ export default function Dashboard() {
         {/* BENTO STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           
-          <FadeIn delay={0.2} className="relative overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
+          <FadeIn delay={0.2} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Global Market Cap</div>
              <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
@@ -230,7 +226,7 @@ export default function Dashboard() {
              <div className="text-sm text-gray-400 mt-2 font-medium">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
           </FadeIn>
 
-          <FadeIn delay={0.3} className="relative overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
+          <FadeIn delay={0.3} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">24h Volume</div>
              <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
@@ -239,7 +235,7 @@ export default function Dashboard() {
              <div className="text-sm text-gray-400 mt-2 font-medium">Across all markets</div>
           </FadeIn>
 
-          <FadeIn delay={0.4} className="relative overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
+          <FadeIn delay={0.4} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Dominance</div>
              <div className="flex items-end gap-2">
@@ -249,13 +245,13 @@ export default function Dashboard() {
              <div className="text-sm text-gray-400 mt-2 font-medium">ETH: <span className="text-white font-mono">{ethDom}%</span></div>
           </FadeIn>
 
-          <FadeIn delay={0.5} className="relative overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
+          <FadeIn delay={0.5} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 flex flex-col justify-between hover:border-white/10 transition-colors group shadow-xl">
              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Fear & Greed</div>
              {fngValue !== null ? (
                <div className="flex items-center gap-4">
                  <div className="relative w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.05) ${fngValue}% 100%)`, boxShadow: `0 0 20px ${fngColor}30` }}>
-                   <div className="absolute inset-[3px] rounded-full bg-[#19191c] flex items-center justify-center">
+                   <div className="absolute inset-[3px] rounded-full bg-[#16181c] flex items-center justify-center">
                      <span className="text-lg font-black font-mono text-white">{fngValue}</span>
                    </div>
                  </div>
@@ -274,7 +270,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
           
           {/* LEFT: TABLE */}
-          <FadeIn delay={0.6} className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col">
+          <FadeIn delay={0.6} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-2xl flex flex-col">
             {/* Toolbar */}
             <div className="flex items-center justify-between p-6 border-b border-white/5 flex-wrap gap-4 bg-white/[0.01]">
               <div className="relative w-full max-w-[240px]">
@@ -318,7 +314,7 @@ export default function Dashboard() {
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, margin: "-20px" }}
                           transition={{ delay: (i % 10) * 0.05 }}
-                          whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
+                          whileHover={{ scale: 0.995, backgroundColor: "rgba(255,255,255,0.03)", transition: { type: "spring", stiffness: 400, damping: 30 } }}
                           key={coin.symbol + i}
                           onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                           className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/[0.02] items-center cursor-pointer group"
@@ -349,7 +345,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-6">
             
             {/* Trending Box */}
-            <FadeIn delay={0.7} className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl">
+            <FadeIn delay={0.7} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
               <div className="flex items-center justify-between p-5 border-b border-white/5">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
@@ -361,7 +357,7 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-col p-2">
                 {(trendingData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <motion.div whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.02)" }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
+                  <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-bold text-gray-600 font-mono w-4">{i + 1}</span>
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-6 h-6 rounded-full bg-white/5" /> : <div className="w-6 h-6 rounded-full bg-white/10" />}
@@ -374,7 +370,7 @@ export default function Dashboard() {
             </FadeIn>
 
             {/* Gainers Box */}
-            <FadeIn delay={0.8} className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl">
+            <FadeIn delay={0.8} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
               <div className="flex items-center p-5 border-b border-white/5 gap-2">
                 <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
                   <TrendingUp size={16} className="text-green-500" />
@@ -383,7 +379,7 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-col p-2">
                 {(gainersData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <motion.div whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.02)" }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
+                  <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
                     <div className="flex items-center gap-3">
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
                       <div>
@@ -398,7 +394,7 @@ export default function Dashboard() {
             </FadeIn>
 
             {/* Losers Box */}
-            <FadeIn delay={0.9} className="bg-[#19191c] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl">
+            <FadeIn delay={0.9} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
               <div className="flex items-center p-5 border-b border-white/5 gap-2">
                 <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
                   <TrendingDown size={16} className="text-red-500" />
@@ -407,7 +403,7 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-col p-2">
                 {(losersData || []).slice(0, 5).map((coin: any, i: number) => (
-                  <motion.div whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.02)" }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
+                  <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
                     <div className="flex items-center gap-3">
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
                       <div>
