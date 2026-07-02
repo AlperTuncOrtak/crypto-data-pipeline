@@ -1,4 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { motion } from 'framer-motion';
+import { Wallet, AlertTriangle } from 'lucide-react';
 
 export default function WalletConnectButton() {
   return (
@@ -12,7 +14,6 @@ export default function WalletConnectButton() {
         authenticationStatus,
         mounted,
       }) => {
-        // Ready status for SSR
         const ready = mounted && authenticationStatus !== 'loading';
         const connected =
           ready &&
@@ -35,134 +36,73 @@ export default function WalletConnectButton() {
             {(() => {
               if (!connected) {
                 return (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={openConnectModal}
                     type="button"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      padding: "8px 16px",
-                      background: "var(--border)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: 20,
-                      color: "var(--text-primary)",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
-                      e.currentTarget.style.transform = "scale(1.02)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "var(--border)";
-                      e.currentTarget.style.transform = "scale(1)";
-                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--accent)] to-purple-500 rounded-full text-white font-bold text-sm shadow-[0_0_20px_rgba(83,58,253,0.3)] hover:shadow-[0_0_30px_rgba(83,58,253,0.5)] transition-all"
                   >
+                    <Wallet size={16} />
                     Connect Wallet
-                  </button>
+                  </motion.button>
                 );
               }
 
               if (chain.unsupported) {
                 return (
-                  <button 
-                    onClick={openChainModal} 
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={openChainModal}
                     type="button"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "8px 16px",
-                      background: "rgba(231, 76, 60, 0.1)",
-                      border: "1px solid rgba(231, 76, 60, 0.2)",
-                      borderRadius: 20,
-                      color: "#e74c3c",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-full text-red-400 font-bold text-sm shadow-[0_0_15px_rgba(239,68,68,0.2)]"
                   >
+                    <AlertTriangle size={16} />
                     Wrong network
-                  </button>
+                  </motion.button>
                 );
               }
 
               return (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={openChainModal}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: "var(--border)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: 20,
-                      padding: "6px 12px",
-                      color: "var(--text-primary)",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
                     type="button"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-[#16181c] border border-[#273951]/50 shadow-[inset_0_0_10px_rgba(39,57,81,0.2)] rounded-full text-white font-bold text-sm hover:bg-white/5 transition-colors"
                   >
                     {chain.hasIcon && (
-                      <div
-                        style={{
-                          background: chain.iconBackground,
-                          width: 16,
-                          height: 16,
-                          borderRadius: 999,
-                          overflow: 'hidden',
-                          marginRight: 6,
-                        }}
-                      >
+                      <div className="w-4 h-4 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
                         {chain.iconUrl && (
                           <img
                             alt={chain.name ?? 'Chain icon'}
                             src={chain.iconUrl}
-                            style={{ width: 16, height: 16 }}
+                            className="w-4 h-4"
                           />
                         )}
                       </div>
                     )}
                     {chain.name}
-                  </button>
+                  </motion.button>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={openAccountModal}
                     type="button"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      padding: "6px 12px",
-                      background: "rgba(46, 204, 113, 0.1)",
-                      border: "1px solid rgba(46, 204, 113, 0.2)",
-                      borderRadius: 20,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      color: "var(--text-primary)",
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(46, 204, 113, 0.15)";
-                      e.currentTarget.style.borderColor = "rgba(46, 204, 113, 0.3)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "rgba(46, 204, 113, 0.1)";
-                      e.currentTarget.style.borderColor = "rgba(46, 204, 113, 0.2)";
-                    }}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-[#16181c] border border-[var(--accent)]/30 shadow-[inset_0_0_15px_rgba(83,58,253,0.1)] rounded-full text-white font-bold text-sm hover:bg-[var(--accent)]/10 transition-colors"
                   >
-                    {account.displayBalance
-                      ? ` ${account.displayBalance}`
-                      : ''}
-                    <span style={{ fontFamily: "monospace", marginLeft: account.displayBalance ? 8 : 0 }}>
+                    {account.displayBalance ? (
+                      <span className="text-gray-300 font-medium">
+                        {account.displayBalance}
+                      </span>
+                    ) : null}
+                    <span className="font-mono text-[var(--accent)] ml-1">
                       {account.displayName}
                     </span>
-                  </button>
+                  </motion.button>
                 </div>
               );
             })()}
