@@ -340,17 +340,17 @@ export default function Landing() {
                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(225,29,72,0.4)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #e11d48dd, #e11d4844, rgba(0,0,0,0.8))" }}>
                    <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                    <span className="text-white font-black text-xs">Memecoins</span>
-                 </div>
+                 </motion.div>
                  {/* Orb 2 */}
                  <div className="w-32 h-32 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_40px_rgba(124,58,237,0.5)] relative -mt-8" style={{ background: "radial-gradient(circle at 30% 30%, #7c3aeddd, #7c3aed44, rgba(0,0,0,0.8))" }}>
                    <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                    <span className="text-white font-black text-sm">AI</span>
-                 </div>
+                 </motion.div>
                  {/* Orb 3 */}
                  <div className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #10b981dd, #10b98144, rgba(0,0,0,0.8))" }}>
                    <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                    <span className="text-white font-black text-[10px]">RWA</span>
-                 </div>
+                 </motion.div>
                </div>
             </div>
 
