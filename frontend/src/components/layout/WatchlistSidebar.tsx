@@ -127,7 +127,7 @@ function WatchlistPanel({
     <>
       {/* Header */}
       <div
-        style={{ padding: "16px 16px 12px", borderBottom: "1px solid #1e1e1e" }}
+        style={{ padding: "20px 16px 12px", borderBottom: "1px solid rgba(39, 57, 81, 0.3)" }}
       >
         <div
           style={{
@@ -284,7 +284,8 @@ function WatchlistPanel({
                 gap: 8,
                 padding: "7px 10px",
                 background: "var(--bg-elevated)",
-                border: "1px solid var(--accent-soft)",
+                border: "1px solid rgba(83,58,253,0.3)",
+                boxShadow: "inset 0 0 10px rgba(83,58,253,0.1)",
                 borderRadius: 9,
               }}
             >
@@ -430,16 +431,25 @@ function WatchlistPanel({
               return (
                 <div
                   key={coin.symbol}
-                  style={{ borderRadius: 10, transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)", border: "1px solid transparent" }}
+                  className="group"
+                  style={{ 
+                    borderRadius: 16, 
+                    transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)", 
+                    border: "1px solid transparent",
+                    background: "rgba(255,255,255,0.01)",
+                    marginBottom: 4
+                  }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "var(--bg-elevated)";
-                    e.currentTarget.style.borderColor = "var(--accent-soft)";
-                    e.currentTarget.style.transform = "translateX(2px)";
+                    e.currentTarget.style.background = "#16181c";
+                    e.currentTarget.style.borderColor = "rgba(39,57,81,0.5)";
+                    e.currentTarget.style.transform = "scale(0.98)";
+                    e.currentTarget.style.boxShadow = "inset 0 0 20px rgba(39,57,81,0.2)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.background = "rgba(255,255,255,0.01)";
                     e.currentTarget.style.borderColor = "transparent";
-                    e.currentTarget.style.transform = "translateX(0)";
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.boxShadow = "none";
                   }}
                 >
                   <div
@@ -611,7 +621,8 @@ function WatchlistPanel({
             margin: "8px 10px",
             padding: "12px 14px",
             background: "var(--accent-soft)",
-            border: "1px solid var(--accent-soft)",
+            border: "1px solid rgba(83,58,253,0.3)",
+                boxShadow: "inset 0 0 10px rgba(83,58,253,0.1)",
             borderRadius: 12,
           }}
         >
@@ -874,7 +885,8 @@ function AlertsPanel({ marketData, onClose }) {
               fontWeight: 600,
               padding: "4px 10px",
               borderRadius: 7,
-              border: "1px solid var(--accent-soft)",
+              border: "1px solid rgba(83,58,253,0.3)",
+                boxShadow: "inset 0 0 10px rgba(83,58,253,0.1)",
               background: "var(--accent-soft)",
               color: "var(--accent)",
               cursor: "pointer",
