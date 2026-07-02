@@ -89,23 +89,10 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0b0d] text-white selection:bg-[#533afd] selection:text-white font-sans overflow-x-hidden">
       
       {/* ── BACKGROUND AURORA MESH ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <motion.div 
-          animate={{ rotate: 360, scale: [1, 1.2, 1] }} 
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-[var(--accent)]/10 rounded-full blur-[120px] mix-blend-screen"
-        />
-        <motion.div 
-          animate={{ rotate: -360, scale: [1, 1.5, 1] }} 
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] mix-blend-screen"
-        />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay z-10"></div>
-        <div className="absolute inset-0 bg-[#0d0d0f]/60 backdrop-blur-[80px] z-10"></div>
-      </div>
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       {/* ── 3D HERO CANVAS ── */}
       <ThreeDHero />
@@ -113,7 +100,7 @@ export default function Landing() {
       {/* ── HEADER ── */}
       <motion.header 
         style={{ opacity: headerOpacity, backdropFilter: `blur(20px)` }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex items-center justify-between border-b border-white/[0.05] bg-[#0d0d0f]/50 transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex items-center justify-between border-b border-white/[0.05] bg-[#0a0b0d]/50 transition-all duration-300"
       >
         <Link to="/" className="flex items-center gap-3 group">
           <motion.div 
@@ -197,8 +184,8 @@ export default function Landing() {
 
         {/* ── INFINITE MARQUEE ── */}
         <div className="w-full overflow-hidden mb-24 py-8 border-y border-white/5 relative bg-white/[0.01]">
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0a0b0d] to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0a0b0d] to-transparent z-10 pointer-events-none"></div>
           <motion.div 
             animate={{ x: ["0%", "-50%"] }}
             transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
@@ -217,7 +204,7 @@ export default function Landing() {
         {/* ── BENTO BOX FEATURES (gettrade.ai style) ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-24">
           
-          <FadeIn delay={0.1} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
+          <FadeIn delay={0.1} whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-2 relative group overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: AI Dashboard */}
@@ -253,7 +240,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
+          <FadeIn delay={0.2} whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="relative group overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Orderbook/Sparkline */}
@@ -277,7 +264,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.3} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
+          <FadeIn delay={0.3} whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="relative group overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
             <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Wallet Sync */}
@@ -302,7 +289,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.4} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
+          <FadeIn delay={0.4} whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-2 relative group overflow-hidden rounded-[32px] bg-[#16181c] border border-[#273951]/50 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
              <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             
             {/* UI Preview: Algo Code */}
@@ -330,7 +317,7 @@ export default function Landing() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.5} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-3 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-[var(--accent)]/30 p-6 md:p-10 min-h-[350px] flex flex-col justify-between">
+          <FadeIn delay={0.5} whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-3 relative group overflow-hidden rounded-[32px] bg-[#16181c] border border-[var(--accent)]/30 p-6 md:p-10 min-h-[350px] flex flex-col justify-between">
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none group-hover:bg-[var(--accent)]/20 transition-colors duration-700"></div>
             
             {/* UI Preview: Orbs */}
@@ -370,7 +357,7 @@ export default function Landing() {
 
         {/* ── CALL TO ACTION ── */}
         <FadeIn delay={0.1}>
-          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#19191c] to-[#0d0d0f] border border-white/10 px-8 py-16 text-center">
+          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-b from-[#19191c] to-[#0a0b0d] border border-white/10 px-8 py-16 text-center">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none"></div>
             
             <h2 className="relative z-10 text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
@@ -394,3 +381,4 @@ export default function Landing() {
     </div>
   );
 }
+
