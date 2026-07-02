@@ -1,27 +1,39 @@
-# CryptoNeko TODO List
+﻿# 🚀 CryptoNeko - Gelecek Yol Haritası ve Görevler (TODO)
 
-## Completed Recently
+Bu dosya, Alper'in ajanı ve diğer geliştiricilerin projeye katkı sağlaması için güncel görev listesini içerir. 
+Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlarına geçirilmiştir. Yeni eklenecek tüm özellikler bu tasarım standartlarına uymak zorundadır.
 
-## High Priority
-- [x] **Fix all localhost references:** Ensure no `localhost:3000` or `localhost:5173` links remain in production (check Supabase email confirmations, API endpoints).
-- [ ] **Fix Light Theme:** Overhaul the light color palette and shadows (drop-shadows instead of glow) for better contrast.
-- [ ] **Fix Pricing Page Bugs:** The Pricing tab keeps resetting automatically and the 'year' toggle is unclickable. The design also needs to be tweaked to seamlessly match the current global aesthetic.
+## 🟢 Devam Eden / Sıradaki Öncelikli İşler
 
-## Upcoming Ideas & Features
-- [ ] **Stripe/Paywall Integration:** Implement Pro/Enterprise tier paywalls.
-- [x] **Portfolio Performance Chart:** Added interactive Recharts area chart plotting total historical value of current holdings (24H/7D/30D).
-- [ ] **On-Chain Transactions Feed:** Live feed of recent large swaps/whale movements.
-- [x] **Tokenomics & Unlocks Widget:** Add upcoming token unlocks to CoinDetail page.
+### 1. AI Narrative Map (Yapay Zeka Trend Haritası) - [Devam Ediyor]
+- **Durum:** Narratives.tsx dosyası oluşturuldu, Framer Motion ile süzülen (floating) küreler kodlandı.
+- **Yapılacaklar:**
+  - App.tsx içerisine Route olarak eklenecek (<Route path="/narratives" element={<Narratives />} />).
+  - Navbar veya Sidebar'a (örneğin Dashboard yanına) "Narratives" menü linki eklenecek.
+  - Vercel'e pushlanıp test edilecek.
 
-## UI/UX Overhaul Roadmap
-- [x] **Dashboard:** Premium Bento Box arayüzü eklendi, framer-motion ve NumberFlow kuruldu.
-- [ ] **Market:** Liste tasarimlari, filtreler ve genel sayfa yapisi premium hisse gore bastan tasarlanacak.
-- [ ] **Portfolio:** Varlik kutulari ve grafikler goz yormayan, ultra-premium duzene gecirilecek.
-- [ ] **Alerts:** Eski uyari sayfalari ve pop-up'lar yeni sade/siyah estetigine uygun olacak sekilde yeniden yapilacak.
-- [ ] **Analysis:** AI destekli analiz sayfasi, CoinDetail kalitesinde surukleyici bir deneyime donusturulecek.
+### 2. Global Command Palette (Cmd + K) - [Sırada]
+- **Açıklama:** Kullanıcıların Cmd + K veya Ctrl + K tuşlarına bastığında ekranda beliren, Linear/Raycast tarzı bulanık (backdrop-blur-xl) arka planlı arama ekranı.
+- **Görevler:**
+  - SearchCommand.tsx bileşenini Premium UI standartlarına göre yeniden tasarla.
+  - Tüm sayfalara ve özelliklere (Örn: "Go to Settings", "Toggle Dark Mode", "View BTC") anında erişim sağlayacak komutları ekle.
 
-## Modern Tech Stack Integration Roadmap
-- [ ] **PostHog Integration:** Kullanıcı hareketlerini, tıklama dönüşümlerini ve A/B testlerini izlemek için PostHog'u React frontend'e entegre et.
-- [ ] **Resend Email Service:** "Hoş geldin", "Abonelik Onayı" ve "Fiyat Alarmları (Alerts)" e-postaları için Resend (React Email ile) altyapısını kur.
-- [ ] **Sentry Error Tracking:** Üretim ortamında (production) oluşacak frontend ve backend hatalarını anında yakalamak için Sentry yapılandırmasını ekle.
-- [ ] **Upstash (Redis):** Kripto API istek limitlerini aşmamak ve platform hızını artırmak için Upstash ile rate-limiting/caching stratejisi oluştur (İhtiyaç halinde).
+### 3. Social & Leaderboard (Liderlik Tablosu) - [Sırada]
+- **Açıklama:** En iyi kazanan cüzdanları veya AI stratejilerini gösteren şık bir sıralama sayfası.
+- **Görevler:**
+  - Leaderboard.tsx sayfasını oluştur.
+  - Anonim cüzdan skorlarını Bento Box kartları içinde listele.
+
+## 🟡 Sonraki Aşama (Backlog)
+
+### 1. Interactive Onboarding (Kullanıcı Karşılama Akışı)
+- Sisteme yeni kayıt olan kullanıcıları karşılayan; cüzdan bağlama, favori coinleri seçme ve AI asistanı ayarlama gibi adımları içeren çok şık bir Setup sihirbazı. (Bu özellik, tüm çekirdek özellikler bittikten sonra en son yapılmalıdır.)
+
+### 2. Whale X-Ray (Balina Cüzdan Röntgencisi)
+- Kullanıcıların herhangi bir Solana veya Ethereum cüzdan adresini yapıştırıp, o cüzdanın işlem geçmişini ve yapay zeka risk analizini şık grafiklerle (Bento Box) görebildiği bir araç.
+
+### 3. Time-Travel Backtesting (Zaman Makinesi)
+- Kullanıcıların geçmişe yönelik "Eğer 3 ay önce bu portföyü kursaydım veya AI'ı dinleseydim ne olurdu?" sorusunun cevabını gösteren animasyonlu, slider destekli bir test aracı.
+
+---
+**Tasarım Notu:** Yeni eklenecek tüm özelliklerde g-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl cam efekti ve Framer Motion geçişleri kullanılması zorunludur.
