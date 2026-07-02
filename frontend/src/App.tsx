@@ -18,6 +18,7 @@ import Market from "./pages/Market";
 import Alerts from "./pages/Alerts";
 import Analysis from "./pages/Analysis";
 import Narratives from "./pages/Narratives";
+import WhaleXRay from "./pages/WhaleXRay";
 
 import CoinDetail from "./pages/CoinDetail";
 import Heatmap from "./pages/Heatmap";
@@ -171,6 +172,7 @@ function AppInner() {
           <Route path="/coin/:slug" element={<CoinDetail />} />
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/narratives" element={<Narratives />} />
+          <Route path="/whale" element={<WhaleXRay />} />
           <Route path="/analysis" element={<Analysis />} />
 
           <Route path="/terms" element={<Terms />} />

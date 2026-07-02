@@ -28,6 +28,7 @@ import {
   Wallet,
   Sun,
   Moon,
+  Eye,
 } from "lucide-react";
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
@@ -143,6 +144,13 @@ const NAV_ITEMS = [
         label: "Market Heatmap",
         Icon: LayoutGrid,
         desc: "Visual market overview",
+        soon: false,
+      },
+      {
+        to: "/whale",
+        label: "Whale X-Ray",
+        Icon: Eye,
+        desc: "Analyze wallet portfolios",
         soon: false,
       },
       {
