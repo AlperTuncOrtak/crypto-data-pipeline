@@ -19,6 +19,7 @@ import Alerts from "./pages/Alerts";
 import Analysis from "./pages/Analysis";
 import Narratives from "./pages/Narratives";
 import WhaleXRay from "./pages/WhaleXRay";
+import TimeMachine from "./pages/TimeMachine";
 
 import CoinDetail from "./pages/CoinDetail";
 import Heatmap from "./pages/Heatmap";
@@ -173,6 +174,7 @@ function AppInner() {
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/narratives" element={<Narratives />} />
           <Route path="/whale" element={<WhaleXRay />} />
+          <Route path="/timemachine" element={<TimeMachine />} />
           <Route path="/analysis" element={<Analysis />} />
 
           <Route path="/terms" element={<Terms />} />

@@ -154,6 +154,13 @@ const NAV_ITEMS = [
         soon: false,
       },
       {
+        to: "/timemachine",
+        label: "Time Machine",
+        Icon: History,
+        desc: "Historical backtesting",
+        soon: false,
+      },
+      {
         to: "/correlation",
         label: "Correlation Matrix",
         Icon: Network,
