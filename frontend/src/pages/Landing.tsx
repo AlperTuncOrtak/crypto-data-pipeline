@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import {
-  Brain, BarChart2, Wallet, ArrowRight, Activity, Cpu, Shield, Zap, RefreshCw, Layers, Sparkles
+  Brain, Activity, Cpu, ArrowRight, Sparkles, Terminal, Command, Code
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ThreeDHero } from "../components/ThreeDHero";
+
 // ============================================================================
 // ANIMATION VARIANTS
 // ============================================================================
 const fadeUp = {
-  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 15 },
   visible: { 
     opacity: 1, 
     y: 0, 
-    filter: "blur(0px)",
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } 
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } 
   }
 };
 
@@ -24,7 +23,7 @@ const fadeUp = {
 // COMPONENTS
 // ============================================================================
 
-function FadeIn({ children, delay = 0, className = "", whileHover }: { children: React.ReactNode, delay?: number, className?: string, whileHover?: any }) {
+function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   return (
@@ -32,14 +31,12 @@ function FadeIn({ children, delay = 0, className = "", whileHover }: { children:
       ref={ref}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      whileHover={whileHover}
       variants={{
-        hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+        hidden: { opacity: 0, y: 15 },
         visible: { 
           opacity: 1, 
           y: 0, 
-          filter: "blur(0px)",
-          transition: { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] } 
+          transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] } 
         }
       }}
       className={className}
@@ -56,16 +53,10 @@ function FadeIn({ children, delay = 0, className = "", whileHover }: { children:
 export default function Landing() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const { scrollYProgress } = useScroll();
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [0.5, 0.8]);
-  const headerBlur = useTransform(scrollYProgress, [0, 0.1], ["10px", "20px"]);
   const { t } = useTranslation();
 
-  const PARTNERS = ["BINANCE", "COINBASE", "KRAKEN", "OKX", "BYBIT", "BITGET", "KUCOIN", "METAMASK", "PHANTOM", "TRUST WALLET"];
+  const PARTNERS = ["BINANCE", "COINBASE", "KRAKEN", "OKX", "BYBIT", "BITGET", "KUCOIN"];
 
-  // Live Simulation State
-  const [fearGreed, setFearGreed] = useState(76);
-  const [balance, setBalance] = useState(124592.00);
   const [orderbook, setOrderbook] = useState([
     { pair: "BTC-PERP", pnl: "+2.4", color: "green" },
     { pair: "ETH-PERP", pnl: "-1.2", color: "red" },
@@ -74,8 +65,6 @@ export default function Landing() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFearGreed(prev => Math.max(10, Math.min(90, prev + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3))));
-      setBalance(prev => prev + (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 50));
       setOrderbook(prev => prev.map(o => {
         const val = parseFloat(o.pnl) + (Math.random() > 0.5 ? 0.2 : -0.2);
         return {
@@ -89,308 +78,203 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] selection:bg-[var(--bg-elevated)] selection:text-white font-sans overflow-x-hidden">
       
-      {/* ── BACKGROUND AURORA MESH ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <motion.div 
-          animate={{ rotate: 360, scale: [1, 1.2, 1] }} 
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-[var(--accent)]/10 rounded-full blur-[120px] mix-blend-screen"
-        />
-        <motion.div 
-          animate={{ rotate: -360, scale: [1, 1.5, 1] }} 
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] mix-blend-screen"
-        />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay z-10"></div>
-        <div className="absolute inset-0 bg-[#0d0d0f]/60 backdrop-blur-[80px] z-10"></div>
-      </div>
+      {/* 🔴 HERO STRIPE (Raycast Signature) */}
+      <div className="absolute top-0 left-0 right-0 h-1 z-50 bg-[linear-gradient(90deg,#ff3366,#ff9933,#ff3366)]"></div>
+      <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none z-0"></div>
 
-      {/* ── 3D HERO CANVAS ── */}
-      <ThreeDHero />
-
-      {/* ── HEADER ── */}
-      <motion.header 
-        style={{ opacity: headerOpacity, backdropFilter: `blur(20px)` }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex items-center justify-between border-b border-white/[0.05] bg-[#0d0d0f]/50 transition-all duration-300"
-      >
+      {/* 🧭 HEADER */}
+      <header className="fixed top-0 left-0 right-0 z-40 px-6 lg:px-12 py-4 flex items-center justify-between border-b border-[var(--border)] bg-[var(--bg-base)] transition-all duration-300 mt-1">
         <Link to="/" className="flex items-center gap-3 group">
-          <motion.div 
-            whileHover={{ rotate: 180, scale: 1.1 }} 
-            transition={{ type: "spring", stiffness: 200, damping: 10 }}
-            className="w-8 h-8 rounded-xl bg-gradient-to-br from-white to-gray-500 flex items-center justify-center text-black font-black text-xl shadow-[0_0_15px_rgba(255,255,255,0.2)]"
-          >
+          <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center text-black font-black text-sm">
             C
-          </motion.div>
-          <span className="text-xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">
+          </div>
+          <span className="text-[15px] font-semibold tracking-tight text-[var(--text-primary)]">
             CryptoNeko
           </span>
         </Link>
         <div className="flex items-center gap-6">
-          <Link to="/pro" className="text-sm font-semibold text-gray-400 hover:text-white transition-colors">Pro</Link>
-          <Link to="/pricing" className="text-sm font-semibold text-gray-400 hover:text-white transition-colors">Pricing</Link>
+          <Link to="/pro" className="text-[13px] font-medium text-[var(--text-secondary)] hover:text-white transition-colors">Pro</Link>
+          <Link to="/pricing" className="text-[13px] font-medium text-[var(--text-secondary)] hover:text-white transition-colors">Pricing</Link>
           {loading ? null : user ? (
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-5 py-2.5 rounded-full bg-white text-black font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+              className="px-4 py-2 rounded-md bg-white text-black font-medium text-[13px] hover:bg-[#e8e8e8] transition-colors"
             >
               Dashboard
             </button>
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="px-5 py-2.5 rounded-full bg-white text-black font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+              className="px-4 py-2 rounded-md bg-white text-black font-medium text-[13px] hover:bg-[#e8e8e8] transition-colors"
             >
-              Sign In
+              Log in
             </button>
           )}
         </div>
-      </motion.header>
+      </header>
 
-      {/* ── HERO SECTION ── */}
-      <main className="relative z-10 pt-40 pb-20 px-6 lg:px-12 max-w-[1400px] mx-auto">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-32">
+      {/* 🚀 HERO SECTION */}
+      <main className="relative z-10 pt-32 pb-20 px-6 lg:px-12 max-w-[1200px] mx-auto">
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-24">
           
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-sm font-medium text-gray-300 mb-8 backdrop-blur-md flex items-center gap-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="px-3 py-1 rounded-md border border-[var(--border)] bg-[var(--bg-surface)] text-[12px] font-medium text-[var(--text-secondary)] mb-8 flex items-center gap-2"
           >
-            <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></span>
+            <Command size={12} className="text-[var(--text-muted)]" />
             Intelligence powered by Deep Learning
           </motion.div>
 
           <motion.h1 
             initial="hidden" animate="visible" variants={fadeUp}
-            className="text-5xl md:text-7xl font-black tracking-tighter leading-[1.1] mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500"
+            className="text-5xl md:text-[64px] font-bold tracking-tight leading-[1.1] mb-6 text-[var(--text-primary)]"
           >
             Algorithmic <br /> Crypto Trading.
           </motion.h1>
 
           <motion.p 
             initial="hidden" animate="visible" variants={fadeUp} custom={1}
-            className="text-base md:text-lg text-gray-400 font-medium max-w-2xl leading-relaxed mb-8"
+            className="text-base md:text-[17px] text-[var(--text-secondary)] font-normal max-w-2xl leading-relaxed mb-8"
           >
             Advanced portfolio tracking, real-time AI sentiment analysis, and professional-grade algorithmic indicators in one sleek, unified terminal.
           </motion.p>
 
           <motion.div 
             initial="hidden" animate="visible" variants={fadeUp} custom={2}
-            className="flex flex-col sm:flex-row items-center gap-4"
+            className="flex flex-col sm:flex-row items-center gap-3"
           >
             <button 
               onClick={() => navigate(user ? "/dashboard" : "/login")}
-              className="px-6 py-3 rounded-full bg-white text-black font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-2 group"
+              className="px-5 py-2.5 rounded-md bg-white text-black font-medium text-[14px] hover:bg-[#e8e8e8] transition-colors flex items-center gap-2 group"
             >
-              Start Trading <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              Start Trading <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
             <button 
               onClick={() => navigate("/pricing")}
-              className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-base hover:bg-white/10 transition-colors"
+              className="px-5 py-2.5 rounded-md bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-primary)] font-medium text-[14px] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               View Pricing
             </button>
           </motion.div>
         </div>
 
-        {/* ── INFINITE MARQUEE ── */}
-        <div className="w-full overflow-hidden mb-24 py-8 border-y border-white/5 relative bg-white/[0.01]">
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0d0f] to-transparent z-10 pointer-events-none"></div>
-          <motion.div 
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="flex items-center gap-16 whitespace-nowrap"
-            style={{ width: "max-content" }}
-          >
-            {[...PARTNERS, ...PARTNERS].map((partner, i) => (
-              <div key={i} className="text-lg md:text-xl font-black text-gray-600/50 hover:text-white/80 transition-colors flex items-center gap-3">
-                <Sparkles size={16} className="text-[var(--accent)]/30" />
-                {partner}
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* ── BENTO BOX FEATURES (gettrade.ai style) ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-24">
+        {/* 🧱 BENTO BOX FEATURES (Raycast Spec) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-24">
           
-          <FadeIn delay={0.1} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            
+          <FadeIn delay={0.1} className="lg:col-span-2 relative overflow-hidden rounded-[10px] bg-[var(--bg-surface)] border border-[var(--border)] p-6 min-h-[300px] flex flex-col justify-between hover:bg-[var(--bg-elevated)] transition-colors">
             {/* UI Preview: AI Dashboard */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-6 shadow-2xl flex items-center justify-center">
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--accent)]/30 rounded-full blur-[50px] pointer-events-none"></div>
-              <div className="flex items-center gap-8 w-full max-w-sm">
-                <div className="relative w-32 h-32 shrink-0">
-                  <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_var(--accent-soft)]">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * fearGreed / 100)} strokeLinecap="round" className="transition-all duration-1000 ease-out" />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-black text-white">{fearGreed}</span>
-                    <span className="text-[10px] text-[var(--accent)] font-bold tracking-widest uppercase">{fearGreed > 75 ? "Extr. Greed" : fearGreed > 55 ? "Greed" : fearGreed > 45 ? "Neutral" : "Fear"}</span>
+            <div className="relative z-10 flex-1 mb-6 w-full rounded-md border border-[var(--border)] bg-[var(--bg-base)] overflow-hidden p-4 flex items-center justify-center">
+              <div className="flex items-center gap-6 w-full max-w-sm">
+                <div className="flex flex-col gap-2 w-full">
+                  <div className="h-1.5 w-full bg-[var(--border)] rounded-sm overflow-hidden"><div className="h-full bg-[var(--text-primary)] w-[85%]"></div></div>
+                  <div className="flex justify-between text-[11px] font-mono text-[var(--text-muted)]">
+                    <span>EXTREME GREED</span>
+                    <span>85/100</span>
                   </div>
-                </div>
-                <div className="flex flex-col gap-3 w-full">
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div style={{ width: `${Math.min(100, fearGreed + 10)}%` }} className="h-full bg-green-500 transition-all duration-1000"></div></div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div style={{ width: `${fearGreed}%` }} className="h-full bg-[var(--accent)] transition-all duration-1000"></div></div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div style={{ width: `${Math.max(0, fearGreed - 20)}%` }} className="h-full bg-red-500 transition-all duration-1000"></div></div>
                 </div>
               </div>
             </div>
             
             <div className="relative z-10 mt-auto">
-              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-5">
-                <Brain className="text-[var(--accent)]" size={20} />
+              <div className="w-8 h-8 rounded-md bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center mb-4">
+                <Brain className="text-[var(--text-primary)]" size={16} />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold mb-2 tracking-tight text-white">AI Market Analysis</h3>
-              <p className="text-gray-400 max-w-md text-sm leading-relaxed">
-                Our proprietary AI analyzes sentiment across millions of data points, giving you an edge with real-time Fear & Greed indices and predictive modeling.
+              <h3 className="text-[15px] font-semibold mb-1 text-[var(--text-primary)]">AI Market Analysis</h3>
+              <p className="text-[13px] text-[var(--text-secondary)] max-w-md leading-relaxed">
+                Our proprietary AI analyzes sentiment across millions of data points, giving you an edge with real-time Fear & Greed indices.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            
+          <FadeIn delay={0.2} className="relative overflow-hidden rounded-[10px] bg-[var(--bg-surface)] border border-[var(--border)] p-6 min-h-[300px] flex flex-col justify-between hover:bg-[var(--bg-elevated)] transition-colors">
             {/* UI Preview: Orderbook/Sparkline */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-4 shadow-2xl flex flex-col justify-end gap-2">
+            <div className="relative z-10 flex-1 mb-6 w-full rounded-md border border-[var(--border)] bg-[var(--bg-base)] overflow-hidden p-3 flex flex-col justify-end gap-1.5">
               {orderbook.map((o, i) => (
-                <div key={i} className={`flex justify-between items-center px-2 py-1.5 rounded-md bg-${o.color}-500/10 border border-${o.color}-500/20 transition-all duration-300`}>
-                  <span className={`text-[10px] font-mono text-${o.color}-400`}>{o.pair}</span>
-                  <span className={`text-xs font-bold text-${o.color}-400`}>{o.pnl}%</span>
+                <div key={i} className={`flex justify-between items-center px-2 py-1.5 rounded bg-[var(--bg-surface)] border border-[var(--border)]`}>
+                  <span className={`text-[10px] font-mono text-[var(--text-secondary)]`}>{o.pair}</span>
+                  <span className={`text-[11px] font-mono ${o.color === 'green' ? 'text-emerald-400' : 'text-rose-400'}`}>{o.pnl}%</span>
                 </div>
               ))}
             </div>
 
             <div className="relative z-10 mt-auto">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-                <Activity className="text-gray-300" size={20} />
+              <div className="w-8 h-8 rounded-md bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center mb-4">
+                <Activity className="text-[var(--text-primary)]" size={16} />
               </div>
-              <h3 className="text-xl font-bold mb-2 tracking-tight text-white">Real-Time Data</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <h3 className="text-[15px] font-semibold mb-1 text-[var(--text-primary)]">Real-Time Data</h3>
+              <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
                 Millisecond-precision websocket feeds straight to your dashboard. No delays.
               </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.3} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
-            <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            
-            {/* UI Preview: Wallet Sync */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors p-5 shadow-2xl flex flex-col items-center justify-center relative">
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-               <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ type: "spring", delay: 0.4 }} className="w-12 h-12 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center mb-3 z-10 relative">
-                 <Wallet className="text-[var(--accent)]" size={20} />
-                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#19191c]"></div>
-               </motion.div>
-               <div className="text-lg font-black text-white z-10 font-mono transition-all duration-500">${balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-               <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="text-xs font-bold text-gray-500 z-10 mt-1 uppercase tracking-widest">Total Balance</motion.div>
-            </div>
-
-            <div className="relative z-10 mt-auto">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-                <Wallet className="text-gray-300" size={20} />
-              </div>
-              <h3 className="text-xl font-bold mb-2 tracking-tight text-white">Portfolio Sync</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Automatically import trades via CSV or connect on-chain wallets for tracking.
-              </p>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.4} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-2 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-white/5 p-6 md:p-8 min-h-[350px] flex flex-col justify-between">
-             <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-[var(--accent)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            
+          <FadeIn delay={0.3} className="lg:col-span-3 relative overflow-hidden rounded-[10px] bg-[var(--bg-surface)] border border-[var(--border)] p-6 md:p-8 min-h-[300px] flex flex-col justify-between hover:bg-[var(--bg-elevated)] transition-colors">
             {/* UI Preview: Algo Code */}
-            <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/5 bg-[#0a0a0c] overflow-hidden group-hover:border-white/10 transition-colors p-6 shadow-2xl flex flex-col justify-center font-mono text-xs md:text-sm text-gray-500 relative">
-               <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-[60px] pointer-events-none"></div>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-purple-400">import <span className="text-white">{' { MarketMaker } '}</span> from <span className="text-green-400">'@crypto/algo'</span>;</motion.div>
+            <div className="relative z-10 flex-1 mb-6 w-full rounded-md border border-[var(--border)] bg-[var(--bg-base)] overflow-hidden p-4 font-mono text-[11px] text-[var(--text-secondary)] leading-loose">
+               <div><span className="text-[var(--text-primary)]">import</span> {' { MarketMaker } '} <span className="text-[var(--text-primary)]">from</span> '@crypto/algo';</div>
                <br/>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.8 }}><span className="text-blue-400">const</span> <span className="text-white">strategy</span> = <span className="text-blue-400">new</span> <span className="text-yellow-200">MarketMaker</span>({'{'}</motion.div>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.2 }} className="pl-4">pair: <span className="text-green-400">'BTC/USDT'</span>,</motion.div>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.6 }} className="pl-4">riskFactor: <span className="text-orange-400">0.05</span>,</motion.div>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.0 }} className="pl-4">leverage: <span className="text-orange-400">10</span>,</motion.div>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.4 }}>{'}'});</motion.div>
+               <div><span className="text-[var(--text-primary)]">const</span> strategy = <span className="text-[var(--text-primary)]">new</span> MarketMaker({'{'}</div>
+               <div className="pl-4">pair: 'BTC/USDT',</div>
+               <div className="pl-4">riskFactor: 0.05,</div>
+               <div className="pl-4">leverage: 10,</div>
+               <div>{'}'});</div>
                <br/>
-               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.8 }}><span className="text-white">strategy</span>.<span className="text-yellow-200">execute</span>(); <span className="text-green-500 font-bold ml-2 animate-pulse">// Running...</span></motion.div>
-            </div>
-
-            <div className="relative z-10 mt-auto">
-              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-5">
-                <Cpu className="text-[var(--accent)]" size={20} />
-              </div>
-              <h3 className="text-xl md:text-2xl font-bold mb-2 tracking-tight text-white">Algorithmic Edge</h3>
-              <p className="text-gray-400 max-w-md text-sm leading-relaxed">
-                Utilize advanced quantitative metrics typically reserved for institutional trading desks, simplified into an elegant UI.
-              </p>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.5} whileHover={{ y: -8, transition: { duration: 0.3 } }} className="md:col-span-3 relative group overflow-hidden rounded-[2rem] bg-[#19191c] border border-[var(--accent)]/30 p-6 md:p-10 min-h-[350px] flex flex-col justify-between">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none group-hover:bg-[var(--accent)]/20 transition-colors duration-700"></div>
-            
-            {/* UI Preview: Orbs */}
-            <div className="relative z-10 flex-1 mb-8 w-full rounded-2xl border border-white/5 bg-black/40 overflow-hidden group-hover:border-white/10 transition-colors shadow-2xl flex items-center justify-center p-8">
-               <div className="relative w-full h-full min-h-[160px] flex items-center justify-center gap-6">
-                 {/* Orb 1 */}
-                 <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0 }} className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(225,29,72,0.4)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #e11d48dd, #e11d4844, rgba(0,0,0,0.8))" }}>
-                   <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
-                   <span className="text-white font-black text-xs">Memecoins</span>
-                 </motion.div>
-                 {/* Orb 2 */}
-                 <motion.div animate={{ y: [0, -15, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }} className="w-32 h-32 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_40px_rgba(124,58,237,0.5)] relative -mt-8" style={{ background: "radial-gradient(circle at 30% 30%, #7c3aeddd, #7c3aed44, rgba(0,0,0,0.8))" }}>
-                   <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
-                   <span className="text-white font-black text-sm">AI</span>
-                 </motion.div>
-                 {/* Orb 3 */}
-                 <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 1 }} className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] relative" style={{ background: "radial-gradient(circle at 30% 30%, #10b981dd, #10b98144, rgba(0,0,0,0.8))" }}>
-                   <div className="absolute top-[10%] left-[15%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
-                   <span className="text-white font-black text-[10px]">RWA</span>
-                 </motion.div>
-               </div>
+               <div>strategy.execute(); <span className="text-[var(--text-muted)]">// Running...</span></div>
             </div>
 
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center mb-4">
-                  <Brain className="text-[var(--accent)]" size={20} />
+                <div className="w-8 h-8 rounded-md bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center mb-4">
+                  <Terminal className="text-[var(--text-primary)]" size={16} />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-2 tracking-tight text-white">AI Narrative Map <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-[var(--accent)] text-[#111]">New</span></h3>
-                <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
-                  Stop chasing green candles. Our AI visually maps where the market liquidity and hype are flowing in real-time. Follow the narratives before they break out.
+                <h3 className="text-[15px] font-semibold mb-1 text-[var(--text-primary)]">Algorithmic Edge</h3>
+                <p className="text-[13px] text-[var(--text-secondary)] max-w-xl leading-relaxed">
+                  Utilize advanced quantitative metrics typically reserved for institutional trading desks, simplified into an elegant UI.
                 </p>
               </div>
             </div>
           </FadeIn>
         </div>
 
-        {/* ── CALL TO ACTION ── */}
+        {/* 🎬 CALL TO ACTION */}
         <FadeIn delay={0.1}>
-          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#19191c] to-[#0d0d0f] border border-white/10 px-8 py-16 text-center">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-[var(--accent)]/10 blur-[100px] rounded-full pointer-events-none"></div>
-            
-            <h2 className="relative z-10 text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
+          <div className="relative overflow-hidden rounded-[10px] bg-[var(--bg-surface)] border border-[var(--border)] px-8 py-12 text-center">
+            <h2 className="relative z-10 text-2xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
               Ready to trade smarter?
             </h2>
-            <p className="relative z-10 text-gray-400 text-base mb-8 max-w-xl mx-auto">
+            <p className="relative z-10 text-[var(--text-secondary)] text-[14px] mb-6 max-w-xl mx-auto">
               Join elite traders who rely on CryptoNeko's intelligence layer to navigate the markets.
             </p>
             <button 
-              onClick={() => navigate(user ? "/dashboard" : "/login")}
-              className="relative z-10 px-8 py-4 rounded-full bg-white text-black font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)]"
+              onClick={() => navigate("/signup")}
+              className="relative z-10 px-5 py-2.5 rounded-md bg-white text-black font-medium text-[14px] hover:bg-[#e8e8e8] transition-colors"
             >
-              {user ? "Go to Dashboard" : "Create Free Account"}
+              Create Free Account
             </button>
           </div>
         </FadeIn>
       </main>
 
-      
-
+      {/* 🦶 FOOTER */}
+      <footer className="border-t border-[var(--border)] py-8 mt-12 bg-[var(--bg-base)] relative z-10">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded bg-white flex items-center justify-center text-black font-bold text-[10px]">C</div>
+            <span className="text-[13px] font-semibold text-[var(--text-primary)]">CryptoNeko</span>
+          </div>
+          <div className="text-[12px] text-[var(--text-muted)]">
+            © {new Date().getFullYear()} CryptoNeko Analytics. All rights reserved.
+          </div>
+          <div className="flex gap-4 text-[12px] text-[var(--text-secondary)]">
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

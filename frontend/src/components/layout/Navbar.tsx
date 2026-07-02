@@ -258,14 +258,11 @@ function NavItem({ item, isActive }) {
             top: "calc(100% + 8px)",
             left: 0,
             zIndex: 1000,
-            borderRadius: 12,
+            borderRadius: 10,
             overflow: "hidden",
             minWidth: 272,
-            background: "rgba(5, 5, 5, 0.85)",
-            backdropFilter: "blur(32px) saturate(180%)",
-            WebkitBackdropFilter: "blur(32px) saturate(180%)",
+            background: "var(--bg-surface)",
             border: "1px solid var(--border)",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
             opacity: open ? 1 : 0,
             transform: open ? "translateY(0) scale(1)" : "translateY(-6px) scale(0.97)",
             pointerEvents: open ? "auto" : "none",
@@ -299,8 +296,7 @@ function NavItem({ item, isActive }) {
                   }}
                   onMouseEnter={(e) => {
                     if (!sub.soon) {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+                      e.currentTarget.style.background = "var(--bg-elevated)";
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -756,11 +752,9 @@ export default function Navbar({
                     position: "absolute",
                     top: "calc(100% + 8px)",
                     right: 0,
-                    background: "rgba(10,10,12,0.95)",
-                    backdropFilter: "blur(20px)",
+                    background: "var(--bg-surface)",
                     border: "1px solid var(--border)",
-                    borderRadius: 14,
-                    boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
+                    borderRadius: 10,
                     minWidth: 240,
                     overflow: "hidden",
                     zIndex: 200,
@@ -785,7 +779,7 @@ export default function Navbar({
                       }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.background =
-                          "var(--border)")
+                          "var(--bg-elevated)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.background = "transparent")

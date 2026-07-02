@@ -21,9 +21,9 @@
 
 /* ── DEFAULT / FALLBACK (Midnight + Zinc) ── */
 :root {
-  --text-primary:   rgba(255, 255, 255, 0.95);
-  --text-secondary: rgba(255, 255, 255, 0.65);
-  --text-muted:     rgba(255, 255, 255, 0.40);
+  --text-primary:   #f4f4f6;
+  --text-secondary: #cdcdcd;
+  --text-muted:     #9c9c9d;
 
   /* Semantic colors */
   --positive:       #10b981;
@@ -42,16 +42,16 @@
 
 /* ── BASE THEMES ── */
 :root, [data-theme="midnight"] {
-  --bg-base:       #000000;
-  --bg-surface:    #0C0C0E;
-  --bg-elevated:   #131316;
-  --bg-card:       #09090B;
+  --bg-base:       #07080a;
+  --bg-surface:    #0d0d0d;
+  --bg-elevated:   #101111;
+  --bg-card:       #121212;
   --bg-hover:      rgba(255, 255, 255, 0.04);
 
-  --border:        rgba(255, 255, 255, 0.06);
-  --border-soft:   rgba(255, 255, 255, 0.03);
-  --border-mid:    rgba(255, 255, 255, 0.10);
-  --border-focus:  rgba(255, 255, 255, 0.15);
+  --border:        #242728;
+  --border-soft:   rgba(255, 255, 255, 0.08);
+  --border-mid:    rgba(255, 255, 255, 0.16);
+  --border-focus:  rgba(255, 255, 255, 0.20);
 }
 
 [data-theme="dark"] {
@@ -120,75 +120,60 @@
    COMPONENT BASE CLASSES
 ═══════════════════════════════════════════════════════════ */
 
-/* Card — Linear's main container surface */
+/* Card — Raycast main container surface */
 .glass-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.03), 
-    0 4px 12px rgba(0, 0, 0, 0.5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   transition: var(--transition-smooth);
 }
 .glass-card:hover {
-  border-color: var(--border-mid);
-  background: var(--bg-hover);
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.06), 
-    0 6px 16px rgba(0, 0, 0, 0.6);
+  background: var(--bg-elevated);
 }
 
 /* Card - Modern Clean Surface */
 .card-clean {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 .card-clean:hover {
-  border-color: var(--border-mid);
   background: var(--bg-elevated);
 }
 
 /* Panel — inner containers, sections */
 .glass-panel {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   transition: var(--transition-smooth);
 }
 
-/* Button — primary CTA with premium gradient */
+/* Button — primary CTA */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: -0.01em;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%), var(--bg-elevated);
-  color: #fff;
+  border: none;
+  background: #ffffff;
+  color: #000000;
   cursor: pointer;
   transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 .btn-primary:hover {
-  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%), var(--bg-hover);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+  background: #e8e8e8;
   transform: translateY(-1px);
 }
 
-/* Frosted nav surface — used in sticky headers / dropdowns */
+/* Frosted nav surface — Raycast opaque top nav */
 .frosted {
-  background: rgba(5, 5, 5, 0.65);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  background: var(--bg-base);
   border-bottom: 1px solid var(--border);
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Mesh gradient hero background */
@@ -292,6 +277,7 @@ body {
   background-color: var(--bg-base);
   color: var(--text-primary);
   font-family: 'Inter', 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "calt", "kern", "liga", "ss03";
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
