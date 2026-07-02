@@ -18,8 +18,8 @@ import Market from "./pages/Market";
 import Alerts from "./pages/Alerts";
 import Analysis from "./pages/Analysis";
 import Narratives from "./pages/Narratives";
-import WhaleXRay from "./pages/WhaleXRay";
 import TimeMachine from "./pages/TimeMachine";
+import Leaderboard from "./pages/Leaderboard";
 
 import CoinDetail from "./pages/CoinDetail";
 import Heatmap from "./pages/Heatmap";
@@ -145,6 +145,7 @@ function AppInner() {
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
         <Routes>
+          <Route path="/leaderboard" element={<Leaderboard />} />
           {/* Public */}
           <Route
             path="/"

@@ -29,6 +29,7 @@ import {
   Sun,
   Moon,
   Eye,
+  Trophy,
 } from "lucide-react";
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
@@ -42,6 +43,7 @@ import AnimatedLogo from "./AnimatedLogo";
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
   { to: "/portfolio", label: "Portfolio", Icon: Wallet, dropdown: null },
+  { to: "/leaderboard", label: "Leaderboard", Icon: Trophy, dropdown: null },
   { to: "/pro", label: "Pro", Icon: Crown, dropdown: null },
   {
     to: "/market",
