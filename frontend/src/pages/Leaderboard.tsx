@@ -177,7 +177,7 @@ export default function Leaderboard() {
         {/* LIST VIEW - Coinbase Style */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
-          className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] p-2 md:p-4 overflow-hidden"
+          className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-2 md:p-4 overflow-hidden"
         >
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             <table className="w-full text-left border-collapse min-w-[600px]">
@@ -237,3 +237,4 @@ function Crown(props: any) {
     </svg>
   );
 }
+

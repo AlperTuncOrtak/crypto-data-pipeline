@@ -1331,8 +1331,8 @@ export default function Portfolio() {
         {/* TOP MOVERS WIDGETS */}
         {topPerformer && worstPerformer && topPerformer.symbol !== worstPerformer.symbol && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-green-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
+            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-green-500/20 group-hover:scale-150 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp size={14} className="text-green-400" /> Top Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
                 {topPerformer.image_url ? <img src={topPerformer.image_url} alt={topPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-300">{topPerformer.symbol[0]}</div>}
@@ -1345,8 +1345,8 @@ export default function Portfolio() {
               </div>
             </div>
             
-            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-red-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-red-500/20 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
+            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-red-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-red-500/20 group-hover:scale-150 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingDown size={14} className="text-red-400" /> Worst Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
                 {worstPerformer.image_url ? <img src={worstPerformer.image_url} alt={worstPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-300">{worstPerformer.symbol[0]}</div>}
@@ -1375,7 +1375,7 @@ export default function Portfolio() {
           </div>
 
           {showAddSource && (
-            <div className="mb-6 bg-[#16181c] border border-[#273951]/50 rounded-[32px] p-6 shadow-xl relative overflow-hidden">
+            <div className="mb-6 bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] rounded-[32px] p-6 shadow-2xl relative overflow-hidden">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <Wallet size={14} className="text-[var(--accent)]" /> Import Data
               </h3>
@@ -1395,7 +1395,7 @@ export default function Portfolio() {
             </div>
           )}
 
-          <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6 shadow-xl mb-6">
+          <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] rounded-[32px] p-6 shadow-2xl mb-6">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
               <RefreshCw size={14} className="text-[var(--accent)]" /> {t('portfolio.eth_wallet')}
             </p>
@@ -1761,4 +1761,5 @@ export default function Portfolio() {
     </div>
   );
 }
+
 

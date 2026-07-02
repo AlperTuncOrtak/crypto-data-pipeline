@@ -529,12 +529,7 @@ export default function Heatmap() {
           position: "relative",
           width: "100%",
           paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%`,
-          backgroundColor: "rgba(25, 25, 28, 0.5)",
-          backdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.05)",
-          borderRadius: 24,
-          overflow: "hidden",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+          backgroundColor: "#16181cCC", backdropFilter: "blur(20px)", border: "1px solid rgba(39, 57, 81, 0.5)", borderRadius: 32, overflow: "hidden", boxShadow: "inset 0 0 80px rgba(39,57,81,0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.8)"
         }}
       >
         <div
@@ -757,4 +752,5 @@ export default function Heatmap() {
     </div>
   );
 }
+
 

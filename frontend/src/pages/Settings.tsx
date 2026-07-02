@@ -30,7 +30,7 @@ function Section({ title, icon: Icon, children }: any) {
   return (
     <motion.div 
       variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} 
-      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden mb-6"
+      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] overflow-hidden mb-6"
     >
       <div className="flex items-center gap-2.5 px-6 py-4 border-b border-[#273951]/50 bg-white/[0.02]">
         <Icon size={15} style={{ color: "var(--accent)" }} />
@@ -636,4 +636,5 @@ export default function Settings() {
     </div>
   );
 }
+
 

@@ -359,7 +359,7 @@ function MarketContextCard({ marketContext }) {
 
   return (
     <div
-      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
     >
       <div className="flex items-center gap-2 mb-5">
         <Activity size={14} style={{ color: "var(--accent)" }} />
@@ -653,7 +653,7 @@ function BullishnessGauge({ score }) {
 
   return (
     <div
-      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
     >
       <div className="flex items-center gap-2 mb-4">
         <span style={{ fontSize: 16 }}>📊</span>
@@ -831,7 +831,7 @@ function ActionTagsCard({ tags }) {
   if (!tags || tags.length === 0) return null;
   return (
     <div
-      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
     >
       <div className="flex items-center gap-2 mb-4">
         <Zap size={14} style={{ color: "var(--accent)" }} />
@@ -919,7 +919,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
 
   return (
     <div
-      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+      className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
     >
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
@@ -2279,7 +2279,7 @@ export default function AIAnalysis() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
             {/* Technical Indicators */}
             <div
-              className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+              className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
             >
               <div className="flex items-center gap-2 mb-5">
                 <Zap size={14} style={{ color: "var(--accent)" }} />
@@ -2381,7 +2381,7 @@ export default function AIAnalysis() {
 
             {/* AI Summary */}
             <div
-              className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+              className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
             >
               <div className="flex items-center gap-2 mb-5">
                 <Brain size={14} style={{ color: "var(--accent)" }} />
@@ -2444,7 +2444,7 @@ export default function AIAnalysis() {
             {/* Risk + Key Levels */}
             <div className="flex flex-col gap-4">
               <div
-                className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+                className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Shield size={14} style={{ color: "var(--accent)" }} />
@@ -2496,7 +2496,7 @@ export default function AIAnalysis() {
 
               <div
                 className="flex-1"
-                className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] p-6"
+                className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Target size={14} style={{ color: "var(--accent)" }} />
@@ -2597,3 +2597,4 @@ export default function AIAnalysis() {
     </div>
   );
 }
+

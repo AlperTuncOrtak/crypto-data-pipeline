@@ -43,7 +43,7 @@ const TYPE_CONFIG = {
 
 function SidebarCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden">
+    <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] overflow-hidden">
       <div className="px-5 py-4 border-b border-[#273951]/50">
         <span className="text-[13px] font-bold text-white tracking-wide">{title}</span>
       </div>
@@ -291,7 +291,7 @@ export default function Alerts() {
                         variants={itemVariants}
                         key={`${alert.symbol}-${alert.type}-${idx}`}
                         onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-[#273951]/50 transition-colors duration-200 hover:bg-white/[0.04]"
+                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-[#273951]/50 transition-all duration-300 hover:bg-white/[0.04] hover:scale-[0.99] cursor-pointer"
                         style={{
                           borderLeft: `3px solid ${config.dot}`,
                           cursor: coin.slug ? 'pointer' : 'default',
@@ -349,4 +349,6 @@ export default function Alerts() {
     </div>
   )
 }
+
+
 
