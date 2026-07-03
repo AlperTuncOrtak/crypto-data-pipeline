@@ -128,7 +128,7 @@ function AppInner() {
       {/* Global Ticker */}
       {location.pathname !== "/onboarding" && <CoinTicker />}
 
-      {location.pathname !== "/onboarding" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
+      {location.pathname !== "/onboarding" && location.pathname !== "/" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
             {location.pathname !== "/onboarding" && location.pathname !== "/" && (
         <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
           <div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div>

@@ -136,28 +136,7 @@ export default function CoinDetail() {
     return cloned;
   }, [history, coin?.current_price]);
 
-  if (isLoading) return (
-    <div className="flex items-center justify-center min-h-[500px]">
-      <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin drop-shadow-[0_0_15px_var(--accent-soft)]"></div>
-    </div>
-  );
-
-  if (isError || !coin) return (
-    <div className="flex flex-col items-center justify-center min-h-[500px] gap-5">
-      <div className="text-6xl drop-shadow-2xl">🔍</div>
-      <div className="text-2xl font-black text-white tracking-tight">Coin not found</div>
-      <button onClick={() => navigate("/market")} className="px-6 py-2.5 rounded-full border border-[#273951]/50 bg-white/5 text-white font-bold hover:bg-white/10 transition-colors shadow-lg">
-        ← Back to Markets
-      </button>
-    </div>
-  );
-
-  const change = Number(coin.price_change_percentage_24h);
-  const isPositive = change >= 0;
   const chartData = Array.isArray(history) ? history : [];
-  const chartTrend = chartData.length >= 2
-    ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
-    : isPositive;
   
   const ohlcData = useMemo(() => {
     if (!chartData || chartData.length === 0) return [];
@@ -185,6 +164,28 @@ export default function CoinDetail() {
       };
     });
   }, [chartData]);
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[500px]">
+      <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin drop-shadow-[0_0_15px_var(--accent-soft)]"></div>
+    </div>
+  );
+
+  if (isError || !coin) return (
+    <div className="flex flex-col items-center justify-center min-h-[500px] gap-5">
+      <div className="text-6xl drop-shadow-2xl">🔍</div>
+      <div className="text-2xl font-black text-white tracking-tight">Coin not found</div>
+      <button onClick={() => navigate("/market")} className="px-6 py-2.5 rounded-full border border-[#273951]/50 bg-white/5 text-white font-bold hover:bg-white/10 transition-colors shadow-lg">
+        ← Back to Markets
+      </button>
+    </div>
+  );
+
+  const change = Number(coin.price_change_percentage_24h);
+  const isPositive = change >= 0;
+  const chartTrend = chartData.length >= 2
+    ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
+    : isPositive;
 
   const chartColor = chartTrend ? "#22c55e" : "#ef4444";
   const brandColor = getCoinColor(coin.symbol);
