@@ -484,8 +484,8 @@ export default function Navbar({
 
           {/* NAV LINKS */}
           <nav
-            className="desktop-nav-links"
-            style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}
+            className="hidden md:flex desktop-nav-links"
+            style={{ alignItems: "center", gap: 2, flex: 1 }}
           >
             {NAV_ITEMS.map((item) => {
               const isActive =

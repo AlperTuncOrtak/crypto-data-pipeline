@@ -18,6 +18,9 @@ import {
 } from 'wagmi/chains';
 
 import './index.css'
+import { registerSW } from 'virtual:pwa-register'
+
+registerSW({ immediate: true })
 import './i18n'
 import App from './App.jsx'
 import * as Sentry from "@sentry/react";

@@ -12,6 +12,7 @@ import Navbar from "./components/layout/Navbar";
 import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistSidebar";
 import Footer from "./components/layout/Footer";
+import MobileNav from "./components/layout/MobileNav";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
@@ -134,7 +135,7 @@ function AppInner() {
         </div>
       )}
       <main
-        className={location.pathname === "/" || location.pathname === "/onboarding" ? "" : "main-content"}
+        className={location.pathname === "/" || location.pathname === "/onboarding" ? "pb-20 md:pb-0" : "main-content pb-20 md:pb-0"}
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
         <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} />
@@ -257,7 +258,9 @@ function AppInner() {
               </ProtectedRoute>
             }
           />
-        </Routes></Suspense></main>{location.pathname !== "/onboarding" && <Footer />}
+        </Routes></Suspense></main>
+      {location.pathname !== "/onboarding" && <MobileNav />}
+      {location.pathname !== "/onboarding" && <Footer />}
 
       <AIChatWidget />
 
