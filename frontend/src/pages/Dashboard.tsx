@@ -148,10 +148,11 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"all" | "gainers" | "losers" | "trending">("all");
 
   // Derived stats
-  const calcTotalVolume = coins?.reduce((s: number, c: any) => s + (Number(c.total_volume) || 0), 0) || 0;
-  const calcTotalMcap = coins?.reduce((s: number, c: any) => s + (Number(c.market_cap) || 0), 0) || 0;
-  const btc = coins?.find((c: any) => c.symbol?.toUpperCase() === "BTC");
-  const eth = coins?.find((c: any) => c.symbol?.toUpperCase() === "ETH");
+  const safeCoins = Array.isArray(coins) ? coins : [];
+  const calcTotalVolume = safeCoins.reduce((s: number, c: any) => s + (Number(c.total_volume) || 0), 0) || 0;
+  const calcTotalMcap = safeCoins.reduce((s: number, c: any) => s + (Number(c.market_cap) || 0), 0) || 0;
+  const btc = safeCoins.find((c: any) => c.symbol?.toUpperCase() === "BTC");
+  const eth = safeCoins.find((c: any) => c.symbol?.toUpperCase() === "ETH");
   const calcBtcDom = btc && calcTotalMcap ? ((Number(btc.market_cap) / calcTotalMcap) * 100).toFixed(1) : "—";
   const calcEthDom = eth && calcTotalMcap ? ((Number(eth.market_cap) / calcTotalMcap) * 100).toFixed(1) : "—";
 
@@ -168,7 +169,10 @@ export default function Dashboard() {
   const volFlow = getFlowData(totalVolume);
 
   // List
-  const baseList: any[] = activeTab === "gainers" ? (gainersData || []) : activeTab === "losers" ? (losersData || []) : activeTab === "trending"? (trendingData || []) : (coins || []);
+  const safeGainers = Array.isArray(gainersData) ? gainersData : [];
+  const safeLosers = Array.isArray(losersData) ? losersData : [];
+  const safeTrending = Array.isArray(trendingData) ? trendingData : [];
+  const baseList: any[] = activeTab === "gainers" ? safeGainers : activeTab === "losers" ? safeLosers : activeTab === "trending"? safeTrending : safeCoins;
   const filtered = baseList
     .filter((c: any) => !search || c.name?.toLowerCase().includes(search.toLowerCase()) || c.symbol?.toLowerCase().includes(search.toLowerCase()))
     .sort((a: any, b: any) => {

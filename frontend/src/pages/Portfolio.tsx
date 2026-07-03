@@ -411,7 +411,7 @@ function parseCSV(text) {
 // ── Holdings hesapla (FIFO) ───────────────────────────────────
 function calcHoldings(trades, marketData, walletHoldings = []) {
   const priceMap = {};
-  (marketData || []).forEach((c) => {
+  (Array.isArray(marketData) ? marketData : []).forEach((c) => {
     priceMap[c.symbol?.toUpperCase()] = {
       price: parseFloat(c.current_price) || 0,
       change24h: parseFloat(c.price_change_percentage_24h) || 0,
