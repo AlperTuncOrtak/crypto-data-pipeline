@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import {
+  ArrowDownUp, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
@@ -498,6 +499,15 @@ export default function Navbar({
 
           {/* RIGHT SIDE */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            
+            <button 
+              onClick={() => window.dispatchEvent(new Event("open-swap"))}
+              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-500/50 text-purple-300 px-4 py-1.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+            >
+              <ArrowDownUp size={14} />
+              Swap
+            </button>
+
             {/* WATCHLIST */}
             <button
               onClick={onWatchlistOpen}

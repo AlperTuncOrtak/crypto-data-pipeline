@@ -13,6 +13,7 @@ import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistSidebar";
 import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
+import SwapWidget from "./components/market/SwapWidget";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
@@ -259,6 +260,7 @@ function AppInner() {
             }
           />
         </Routes></Suspense></main>
+      <SwapWidget />
       {location.pathname !== "/onboarding" && <MobileNav />}
       {location.pathname !== "/onboarding" && <Footer />}
 
