@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { Brain, X, Send, Sparkles, TrendingUp, Activity, RefreshCw, Zap, Shield, FileDown } from 'lucide-react';
+import { Brain, X, Send, Sparkles, TrendingUp, Activity, Shield, FileDown, Mic, MicOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useVoice } from '../../hooks/useVoice';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -45,6 +46,45 @@ function Message({ msg }: { msg: any }) {
   );
 }
 
+// Siri-like Audio Visualizer Component
+function AudioVisualizer({ isSpeaking, isListening }: { isSpeaking: boolean, isListening: boolean }) {
+  if (!isSpeaking && !isListening) return null;
+  
+  const barCount = 12;
+  const color = isSpeaking ? "bg-blue-400" : "bg-purple-400";
+  const glow = isSpeaking ? "shadow-[0_0_15px_rgba(96,165,250,0.6)]" : "shadow-[0_0_15px_rgba(168,85,247,0.6)]";
+  const label = isListening ? "Listening..." : "Speaking...";
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="flex flex-col items-center justify-center p-6 bg-[#0a0b0d]/50 rounded-2xl border border-white/5 mx-5 mb-4"
+    >
+      <div className="flex items-center gap-1.5 mb-3 h-10">
+        {Array.from({ length: barCount }).map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{ 
+              height: isSpeaking ? [8, Math.random() * 30 + 10, 8] : isListening ? [8, Math.random() * 20 + 8, 8] : 8
+            }}
+            transition={{ 
+              duration: isSpeaking ? 0.4 : 0.8, 
+              repeat: Infinity, 
+              delay: i * 0.05 
+            }}
+            className={`w-1.5 rounded-full ${color} ${glow}`}
+          />
+        ))}
+      </div>
+      <div className="text-xs font-mono text-gray-400 uppercase tracking-widest animate-pulse">
+        {label}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -56,17 +96,28 @@ export default function AIChatWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
 
+  // Voice Hook
+  const { isListening, isSpeaking, startListening, stopListening, speak, stopSpeaking, isSupported } = useVoice((text) => {
+    // When speech is recognized, set it to input and automatically send
+    setInputValue(text);
+    handleSend(text);
+  });
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading, isSpeaking, isListening]);
 
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 150);
+    } else {
+      // Stop voice features when closing
+      stopListening();
+      stopSpeaking();
     }
   }, [isOpen]);
 
@@ -107,6 +158,10 @@ export default function AIChatWidget() {
     const msg = (text || inputValue).trim();
     if (!msg || isLoading) return;
 
+    // Stop listening/speaking when sending a new message manually
+    stopListening();
+    stopSpeaking();
+
     const userMsg = { role: 'user', content: msg };
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
@@ -129,6 +184,10 @@ export default function AIChatWidget() {
 
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      
+      // Speak the response if the user was using voice
+      speak(data.reply);
+
     } catch (err: any) {
       setMessages(prev => [...prev, {
         role: 'assistant',
@@ -137,6 +196,14 @@ export default function AIChatWidget() {
       }]);
     } 
     setIsLoading(false);
+  };
+
+  const toggleVoice = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
   };
 
   return (
@@ -150,7 +217,7 @@ export default function AIChatWidget() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-white text-black rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] flex items-center justify-center z-[9999] hover:bg-gray-100 transition-colors"
+            className="fixed bottom-6 md:bottom-6 right-6 w-14 h-14 bg-white text-black rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] flex items-center justify-center z-[9999] hover:bg-gray-100 transition-colors"
           >
             <Brain size={24} strokeWidth={2.5} />
           </motion.button>
@@ -164,7 +231,7 @@ export default function AIChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-6 right-6 w-[380px] h-[600px] max-h-[80vh] bg-[#0a0b0d]/90 backdrop-blur-3xl border border-[#273951]/50 rounded-[32px] shadow-[inset_0_0_80px_rgba(39,57,81,0.2),0_30px_60px_-12px_rgba(0,0,0,0.8)] z-[9999] flex flex-col overflow-hidden"
+            className="fixed bottom-6 right-6 w-[380px] h-[600px] max-w-[calc(100vw-48px)] max-h-[80vh] bg-[#0a0b0d]/90 backdrop-blur-3xl border border-[#273951]/50 rounded-[32px] shadow-[inset_0_0_80px_rgba(39,57,81,0.2),0_30px_60px_-12px_rgba(0,0,0,0.8)] z-[9999] flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between p-5 border-b border-[#273951]/30 bg-[#16181c]/50">
               <div className="flex items-center gap-3">
@@ -204,7 +271,9 @@ export default function AIChatWidget() {
               <div ref={messagesEndRef} />
             </div>
 
-            {messages.length === 1 && !isLoading && (
+            <AudioVisualizer isSpeaking={isSpeaking} isListening={isListening} />
+
+            {messages.length === 1 && !isLoading && !isSpeaking && !isListening && (
               <div className="px-5 pb-2 flex flex-wrap gap-2">
                 {quickActions.map(action => {
                   const Icon = action.icon as any;
@@ -226,20 +295,40 @@ export default function AIChatWidget() {
 
             <div className="p-4 bg-[#16181c]/80 border-t border-[#273951]/30">
               <div className="flex items-center gap-2 bg-[#0a0b0d] border border-[#273951]/50 rounded-[20px] p-1.5 focus-within:border-white/30 transition-colors shadow-inner">
+                
+                {isSupported && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={toggleVoice}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                      isListening 
+                        ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]' 
+                        : isSpeaking 
+                        ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]'
+                        : 'bg-white/5 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {isListening ? <Mic size={18} className="animate-pulse" /> : <Mic size={18} />}
+                  </motion.button>
+                )}
+
                 <input
                   ref={inputRef}
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSend('')}
-                  placeholder="Ask me anything..."
-                  className="flex-1 bg-transparent text-sm text-white px-3 py-2 outline-none placeholder-gray-500"
+                  placeholder={isListening ? "Listening..." : "Ask me anything..."}
+                  disabled={isListening}
+                  className="flex-1 bg-transparent text-sm text-white px-2 py-2 outline-none placeholder-gray-500 disabled:opacity-50"
                 />
+                
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleSend('')}
                   disabled={!inputValue.trim() || isLoading}
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${
                     inputValue.trim() && !isLoading
                       ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]'
                       : 'bg-white/5 text-gray-500'
