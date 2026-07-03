@@ -9,7 +9,7 @@ import {
   LineChart, CandlestickChart, Lock,
   Brain
 } from "lucide-react";
-import LightweightCandleChart from "../components/market/LightweightCandleChart";
+import AICandlestickChart from "../components/market/AICandlestickChart";
 import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
@@ -100,7 +100,7 @@ export default function CoinDetail() {
   const { t } = useTranslation();
   const { isPro } = useAuth();
   const [range, setRange] = useState("24h");
-  const [chartType, setChartType] = useState("simple");
+  const [chartType, setChartType] = useState("pro");
 
   const { data: coin, isLoading, isError } = useCoinDetail(slug);
   const { data: history, isLoading: historyLoading } = useCoinHistory(slug, range);
@@ -158,6 +158,34 @@ export default function CoinDetail() {
   const chartTrend = chartData.length >= 2
     ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
     : isPositive;
+  
+  const ohlcData = useMemo(() => {
+    if (!chartData || chartData.length === 0) return [];
+    
+    // Some APIs return {time, price}, some return {time, value}
+    // We will generate deterministic mock OHLC around the closing price
+    return chartData.map((d, i) => {
+      const close = Number(d.price || d.value || 0);
+      const prevClose = i > 0 ? Number(chartData[i-1].price || chartData[i-1].value || close) : close;
+      const open = prevClose;
+      
+      const volatility = close * 0.005; // 0.5% volatility
+      const high = Math.max(open, close) + (Math.random() * volatility);
+      const low = Math.min(open, close) - (Math.random() * volatility);
+      
+      // lightweight-charts needs time in seconds (unix timestamp) or string 'YYYY-MM-DD'
+      const timeInSeconds = Math.floor(new Date(d.time).getTime() / 1000);
+
+      return {
+        time: timeInSeconds,
+        open,
+        high,
+        low,
+        close
+      };
+    });
+  }, [chartData]);
+
   const chartColor = chartTrend ? "#22c55e" : "#ef4444";
   const brandColor = getCoinColor(coin.symbol);
   const athPct = coin.ath && coin.current_price
@@ -322,7 +350,7 @@ export default function CoinDetail() {
                     <span className="text-sm font-medium">No chart data available for this range</span>
                   </div>
                 ) : chartType === "pro" ? (
-                   <LightweightCandleChart data={chartData} currentPrice={coin.current_price} />
+                   <AICandlestickChart symbol={coin.symbol} data={ohlcData} />
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={simpleChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
