@@ -123,7 +123,7 @@ export default function CoinDetail() {
   }, [coin?.current_price]);
 
   const simpleChartData = useMemo(() => {
-    const arr = history || [];
+    const arr = Array.isArray(history) ? history : [];
     if (!arr.length || !coin?.current_price) return arr;
     const cloned = [...arr];
     const last = cloned[cloned.length - 1];
@@ -154,7 +154,7 @@ export default function CoinDetail() {
 
   const change = Number(coin.price_change_percentage_24h);
   const isPositive = change >= 0;
-  const chartData = history || [];
+  const chartData = Array.isArray(history) ? history : [];
   const chartTrend = chartData.length >= 2
     ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
     : isPositive;

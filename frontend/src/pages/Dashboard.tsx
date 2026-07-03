@@ -384,7 +384,7 @@ export default function Dashboard() {
                 <button onClick={() => navigate("/market")} className="text-xs font-bold text-gray-500 hover:text-white transition-colors">View all</button>
               </div>
               <div className="flex flex-col p-2">
-                {(trendingData || []).slice(0, 5).map((coin: any, i: number) => (
+                {(safeTrending).slice(0, 5).map((coin: any, i: number) => (
                   <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-bold text-gray-600 font-mono w-4">{i + 1}</span>
@@ -406,7 +406,7 @@ export default function Dashboard() {
                 <span className="font-bold text-white tracking-tight">Top Gainers</span>
               </div>
               <div className="flex flex-col p-2">
-                {(gainersData || []).slice(0, 5).map((coin: any, i: number) => (
+                {(safeGainers).slice(0, 5).map((coin: any, i: number) => (
                   <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
                     <div className="flex items-center gap-3">
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
@@ -430,7 +430,7 @@ export default function Dashboard() {
                 <span className="font-bold text-white tracking-tight">Top Losers</span>
               </div>
               <div className="flex flex-col p-2">
-                {(losersData || []).slice(0, 5).map((coin: any, i: number) => (
+                {(safeLosers).slice(0, 5).map((coin: any, i: number) => (
                   <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
                     <div className="flex items-center gap-3">
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
