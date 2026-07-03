@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 // Extend window for Web Speech API
 declare global {
@@ -9,6 +9,8 @@ declare global {
 }
 
 export function useVoice(onResult: (text: string) => void) {
+  const onResultRef = useRef(onResult);
+  useEffect(() => { onResultRef.current = onResult; }, []);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
@@ -27,7 +29,7 @@ export function useVoice(onResult: (text: string) => void) {
         
         reco.onresult = (event: any) => {
           const text = event.results[0][0].transcript;
-          onResult(text);
+          onResultRef.current(text);
         };
         
         reco.onerror = (event: any) => {
@@ -38,7 +40,7 @@ export function useVoice(onResult: (text: string) => void) {
         setRecognition(reco);
       }
     }
-  }, [onResult]);
+  }, []);
 
   const startListening = useCallback(() => {
     if (recognition) {

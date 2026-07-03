@@ -40,7 +40,7 @@ const SORT_OPTIONS = [
 // ── Mini Sparkline ────────────────────────────────────────────
 function OldSparkline({ symbol }) {
   const { data: market } = useMarket(500);
-  const coin = market?.find((c) => c.symbol === symbol);
+  const coin = (Array.isArray(market) ? market : []).find((c) => c.symbol === symbol);
   // Recharts yerine basit SVG sparkline — daha hızlı
   const isUp = (coin?.price_change_percentage_24h || 0) >= 0;
   const color = isUp ? "#2ecc71" : "#e74c3c";
@@ -92,7 +92,7 @@ function OldWatchlistPanel({
 
   const watchedCoins = useMemo(() => {
     const coins = watchlist
-      .map((symbol) => marketData?.find((c) => c.symbol === symbol))
+      .map((symbol) => (Array.isArray(marketData) ? marketData : []).find((c) => c.symbol === symbol))
       .filter(Boolean);
 
     return [...coins].sort((a, b) => {
@@ -774,7 +774,7 @@ function AlertsPanel({ marketData, onClose }) {
   // Fiyatları canlı kontrol et
   const alertsWithStatus = useMemo(() => {
     return alerts.map((alert) => {
-      const coin = marketData?.find((c) => c.symbol === alert.symbol);
+      const coin = (Array.isArray(marketData) ? marketData : []).find((c) => c.symbol === alert.symbol);
       if (!coin) return { ...alert, status: "pending", currentPrice: null };
 
       const price = Number(coin.current_price);
@@ -1308,7 +1308,7 @@ export default function RightSidebar({
 
   const triggeredCount = useMemo(() => {
     return sbAlerts.filter((alert) => {
-      const coin = market?.find((c) => c.symbol === alert.symbol);
+      const coin = (Array.isArray(market) ? market : []).find((c) => c.symbol === alert.symbol);
       if (!coin) return false;
       const price = Number(coin.current_price);
       const change = Number(coin.price_change_percentage_24h);

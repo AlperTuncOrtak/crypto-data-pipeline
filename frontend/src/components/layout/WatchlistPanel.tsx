@@ -49,7 +49,7 @@ const SORT_OPTIONS = [
 export default function WatchlistPanel({
   watchlist,
   removeFromWatchlist,
-  marketData,
+  safeMarketData,
   onClose,
   addToWatchlist,
   isAtLimit,
@@ -64,7 +64,7 @@ export default function WatchlistPanel({
 
   const watchedCoins = useMemo(() => {
     const coins = watchlist
-      .map((symbol) => marketData?.find((c) => c.symbol === symbol))
+      .map((symbol) => safeMarketData.find((c) => c.symbol === symbol))
       .filter(Boolean);
 
     return [...coins].sort((a, b) => {
@@ -74,19 +74,19 @@ export default function WatchlistPanel({
       if (sort === "alpha") return a.symbol.localeCompare(b.symbol);
       return 0; // added order
     });
-  }, [watchlist, marketData, sort]);
+  }, [watchlist, safeMarketData, sort]);
 
   const searchResults = useMemo(() => {
-    if (!addSearch.trim() || !marketData) return [];
+    if (!addSearch.trim() || !safeMarketData) return [];
     const term = addSearch.toLowerCase();
-    return marketData
+    return safeMarketData
       .filter(
         (c) =>
           (c.symbol?.toLowerCase().includes(term) || c.name?.toLowerCase().includes(term)) &&
           !watchlist.includes(c.symbol)
       )
       .slice(0, 6);
-  }, [addSearch, marketData, watchlist]);
+  }, [addSearch, safeMarketData, watchlist]);
 
   return (
     <div className="flex flex-col h-full bg-[#0a0b0d]/50">

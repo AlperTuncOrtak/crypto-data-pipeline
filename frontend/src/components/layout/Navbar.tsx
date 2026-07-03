@@ -1,5 +1,5 @@
 import {
-  ArrowDownUp, useState, useEffect, useRef } from "react";
+  useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
@@ -31,6 +31,7 @@ import {
   Moon,
   Eye,
   Trophy,
+  ArrowDownUp,
 } from "lucide-react";
 import { useMarket, useMarketStats } from "../../hooks/useMarket";
 import { useAuth } from "../../hooks/useAuth";
@@ -67,7 +68,8 @@ const NAV_ITEMS = [
       { to: "/alerts", label: "Active Alerts", Icon: Bell, desc: "Current market alerts", soon: false },
     ],
   },
-  { to: "/leaderboard", label: "Leaderboard", Icon: Trophy, dropdown: null },
+  { to: "/leaderboard", label: "Leaderboard", Icon: Trophy,
+  ArrowDownUp, dropdown: null },
   { to: "/pro", label: "Pro", Icon: Crown, dropdown: null },
 ];
 
@@ -278,6 +280,7 @@ export default function Navbar({
   const location = useLocation();
   const { data: statsData } = useMarketStats();
   const { data: marketData } = useMarket(2000);
+  const safeMarketData = Array.isArray(marketData) ? marketData : window.__EMPTY_ARRAY__ || (window.__EMPTY_ARRAY__ = []);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -320,11 +323,11 @@ export default function Navbar({
   }, []);
 
   const totalVolume =
-    marketData?.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0;
-  const btcDom = marketData
+    safeMarketData.reduce((s, c) => s + (Number(c.total_volume) || 0), 0) || 0;
+  const btcDom = safeMarketData
     ? (() => {
-        const btc = marketData.find((c) => c.symbol === "BTC");
-        const total = marketData.reduce(
+        const btc = safeMarketData.find((c) => c.symbol === "BTC");
+        const total = safeMarketData.reduce(
           (s, c) => s + (Number(c.market_cap) || 0),
           0,
         );
@@ -333,22 +336,22 @@ export default function Navbar({
           : "—";
       })()
     : "—";
-  const btcPrice = marketData?.find((c) => c.symbol === "BTC")?.current_price;
+  const btcPrice = safeMarketData.find((c) => c.symbol === "BTC")?.current_price;
   const gainers =
-    marketData?.filter((c) => Number(c.price_change_percentage_24h) > 0)
+    safeMarketData.filter((c) => Number(c.price_change_percentage_24h) > 0)
       .length || 0;
   const losers =
-    marketData?.filter((c) => Number(c.price_change_percentage_24h) < 0)
+    safeMarketData.filter((c) => Number(c.price_change_percentage_24h) < 0)
       .length || 0;
 
   useEffect(() => {
-    if (!search.trim() || !marketData) {
+    if (!search.trim() || !safeMarketData) {
       setSearchResults([]);
       return;
     }
     const term = search.toLowerCase();
     setSearchResults(
-      marketData
+      safeMarketData
         .filter(
           (c) =>
             c.symbol?.toLowerCase().includes(term) ||
@@ -356,7 +359,7 @@ export default function Navbar({
         )
         .slice(0, 6),
     );
-  }, [search, marketData]);
+  }, [search, safeMarketData]);
 
   return (
     <>
@@ -412,7 +415,7 @@ export default function Navbar({
               <div className="stat-item">
                 <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("nav.coins_marquee")}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "monospace" }}>
-                  {statsData?.coin_count ?? marketData?.length ?? 0}
+                  {statsData?.coin_count ?? safeMarketData?.length ?? 0}
                 </span>
               </div>
               <div className="stat-item">
@@ -437,7 +440,7 @@ export default function Navbar({
                 <span style={{ fontSize: 11, color: "var(--positive)", fontFamily: "monospace", fontWeight: 600 }}>▲ {gainers}</span>
                 <span style={{ fontSize: 11, color: "var(--negative)", fontFamily: "monospace", fontWeight: 600 }}>▼ {losers}</span>
               </div>
-              {marketData?.slice(0, 10).map((coin) => (
+              {safeMarketData?.slice(0, 10).map((coin) => (
                 <div key={coin.symbol} className="stat-item">
                   <span style={{ fontSize: 10, color: getCoinColor(coin.symbol), fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
                   <span style={{ fontSize: 11, fontFamily: "monospace", color: "var(--text-primary)" }}>
