@@ -11,6 +11,7 @@ import { supabase } from "../lib/supabase";
 import { useMarket } from "../hooks/useMarket";
 import { apiClient } from "../api/client";
 import { useTranslation } from "react-i18next";
+import AIRebalanceModal from "../components/portfolio/AIRebalanceModal";
 import {
   PieChart,
   Pie,
@@ -975,7 +976,9 @@ export default function Portfolio() {
   const { data: marketData } = useMarket(500);
   const fileRef = useRef(null);
 
-  const [trades, setTrades] = useState(() => {
+  
+  const [isRebalanceOpen, setIsRebalanceOpen] = useState(false);
+    const [trades, setTrades] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_trades") || "[]"); }
     catch { return []; }
   });
