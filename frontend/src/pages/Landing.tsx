@@ -3,7 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import {
-  Brain, BarChart2, Wallet, ArrowRight, Activity, Cpu, Shield, Zap, RefreshCw, Layers, Sparkles
+  Brain, BarChart2, Wallet, ArrowRight, Activity, Cpu, Shield, Zap, RefreshCw, Layers, Sparkles, Briefcase, Hexagon, Circle, Triangle, Box, Fingerprint, Globe
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ThreeDHero } from "../components/ThreeDHero";
@@ -61,7 +61,18 @@ export default function Landing() {
   const headerBlur = useTransform(scrollYProgress, [0, 0.1], ["10px", "20px"]);
   const { t } = useTranslation();
 
-  const PARTNERS = ["BINANCE", "COINBASE", "KRAKEN", "OKX", "BYBIT", "BITGET", "KUCOIN", "METAMASK", "PHANTOM", "TRUST WALLET"];
+  const PARTNERS = [
+    { name: "BINANCE", icon: Hexagon },
+    { name: "COINBASE", icon: Circle },
+    { name: "KRAKEN", icon: Triangle },
+    { name: "OKX", icon: Globe },
+    { name: "BYBIT", icon: Box },
+    { name: "BITGET", icon: Fingerprint },
+    { name: "KUCOIN", icon: Briefcase },
+    { name: "METAMASK", icon: Shield },
+    { name: "PHANTOM", icon: Wallet },
+    { name: "TRUST WALLET", icon: Layers }
+  ];
 
   // Live Simulation State
   const [fearGreed, setFearGreed] = useState(76);
@@ -192,12 +203,17 @@ export default function Landing() {
             className="flex items-center gap-16 whitespace-nowrap"
             style={{ width: "max-content" }}
           >
-            {[...PARTNERS, ...PARTNERS].map((partner, i) => (
-              <div key={i} className="text-lg md:text-xl font-black text-gray-600/50 hover:text-white/80 transition-colors flex items-center gap-3">
-                <Sparkles size={16} className="text-[var(--accent)]/30" />
-                {partner}
-              </div>
-            ))}
+            {[...PARTNERS, ...PARTNERS].map((partner, i) => {
+              const Icon = partner.icon;
+              return (
+                <div key={i} className="flex items-center gap-3 opacity-40 hover:opacity-100 transition-all duration-300 cursor-default mix-blend-plus-lighter hover:scale-105">
+                  <Icon size={32} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" strokeWidth={1.5} />
+                  <span className="text-xl md:text-2xl font-black tracking-[0.2em] text-white uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                    {partner.name}
+                  </span>
+                </div>
+              );
+            })}
           </motion.div>
         </div>
 
