@@ -62,16 +62,15 @@ export default function Landing() {
   const { t } = useTranslation();
 
   const PARTNERS = [
-    { name: "BINANCE", icon: Hexagon },
-    { name: "COINBASE", icon: Circle },
-    { name: "KRAKEN", icon: Triangle },
-    { name: "OKX", icon: Globe },
-    { name: "BYBIT", icon: Box },
-    { name: "BITGET", icon: Fingerprint },
-    { name: "KUCOIN", icon: Briefcase },
-    { name: "METAMASK", icon: Shield },
-    { name: "PHANTOM", icon: Wallet },
-    { name: "TRUST WALLET", icon: Layers }
+    { name: "BINANCE", img: "/logos/binance.png" },
+    { name: "COINBASE", img: "/logos/coinbase.png" },
+    { name: "KRAKEN", img: "/logos/kraken.png" },
+    { name: "OKX", img: "/logos/okx.png" },
+    { name: "BYBIT", img: "/logos/bybit.png" },
+    { name: "BITGET", img: "/logos/bitget.png" },
+    { name: "KUCOIN", img: "/logos/kucoin.png" },
+    { name: "METAMASK", img: "/logos/metamask.svg" },
+    { name: "TRUST WALLET", img: "/logos/trustwallet.png" }
   ];
 
   // Live Simulation State
@@ -204,11 +203,10 @@ export default function Landing() {
             style={{ width: "max-content" }}
           >
             {[...PARTNERS, ...PARTNERS].map((partner, i) => {
-              const Icon = partner.icon;
               return (
-                <div key={i} className="flex items-center gap-3 opacity-40 hover:opacity-100 transition-all duration-300 cursor-default mix-blend-plus-lighter hover:scale-105">
-                  <Icon size={32} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" strokeWidth={1.5} />
-                  <span className="text-xl md:text-2xl font-black tracking-[0.2em] text-white uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                <div key={i} className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-all duration-300 cursor-default hover:scale-105">
+                  <img src={partner.img} alt={partner.name} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 p-1 object-contain shadow-2xl" />
+                  <span className="text-xl md:text-2xl font-black tracking-widest text-white uppercase" style={{ fontFamily: 'Outfit, sans-serif' }}>
                     {partner.name}
                   </span>
                 </div>
