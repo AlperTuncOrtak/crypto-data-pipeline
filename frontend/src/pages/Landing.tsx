@@ -106,7 +106,7 @@ export default function Landing() {
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       {/* ── 3D HERO CANVAS ── */}
-      <ThreeDHero />
+      {/* <ThreeDHero /> */}
 
       {/* ── HEADER ── */}
       <motion.header 
