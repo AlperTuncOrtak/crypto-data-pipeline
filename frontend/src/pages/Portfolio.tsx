@@ -1075,6 +1075,25 @@ export default function Portfolio() {
   });
   const [isSyncingBinance, setIsSyncingBinance] = useState(false);
   const [binanceHoldings, setBinanceHoldings] = useState([]);
+
+  // Sync Wagmi Wallet Balance
+  useEffect(() => {
+    if (isConnected && ethBalance) {
+      setWalletHoldings((prev) => {
+        const others = prev.filter((h) => h.source !== "wagmi");
+        return [
+          ...others,
+          {
+            symbol: ethBalance.symbol || "ETH",
+            quantity: Number(ethBalance.formatted),
+            source: "wagmi",
+          },
+        ];
+      });
+    } else {
+      setWalletHoldings((prev) => prev.filter((h) => h.source !== "wagmi"));
+    }
+  }, [isConnected, ethBalance]);
   const [showAddSource, setShowAddSource] = useState(false);
   const [guide, setGuide] = useState(null);
 
