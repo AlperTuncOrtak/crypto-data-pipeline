@@ -16,6 +16,7 @@ import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
 import SwapWidget from "./components/market/SwapWidget";
 import { CommandPalette } from "./components/layout/CommandPalette";
+import VoiceAssistantWidget from "./components/layout/VoiceAssistantWidget";
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -268,6 +269,7 @@ function AppInner() {
       {location.pathname !== "/onboarding" && <Footer />}
 
       <AIChatWidget />
+      <VoiceAssistantWidget />
 
       <SearchCommand isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <CommandPalette />
