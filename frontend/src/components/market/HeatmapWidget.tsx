@@ -5,12 +5,14 @@ import { LayoutGrid } from "lucide-react";
 
 function changeColor(pct) {
   const p = Number(pct) || 0;
-  if (p >= 10) return { bg: "rgba(46, 204, 113, 0.4)", text: "#fff", border: "rgba(46, 204, 113, 0.6)" };
-  if (p >= 5) return { bg: "rgba(46, 204, 113, 0.25)", text: "#fff", border: "rgba(46, 204, 113, 0.4)" };
-  if (p >= 0) return { bg: "rgba(46, 204, 113, 0.1)", text: "#fff", border: "rgba(46, 204, 113, 0.2)" };
-  if (p >= -5) return { bg: "rgba(231, 76, 60, 0.15)", text: "#fff", border: "rgba(231, 76, 60, 0.3)" };
-  if (p >= -10) return { bg: "rgba(231, 76, 60, 0.3)", text: "#fff", border: "rgba(231, 76, 60, 0.5)" };
-  return { bg: "rgba(231, 76, 60, 0.5)", text: "#fff", border: "rgba(231, 76, 60, 0.7)" };
+  if (p >= 10) return { bg: "#0d6b35", text: "#6efaaa", border: "#1a9e52" };
+  if (p >= 5) return { bg: "#0f7a3a", text: "#7dfdb5", border: "#1db356" };
+  if (p >= 2) return { bg: "#155e30", text: "#86f5b0", border: "#20a050" };
+  if (p >= 0) return { bg: "#163d25", text: "#5ddc8a", border: "#1e7a44" };
+  if (p >= -2) return { bg: "#4a1515", text: "#f47878", border: "#7a2222" };
+  if (p >= -5) return { bg: "#5c1010", text: "#f96060", border: "#921a1a" };
+  if (p >= -10) return { bg: "#6b0d0d", text: "#ff5252", border: "#a01c1c" };
+  return { bg: "#7a0a0a", text: "#ff3838", border: "#b01515" };
 }
 
 function fmtPct(n) {
@@ -132,7 +134,7 @@ export default function HeatmapWidget({ limit = 50 }) {
     >
       <div className="feat-bg-glow" style={{
         position: "absolute", top: -20, right: -20, width: 200, height: 200,
-        borderRadius: "50%", background: `radial-gradient(circle, rgba(46, 204, 113, 0.1) 0%, transparent 70%)`,
+        borderRadius: "50%", background: `radial-gradient(circle, rgba(34, 211, 238, 0.15) 0%, transparent 70%)`,
         filter: "blur(20px)", pointerEvents: "none", zIndex: 0,
         transform: "scale(1)", opacity: 0,
         transition: "all .6s cubic-bezier(0.25, 1, 0.5, 1)",

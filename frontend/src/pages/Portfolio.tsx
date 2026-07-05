@@ -1211,7 +1211,8 @@ export default function Portfolio() {
   const worstPerformer = holdings.length > 0 ? [...holdings].sort((a, b) => a.pnl_pct - b.pnl_pct)[0] : null;
 
   return (
-    <div className="max-w-[1600px] mx-auto pb-16 px-4 sm:px-6">
+    <div className="min-h-screen bg-[#020817] text-white">
+      <div className="max-w-[1600px] mx-auto pb-16 px-4 sm:px-6 relative z-10">
 
       {/* HERO */}
       <div className="relative flex flex-col items-center justify-center pt-20 pb-10 text-center overflow-hidden">
@@ -1761,6 +1762,7 @@ export default function Portfolio() {
       )}
 
       {guide && <GuideModal exchange={guide} onClose={() => setGuide(null)} />}
+    </div>
     </div>
   );
 }

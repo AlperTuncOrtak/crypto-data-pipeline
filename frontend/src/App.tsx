@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
 import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistModal";
+import ReloadPrompt from "./components/layout/ReloadPrompt";
 import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
 import SwapWidget from "./components/market/SwapWidget";
@@ -281,6 +282,8 @@ function AppInner() {
         isAtLimit={isAtLimit}
         limit={limit}
       />
+
+      <ReloadPrompt />
 
       {authOpen && (
         <AuthModal

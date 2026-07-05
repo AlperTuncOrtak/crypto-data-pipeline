@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'logo.png'],
       workbox: {
         maximumFileSizeToCacheInBytes: 5000000 // 5 MB
