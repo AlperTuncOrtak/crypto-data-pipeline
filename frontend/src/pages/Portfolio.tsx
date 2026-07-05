@@ -16,6 +16,7 @@ import SwapInterface from "../components/portfolio/SwapInterface";
 import { useAccount, useBalance, useReadContracts } from "wagmi";
 import { TOKENS, ERC20_ABI } from "../constants/web3";
 import { formatUnits } from "viem";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import {
   PieChart,
   Pie,
@@ -1527,6 +1528,34 @@ export default function Portfolio() {
                 <Wallet size={14} className="text-[var(--accent)]" /> Import Data
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-[32px] bg-white/[0.02] border border-[#273951]/50">
+                <ConnectButton.Custom>
+                  {({ account, chain, openAccountModal, openConnectModal, authenticationStatus, mounted }) => {
+                    const ready = mounted && authenticationStatus !== 'loading';
+                    const connected = ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated');
+                    return (
+                      <button
+                        onClick={connected ? openAccountModal : openConnectModal}
+                        className={`relative flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] border transition-all duration-300 group overflow-hidden shadow-lg ${
+                          connected 
+                            ? "bg-purple-500/10 border-purple-500/30 cursor-pointer" 
+                            : "bg-[#16181c] border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98]"
+                        }`}
+                      >
+                        {connected && (
+                          <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                        )}
+                        <span className={`text-3xl transition-transform duration-300 drop-shadow-2xl ${!connected && "group-hover:scale-110"}`}>
+                          🦊
+                        </span>
+                        <span className={`text-xs font-bold text-center truncate w-full transition-colors ${
+                          connected ? "text-purple-400" : "text-gray-400 group-hover:text-white"
+                        }`}>
+                          {connected ? "Wallet Connected" : "Connect Web3"}
+                        </span>
+                      </button>
+                    );
+                  }}
+                </ConnectButton.Custom>
                 {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => {
                   const isExConnected = trades.some(t => t.exchange === ex.name);
                   return (
