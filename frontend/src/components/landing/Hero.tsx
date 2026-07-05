@@ -53,7 +53,7 @@ export function Hero() {
         style={{
           background: useTransform(
             [smoothX, smoothY],
-            ([x, y]) => `radial-gradient(circle at ${50 + (x as number) * 20}% ${50 + (y as number) * 20}%, rgba(34, 211, 238, 0.15) 0%, rgba(0, 0, 0, 0) 50%)`
+            ([x, y]) => `radial-gradient(circle at ${50 + (x as number) * 20}% ${50 + (y as number) * 20}%, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 50%)`
           )
         }}
       />
@@ -68,9 +68,9 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="px-4 py-2 rounded-full border border-cyan-500/20 bg-cyan-500/[0.03] text-xs md:text-sm font-semibold text-cyan-400 mb-8 backdrop-blur-md flex items-center gap-2 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
+          className="px-4 py-2 rounded-full border border-white/20 bg-white/5 text-xs md:text-sm font-semibold text-white mb-8 backdrop-blur-md flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
         >
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#22d3ee]"></span>
+          <span className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_10px_#ffffff]"></span>
           Intelligence powered by Deep Learning
         </motion.div>
 
