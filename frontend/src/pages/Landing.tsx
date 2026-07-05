@@ -11,6 +11,7 @@ import { Testimonials } from "../components/landing/Testimonials";
 import { FAQ } from "../components/landing/FAQ";
 import { InfiniteMarquee } from "../components/landing/InfiniteMarquee";
 import { CTA } from "../components/landing/CTA";
+import { PremiumFooter } from "../components/landing/PremiumFooter";
 
 export default function Landing() {
   const { user, loading } = useAuth();
@@ -77,6 +78,7 @@ export default function Landing() {
       <Testimonials />
       <FAQ />
       <CTA />
+      <PremiumFooter />
 
     </div>
   );

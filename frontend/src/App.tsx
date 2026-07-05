@@ -15,6 +15,7 @@ import ReloadPrompt from "./components/layout/ReloadPrompt";
 import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
 import SwapWidget from "./components/market/SwapWidget";
+import { CommandPalette } from "./components/layout/CommandPalette";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
@@ -268,6 +269,7 @@ function AppInner() {
       <AIChatWidget />
 
       <SearchCommand isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <CommandPalette />
 
       <RightSidebar
         isOpen={sidebarOpen}

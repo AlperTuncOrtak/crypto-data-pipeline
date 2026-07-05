@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LayoutGrid, Filter, Search, ChevronDown, Activity, ArrowUpRight, ArrowDownRight, Wallet, Eye, AlertTriangle, CheckCircle2, TrendingUp, Layers, ShieldAlert, ExternalLink } from "lucide-react";
 import ProPaywall from "../components/layout/ProPaywall";
+import { CardSkeleton } from "../components/ui/Skeleton";
 import { useTranslation } from "react-i18next";
 
 export default function WhaleXRay() {
@@ -123,7 +124,23 @@ export default function WhaleXRay() {
 
         {/* Results Area */}
         <AnimatePresence>
-          {hasResult && (
+          {isSearching && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+              <div className="md:col-span-2">
+                <CardSkeleton />
+              </div>
+              <div className="md:col-span-1">
+                <CardSkeleton />
+              </div>
+            </motion.div>
+          )}
+
+          {hasResult && !isSearching && (
             <motion.div 
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
