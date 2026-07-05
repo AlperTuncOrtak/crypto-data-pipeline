@@ -10,7 +10,7 @@ import { ToastProvider, useAlertMonitor, useToast } from "./hooks/useAlertMonito
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Navbar from "./components/layout/Navbar";
 import CoinTicker from "./components/market/CoinTicker";
-import RightSidebar from "./components/layout/WatchlistSidebar";
+import RightSidebar from "./components/layout/WatchlistModal";
 import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
 import SwapWidget from "./components/market/SwapWidget";
