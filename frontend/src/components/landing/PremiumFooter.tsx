@@ -29,14 +29,14 @@ export function PremiumFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative z-10 border-t border-white/[0.05] bg-[#020817] pt-20 pb-10">
+    <footer className="relative z-10 border-t border-white/[0.05] bg-[#000000] pt-20 pb-10">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
           
           {/* Brand & Newsletter */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-3 group mb-6 inline-flex">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-[#020817] font-black text-lg shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-transform group-hover:scale-110">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-[#000000] font-black text-lg shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-transform group-hover:scale-110">
                 C
               </div>
               <span className="text-xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">

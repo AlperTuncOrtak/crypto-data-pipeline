@@ -55,9 +55,9 @@ function WhaleDemo() {
   }, []);
 
   return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
+    <div className="relative rounded-[28px] bg-[#000000] border border-white/10 p-4 shadow-2xl overflow-hidden group">
       <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-3 min-h-[240px]">
+      <div className="relative z-10 bg-[#000000] rounded-2xl border border-white/5 p-5 shadow-inner space-y-3 min-h-[240px]">
         <div className="flex items-center gap-2 mb-1">
           <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Whale Feed · All DEXs</span>
@@ -123,9 +123,9 @@ function BacktestDemo() {
   }, [running]);
 
   return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
+    <div className="relative rounded-[28px] bg-[#000000] border border-white/10 p-4 shadow-2xl overflow-hidden group">
       <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-4">
+      <div className="relative z-10 bg-[#000000] rounded-2xl border border-white/5 p-5 shadow-inner space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">SOL/USDT · 2022–2023</span>
           {done && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300 }} className="text-white font-black text-lg font-mono">+4,250%</motion.span>}
@@ -185,9 +185,9 @@ const CANDLE_BARS = [40, 55, 45, 70, 60, 80, 65, 90, 75, 85, 70, 95, 80, 72, 88]
 function CandleDemo() {
   const [aiOn, setAiOn] = useState(false);
   return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
+    <div className="relative rounded-[28px] bg-[#000000] border border-white/10 p-4 shadow-2xl overflow-hidden group">
       <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-4">
+      <div className="relative z-10 bg-[#000000] rounded-2xl border border-white/5 p-5 shadow-inner space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">BTC/USDT · 1H</span>
           <button onClick={() => setAiOn(v => !v)}

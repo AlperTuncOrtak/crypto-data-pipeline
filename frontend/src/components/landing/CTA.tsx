@@ -31,8 +31,8 @@ export function CTA() {
         </p>
         
         <button 
-          onClick={() => navigate(user ? "/dashboard" : "/login")}
-          className="relative z-10 px-10 py-5 rounded-full bg-cyan-400 text-[#020817] font-bold text-lg hover:bg-cyan-300 hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(34,211,238,0.3)]"
+          onClick={() => navigate("/dashboard")}
+          className="relative z-10 px-10 py-5 rounded-full bg-cyan-400 text-[#000000] font-bold text-lg hover:bg-cyan-300 hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(34,211,238,0.3)]"
         >
           {user ? "Go to Dashboard" : "Create Free Account"}
         </button>
