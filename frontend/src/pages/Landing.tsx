@@ -5,7 +5,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 // Modüler Bileşenler
 import { Hero } from "../components/landing/Hero";
 import { Stats } from "../components/landing/Stats";
-import { BentoGrid } from "../components/landing/BentoGrid";
 import { FeatureBentoGrid } from "../components/landing/FeatureBentoGrid";
 import { FeaturesZigZag } from "../components/landing/FeaturesZigZag";
 import { Testimonials } from "../components/landing/Testimonials";
@@ -74,7 +73,6 @@ export default function Landing() {
       <Hero />
       <InfiniteMarquee />
       <Stats />
-      <BentoGrid />
       <FeaturesZigZag />
       <FeatureBentoGrid />
       <Testimonials />
