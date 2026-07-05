@@ -19,6 +19,7 @@ requests
 pandas
 feedparser
 ta
+ccxt
 
 # Environment
 python-dotenv

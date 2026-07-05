@@ -1007,6 +1007,8 @@ export default function Portfolio() {
   const [importMsg, setImportMsg] = useState(null);
   const [connectingExchange, setConnectingExchange] = useState(null);
   const [oauthStep, setOauthStep] = useState(0);
+  const [apiKey, setApiKey] = useState("");
+  const [apiSecret, setApiSecret] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
   const [wallets, setWallets] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_wallets") || "[]"); }
@@ -1995,10 +1997,119 @@ export default function Portfolio() {
                       >
                         Connect automatically (OAuth)
                       </button>
-                      <button className="w-full text-xs font-bold text-gray-500 hover:text-white py-2 transition-colors">
+                      <button 
+                        onClick={() => setOauthStep(4)}
+                        className="w-full text-xs font-bold text-gray-500 hover:text-white py-2 transition-colors"
+                      >
                         Enter API Keys Manually
                       </button>
                     </div>
+                  </div>
+                </>
+              )}
+
+              {oauthStep === 4 && (
+                <>
+                  <div className="h-2 w-full" style={{ background: connectingExchange.color }} />
+                  <button
+                    onClick={() => {
+                      setOauthStep(0);
+                      setApiKey("");
+                      setApiSecret("");
+                    }}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+
+                  <div className="p-8">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="text-4xl">{connectingExchange.logo}</div>
+                      <div>
+                        <h3 className="text-xl font-black text-white">API Connection</h3>
+                        <p className="text-xs text-gray-400">Read-Only access for {connectingExchange.name}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 mb-8">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">API Key</label>
+                        <input
+                          type="text"
+                          value={apiKey}
+                          onChange={(e) => setApiKey(e.target.value)}
+                          className="w-full bg-[#121212] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="Enter your API Key"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">API Secret</label>
+                        <input
+                          type="password"
+                          value={apiSecret}
+                          onChange={(e) => setApiSecret(e.target.value)}
+                          className="w-full bg-[#121212] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="Enter your API Secret"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={async () => {
+                        setIsConnecting(true);
+                        setOauthStep(5);
+                        try {
+                          const res = await apiClient.post("/api/exchanges/sync", {
+                            exchange_id: connectingExchange.name,
+                            api_key: apiKey,
+                            secret: apiSecret
+                          });
+                          
+                          // Mocking the imported real holdings into demo trades for UX 
+                          // Or we directly insert them
+                          const fetchedHoldings = res.data;
+                          
+                          if (fetchedHoldings && fetchedHoldings.length > 0) {
+                            const newTrades = fetchedHoldings.map((h: any) => ({
+                              symbol: h.symbol,
+                              side: "buy",
+                              quantity: h.quantity,
+                              price: 0,
+                              total: 0,
+                              traded_at: new Date().toISOString(),
+                              exchange: connectingExchange.name
+                            }));
+
+                            if (user) {
+                              const tradesToInsert = newTrades.map((t: any) => ({ ...t, user_id: user.id }));
+                              await supabase.from("trades").insert(tradesToInsert);
+                              const { data } = await supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true });
+                              if (data) setTrades(data);
+                            } else {
+                              const updated = [...trades, ...newTrades];
+                              setTrades(updated);
+                              localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
+                            }
+                            setImportMsg({ ok: true, text: `Successfully synced ${fetchedHoldings.length} assets from ${connectingExchange.name}!` });
+                          } else {
+                            setImportMsg({ ok: true, text: `Connected successfully, but no assets found in ${connectingExchange.name}.` });
+                          }
+                          setOauthStep(0);
+                          setConnectingExchange(null);
+                        } catch (err: any) {
+                          alert(err.response?.data?.detail || "Failed to connect to exchange.");
+                          setOauthStep(4);
+                        } finally {
+                          setIsConnecting(false);
+                          setApiKey("");
+                          setApiSecret("");
+                        }
+                      }}
+                      disabled={isConnecting || !apiKey || !apiSecret}
+                      className="w-full bg-[var(--accent)] text-white font-bold py-3.5 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isConnecting ? "Connecting..." : "Sync Real Portfolio"}
+                    </button>
                   </div>
                 </>
               )}
@@ -2073,6 +2184,13 @@ export default function Portfolio() {
                   <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mb-6" />
                   <h3 className="text-xl font-bold text-white mb-2">Syncing Data...</h3>
                   <p className="text-gray-500 text-sm">Downloading portfolio balances and trades</p>
+                </div>
+              )}
+              {oauthStep === 5 && (
+                <div className="p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
+                  <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mb-6" />
+                  <h3 className="text-xl font-bold text-white mb-2">Connecting API...</h3>
+                  <p className="text-gray-500 text-sm">Authenticating and fetching real balances from {connectingExchange?.name}</p>
                 </div>
               )}
             </motion.div>

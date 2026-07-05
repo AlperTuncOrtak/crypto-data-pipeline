@@ -41,6 +41,13 @@ from backend.services.coin_service import (
     get_coin_history,
     get_coin_stats,
 )
+from backend.services.exchange_service import sync_exchange_balance
+
+class ExchangeSyncRequest(BaseModel):
+    exchange_id: str
+    api_key: str
+    secret: str
+    password: str = None
 
 app = FastAPI(title="Crypto Analytics API", version="2.0.0")
 
@@ -952,3 +959,7 @@ async def get_swap_quote(sellToken: str, buyToken: str, sellAmount: str):
             raise HTTPException(status_code=e.response.status_code, detail=f"0x API Error: {e.response.text}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/exchanges/sync")
+async def api_exchange_sync(req: ExchangeSyncRequest):
+    return await sync_exchange_balance(req.exchange_id, req.api_key, req.secret, req.password)
