@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import NumberFlow from "@number-flow/react";
 import { useMarket } from "../hooks/useMarket";
 import { useTimeMachine } from "../hooks/useTimeMachine";
+import ProPaywall from "../components/layout/ProPaywall";
 
 export default function TimeMachine() {
   const { t } = useTranslation();
@@ -91,6 +92,7 @@ export default function TimeMachine() {
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">
+        <ProPaywall featureName="Time-Machine Backtesting">
         
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-16 text-center">
@@ -286,6 +288,7 @@ export default function TimeMachine() {
           </motion.div>
 
         </div>
+        </ProPaywall>
 
       </div>
     </div>

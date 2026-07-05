@@ -14,16 +14,16 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 - **AI Chat Memory:** Hetzner backend ile entegre gerçek zamanlı AI hafıza sorunu çözüldü.
 
 ## 🚨 Kritik Hata Çözümleri (Bug Fixes)
-- [ ] **PWA Cache / Update Sorunu:** Yeni sürüm yayınlandığında kullanıcıların sürekli "Ctrl + Shift + R" yapmak zorunda kalmasını engellemek için `vite-plugin-pwa`'nın `PromptForUpdate` (Yeni Sürüm Var, Yenile) bileşeni eklenecek.
-- [ ] **Market Heatmap:** Görsel hizalama ve veri çekme sorunları düzeltilecek.
-- [ ] **Portfolio Arka Planı:** Tasarımsal arka plan uyumsuzlukları giderilecek.
+- [x] **PWA Cache / Update Sorunu:** Yeni sürüm yayınlandığında kullanıcıların sürekli "Ctrl + Shift + R" yapmak zorunda kalmasını engellemek için `vite-plugin-pwa`'nın `PromptForUpdate` (Yeni Sürüm Var, Yenile) bileşeni eklendi.
+- [x] **Market Heatmap:** Görsel hizalama ve veri çekme sorunları düzeltildi.
+- [x] **Portfolio Arka Planı:** Tasarımsal arka plan uyumsuzlukları giderildi.
 
 ## 💎 PRO Sürüm Özellikleri (Aylık Abonelik Modeli)
 Ücretsiz sürüm temel piyasa verilerini sağlarken, aşağıdaki özellikler **CryptoNeko PRO** abonelerine özel kilitli olacak:
-- [ ] **Whale X-Ray (Balina Takibi):** Büyük cüzdan hareketlerinin anlık canlı takibi. (PRO)
-- [ ] **Time-Machine Backtesting:** Kendi stratejilerini geçmiş verilerle test etme aracı. (PRO)
-- [ ] **AI Candlestick Vision (Canlı Analiz):** Grafikteki mum formasyonlarını anlık olarak okuyup geleceği tahmin eden yapay zeka görüşü. (PRO)
-- [ ] **Sınırsız AI Chat:** Ücretsiz kullanıcılara günlük 5 mesaj hakkı verilirken, PRO kullanıcılara sınırsız analiz. (PRO)
+- [x] **Whale X-Ray:** Balina hareketleri ve on-chain para akışı.
+- [x] **Time-Machine Backtesting:** Geçmişe dönük simülasyon ve portföy performansı.
+- [x] **AI Candlestick Vision:** Grafikler üzerinde yapay zekanın formasyonları çizmesi (destek, direnç, whale zone).
+- [ ] **Sınırsız AI Chat:** Ücretsiz kullanıcılara günlük 5 mesaj, PRO'lara sınırsız sohbet.
 - [ ] **Özelleştirilebilir Dashboard (Widget Builder):** Kullanıcının ana sayfasını kendi istediği grafiklerle dizayn etmesi. (PRO)
 
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)

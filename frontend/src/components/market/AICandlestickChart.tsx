@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, ISeriesApi, SeriesMarker, Time } from 'lightweight-charts';
 import { Brain, TrendingUp, TrendingDown, Target, Zap, Waves } from 'lucide-react';
+import ProPaywall from '../layout/ProPaywall';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface OHLCData {
@@ -221,6 +222,7 @@ export default function AICandlestickChart({ symbol, data }: AICandlestickChartP
   }, [isAIVision, data]);
 
   return (
+    <ProPaywall featureName="AI Candlestick Vision" inline={true}>
     <div className="relative w-full h-full flex flex-col bg-[#0a0b0d] rounded-2xl overflow-hidden border border-[#273951]/50 shadow-[inset_0_0_40px_rgba(39,57,81,0.1)]">
       
       {/* Chart Header & Controls */}
@@ -311,5 +313,6 @@ export default function AICandlestickChart({ symbol, data }: AICandlestickChartP
         style={{ cursor: isAIVision ? 'crosshair' : 'default' }}
       />
     </div>
+    </ProPaywall>
   );
 }

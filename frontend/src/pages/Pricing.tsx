@@ -11,6 +11,7 @@ import { Sparkles as SparklesComp } from "../components/ui/sparkles";
 import { TimelineContent } from "../components/ui/timeline-animation";
 import { VerticalCutReveal } from "../components/ui/vertical-cut-reveal";
 import { cn } from "../lib/utils";
+import { apiClient } from "../api/client";
 
 import {
   Check, X, Crown, Webhook, BarChart2, ArrowRight
@@ -124,11 +125,35 @@ const PricingSwitch = ({ isYearly, onSwitch }: { isYearly: boolean, onSwitch: (v
 export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
   const { t } = useTranslation();
   const [isYearly, setIsYearly] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
   
-  // For demo logic
-  const currentPlan = "free"; 
-  const checkoutLoading = false;
+  const { plan: currentPlan, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubscribe = async (planId: string) => {
+    if (!user) {
+      navigate('/login?redirect=/pricing');
+      return;
+    }
+    
+    try {
+      setLoadingPlan(planId);
+      const { data } = await apiClient.post('/create-checkout-session', {
+        plan: planId,
+        billing: isYearly ? 'yearly' : 'monthly'
+      });
+      
+      if (data && data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Stripe error:", err);
+      alert("Failed to start checkout process. Please try again.");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   const revealVariants = {
     visible: (i: number) => ({
@@ -248,7 +273,8 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
 
                   {/* CTA Button */}
                   <button
-                    disabled={currentPlan === plan.id}
+                    disabled={currentPlan === plan.id || loadingPlan === plan.id}
+                    onClick={() => handleSubscribe(plan.id)}
                     className={cn(
                       "w-full py-4 rounded-[32px] font-black text-xs tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 mb-10",
                       currentPlan === plan.id ? "bg-white/5 text-gray-500 cursor-not-allowed border border-[#273951]/50" :
@@ -256,8 +282,13 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
                       "bg-white text-black hover:bg-gray-200 hover:scale-[1.02] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                     )}
                   >
-                    {currentPlan === plan.id ? "Active" : "Upgrade Now"}
-                    {currentPlan !== plan.id && <ArrowRight size={16} />}
+                    {loadingPlan === plan.id ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        Processing...
+                      </span>
+                    ) : currentPlan === plan.id ? "Active" : "Upgrade Now"}
+                    {currentPlan !== plan.id && loadingPlan !== plan.id && <ArrowRight size={16} />}
                   </button>
 
                   {/* Features List */}
