@@ -4,7 +4,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import NumberFlow from "@number-flow/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { getCoinColor } from "../utils/colors";
 import { supabase } from "../lib/supabase";
@@ -12,6 +12,7 @@ import { useMarket } from "../hooks/useMarket";
 import { apiClient } from "../api/client";
 import { useTranslation } from "react-i18next";
 import AIRebalanceModal from "../components/portfolio/AIRebalanceModal";
+import SwapInterface from "../components/portfolio/SwapInterface";
 import {
   PieChart,
   Pie,
@@ -973,8 +974,22 @@ export default function Portfolio() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: marketData } = useMarket(500);
   const fileRef = useRef(null);
+
+  // Default tab handling via URL parameters
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") === "swap" ? "swap" : "overview");
+  
+  // Update URL when tab changes without full reload
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "swap") {
+      setSearchParams({ tab: "swap" });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   
   const [isRebalanceOpen, setIsRebalanceOpen] = useState(false);
@@ -1237,7 +1252,53 @@ export default function Portfolio() {
           </span>
         </div>
 
-        {/* PERFORMANCE CHART */}
+        {/* TABS */}
+        <div className="relative z-10 flex items-center justify-center gap-2 mt-12 bg-white/[0.02] border border-white/[0.08] p-1 rounded-2xl w-max mx-auto shadow-2xl">
+          <button
+            onClick={() => handleTabChange("overview")}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+              activeTab === "overview"
+                ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10"
+                : "text-slate-400 hover:text-white hover:bg-white/[0.02]"
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => handleTabChange("swap")}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+              activeTab === "swap"
+                ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10"
+                : "text-slate-400 hover:text-white hover:bg-white/[0.02]"
+            }`}
+          >
+            Trade & Swap
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === "swap" && (
+          <motion.div
+            key="swap-view"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <SwapInterface />
+          </motion.div>
+        )}
+
+        {activeTab === "overview" && (
+          <motion.div
+            key="overview-view"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* PERFORMANCE CHART */}
         {chartData.length > 0 && (
           <div className="w-full max-w-4xl mx-auto mt-12 mb-4 relative z-10">
             <div className="flex justify-end gap-2 mb-4 px-4">
@@ -1316,7 +1377,6 @@ export default function Portfolio() {
             </div>
           </div>
         )}
-      </div>
 
       {/* Import message */}
       {importMsg && (
@@ -1762,6 +1822,11 @@ export default function Portfolio() {
       )}
 
       {guide && <GuideModal exchange={guide} onClose={() => setGuide(null)} />}
+
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
     </div>
   );

@@ -47,7 +47,7 @@ export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebala
     setPhase("executing");
     setTimeout(() => {
       onClose();
-      navigate("/swap");
+      navigate("/portfolio?tab=swap");
     }, 1500);
   };
 

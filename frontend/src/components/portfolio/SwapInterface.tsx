@@ -5,13 +5,13 @@ import { useAccount, useBalance, useReadContract, useWriteContract, useSendTrans
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { parseUnits, formatUnits } from "viem";
-import { TOKENS, UNISWAP_V2_ROUTER, WETH_ADDRESS, UNISWAP_ROUTER_ABI, ERC20_ABI } from "../constants/web3";
-import AITradeInsights from "../components/market/AITradeInsights";
-import { apiClient } from "../api/client";
+import { TOKENS, UNISWAP_V2_ROUTER, WETH_ADDRESS, UNISWAP_ROUTER_ABI, ERC20_ABI } from "../../constants/web3";
+import AITradeInsights from "../../components/market/AITradeInsights";
+import { apiClient } from "../../api/client";
 
 type TxState = "idle" | "confirming" | "pending" | "success";
 
-export default function Swap() {
+export default function SwapInterface() {
   const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
   
@@ -253,15 +253,11 @@ export default function Swap() {
   );
 
   return (
-    <div className="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Background Ambient Effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="w-full relative flex flex-col items-center justify-center pt-8 pb-12 overflow-visible">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-start justify-center gap-6 relative z-10"
+        className="w-full mx-auto flex flex-col md:flex-row items-start justify-center gap-6 relative z-10"
       >
         {/* Main Swap Container */}
         <div className="w-full max-w-[480px] rounded-[32px] bg-[#0a0b0d] border border-white/10 shadow-2xl overflow-hidden shrink-0 mx-auto md:mx-0">

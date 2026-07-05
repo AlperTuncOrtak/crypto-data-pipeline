@@ -17,7 +17,7 @@ export default function MobileNav() {
     { path: "/market", icon: LineChart, label: "Market" },
     { path: "/whale", icon: Activity, label: "X-Ray" },
     { path: "/timemachine", icon: Target, label: "Time" },
-    { path: "/swap", icon: ArrowDownUp, label: "Swap" },
+    { path: "/portfolio?tab=swap", icon: ArrowDownUp, label: "Swap" },
     { path: "/portfolio", icon: PieChart, label: "Portfolio" },
   ];
 
