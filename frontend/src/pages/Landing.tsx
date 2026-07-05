@@ -4,7 +4,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 
 // Modüler Bileşenler
 import { Hero } from "../components/landing/Hero";
+import { Stats } from "../components/landing/Stats";
 import { BentoGrid } from "../components/landing/BentoGrid";
+import { FeaturesZigZag } from "../components/landing/FeaturesZigZag";
+import { Testimonials } from "../components/landing/Testimonials";
+import { FAQ } from "../components/landing/FAQ";
 import { InfiniteMarquee } from "../components/landing/InfiniteMarquee";
 import { CTA } from "../components/landing/CTA";
 
@@ -67,7 +71,11 @@ export default function Landing() {
       {/* ── MODULAR SECTIONS ── */}
       <Hero />
       <InfiniteMarquee />
+      <Stats />
       <BentoGrid />
+      <FeaturesZigZag />
+      <Testimonials />
+      <FAQ />
       <CTA />
 
     </div>
