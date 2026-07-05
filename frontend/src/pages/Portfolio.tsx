@@ -44,6 +44,7 @@ import {
   Wallet,
   BarChart2,
   Info,
+  Lock,
 } from "lucide-react";
 
 // ── Formatters ────────────────────────────────────────────────
@@ -1004,6 +1005,7 @@ export default function Portfolio() {
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState(null);
   const [connectingExchange, setConnectingExchange] = useState(null);
+  const [oauthStep, setOauthStep] = useState(0);
   const [isConnecting, setIsConnecting] = useState(false);
   const [wallets, setWallets] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_wallets") || "[]"); }
@@ -1085,14 +1087,6 @@ export default function Portfolio() {
     // ------------------------------------
   const [isFetchingWallet, setIsFetchingWallet] = useState(false);
   const [walletInput, setWalletInput] = useState("");
-  const [connectedExchanges, setConnectedExchanges] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("crypto_neko_connected_exchanges") || "[]"); }
-    catch { return []; }
-  });
-  useEffect(() => {
-    localStorage.setItem("crypto_neko_connected_exchanges", JSON.stringify(connectedExchanges));
-  }, [connectedExchanges]);
-
   const [binanceKeys, setBinanceKeys] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_binance_keys") || '{"key":"","secret":""}'); }
     catch { return { key: "", secret: "" }; }
@@ -1534,7 +1528,7 @@ export default function Portfolio() {
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-[32px] bg-white/[0.02] border border-[#273951]/50">
                 {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => {
-                  const isExConnected = connectedExchanges.includes(ex.name);
+                  const isExConnected = trades.some(t => t.exchange === ex.name);
                   return (
                     <button
                       key={key}
@@ -1945,76 +1939,113 @@ export default function Portfolio() {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative"
             >
-              <div
-                className="h-2 w-full"
-                style={{ background: connectingExchange.color }}
-              />
-              <button
-                onClick={() => {
-                  if (!isConnecting) setConnectingExchange(null);
-                }}
-                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
-                disabled={isConnecting}
-              >
-                <X size={20} />
-              </button>
-
-              <div className="p-8 text-center">
-                <div className="text-6xl mb-6">{connectingExchange.logo}</div>
-                <h3 className="text-2xl font-black text-white mb-2">
-                  Connect {connectingExchange.name}
-                </h3>
-                <p className="text-gray-400 text-sm mb-8">
-                  Authorize CryptoNeko to view your {connectingExchange.name} balances and trading history via Fast API.
-                </p>
-
-                <div className="space-y-3">
+              {oauthStep === 0 && (
+                <>
+                  <div className="h-2 w-full" style={{ background: connectingExchange.color }} />
                   <button
-                    onClick={() => {
-                      setIsConnecting(true);
-                      setTimeout(async () => {
-                        const exName = connectingExchange.name;
-                        const demoTrades = [
-                          { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString() },
-                          { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString() }
-                        ];
-                        
-                        if (user) {
-                          const tradesToInsert = demoTrades.map(t => ({ ...t, user_id: user.id }));
-                          const { error } = await supabase.from("trades").insert(tradesToInsert);
-                          if (error) console.error("Mock insert error:", error);
-                          
-                          const { data } = await supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true });
-                          if (data) setTrades(data);
-                        } else {
-                          const updated = [...trades, ...demoTrades];
-                          setTrades(updated);
-                          localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
-                        }
-                        
-                        setConnectedExchanges(prev => [...new Set([...prev, exName])]);
-                        setIsConnecting(false);
-                        setConnectingExchange(null);
-                        setImportMsg({ ok: true, text: `Successfully synced with ${exName}!` });
-                      }, 2500);
-                    }}
-                    disabled={isConnecting}
-                    className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                    onClick={() => setConnectingExchange(null)}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
                   >
-                    {isConnecting ? (
-                      <div className="animate-spin w-5 h-5 border-2 border-black border-t-transparent rounded-full" />
-                    ) : (
-                      "Connect automatically (OAuth)"
-                    )}
+                    <X size={20} />
                   </button>
-                  <button
-                    disabled={isConnecting}
-                    className="w-full text-xs font-bold text-gray-500 hover:text-white py-2 transition-colors disabled:opacity-50"
-                  >
-                    Enter API Keys Manually
-                  </button>
+
+                  <div className="p-8 text-center">
+                    <div className="text-6xl mb-6 flex justify-center">{connectingExchange.logo}</div>
+                    <h3 className="text-2xl font-black text-white mb-2">Connect {connectingExchange.name}</h3>
+                    <p className="text-gray-400 text-sm mb-8">
+                      Authorize CryptoNeko to view your {connectingExchange.name} balances and trading history via Fast API.
+                    </p>
+
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => {
+                          setOauthStep(1);
+                          setTimeout(() => setOauthStep(2), 1500);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors"
+                      >
+                        Connect automatically (OAuth)
+                      </button>
+                      <button className="w-full text-xs font-bold text-gray-500 hover:text-white py-2 transition-colors">
+                        Enter API Keys Manually
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {oauthStep === 1 && (
+                <div className="p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
+                  <div className="animate-spin w-12 h-12 border-4 border-[var(--accent)] border-t-transparent rounded-full mb-6" />
+                  <h3 className="text-xl font-bold text-white mb-2">Redirecting to {connectingExchange.name}...</h3>
+                  <p className="text-gray-500 text-sm">Opening secure OAuth portal</p>
                 </div>
-              </div>
+              )}
+
+              {oauthStep === 2 && (
+                <div className="bg-white text-black h-full flex flex-col">
+                  <div className="flex items-center gap-2 border-b border-gray-200 p-3 bg-gray-50 text-xs text-gray-500 font-mono">
+                    <Lock size={14} className="text-green-600" />
+                    https://oauth.{connectingExchange.name.toLowerCase().replace(/\s/g, '')}.com/authorize
+                  </div>
+                  <div className="p-8 text-center flex-1">
+                    <div className="text-5xl mb-4 flex justify-center">{connectingExchange.logo}</div>
+                    <h2 className="text-xl font-bold mb-4">Authorize Access</h2>
+                    <p className="text-gray-600 text-sm mb-6">
+                      <strong>CryptoNeko</strong> is requesting read-only access to your {connectingExchange.name} account to view balances and trading history.
+                    </p>
+                    <div className="flex gap-3 mt-8">
+                      <button 
+                        onClick={() => {
+                          setOauthStep(0);
+                          setConnectingExchange(null);
+                        }}
+                        className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors"
+                      >
+                        Deny
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setOauthStep(3);
+                          setTimeout(async () => {
+                            const exName = connectingExchange.name;
+                            const demoTrades = [
+                              { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString(), exchange: exName },
+                              { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString(), exchange: exName }
+                            ];
+                            
+                            if (user) {
+                              const tradesToInsert = demoTrades.map(t => ({ ...t, user_id: user.id }));
+                              await supabase.from("trades").insert(tradesToInsert);
+                              const { data } = await supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true });
+                              if (data) setTrades(data);
+                            } else {
+                              const updated = [...trades, ...demoTrades];
+                              setTrades(updated);
+                              localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
+                            }
+                            
+                            setOauthStep(0);
+                            setConnectingExchange(null);
+                            setImportMsg({ ok: true, text: `Successfully synced with ${exName}!` });
+                          }, 2500);
+                        }}
+                        className="flex-1 py-3 bg-[var(--accent)] hover:brightness-110 text-white font-bold rounded-xl transition-all"
+                      >
+                        Authorize
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {oauthStep === 3 && (
+                <div className="p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
+                  <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mb-6" />
+                  <h3 className="text-xl font-bold text-white mb-2">Syncing Data...</h3>
+                  <p className="text-gray-500 text-sm">Downloading portfolio balances and trades</p>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
