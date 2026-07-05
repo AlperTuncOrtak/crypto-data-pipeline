@@ -7,7 +7,7 @@ import { Hero } from "../components/landing/Hero";
 import { Stats } from "../components/landing/Stats";
 
 import { FeaturesZigZag } from "../components/landing/FeaturesZigZag";
-import { Comparison } from "../components/landing/Comparison";
+
 import { Testimonials } from "../components/landing/Testimonials";
 import { FAQ } from "../components/landing/FAQ";
 import { InfiniteMarquee } from "../components/landing/InfiniteMarquee";
@@ -75,7 +75,7 @@ export default function Landing() {
       <InfiniteMarquee />
       <Stats />
       <FeaturesZigZag />
-      <Comparison />
+
       <Testimonials />
       <FAQ />
       <CTA />

@@ -32,69 +32,53 @@ function FadeUp({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-/* ─── 1. Whale Copy-Trading & Alerts ─── */
+/* ─── 1. Whale X-Ray ─── */
 const WHALE_DATA = [
   { id: "a1", type: "BUY",      token: "ETH",  amt: "$1.2M", time: "Just now",  cls: { row: "bg-emerald-500/10 border-emerald-500/20", badge: "bg-emerald-500/20 text-emerald-300", val: "text-emerald-400" } },
   { id: "a2", type: "SELL",     token: "WIF",  amt: "$800K",  time: "2m ago",    cls: { row: "bg-rose-500/10 border-rose-500/20",    badge: "bg-rose-500/20 text-rose-300",    val: "text-rose-400" } },
-  { id: "a3", type: "BUY",      token: "PEPE", amt: "$3.7M",  time: "15m ago",   cls: { row: "bg-emerald-500/10 border-emerald-500/20", badge: "bg-emerald-500/20 text-emerald-300", val: "text-emerald-400" } },
-  { id: "a4", type: "BUY",      token: "BTC",  amt: "$5.1M",  time: "Just now",  cls: { row: "bg-emerald-500/10 border-emerald-500/20", badge: "bg-emerald-500/20 text-emerald-300", val: "text-emerald-400" } },
-  { id: "a5", type: "SELL",     token: "SOL",  amt: "$2.1M",  time: "4m ago",    cls: { row: "bg-rose-500/10 border-rose-500/20",    badge: "bg-rose-500/20 text-rose-300",    val: "text-rose-400" } },
+  { id: "a3", type: "TRANSFER", token: "USDC", amt: "$5.0M",  time: "15m ago",   cls: { row: "bg-white/5 border-white/10",           badge: "bg-white/10 text-slate-300",      val: "text-white" } },
+  { id: "a4", type: "BUY",      token: "BTC",  amt: "$3.7M",  time: "Just now",  cls: { row: "bg-emerald-500/10 border-emerald-500/20", badge: "bg-emerald-500/20 text-emerald-300", val: "text-emerald-400" } },
+  { id: "a5", type: "SELL",     token: "PEPE", amt: "$2.1M",  time: "4m ago",    cls: { row: "bg-rose-500/10 border-rose-500/20",    badge: "bg-rose-500/20 text-rose-300",    val: "text-rose-400" } },
+  { id: "a6", type: "TRANSFER", token: "USDT", amt: "$9.4M",  time: "7m ago",    cls: { row: "bg-white/5 border-white/10",           badge: "bg-white/10 text-slate-300",      val: "text-white" } },
 ];
 
-function CopyTradeDemo() {
-  const [feed, setFeed] = useState(() => WHALE_DATA.slice(0, 2));
-  const idxRef = useRef(2);
-  const [copied, setCopied] = useState(false);
-
+function WhaleDemo() {
+  const [feed, setFeed] = useState(() => WHALE_DATA.slice(0, 3));
+  const idxRef = useRef(3);
   useEffect(() => {
     const t = setInterval(() => {
       const next = idxRef.current % WHALE_DATA.length;
       idxRef.current = next + 1;
-      setFeed(f => [WHALE_DATA[next], ...f].slice(0, 2));
-      setCopied(false);
-    }, 3500);
+      setFeed(f => [WHALE_DATA[next], ...f].slice(0, 3));
+    }, 2200);
     return () => clearInterval(t);
   }, []);
 
   return (
     <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
       <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-4 min-h-[240px]">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Telegram Bot Active</span>
-          </div>
-          <span className="text-[9px] bg-white/10 text-white px-2 py-0.5 rounded font-bold">@WhaleAlerts</span>
+      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-3 min-h-[240px]">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Whale Feed · All DEXs</span>
         </div>
-        
         <AnimatePresence initial={false} mode="popLayout">
-          {feed.map((row, i) => (
+          {feed.map((row) => (
             <motion.div key={row.id}
               layout
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className={`flex flex-col gap-3 px-4 py-3.5 rounded-xl border ${row.cls.row}`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${row.cls.badge}`}>{row.type}</span>
-                  <span className="font-bold text-white text-sm">{row.token}</span>
-                </div>
-                <div className={`font-mono text-sm font-black ${row.cls.val}`}>{row.amt}</div>
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${row.cls.row}`}>
+              <div className="flex items-center gap-2.5">
+                <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${row.cls.badge}`}>{row.type}</span>
+                <span className="font-bold text-white text-sm">{row.token}</span>
               </div>
-              
-              {i === 0 && (
-                <div className="flex items-center gap-2 pt-2 border-t border-white/5 mt-1">
-                  <button 
-                    onClick={() => setCopied(true)}
-                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${copied ? "bg-white/10 text-white cursor-default" : "bg-white text-black hover:bg-white/90"}`}
-                  >
-                    {copied ? "✓ Copied Trade ($50)" : "1-Click Copy Trade"}
-                  </button>
-                </div>
-              )}
+              <div className="text-right">
+                <div className={`font-mono text-sm font-black ${row.cls.val}`}>{row.amt}</div>
+                <div className="text-[10px] text-slate-500">{row.time}</div>
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -103,70 +87,93 @@ function CopyTradeDemo() {
   );
 }
 
-/* ─── 2. Token Safety Scanner ─── */
-function ScannerDemo() {
-  const [scanning, setScanning] = useState(false);
-  const [done, setDone] = useState(true);
+/* ─── 2. Time-Machine Backtesting ─── */
+const BT_BARS = [28, 38, 30, 50, 42, 38, 45, 62, 70, 82, 76, 90, 80, 110];
 
-  const scan = () => {
-    if (scanning) return;
-    setScanning(true);
-    setDone(false);
-    setTimeout(() => {
-      setScanning(false);
-      setDone(true);
-    }, 2000);
-  };
+function BacktestDemo() {
+  const [progress, setProgress] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [done, setDone] = useState(false);
+  const [aiIdx, setAiIdx] = useState(-1);
+  const AI_MSGS = [
+    "Strong buy at the 0.618 Fibonacci level. Textbook accumulation pattern.",
+    "SOL entry timing was near-perfect. Risk/reward ratio: 42x.",
+    "Would recommend scaling into position over 3 tranches next time.",
+  ];
+
+  const run = useCallback(() => {
+    if (running) return;
+    setProgress(0); setDone(false); setAiIdx(-1); setRunning(true);
+    let p = 0;
+    const t = setInterval(() => {
+      p += Math.random() * 10 + 5;
+      if (p >= 100) {
+        clearInterval(t);
+        setProgress(100); setRunning(false); setDone(true);
+        let i = 0;
+        const m = setInterval(() => {
+          setAiIdx(i);
+          i++;
+          if (i >= AI_MSGS.length) clearInterval(m);
+        }, 1400);
+      } else {
+        setProgress(p);
+      }
+    }, 80);
+  }, [running]);
 
   return (
     <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
       <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
       <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Smart Contract Audit</span>
-          <button onClick={scan} className="text-[9px] bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded font-bold transition-colors">
-            Re-scan Contract
-          </button>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">SOL/USDT · 2022–2023</span>
+          {done && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300 }} className="text-white font-black text-lg font-mono">+4,250%</motion.span>}
         </div>
 
-        <div className="p-4 rounded-xl border border-white/10 bg-white/5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-              <span className="text-emerald-400 font-bold text-xs">PEPE</span>
-            </div>
-            <div>
-              <div className="text-sm font-bold text-white">PepeCoin</div>
-              <div className="text-[10px] text-slate-500 font-mono">0x6982...193</div>
-            </div>
-          </div>
-          {done ? (
-            <div className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
-              100/100 Safe
-            </div>
-          ) : (
-            <div className="px-2 py-1 rounded bg-white/10 text-white text-[10px] font-bold animate-pulse">
-              Scanning...
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { label: "Honeypot Risk", val: "Passed", color: "text-emerald-400" },
-            { label: "Buy/Sell Tax", val: "0% / 0%", color: "text-emerald-400" },
-            { label: "Liquidity", val: "Locked (99%)", color: "text-emerald-400" },
-            { label: "Contract", val: "Renounced", color: "text-emerald-400" },
-          ].map((item, i) => (
-            <div key={i} className="p-3 rounded-xl border border-white/5 bg-white/[0.02]">
-              <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">{item.label}</div>
-              {scanning ? (
-                <div className="h-4 w-12 bg-white/10 rounded animate-pulse" />
-              ) : (
-                <div className={`text-xs font-black ${item.color}`}>{item.val}</div>
-              )}
-            </div>
+        {/* Chart bars */}
+        <div className="flex items-end gap-1 h-20 w-full">
+          {BT_BARS.map((h, i) => (
+            <motion.div key={i}
+              initial={{ height: 0 }}
+              animate={{ height: `${(h / 110) * 100}%` }}
+              transition={{ delay: i * 0.04, duration: 0.5, ease: "easeOut" }}
+              className={`flex-1 rounded-t-sm relative ${i < 6 ? "bg-white/20" : "bg-white/60"}`}>
+              {i === 5 && <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] text-white whitespace-nowrap font-bold">BOTTOM</div>}
+            </motion.div>
           ))}
         </div>
+
+        {/* Progress bar */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+            <span>{Math.min(100, Math.round(progress))}%</span>
+            <span>RSI + EMA Cross</span>
+          </div>
+          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <motion.div
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.1 }}
+              className="h-full rounded-full bg-white" />
+          </div>
+        </div>
+
+        {/* AI message */}
+        <AnimatePresence mode="wait">
+          {aiIdx >= 0 && (
+            <motion.div key={aiIdx}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              className="flex items-start gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
+              <span className="text-white text-[10px] font-black shrink-0 mt-0.5">AI</span>
+              <p className="text-[11px] text-slate-300 leading-relaxed">{AI_MSGS[aiIdx]}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button onClick={run}
+          className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${running ? "bg-white/5 text-slate-500 cursor-not-allowed" : done ? "bg-white/[0.04] border border-white/10 text-slate-400 hover:bg-white/10" : "bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)]"}`}>
+          {running ? "Simulating..." : done ? "↩ Reset & Run Again" : "▶  Run Time-Machine"}
+        </button>
       </div>
     </div>
   );
@@ -190,7 +197,9 @@ function CandleDemo() {
           </button>
         </div>
 
+        {/* Chart */}
         <div className="relative flex items-end gap-[3px] h-24 w-full">
+          {/* Support line */}
           <AnimatePresence>
             {aiOn && (
               <motion.div key="support"
@@ -224,6 +233,7 @@ function CandleDemo() {
           ))}
         </div>
 
+        {/* AI tags */}
         <AnimatePresence>
           {aiOn && (
             <motion.div key="tags" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
@@ -239,219 +249,10 @@ function CandleDemo() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </div>
-  );
-}
 
-/* ─── 4. AI Market Analysis ─── */
-function AIMarketDemo() {
-  const [fg, setFg] = useState(74);
-  useEffect(() => {
-    const t = setInterval(() => setFg(p => Math.max(15, Math.min(92, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3 + 1)))), 1800);
-    return () => clearInterval(t);
-  }, []);
-  const label = fg > 75 ? "Extreme Greed" : fg > 55 ? "Greed" : fg > 45 ? "Neutral" : "Fear";
-  const circumference = 251.2;
-  const offset = circumference - (circumference * fg / 100);
-
-  return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
-      <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-6 shadow-inner flex flex-col items-center gap-5">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">AI Market Sentiment</span>
-        <div className="relative w-32 h-32">
-          <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#ffffff" strokeWidth="8"
-              strokeDasharray={circumference} strokeDashoffset={offset}
-              strokeLinecap="round" style={{ transition: "stroke-dashoffset 1s ease" }} />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-black text-white tabular-nums">{fg}</span>
-            <span className="text-[9px] font-bold uppercase tracking-widest text-white">{label}</span>
-          </div>
-        </div>
-        <div className="w-full space-y-2.5">
-          {[
-            { label: "Bullish signals",  val: Math.min(100, fg + 10) },
-            { label: "Momentum score",   val: fg },
-            { label: "Bearish pressure", val: Math.max(0, 100-fg-10) },
-          ].map(b => (
-            <div key={b.label} className="flex items-center gap-3">
-              <span className="text-[10px] text-slate-500 w-28 shrink-0">{b.label}</span>
-              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <motion.div animate={{ width: `${b.val}%` }} transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="h-full rounded-full bg-white" />
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 w-7 text-right tabular-nums">{b.val}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── 5. Real-Time Data ─── */
-const INITIAL_TICKERS = [
-  { id: "btc", pair: "BTC/USDT",  basePrice: 63420.5 },
-  { id: "eth", pair: "ETH/USDT",  basePrice: 3451.2 },
-  { id: "sol", pair: "SOL/USDT",  basePrice: 142.88 },
-  { id: "pepe",pair: "PEPE/USDT", basePrice: 0.00001221 },
-];
-
-function RealTimeDemo() {
-  const [tickers, setTickers] = useState(() =>
-    INITIAL_TICKERS.map(t => ({ ...t, price: t.basePrice, change: 0 }))
-  );
-  useEffect(() => {
-    const t = setInterval(() => {
-      setTickers(prev => prev.map(tk => {
-        const delta = (Math.random() - 0.48) * 0.004;
-        const newPrice = tk.price * (1 + delta);
-        const change = ((newPrice - tk.basePrice) / tk.basePrice) * 100;
-        return { ...tk, price: newPrice, change };
-      }));
-    }, 900);
-    return () => clearInterval(t);
-  }, []);
-  const fmt = (p: number) => p > 1 ? p.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(8);
-
-  return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
-      <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-5 shadow-inner space-y-3">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">WebSocket Feed · Live</span>
-        </div>
-        {tickers.map(tk => (
-          <div key={tk.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/5 border border-white/10">
-            <span className="font-bold text-white text-sm">{tk.pair}</span>
-            <div className="text-right">
-              <motion.div layout className="font-mono text-sm font-bold text-white tabular-nums">{fmt(tk.price)}</motion.div>
-              <div className={`text-[11px] font-bold tabular-nums text-slate-400`}>
-                {tk.change >= 0 ? "+" : ""}{tk.change.toFixed(2)}%
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── 6. AI Auto-Pilot ─── */
-function AutoPilotDemo() {
-  const [active, setActive] = useState(false);
-  const [pnl, setPnl] = useState(0);
-
-  useEffect(() => {
-    let t: any;
-    if (active) {
-      t = setInterval(() => {
-        setPnl(prev => prev + (Math.random() * 12 + 2));
-      }, 800);
-    } else {
-      setPnl(0);
-    }
-    return () => clearInterval(t);
-  }, [active]);
-
-  return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
-      <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-6 shadow-inner space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Active Strategy</div>
-            <div className="text-sm font-bold text-white">AI Trend Following (SOL)</div>
-          </div>
-          <button 
-            onClick={() => setActive(!active)}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${active ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-white/10 text-white hover:bg-white/20"}`}
-          >
-            {active ? "ON" : "OFF"}
-          </button>
-        </div>
-
-        <div className="p-4 rounded-xl border border-white/10 bg-white/5 flex flex-col items-center justify-center min-h-[100px] transition-all">
-          <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Simulated P&L</span>
-          {active ? (
-            <motion.div key="active" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-3xl font-black font-mono text-emerald-400 tabular-nums drop-shadow-[0_0_10px_rgba(52,211,153,0.3)]">
-              +${pnl.toFixed(2)}
-            </motion.div>
-          ) : (
-            <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-2xl font-black font-mono text-slate-500">
-              $0.00
-            </motion.div>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs font-bold text-slate-400">
-            <span>Risk Level</span>
-            <span className="text-white">Moderate</span>
-          </div>
-          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full w-1/2 bg-white/60 rounded-full" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── 7. Portfolio Sync ─── */
-const PORTFOLIO_ASSETS = [
-  { symbol: "BTC", pct: 45, opacity: 1 },
-  { symbol: "ETH", pct: 30, opacity: 0.8 },
-  { symbol: "SOL", pct: 15, opacity: 0.6 },
-  { symbol: "Other", pct: 10, opacity: 0.4 },
-];
-
-function PortfolioDemo() {
-  const [bal, setBal] = useState(124592.0);
-  useEffect(() => {
-    const t = setInterval(() => setBal(p => p + (Math.random() - 0.48) * 60), 1500);
-    return () => clearInterval(t);
-  }, []);
-
-  return (
-    <div className="relative rounded-[28px] bg-[#020817] border border-white/10 p-4 shadow-2xl overflow-hidden group">
-      <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#020817] rounded-2xl border border-white/5 p-6 shadow-inner space-y-5">
-        <div className="text-center">
-          <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total Portfolio</div>
-          <div className="text-2xl font-black font-mono text-white tabular-nums">
-            ${bal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </div>
-          <div className="text-xs text-white font-bold mt-1">+12.4% this week</div>
-        </div>
-
-        <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
-          {PORTFOLIO_ASSETS.map(a => (
-            <div key={a.symbol} className="bg-white rounded-full" style={{ width: `${a.pct}%`, opacity: a.opacity }} />
-          ))}
-        </div>
-
-        <div className="space-y-2.5">
-          {PORTFOLIO_ASSETS.map(a => (
-            <div key={a.symbol} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-white" style={{ opacity: a.opacity }} />
-                <span className="text-xs font-bold text-slate-300">{a.symbol}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] text-slate-500">{a.pct}%</span>
-                <span className="text-xs font-mono text-slate-400 tabular-nums">
-                  ${(bal * a.pct / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {!aiOn && (
+          <p className="text-[11px] text-slate-500 text-center pt-1">Toggle AI Vision to reveal hidden patterns</p>
+        )}
       </div>
     </div>
   );
@@ -466,23 +267,20 @@ type Feature = {
 };
 
 const FEATURES: Feature[] = [
-  { tag: "Copy Trading",          title: "Whale Copy-Trading",      desc: "Don't just watch whales—trade like them. Connect your wallet and automatically copy the exact moves of the most profitable wallets on-chain in real-time. Delivered straight to your Telegram.", bullets: ["1-Click automated copy trading", "Instant Telegram & Discord alerts", "Customizable wallet tracking"], Demo: CopyTradeDemo,  flip: false },
-  { tag: "Security",              title: "Token Safety Scanner",    desc: "Never get rugged again. Every token you look at goes through an instant Smart Contract Audit checking for honeypots, locked liquidity, tax rates, and contract ownership.", bullets: ["Honeypot & rug-pull detection", "Real-time liquidity verification", "Buy/Sell tax analysis"], Demo: ScannerDemo,    flip: true  },
-  { tag: "AI Vision",             title: "AI Candlestick Vision",   desc: "Tired of drawing lines manually? Toggle AI Vision on your charts and let Deep Learning instantly map support/resistance zones, highlight hidden patterns, and overlay orderbook density right on the candles.", bullets: ["Auto-drawn Support & Resistance", "Pattern recognition (Head & Shoulders, Flags)", "Liquidity heatmaps"], Demo: CandleDemo,     flip: false },
-  { tag: "AI Auto-Pilot",         title: "AI Auto-Pilot",           desc: "Stop agonizing over technical indicators. Tell the AI your risk tolerance, and it will backtest thousands of historical scenarios instantly to find and execute the most profitable strategy for you.", bullets: ["Zero-code strategy generation", "Instant historical backtesting", "One-click live deployment"], Demo: AutoPilotDemo,  flip: true  },
-  { tag: "AI Powered",            title: "AI Market Analysis",      desc: "Our proprietary AI analyzes sentiment across millions of data points, giving you an edge with real-time Fear & Greed indices, social signals, and predictive modeling before the crowd catches on.", bullets: ["Fear & Greed Index (live)", "Social sentiment scanning", "Predictive pattern modeling"], Demo: AIMarketDemo,   flip: false },
-  { tag: "Live Data",             title: "Real-Time Data",          desc: "Millisecond-precision WebSocket feeds straight to your dashboard. No 15-minute delays, no refresh buttons — every tick, every trade, every move, delivered the instant it happens on-chain.", bullets: ["Sub-second WebSocket feeds", "Multi-exchange aggregation", "Order book depth streaming"], Demo: RealTimeDemo,   flip: true  },
-  { tag: "Portfolio",             title: "Unified Portfolio Sync",  desc: "Connect your Web3 wallets and Exchange APIs securely. See your full net worth, asset allocation breakdown, and real-time P&L in one beautiful, unified dashboard without manual tracking.", bullets: ["1-Click Web3 Wallet Connect", "Exchange API Synchronization", "Real-time P&L breakdown"], Demo: PortfolioDemo,  flip: false },
+  { tag: "On-Chain Intelligence", title: "Whale X-Ray",            desc: "See exactly where the smart money is flowing. Our on-chain analysis engine tracks massive wallet movements across multiple DEXs in real-time. Don't be the exit liquidity; trade alongside the whales.",                                                                                                bullets: ["Live large transfer alerts", "DEX activity monitoring", "Wallet tagging and profiling"],             Demo: WhaleDemo,      flip: false },
+  { tag: "Strategy Lab",          title: "Time-Machine Backtesting",desc: "What if you had bought Solana at the bottom of the bear market? Stop wondering. Simulate past market conditions, backtest your strategies, and receive an AI-generated analysis of your hypothetical portfolio performance.",                                                                          bullets: ["Historical price replay", "P&L Simulation", "AI-driven critique of your entries"],                  Demo: BacktestDemo,   flip: true  },
+  { tag: "AI Vision",             title: "AI Candlestick Vision",   desc: "Tired of drawing lines manually? Toggle AI Vision on your charts and let Deep Learning instantly map support/resistance zones, highlight hidden patterns, and overlay orderbook density right on the candles.",                                                                                          bullets: ["Auto-drawn Support & Resistance", "Pattern recognition (Head & Shoulders, Flags)", "Liquidity heatmaps"], Demo: CandleDemo,  flip: false },
 ];
 
 export function FeaturesZigZag() {
   return (
     <section className="relative z-10 px-6 lg:px-16 max-w-[1300px] mx-auto mb-32 space-y-32">
 
+      {/* Section Header */}
       <FadeUp className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/5 text-white text-xs font-semibold mb-6 uppercase tracking-widest">
           <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          The Arsenal
+          Exclusive Features
         </div>
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight leading-[1.1]">
           Tools that give you an{" "}
@@ -499,6 +297,7 @@ export function FeaturesZigZag() {
         const { Demo } = f;
         return (
           <div key={f.title} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Text */}
             <FadeUp delay={0.1} className={f.flip ? "lg:order-2" : ""}>
               <span className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border mb-6 border-white/20 bg-white/5 text-white`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -516,6 +315,7 @@ export function FeaturesZigZag() {
               </ul>
             </FadeUp>
 
+            {/* Demo — rendered as component, not pre-created JSX */}
             <SlideIn direction={f.flip ? "left" : "right"} delay={0.2} className={f.flip ? "lg:order-1" : ""}>
               <Demo />
             </SlideIn>
