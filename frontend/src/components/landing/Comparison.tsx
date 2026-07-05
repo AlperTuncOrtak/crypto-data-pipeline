@@ -1,15 +1,14 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, X, Minus } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 
 const COMPARISON_FEATURES = [
   { id: "dex", name: "Live DEX Tracking", us: true, screener: true, analytics: true, charting: false },
-  { id: "charting", name: "Advanced Charting", us: true, screener: true, analytics: false, charting: true },
-  { id: "whale", name: "Whale Wallet Profiling", us: true, screener: false, analytics: true, charting: false },
+  { id: "copy", name: "1-Click Copy Trading", us: true, screener: false, analytics: false, charting: false },
+  { id: "security", name: "Smart Contract Audit", us: true, screener: true, analytics: false, charting: false },
   { id: "ai", name: "AI Candlestick Vision", us: true, screener: false, analytics: false, charting: "partial" },
-  { id: "algo", name: "Zero-Code Algo Trading", us: true, screener: false, analytics: false, charting: "code" },
-  { id: "backtest", name: "Time-Machine Backtesting", us: true, screener: false, analytics: false, charting: true },
-  { id: "sentiment", name: "AI Market Sentiment", us: true, screener: false, analytics: "partial", charting: false },
+  { id: "autopilot", name: "AI Auto-Pilot", us: true, screener: false, analytics: false, charting: "code" },
+  { id: "telegram", name: "Telegram Alert Bot", us: true, screener: false, analytics: "partial", charting: false },
   { id: "portfolio", name: "Unified Portfolio Sync", us: true, screener: false, analytics: false, charting: false },
 ];
 
@@ -32,7 +31,7 @@ export function Comparison() {
     if (status === true) {
       return (
         <div className="flex justify-center">
-          <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center">
+          <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.4)]">
             <Check size={14} strokeWidth={3} />
           </div>
         </div>
@@ -87,13 +86,13 @@ export function Comparison() {
           <div className="absolute inset-0 bg-white/5 blur-[120px] rounded-full pointer-events-none opacity-20" />
           
           <div className="relative z-10 overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr>
-                  <th className="p-6 font-semibold text-slate-400 text-sm tracking-wider uppercase border-b border-white/5 min-w-[200px]">
+                  <th className="p-6 font-semibold text-slate-400 text-sm tracking-wider uppercase border-b border-white/5">
                     Features
                   </th>
-                  <th className="p-6 text-center border-b border-white/5 min-w-[140px]">
+                  <th className="p-6 text-center border-b border-white/5 w-[160px]">
                     <div className="inline-flex flex-col items-center">
                       <span className="text-xs font-bold text-white uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full mb-2">
                         CryptoNeko
@@ -101,7 +100,7 @@ export function Comparison() {
                       <span className="text-[10px] text-slate-500 font-mono">Our Platform</span>
                     </div>
                   </th>
-                  <th className="p-6 text-center border-b border-white/5 min-w-[140px]">
+                  <th className="p-6 text-center border-b border-white/5 w-[140px]">
                     <div className="inline-flex flex-col items-center">
                       <span className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">
                         Screener
@@ -109,7 +108,7 @@ export function Comparison() {
                       <span className="text-[10px] text-slate-500 font-mono">DEX Monitors</span>
                     </div>
                   </th>
-                  <th className="p-6 text-center border-b border-white/5 min-w-[140px]">
+                  <th className="p-6 text-center border-b border-white/5 w-[140px]">
                     <div className="inline-flex flex-col items-center">
                       <span className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">
                         Analytics
@@ -117,7 +116,7 @@ export function Comparison() {
                       <span className="text-[10px] text-slate-500 font-mono">On-Chain Giants</span>
                     </div>
                   </th>
-                  <th className="p-6 text-center border-b border-white/5 min-w-[140px]">
+                  <th className="p-6 text-center border-b border-white/5 w-[140px]">
                     <div className="inline-flex flex-col items-center">
                       <span className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">
                         Charting
@@ -128,7 +127,7 @@ export function Comparison() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {COMPARISON_FEATURES.map((feature, i) => (
+                {COMPARISON_FEATURES.map((feature) => (
                   <tr key={feature.id} className="group hover:bg-white/[0.02] transition-colors">
                     <td className="p-6">
                       <span className="font-medium text-slate-200 group-hover:text-white transition-colors">{feature.name}</span>
