@@ -1525,16 +1525,30 @@ export default function Portfolio() {
                 <Wallet size={14} className="text-[var(--accent)]" /> Import Data
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-[32px] bg-white/[0.02] border border-[#273951]/50">
-                {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
-                  <button
-                    key={key}
-                    onClick={() => setConnectingExchange(ex)}
-                    className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] bg-[#16181c] border border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98] transition-transform duration-300 transition-all duration-300 group overflow-hidden shadow-lg"
-                  >
-                    <span className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-2xl">{ex.logo}</span>
-                    <span className="text-xs font-bold text-gray-400 group-hover:text-white transition-colors text-center truncate w-full">{ex.name}</span>
-                  </button>
-                ))}
+                {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => {
+                  const isExConnected = trades.some(t => t.exchange === ex.name);
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => !isExConnected && setConnectingExchange(ex)}
+                      className={`relative flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] border transition-all duration-300 group overflow-hidden shadow-lg ${
+                        isExConnected 
+                          ? "bg-green-500/5 border-green-500/20 cursor-default" 
+                          : "bg-[#16181c] border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98]"
+                      }`}
+                    >
+                      {isExConnected && (
+                        <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                      )}
+                      <span className={`text-3xl transition-transform duration-300 drop-shadow-2xl ${!isExConnected && "group-hover:scale-110"}`}>{ex.logo}</span>
+                      <span className={`text-xs font-bold text-center truncate w-full transition-colors ${
+                        isExConnected ? "text-green-400" : "text-gray-400 group-hover:text-white"
+                      }`}>
+                        {isExConnected ? "Connected" : ex.name}
+                      </span>
+                    </button>
+                  );
+                })}
                 <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
               </div>
             </div>
@@ -1950,17 +1964,27 @@ export default function Portfolio() {
                   <button
                     onClick={() => {
                       setIsConnecting(true);
-                      setTimeout(() => {
+                      setTimeout(async () => {
+                        const exName = connectingExchange.name;
                         const demoTrades = [
-                          { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString() },
-                          { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString() }
+                          { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString(), exchange: exName },
+                          { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString(), exchange: exName }
                         ];
-                        const updated = [...trades, ...demoTrades];
-                        setTrades(updated);
-                        localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
+                        
+                        if (user) {
+                          const tradesToInsert = demoTrades.map(t => ({ ...t, user_id: user.id }));
+                          await supabase.from("trades").insert(tradesToInsert);
+                          const { data } = await supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true });
+                          if (data) setTrades(data);
+                        } else {
+                          const updated = [...trades, ...demoTrades];
+                          setTrades(updated);
+                          localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
+                        }
+                        
                         setIsConnecting(false);
                         setConnectingExchange(null);
-                        setImportMsg({ ok: true, text: `Successfully synced with ${connectingExchange.name}!` });
+                        setImportMsg({ ok: true, text: `Successfully synced with ${exName}!` });
                       }, 2500);
                     }}
                     disabled={isConnecting}
