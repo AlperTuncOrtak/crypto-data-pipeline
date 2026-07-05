@@ -82,7 +82,7 @@ export default function VoiceAssistantWidget() {
   const processIntent = (text: string) => {
     if (text.includes("open swap") || text.includes("trade") || text.includes("exchange")) {
       speak("Opening swap interface.");
-      window.dispatchEvent(new Event("open-swap"));
+      navigate("/swap");
     } 
     else if (text.includes("dashboard") || text.includes("home")) {
       speak("Navigating to dashboard.");

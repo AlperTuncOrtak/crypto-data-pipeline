@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, X, Zap, ArrowRight, ShieldCheck, AlertTriangle, TrendingUp, CheckCircle2 } from "lucide-react";
 
@@ -11,6 +12,7 @@ interface AIRebalanceModalProps {
 type Phase = "scanning" | "results" | "executing";
 
 export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebalanceModalProps) {
+  const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>("scanning");
   const [scanText, setScanText] = useState("Initializing AI Risk Matrix...");
   
@@ -45,8 +47,7 @@ export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebala
     setPhase("executing");
     setTimeout(() => {
       onClose();
-      // Dispatch the global event to open the Swap widget
-      window.dispatchEvent(new Event("open-swap"));
+      navigate("/swap");
     }, 1500);
   };
 

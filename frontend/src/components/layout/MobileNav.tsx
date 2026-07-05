@@ -17,7 +17,7 @@ export default function MobileNav() {
     { path: "/market", icon: LineChart, label: "Market" },
     { path: "/whale", icon: Activity, label: "X-Ray" },
     { path: "/timemachine", icon: Target, label: "Time" },
-    { path: "#", icon: ArrowDownUp, label: "Swap", isAction: true },
+    { path: "/swap", icon: ArrowDownUp, label: "Swap" },
     { path: "/portfolio", icon: PieChart, label: "Portfolio" },
   ];
 
@@ -30,20 +30,7 @@ export default function MobileNav() {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
           
-          if (item.isAction) {
-            return (
-              <button 
-                key={item.label}
-                onClick={() => { handleHaptic(); window.dispatchEvent(new Event("open-swap")); }}
-                className="relative flex flex-col items-center justify-center gap-1 min-w-[50px] text-purple-400 hover:text-purple-300"
-              >
-                <div className="relative flex items-center justify-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                  <Icon size={24} strokeWidth={2.5} />
-                </div>
-                <span className="text-[10px] font-bold tracking-wide">Swap</span>
-              </button>
-            )
-          }
+
           
           return (
             <Link

@@ -14,7 +14,7 @@ import RightSidebar from "./components/layout/WatchlistModal";
 import ReloadPrompt from "./components/layout/ReloadPrompt";
 import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
-import SwapWidget from "./components/market/SwapWidget";
+import Swap from "./pages/Swap";
 import { CommandPalette } from "./components/layout/CommandPalette";
 
 import { Toaster } from "sonner";
@@ -143,7 +143,7 @@ function AppInner() {
         className={location.pathname === "/" || location.pathname === "/onboarding" ? "pb-20 md:pb-0" : "main-content pb-20 md:pb-0"}
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
-        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} />
+        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} /><Route path="/swap" element={<Swap />} />
           {/* Public */}
           <Route
             path="/"
@@ -264,7 +264,7 @@ function AppInner() {
             }
           />
         </Routes></Suspense></main>
-      <SwapWidget />
+      
       {location.pathname !== "/onboarding" && <MobileNav />}
       {location.pathname !== "/onboarding" && <Footer />}
 
