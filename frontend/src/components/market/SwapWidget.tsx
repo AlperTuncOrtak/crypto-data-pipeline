@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowDownUp, Settings, Info, Loader, Search, ChevronDown, CheckCircle2 } from "lucide-react";
-import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useBalance, useReadContract, useWriteContract, useSendTransaction } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { parseUnits, formatUnits } from "viem";
 import { TOKENS, UNISWAP_V2_ROUTER, WETH_ADDRESS, UNISWAP_ROUTER_ABI, ERC20_ABI } from "../../constants/web3";
+
+import AITradeInsights from "./AITradeInsights";
 
 type TxState = "idle" | "confirming" | "pending" | "success";
 
@@ -18,7 +20,7 @@ export default function SwapWidget() {
   const [fromToken, setFromToken] = useState(TOKENS[0]);
   const [toToken, setToToken] = useState(TOKENS[1]);
   const [amountIn, setAmountIn] = useState("");
-  const [quote, setQuote] = useState<{ amountOut: string; rate: number; platformFee?: string } | null>(null);
+  const [quote, setQuote] = useState<{ amountOut: string; rate: number; platformFee?: string; tx?: { to: string, data: string, value: string } } | null>(null);
 
   // Settings State
   const [showSettings, setShowSettings] = useState(false);
@@ -113,7 +115,12 @@ export default function SwapWidget() {
           // In 0x API, the fee is taken from the buyToken
           const feeStr = formatUnits(BigInt(data.feeInfo?.feeAmount || "0"), toToken.decimals);
           
-          setQuote({ amountOut: Number(outStr).toFixed(6), rate, platformFee: feeStr });
+          setQuote({ 
+            amountOut: Number(outStr).toFixed(6), 
+            rate, 
+            platformFee: feeStr,
+            tx: { to: data.to, data: data.data, value: data.value }
+          });
         }
       } catch (error) {
         console.error("0x API Quote Error:", error);
@@ -139,6 +146,7 @@ export default function SwapWidget() {
 
   // Web3 Write Hooks
   const { writeContractAsync } = useWriteContract();
+  const { sendTransactionAsync } = useSendTransaction();
 
   const handleApprove = async () => {
     try {
@@ -185,28 +193,38 @@ export default function SwapWidget() {
 
       let hash: `0x${string}`;
 
-      if (fromToken.address === "ETH") {
-        hash = await writeContractAsync({
-          address: UNISWAP_V2_ROUTER,
-          abi: UNISWAP_ROUTER_ABI,
-          functionName: "swapExactETHForTokens",
-          args: [amountOutMin, path, address as `0x${string}`, deadline],
-          value: parsedAmountIn,
-        });
-      } else if (toToken.address === "ETH") {
-        hash = await writeContractAsync({
-          address: UNISWAP_V2_ROUTER,
-          abi: UNISWAP_ROUTER_ABI,
-          functionName: "swapExactTokensForETH",
-          args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
+      if (quote?.tx) {
+        // Execute the real 0x API transaction
+        hash = await sendTransactionAsync({
+          to: quote.tx.to as `0x${string}`,
+          data: quote.tx.data as `0x${string}`,
+          value: BigInt(quote.tx.value || "0"),
         });
       } else {
-        hash = await writeContractAsync({
-          address: UNISWAP_V2_ROUTER,
-          abi: UNISWAP_ROUTER_ABI,
-          functionName: "swapExactTokensForTokens",
-          args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-        });
+        // Fallback to local Uniswap V2 Router simulation
+        if (fromToken.address === "ETH") {
+          hash = await writeContractAsync({
+            address: UNISWAP_V2_ROUTER,
+            abi: UNISWAP_ROUTER_ABI,
+            functionName: "swapExactETHForTokens",
+            args: [amountOutMin, path, address as `0x${string}`, deadline],
+            value: parsedAmountIn,
+          });
+        } else if (toToken.address === "ETH") {
+          hash = await writeContractAsync({
+            address: UNISWAP_V2_ROUTER,
+            abi: UNISWAP_ROUTER_ABI,
+            functionName: "swapExactTokensForETH",
+            args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
+          });
+        } else {
+          hash = await writeContractAsync({
+            address: UNISWAP_V2_ROUTER,
+            abi: UNISWAP_ROUTER_ABI,
+            functionName: "swapExactTokensForTokens",
+            args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
+          });
+        }
       }
 
       setTxState("pending");
@@ -262,7 +280,7 @@ export default function SwapWidget() {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
+        <div className="fixed inset-0 z-[100] flex flex-col sm:flex-row items-center justify-center p-4 sm:p-0">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -284,7 +302,15 @@ export default function SwapWidget() {
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-5 pt-5 pb-3">
-              <h2 className="text-white font-bold text-lg tracking-tight">Swap (On-Chain)</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-white font-bold text-lg tracking-tight">Swap</h2>
+                <button 
+                  onClick={() => window.open(`https://global.transak.com/?apiKey=YOUR_TRANSAK_API_KEY&cryptoCurrencyCode=${toToken.symbol}&walletAddress=${address || ''}`, "_blank")}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
+                >
+                  Buy with Fiat
+                </button>
+              </div>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setShowSettings(!showSettings)}
@@ -542,6 +568,19 @@ export default function SwapWidget() {
                 </motion.div>
               )}
             </AnimatePresence>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300, delay: 0.1 }}
+            className="w-full max-w-[420px] ml-0 sm:ml-4 mt-4 sm:mt-0"
+          >
+            <AITradeInsights onApplySuggestion={(tokenSymbol) => {
+              const token = TOKENS.find(t => t.symbol === tokenSymbol);
+              if (token) setToToken(token);
+            }} />
           </motion.div>
         </div>
       )}
