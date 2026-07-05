@@ -1,8 +1,11 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion } from 'framer-motion';
-import { Wallet, AlertTriangle } from 'lucide-react';
+import { Wallet, AlertTriangle, LogOut } from 'lucide-react';
+import { useDisconnect } from 'wagmi';
 
 export default function WalletConnectButton() {
+  const { disconnect } = useDisconnect();
+
   return (
     <ConnectButton.Custom>
       {({
@@ -71,7 +74,7 @@ export default function WalletConnectButton() {
                     whileTap={{ scale: 0.95 }}
                     onClick={openChainModal}
                     type="button"
-                    className="flex items-center gap-2 px-3 py-1.5 bg-[#16181c] border border-[#273951]/50 shadow-[inset_0_0_10px_rgba(39,57,81,0.2)] rounded-full text-white font-bold text-sm hover:bg-white/5 transition-colors"
+                    className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#16181c] border border-[#273951]/50 shadow-[inset_0_0_10px_rgba(39,57,81,0.2)] rounded-full text-white font-bold text-sm hover:bg-white/5 transition-colors"
                   >
                     {chain.hasIcon && (
                       <div className="w-4 h-4 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
@@ -87,22 +90,35 @@ export default function WalletConnectButton() {
                     {chain.name}
                   </motion.button>
 
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={openAccountModal}
-                    type="button"
-                    className="flex items-center gap-2 px-3 py-1.5 bg-[#16181c] border border-[var(--accent)]/30 shadow-[inset_0_0_15px_rgba(83,58,253,0.1)] rounded-full text-white font-bold text-sm hover:bg-[var(--accent)]/10 transition-colors"
-                  >
-                    {account.displayBalance ? (
-                      <span className="text-gray-300 font-medium">
-                        {account.displayBalance}
+                  <div className="flex items-center bg-[#16181c] border border-[var(--accent)]/30 shadow-[inset_0_0_15px_rgba(83,58,253,0.1)] rounded-full p-0.5">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={openAccountModal}
+                      type="button"
+                      className="flex items-center gap-2 px-3 py-1 text-white font-bold text-sm hover:bg-[var(--accent)]/10 rounded-full transition-colors"
+                    >
+                      {account.displayBalance ? (
+                        <span className="text-gray-300 font-medium hidden md:inline-block">
+                          {account.displayBalance}
+                        </span>
+                      ) : null}
+                      <span className="font-mono text-[var(--accent)]">
+                        {account.displayName}
                       </span>
-                    ) : null}
-                    <span className="font-mono text-[var(--accent)] ml-1">
-                      {account.displayName}
-                    </span>
-                  </motion.button>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => disconnect()}
+                      type="button"
+                      className="flex items-center justify-center w-7 h-7 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors ml-1"
+                      title="Disconnect Wallet"
+                    >
+                      <LogOut size={14} />
+                    </motion.button>
+                  </div>
                 </div>
               );
             })()}
