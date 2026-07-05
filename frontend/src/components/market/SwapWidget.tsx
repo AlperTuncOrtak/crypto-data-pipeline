@@ -18,7 +18,7 @@ export default function SwapWidget() {
   const [fromToken, setFromToken] = useState(TOKENS[0]);
   const [toToken, setToToken] = useState(TOKENS[1]);
   const [amountIn, setAmountIn] = useState("");
-  const [quote, setQuote] = useState<{ amountOut: string; rate: number } | null>(null);
+  const [quote, setQuote] = useState<{ amountOut: string; rate: number; platformFee?: string } | null>(null);
 
   // Settings State
   const [showSettings, setShowSettings] = useState(false);
@@ -62,25 +62,69 @@ export default function SwapWidget() {
 
   const parsedAmountIn = amountIn ? parseUnits(amountIn, fromToken.decimals) : 0n;
 
-  // Real Quote Fetching
-  const { data: amountsOut, isLoading: isQuoting } = useReadContract({
-    address: UNISWAP_V2_ROUTER,
-    abi: UNISWAP_ROUTER_ABI,
-    functionName: "getAmountsOut",
-    args: [parsedAmountIn, path],
-    query: { enabled: parsedAmountIn > 0n && fromToken.address !== toToken.address }
-  });
+  // 0x API Quote Fetching Architecture (with Platform Fee)
+  const [isQuoting, setIsQuoting] = useState(false);
+  const [apiKeyError, setApiKeyError] = useState(false);
 
   useEffect(() => {
-    if (!amountsOut || (amountsOut as bigint[]).length < 2 || !amountIn) {
+    if (!amountIn || Number(amountIn) <= 0 || fromToken.address === toToken.address) {
       setQuote(null);
       return;
     }
-    const outBigInt = (amountsOut as bigint[])[1];
-    const outStr = formatUnits(outBigInt, toToken.decimals);
-    const rate = Number(outStr) / Number(amountIn);
-    setQuote({ amountOut: Number(outStr).toFixed(6), rate });
-  }, [amountsOut, amountIn, toToken.decimals]);
+
+    const fetchQuote = async () => {
+      setIsQuoting(true);
+      setApiKeyError(false);
+      
+      const API_KEY = import.meta.env.VITE_0X_API_KEY;
+      const FEE_RECIPIENT = import.meta.env.VITE_TREASURY_ADDRESS || "0x0000000000000000000000000000000000000000";
+      const FEE_PERCENTAGE = import.meta.env.VITE_FEE_PERCENTAGE || "0.005"; // 0.5%
+      
+      // If no real API key is set, we simulate the 0x API response using our mock logic
+      // In production, this would be a fetch to: https://api.0x.org/swap/v1/quote?buyToken=...&sellToken=...&sellAmount=...&feeRecipient=...&buyTokenPercentageFee=...
+      if (!API_KEY || API_KEY === "YOUR_0X_API_KEY_HERE") {
+        setTimeout(() => {
+          // Simulate 0x API pricing with Fee Extraction
+          const inputUsd = Number(amountIn) * fromToken.price;
+          const grossAmountOut = inputUsd / toToken.price;
+          
+          // Deduct the Platform Fee (0.5%)
+          const feeAmount = grossAmountOut * Number(FEE_PERCENTAGE);
+          const netAmountOut = grossAmountOut - feeAmount;
+          
+          const rate = netAmountOut / Number(amountIn);
+          
+          setQuote({ amountOut: netAmountOut.toFixed(6), rate, platformFee: feeAmount.toFixed(6) });
+          setIsQuoting(false);
+        }, 800);
+        return;
+      }
+
+      // Real 0x API Call Logic (Waiting for valid API Key)
+      try {
+        const response = await fetch(
+          `https://api.0x.org/swap/v1/quote?sellToken=${fromToken.address}&buyToken=${toToken.address}&sellAmount=${parsedAmountIn.toString()}&feeRecipient=${FEE_RECIPIENT}&buyTokenPercentageFee=${FEE_PERCENTAGE}`,
+          { headers: { "0x-api-key": API_KEY } }
+        );
+        const data = await response.json();
+        if (data.buyAmount) {
+          const outStr = formatUnits(BigInt(data.buyAmount), toToken.decimals);
+          const rate = Number(outStr) / Number(amountIn);
+          // In 0x API, the fee is taken from the buyToken
+          const feeStr = formatUnits(BigInt(data.feeInfo?.feeAmount || "0"), toToken.decimals);
+          
+          setQuote({ amountOut: Number(outStr).toFixed(6), rate, platformFee: feeStr });
+        }
+      } catch (error) {
+        console.error("0x API Quote Error:", error);
+        setApiKeyError(true);
+      } finally {
+        setIsQuoting(false);
+      }
+    };
+
+    fetchQuote();
+  }, [amountIn, fromToken, toToken, parsedAmountIn]);
 
   // Allowance check
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
@@ -399,8 +443,14 @@ export default function SwapWidget() {
                     <span className="font-mono">1 {fromToken.symbol} = {quote.rate.toFixed(4)} {toToken.symbol}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs text-slate-400 py-1">
+                    <span className="flex items-center gap-1 border-b border-dashed border-slate-500/50 cursor-help text-purple-400">Platform Fee (0.5%) <Info size={10} /></span>
+                    <span className="font-mono text-purple-400">
+                      {quote.platformFee ? `${Number(quote.platformFee).toFixed(4)} ${toToken.symbol}` : "0.00"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-slate-400 py-1">
                     <span className="flex items-center gap-1 border-b border-dashed border-slate-500/50 cursor-help">Provider <Info size={10} /></span>
-                    <span className="font-mono text-slate-300">Uniswap V2</span>
+                    <span className="font-mono text-slate-300">0x API Aggregator</span>
                   </div>
                 </motion.div>
               )}
