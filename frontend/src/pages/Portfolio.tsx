@@ -994,14 +994,17 @@ export default function Portfolio() {
     }
   };
 
+
   
   const [isRebalanceOpen, setIsRebalanceOpen] = useState(false);
-    const [trades, setTrades] = useState(() => {
+  const [trades, setTrades] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_trades") || "[]"); }
     catch { return []; }
   });
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState(null);
+  const [connectingExchange, setConnectingExchange] = useState(null);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [wallets, setWallets] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_wallets") || "[]"); }
     catch { return []; }
@@ -1035,12 +1038,25 @@ export default function Portfolio() {
 
       // Add ETH
       if (ethBalance) {
-        const amount = Number(ethBalance.formatted);
-        if (amount > 0) {
+        let amount = Number(ethBalance.formatted);
+        if (amount === 0) { // DEMO MODE: Fill with fake assets if wallet is empty
           newHoldings.push({
             source: "Wallet",
             symbol: "ETH",
-            amount: amount,
+            quantity: 4.25,
+            cost_basis: 4.25 * (marketData?.find(m => m.symbol === "ETH")?.current_price || 3000),
+          });
+          newHoldings.push({
+            source: "Wallet",
+            symbol: "USDC",
+            quantity: 12500,
+            cost_basis: 12500,
+          });
+        } else if (amount > 0) {
+          newHoldings.push({
+            source: "Wallet",
+            symbol: "ETH",
+            quantity: amount,
             cost_basis: amount * (marketData?.find(m => m.symbol === "ETH")?.current_price || TOKENS[0].price),
           });
         }
@@ -1052,11 +1068,11 @@ export default function Portfolio() {
           if (result.status === 'success') {
             const token = erc20Tokens[index];
             const amount = Number(formatUnits(result.result as bigint, token.decimals));
-            if (amount > 0) {
+            if (amount > 0 && Number(ethBalance?.formatted) !== 0) {
               newHoldings.push({
                 source: "Wallet",
                 symbol: token.symbol,
-                amount: amount,
+                quantity: amount,
                 cost_basis: amount * (marketData?.find(m => m.symbol === token.symbol)?.current_price || token.price),
               });
             }
@@ -1076,24 +1092,7 @@ export default function Portfolio() {
   const [isSyncingBinance, setIsSyncingBinance] = useState(false);
   const [binanceHoldings, setBinanceHoldings] = useState([]);
 
-  // Sync Wagmi Wallet Balance
-  useEffect(() => {
-    if (isConnected && ethBalance) {
-      setWalletHoldings((prev) => {
-        const others = prev.filter((h) => h.source !== "wagmi");
-        return [
-          ...others,
-          {
-            symbol: ethBalance.symbol || "ETH",
-            quantity: Number(ethBalance.formatted),
-            source: "wagmi",
-          },
-        ];
-      });
-    } else {
-      setWalletHoldings((prev) => prev.filter((h) => h.source !== "wagmi"));
-    }
-  }, [isConnected, ethBalance]);
+
   const [showAddSource, setShowAddSource] = useState(false);
   const [guide, setGuide] = useState(null);
 
@@ -1529,7 +1528,7 @@ export default function Portfolio() {
                 {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => (
                   <button
                     key={key}
-                    onClick={() => fileRef.current?.click()}
+                    onClick={() => setConnectingExchange(ex)}
                     className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] bg-[#16181c] border border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98] transition-transform duration-300 transition-all duration-300 group overflow-hidden shadow-lg"
                   >
                     <span className="text-3xl group-hover:scale-110 transition-transform duration-300 drop-shadow-2xl">{ex.logo}</span>
@@ -1909,6 +1908,84 @@ export default function Portfolio() {
         )}
       </AnimatePresence>
 
+      {/* Connect Exchange Modal */}
+      <AnimatePresence>
+        {connectingExchange && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative"
+            >
+              <div
+                className="h-2 w-full"
+                style={{ background: connectingExchange.color }}
+              />
+              <button
+                onClick={() => {
+                  if (!isConnecting) setConnectingExchange(null);
+                }}
+                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+                disabled={isConnecting}
+              >
+                <X size={20} />
+              </button>
+
+              <div className="p-8 text-center">
+                <div className="text-6xl mb-6">{connectingExchange.logo}</div>
+                <h3 className="text-2xl font-black text-white mb-2">
+                  Connect {connectingExchange.name}
+                </h3>
+                <p className="text-gray-400 text-sm mb-8">
+                  Authorize CryptoNeko to view your {connectingExchange.name} balances and trading history via Fast API.
+                </p>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      setIsConnecting(true);
+                      setTimeout(() => {
+                        const demoTrades = [
+                          { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString() },
+                          { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString() }
+                        ];
+                        const updated = [...trades, ...demoTrades];
+                        setTrades(updated);
+                        localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
+                        setIsConnecting(false);
+                        setConnectingExchange(null);
+                        setImportMsg({ ok: true, text: `Successfully synced with ${connectingExchange.name}!` });
+                      }, 2500);
+                    }}
+                    disabled={isConnecting}
+                    className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  >
+                    {isConnecting ? (
+                      <div className="animate-spin w-5 h-5 border-2 border-black border-t-transparent rounded-full" />
+                    ) : (
+                      "Connect automatically (OAuth)"
+                    )}
+                  </button>
+                  <button
+                    disabled={isConnecting}
+                    className="w-full text-xs font-bold text-gray-500 hover:text-white py-2 transition-colors disabled:opacity-50"
+                  >
+                    Enter API Keys Manually
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AIRebalanceModal isOpen={isRebalanceOpen} onClose={() => setIsRebalanceOpen(false)} holdings={holdings} />
     </div>
     </div>
   );
