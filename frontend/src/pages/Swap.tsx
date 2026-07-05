@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { parseUnits, formatUnits } from "viem";
 import { TOKENS, UNISWAP_V2_ROUTER, WETH_ADDRESS, UNISWAP_ROUTER_ABI, ERC20_ABI } from "../constants/web3";
 import AITradeInsights from "../components/market/AITradeInsights";
+import { apiClient } from "../api/client";
 
 type TxState = "idle" | "confirming" | "pending" | "success";
 
@@ -70,34 +71,15 @@ export default function Swap() {
       setIsQuoting(true);
       setApiKeyError(false);
       
-      const API_KEY = import.meta.env.VITE_0X_API_KEY;
-      const FEE_RECIPIENT = import.meta.env.VITE_TREASURY_ADDRESS || "0x0000000000000000000000000000000000000000";
-      const FEE_PERCENTAGE = import.meta.env.VITE_FEE_PERCENTAGE || "0.005"; // 0.5%
-      
-      if (!API_KEY || API_KEY === "YOUR_0X_API_KEY_HERE") {
-        setTimeout(() => {
-          // Simulate 0x API pricing with Fee Extraction
-          const inputUsd = Number(amountIn) * fromToken.price;
-          const grossAmountOut = inputUsd / toToken.price;
-          
-          // Deduct the Platform Fee (0.5%)
-          const feeAmount = grossAmountOut * Number(FEE_PERCENTAGE);
-          const netAmountOut = grossAmountOut - feeAmount;
-          
-          const rate = netAmountOut / Number(amountIn);
-          
-          setQuote({ amountOut: netAmountOut.toFixed(6), rate, platformFee: feeAmount.toFixed(6) });
-          setIsQuoting(false);
-        }, 800);
-        return;
-      }
-
       try {
-        const response = await fetch(
-          `https://api.0x.org/swap/v1/quote?sellToken=${fromToken.address}&buyToken=${toToken.address}&sellAmount=${parsedAmountIn.toString()}&feeRecipient=${FEE_RECIPIENT}&buyTokenPercentageFee=${FEE_PERCENTAGE}`,
-          { headers: { "0x-api-key": API_KEY } }
-        );
-        const data = await response.json();
+        const response = await apiClient.get('/api/swap/quote', {
+          params: {
+            sellToken: fromToken.address,
+            buyToken: toToken.address,
+            sellAmount: parsedAmountIn.toString()
+          }
+        });
+        const data = response.data;
         if (data.buyAmount) {
           const outStr = formatUnits(BigInt(data.buyAmount), toToken.decimals);
           const rate = Number(outStr) / Number(amountIn);
@@ -110,7 +92,20 @@ export default function Swap() {
             tx: { to: data.to, data: data.data, value: data.value }
           });
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (error.response && error.response.status === 501) {
+          // Dev environment fallback if backend has no key
+          setTimeout(() => {
+            const inputUsd = Number(amountIn) * fromToken.price;
+            const grossAmountOut = inputUsd / toToken.price;
+            const feeAmount = grossAmountOut * 0.005;
+            const netAmountOut = grossAmountOut - feeAmount;
+            const rate = netAmountOut / Number(amountIn);
+            setQuote({ amountOut: netAmountOut.toFixed(6), rate, platformFee: feeAmount.toFixed(6) });
+            setIsQuoting(false);
+          }, 800);
+          return;
+        }
         console.error("0x API Quote Error:", error);
         setApiKeyError(true);
       } finally {
