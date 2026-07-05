@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
     "@hcaptcha/react-hcaptcha": "^2.0.2",
     "@number-flow/react": "^0.6.1",
     "@rainbow-me/rainbowkit": "^2.2.11",
@@ -44,6 +47,7 @@
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.1",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.2.4",
     "@types/matter-js": "^0.20.2",

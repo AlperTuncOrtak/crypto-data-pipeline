@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useEffect } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
@@ -17,9 +18,50 @@ export function Hero() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Mouse tracking for Spotlight
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normalize values between -1 and 1
+      const { clientX, clientY } = e;
+      const x = (clientX / window.innerWidth - 0.5) * 2;
+      const y = (clientY / window.innerHeight - 0.5) * 2;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  // 3D Parallax transforms based on mouse
+  const rotateX = useTransform(smoothY, [-1, 1], [15, -15]);
+  const rotateY = useTransform(smoothX, [-1, 1], [-15, 15]);
+
   return (
-    <section className="relative z-10 pt-40 pb-20 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-[90vh] flex flex-col justify-center">
-      <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-16">
+    <section className="relative z-10 pt-40 pb-20 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-[90vh] flex flex-col justify-center perspective-1000">
+      
+      {/* Background Spotlight */}
+      <motion.div 
+        className="pointer-events-none absolute inset-0 z-0 opacity-40 mix-blend-screen"
+        style={{
+          background: useTransform(
+            [smoothX, smoothY],
+            ([x, y]) => `radial-gradient(circle at ${50 + (x as number) * 20}% ${50 + (y as number) * 20}%, rgba(34, 211, 238, 0.15) 0%, rgba(0, 0, 0, 0) 50%)`
+          )
+        }}
+      />
+
+      <motion.div 
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+        className="flex flex-col items-center text-center max-w-4xl mx-auto mb-16 relative z-10"
+      >
         
         {/* Top Badge */}
         <motion.div 
@@ -66,7 +108,7 @@ export function Hero() {
             View Pricing
           </button>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
