@@ -1085,6 +1085,14 @@ export default function Portfolio() {
     // ------------------------------------
   const [isFetchingWallet, setIsFetchingWallet] = useState(false);
   const [walletInput, setWalletInput] = useState("");
+  const [connectedExchanges, setConnectedExchanges] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("crypto_neko_connected_exchanges") || "[]"); }
+    catch { return []; }
+  });
+  useEffect(() => {
+    localStorage.setItem("crypto_neko_connected_exchanges", JSON.stringify(connectedExchanges));
+  }, [connectedExchanges]);
+
   const [binanceKeys, setBinanceKeys] = useState(() => {
     try { return JSON.parse(localStorage.getItem("crypto_neko_binance_keys") || '{"key":"","secret":""}'); }
     catch { return { key: "", secret: "" }; }
@@ -1526,7 +1534,7 @@ export default function Portfolio() {
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-[32px] bg-white/[0.02] border border-[#273951]/50">
                 {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => {
-                  const isExConnected = trades.some(t => t.exchange === ex.name);
+                  const isExConnected = connectedExchanges.includes(ex.name);
                   return (
                     <button
                       key={key}
@@ -1967,13 +1975,15 @@ export default function Portfolio() {
                       setTimeout(async () => {
                         const exName = connectingExchange.name;
                         const demoTrades = [
-                          { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString(), exchange: exName },
-                          { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString(), exchange: exName }
+                          { symbol: "BTC", side: "buy", quantity: 0.15, price: 45000, total: 6750, traded_at: new Date().toISOString() },
+                          { symbol: "SOL", side: "buy", quantity: 45, price: 90, total: 4050, traded_at: new Date().toISOString() }
                         ];
                         
                         if (user) {
                           const tradesToInsert = demoTrades.map(t => ({ ...t, user_id: user.id }));
-                          await supabase.from("trades").insert(tradesToInsert);
+                          const { error } = await supabase.from("trades").insert(tradesToInsert);
+                          if (error) console.error("Mock insert error:", error);
+                          
                           const { data } = await supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true });
                           if (data) setTrades(data);
                         } else {
@@ -1982,6 +1992,7 @@ export default function Portfolio() {
                           localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
                         }
                         
+                        setConnectedExchanges(prev => [...new Set([...prev, exName])]);
                         setIsConnecting(false);
                         setConnectingExchange(null);
                         setImportMsg({ ok: true, text: `Successfully synced with ${exName}!` });
