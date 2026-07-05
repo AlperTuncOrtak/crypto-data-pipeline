@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDownUp, Settings, Info, Loader, Search, ChevronDown, CheckCircle2 } from "lucide-react";
+import { ArrowDownUp, Settings, Info, Loader, Search, ChevronDown, CheckCircle2, X } from "lucide-react";
 import { useAccount, useBalance, useReadContract, useWriteContract, useSendTransaction } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";

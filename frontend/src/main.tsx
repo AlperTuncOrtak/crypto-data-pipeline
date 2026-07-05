@@ -49,11 +49,20 @@ if (import.meta.env.VITE_POSTHOG_KEY) {
   })
 }
 
+import { http } from 'wagmi';
+
 // --- WAGMI & RAINBOWKIT CONFIG ---
 const config = getDefaultConfig({
   appName: 'CryptoNeko',
   projectId: '60d9ccc9681d82d9101fc65f31073a01', // Your personal WalletConnect project ID
   chains: [mainnet, polygon, optimism, arbitrum, base],
+  transports: {
+    [mainnet.id]: http('https://cloudflare-eth.com'),
+    [polygon.id]: http('https://polygon-rpc.com'),
+    [optimism.id]: http(),
+    [arbitrum.id]: http('https://arb1.arbitrum.io/rpc'),
+    [base.id]: http('https://mainnet.base.org'),
+  },
 });
 
 // --- QUERY CLIENT ---

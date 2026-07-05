@@ -13,6 +13,9 @@ import { apiClient } from "../api/client";
 import { useTranslation } from "react-i18next";
 import AIRebalanceModal from "../components/portfolio/AIRebalanceModal";
 import SwapInterface from "../components/portfolio/SwapInterface";
+import { useAccount, useBalance, useReadContracts } from "wagmi";
+import { TOKENS, ERC20_ABI } from "../constants/web3";
+import { formatUnits } from "viem";
 import {
   PieChart,
   Pie,
@@ -1003,7 +1006,67 @@ export default function Portfolio() {
     try { return JSON.parse(localStorage.getItem("crypto_neko_wallets") || "[]"); }
     catch { return []; }
   });
-  const [walletHoldings, setWalletHoldings] = useState([]);
+    const [walletHoldings, setWalletHoldings] = useState([]);
+
+    // --- LIVE WALLET BALANCES (WAGMI) ---
+    const { address, isConnected } = useAccount();
+    const { data: ethBalance } = useBalance({ address });
+    
+    const erc20Tokens = useMemo(() => TOKENS.filter(t => t.symbol !== "ETH"), []);
+    const erc20Contracts = useMemo(() => erc20Tokens.map(token => ({
+      address: token.address as `0x${string}`,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf',
+      args: [address],
+    })), [erc20Tokens, address]);
+
+    const { data: tokenBalances } = useReadContracts({
+      contracts: erc20Contracts,
+      query: { enabled: isConnected && !!address }
+    });
+
+    useEffect(() => {
+      if (!isConnected || !address) {
+        setWalletHoldings([]);
+        return;
+      }
+
+      const newHoldings = [];
+
+      // Add ETH
+      if (ethBalance) {
+        const amount = Number(ethBalance.formatted);
+        if (amount > 0) {
+          newHoldings.push({
+            source: "Wallet",
+            symbol: "ETH",
+            amount: amount,
+            cost_basis: amount * (marketData?.find(m => m.symbol === "ETH")?.current_price || TOKENS[0].price),
+          });
+        }
+      }
+
+      // Add ERC20s
+      if (tokenBalances) {
+        tokenBalances.forEach((result, index) => {
+          if (result.status === 'success') {
+            const token = erc20Tokens[index];
+            const amount = Number(formatUnits(result.result as bigint, token.decimals));
+            if (amount > 0) {
+              newHoldings.push({
+                source: "Wallet",
+                symbol: token.symbol,
+                amount: amount,
+                cost_basis: amount * (marketData?.find(m => m.symbol === token.symbol)?.current_price || token.price),
+              });
+            }
+          }
+        });
+      }
+
+      setWalletHoldings(newHoldings);
+    }, [isConnected, address, ethBalance, tokenBalances, marketData, erc20Tokens]);
+    // ------------------------------------
   const [isFetchingWallet, setIsFetchingWallet] = useState(false);
   const [walletInput, setWalletInput] = useState("");
   const [binanceKeys, setBinanceKeys] = useState(() => {
