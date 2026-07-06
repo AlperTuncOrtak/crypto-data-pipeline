@@ -254,10 +254,10 @@ export default function SwapInterface() {
 
   return (
     <div className="w-full relative flex flex-col items-center justify-center pt-8 pb-12 overflow-visible">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full mx-auto flex flex-col md:flex-row items-start justify-center gap-6 relative z-10"
+        className="w-full mx-auto flex flex-col md:flex-row items-stretch justify-center gap-6 relative z-10"
       >
         {/* Main Swap Container */}
         <div className="w-full max-w-[480px] rounded-[32px] bg-[#0a0b0d]/90 backdrop-blur-3xl border border-white/10 shadow-[0_0_80px_-20px_rgba(131,80,232,0.15)] overflow-hidden shrink-0 mx-auto md:mx-0">
@@ -337,10 +337,17 @@ export default function SwapInterface() {
               </div>
               <div className="flex items-center justify-between gap-4">
                 <input
-                  type="number"
+                  type="text"
                   placeholder="0.0"
                   value={amountIn}
-                  onChange={(e) => setAmountIn(e.target.value)}
+                  onChange={(e) => {
+                    let val = e.target.value.replace(/,/g, '.');
+                    // Remove negative signs
+                    val = val.replace(/-/g, '');
+                    if (/^\d*\.?\d*$/.test(val)) {
+                      setAmountIn(val);
+                    }
+                  }}
                   className="w-full bg-transparent text-4xl sm:text-5xl font-mono font-semibold text-white outline-none placeholder:text-slate-700"
                 />
                 <button 
