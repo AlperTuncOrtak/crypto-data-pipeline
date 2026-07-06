@@ -14,12 +14,12 @@ type TxState = "idle" | "confirming" | "pending" | "success";
 export default function SwapInterface() {
   const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  
+
   // Swap State
   const [fromToken, setFromToken] = useState(TOKENS[0]);
   const [toToken, setToToken] = useState(TOKENS[1]);
   const [amountIn, setAmountIn] = useState("");
-  const [quote, setQuote] = useState<{ amountOut: string; rate: number; platformFee?: string; tx?: { to: string, data: string, value: string } } | null>(null);
+  const [quote, setQuote] = useState<{ amountOut: string; rate: number; platformFee?: string; tx?: { to: string; data: string; value: string } } | null>(null);
 
   // Settings State
   const [showSettings, setShowSettings] = useState(false);
@@ -40,24 +40,23 @@ export default function SwapInterface() {
     abi: ERC20_ABI,
     functionName: "balanceOf",
     args: [address as `0x${string}`],
-    query: { enabled: fromToken.address !== "ETH" && !!address }
+    query: { enabled: fromToken.address !== "ETH" && !!address },
   });
 
-  const displayBalance = fromToken.address === "ETH" && ethBalance 
-    ? Number(ethBalance.formatted).toFixed(4)
-    : erc20Balance 
+  const displayBalance =
+    fromToken.address === "ETH" && ethBalance
+      ? Number(ethBalance.formatted).toFixed(4)
+      : erc20Balance
       ? Number(formatUnits(erc20Balance as bigint, fromToken.decimals)).toFixed(4)
       : "0.00";
 
-  // Compute Path for Uniswap
   const path = [
     fromToken.address === "ETH" ? WETH_ADDRESS : fromToken.address,
-    toToken.address === "ETH" ? WETH_ADDRESS : toToken.address
+    toToken.address === "ETH" ? WETH_ADDRESS : toToken.address,
   ] as `0x${string}`[];
 
   const parsedAmountIn = amountIn ? parseUnits(amountIn, fromToken.decimals) : 0n;
 
-  // 0x API Quote Fetching Architecture (with Platform Fee)
   const [isQuoting, setIsQuoting] = useState(false);
   const [apiKeyError, setApiKeyError] = useState(false);
 
@@ -66,35 +65,31 @@ export default function SwapInterface() {
       setQuote(null);
       return;
     }
-
     const fetchQuote = async () => {
       setIsQuoting(true);
       setApiKeyError(false);
-      
       try {
-        const response = await apiClient.get('/api/swap/quote', {
+        const response = await apiClient.get("/api/swap/quote", {
           params: {
             sellToken: fromToken.address,
             buyToken: toToken.address,
-            sellAmount: parsedAmountIn.toString()
-          }
+            sellAmount: parsedAmountIn.toString(),
+          },
         });
         const data = response.data;
         if (data.buyAmount) {
           const outStr = formatUnits(BigInt(data.buyAmount), toToken.decimals);
           const rate = Number(outStr) / Number(amountIn);
           const feeStr = formatUnits(BigInt(data.feeInfo?.feeAmount || "0"), toToken.decimals);
-          
-          setQuote({ 
-            amountOut: Number(outStr).toFixed(6), 
-            rate, 
+          setQuote({
+            amountOut: Number(outStr).toFixed(6),
+            rate,
             platformFee: feeStr,
-            tx: { to: data.to, data: data.data, value: data.value }
+            tx: { to: data.to, data: data.data, value: data.value },
           });
         }
       } catch (error: any) {
         if (error.response && error.response.status === 501) {
-          // Dev environment fallback if backend has no key
           setTimeout(() => {
             const inputUsd = Number(amountIn) * fromToken.price;
             const grossAmountOut = inputUsd / toToken.price;
@@ -112,7 +107,6 @@ export default function SwapInterface() {
         setIsQuoting(false);
       }
     };
-
     fetchQuote();
   }, [amountIn, fromToken, toToken, parsedAmountIn]);
 
@@ -121,10 +115,10 @@ export default function SwapInterface() {
     abi: ERC20_ABI,
     functionName: "allowance",
     args: [address as `0x${string}`, UNISWAP_V2_ROUTER],
-    query: { enabled: fromToken.address !== "ETH" && !!address }
+    query: { enabled: fromToken.address !== "ETH" && !!address },
   });
 
-  const needsApproval = fromToken.address !== "ETH" && parsedAmountIn > 0n && (allowance as bigint || 0n) < parsedAmountIn;
+  const needsApproval = fromToken.address !== "ETH" && parsedAmountIn > 0n && ((allowance as bigint) || 0n) < parsedAmountIn;
 
   const { writeContractAsync } = useWriteContract();
   const { sendTransactionAsync } = useSendTransaction();
@@ -132,20 +126,18 @@ export default function SwapInterface() {
   const handleApprove = async () => {
     try {
       setIsApproving(true);
-      const hash = await writeContractAsync({
+      await writeContractAsync({
         address: fromToken.address as `0x${string}`,
         abi: ERC20_ABI,
         functionName: "approve",
         args: [UNISWAP_V2_ROUTER, parsedAmountIn],
       });
       toast.loading("Approving token...", { id: "approve" });
-      
       setTimeout(() => {
         toast.success("Approved successfully!", { id: "approve" });
         refetchAllowance();
         setIsApproving(false);
       }, 5000);
-      
     } catch (error) {
       setIsApproving(false);
       toast.error("Approval failed or rejected.");
@@ -153,23 +145,15 @@ export default function SwapInterface() {
   };
 
   const handleSwap = async () => {
-    if (!isConnected) {
-      openConnectModal?.();
-      return;
-    }
-    if (needsApproval) {
-      return handleApprove();
-    }
-    
+    if (!isConnected) { openConnectModal?.(); return; }
+    if (needsApproval) return handleApprove();
     setTxState("confirming");
-    
     try {
       const amountOutMin = parseUnits(
         (Number(quote?.amountOut) * (1 - Number(slippage) / 100)).toFixed(toToken.decimals),
         toToken.decimals
       );
-      const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20); // 20 mins
-
+      const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20);
       let hash: `0x${string}`;
 
       if (quote?.tx) {
@@ -178,53 +162,41 @@ export default function SwapInterface() {
           data: quote.tx.data as `0x${string}`,
           value: BigInt(quote.tx.value || "0"),
         });
+      } else if (fromToken.address === "ETH") {
+        hash = await writeContractAsync({
+          address: UNISWAP_V2_ROUTER,
+          abi: UNISWAP_ROUTER_ABI,
+          functionName: "swapExactETHForTokens",
+          args: [amountOutMin, path, address as `0x${string}`, deadline],
+          value: parsedAmountIn,
+        });
+      } else if (toToken.address === "ETH") {
+        hash = await writeContractAsync({
+          address: UNISWAP_V2_ROUTER,
+          abi: UNISWAP_ROUTER_ABI,
+          functionName: "swapExactTokensForETH",
+          args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
+        });
       } else {
-        if (fromToken.address === "ETH") {
-          hash = await writeContractAsync({
-            address: UNISWAP_V2_ROUTER,
-            abi: UNISWAP_ROUTER_ABI,
-            functionName: "swapExactETHForTokens",
-            args: [amountOutMin, path, address as `0x${string}`, deadline],
-            value: parsedAmountIn,
-          });
-        } else if (toToken.address === "ETH") {
-          hash = await writeContractAsync({
-            address: UNISWAP_V2_ROUTER,
-            abi: UNISWAP_ROUTER_ABI,
-            functionName: "swapExactTokensForETH",
-            args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-          });
-        } else {
-          hash = await writeContractAsync({
-            address: UNISWAP_V2_ROUTER,
-            abi: UNISWAP_ROUTER_ABI,
-            functionName: "swapExactTokensForTokens",
-            args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-          });
-        }
+        hash = await writeContractAsync({
+          address: UNISWAP_V2_ROUTER,
+          abi: UNISWAP_ROUTER_ABI,
+          functionName: "swapExactTokensForTokens",
+          args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
+        });
       }
 
       setTxState("pending");
-      
       toast.loading("Transaction pending...", { id: hash });
-      
       setTimeout(() => {
         setTxState("success");
         toast.success(`Swapped ${amountIn} ${fromToken.symbol} for ${quote?.amountOut} ${toToken.symbol}`, {
           id: hash,
           description: "Transaction confirmed on-chain.",
-          action: {
-            label: "View Explorer",
-            onClick: () => window.open(`https://etherscan.io/tx/${hash}`, "_blank")
-          }
+          action: { label: "View Explorer", onClick: () => window.open(`https://etherscan.io/tx/${hash}`, "_blank") },
         });
-
-        setTimeout(() => {
-          setTxState("idle");
-          setAmountIn("");
-        }, 3000);
+        setTimeout(() => { setTxState("idle"); setAmountIn(""); }, 3000);
       }, 5000);
-
     } catch (error) {
       console.error(error);
       setTxState("idle");
@@ -247,75 +219,87 @@ export default function SwapInterface() {
     }
   };
 
-  const filteredTokens = TOKENS.filter(t => 
-    t.symbol.toLowerCase().includes(tokenSearch.toLowerCase()) || 
-    t.name.toLowerCase().includes(tokenSearch.toLowerCase())
+  const filteredTokens = TOKENS.filter(
+    (t) =>
+      t.symbol.toLowerCase().includes(tokenSearch.toLowerCase()) ||
+      t.name.toLowerCase().includes(tokenSearch.toLowerCase())
   );
 
+  // ── BUTTON STYLE ──
+  const ctaBg =
+    txState === "success" ? "#40d97a"
+    : txState === "pending" || isApproving ? "rgba(250,78,255,0.15)"
+    : txState === "confirming" ? "rgba(245,158,11,0.15)"
+    : !amountIn && isConnected ? "rgba(255,255,255,0.05)"
+    : "#fa4eff";
+  const ctaColor =
+    txState === "pending" || isApproving ? "#fa4eff"
+    : txState === "confirming" ? "#f59e0b"
+    : !amountIn && isConnected ? "rgba(255,255,255,0.25)"
+    : "#000";
+
   return (
-    <div className="w-full relative flex flex-col items-center justify-center pt-8 pb-12 overflow-visible">
+    <div className="w-full relative flex flex-col items-center justify-center pt-8 pb-16 overflow-visible">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full mx-auto flex flex-col md:flex-row items-center md:items-center justify-center gap-6 relative z-10"
+        transition={{ duration: 0.3 }}
+        className="w-full mx-auto flex flex-col md:flex-row items-center justify-center gap-5 relative z-10"
       >
-        {/* Main Swap Container */}
-        <div className="w-full max-w-[480px] rounded-[32px] bg-[#0a0b0d]/90 backdrop-blur-3xl border border-white/10 shadow-[0_0_80px_-20px_rgba(131,80,232,0.15)] overflow-hidden shrink-0 mx-auto md:mx-0">
-          
+        {/* ── SWAP CARD ── */}
+        <div
+          className="w-full max-w-[464px] shrink-0 mx-auto md:mx-0 overflow-hidden relative"
+          style={{ background: "#1b1b1b", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 24 }}
+        >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 pb-4">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-white font-bold text-xl tracking-tight">Swap</h2>
-              <p className="text-xs text-slate-400">Trade tokens instantly on-chain.</p>
-            </div>
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <span className="text-white font-semibold text-base">Swap</span>
             <div className="flex items-center gap-2">
-              <button 
-                onClick={() => window.open(`https://global.transak.com/?apiKey=YOUR_TRANSAK_API_KEY&cryptoCurrencyCode=${toToken.symbol}&walletAddress=${address || ''}`, "_blank")}
-                className="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 mr-2 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]"
+              <button
+                onClick={() => window.open(`https://global.transak.com/?apiKey=YOUR_TRANSAK_API_KEY&cryptoCurrencyCode=${toToken.symbol}&walletAddress=${address || ""}`, "_blank")}
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)" }}
               >
-                Buy with Fiat
+                Buy
               </button>
-              <button 
+              <button
                 onClick={() => setShowSettings(!showSettings)}
-                className={`p-2.5 rounded-xl transition-colors ${showSettings ? "bg-white/10 text-white" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
+                className="p-2 rounded-xl transition-all"
+                style={{ background: showSettings ? "rgba(255,255,255,0.08)" : "transparent", color: showSettings ? "#fff" : "rgba(255,255,255,0.35)" }}
               >
-                <Settings size={20} />
+                <Settings size={18} />
               </button>
             </div>
           </div>
 
-          {/* Settings Popover */}
+          {/* Settings panel */}
           <AnimatePresence>
             {showSettings && (
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="px-6 pb-4 relative z-10 overflow-hidden"
+                initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18 }} className="overflow-hidden px-5 pb-3"
               >
-                <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-4">
+                <div style={{ background: "#222", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 16 }}>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium text-slate-300">Max Slippage</span>
-                    <span className="text-xs text-slate-500 font-mono">{slippage}%</span>
+                    <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>Slippage tolerance</span>
+                    <span className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.7)" }}>{slippage}%</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     {["0.1", "0.5", "1.0"].map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => setSlippage(s)}
-                        className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${slippage === s ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "bg-white/[0.05] text-slate-400 hover:bg-white/10 border border-transparent"}`}
-                      >
+                      <button key={s} onClick={() => setSlippage(s)} className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all"
+                        style={{
+                          background: slippage === s ? "rgba(250,78,255,0.15)" : "rgba(255,255,255,0.05)",
+                          color: slippage === s ? "#fa4eff" : "rgba(255,255,255,0.45)",
+                          border: slippage === s ? "1px solid rgba(250,78,255,0.3)" : "1px solid transparent",
+                        }}>
                         {s}%
                       </button>
                     ))}
                     <div className="relative flex-1">
-                      <input
-                        type="text"
-                        value={slippage}
-                        onChange={(e) => setSlippage(e.target.value)}
-                        className="w-full bg-white/[0.05] border border-transparent rounded-lg py-2 px-3 text-sm text-right text-slate-300 focus:outline-none focus:border-cyan-500/50"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">%</span>
+                      <input type="text" value={slippage} onChange={(e) => setSlippage(e.target.value)}
+                        className="w-full py-2 px-3 text-sm text-right rounded-xl focus:outline-none"
+                        style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.7)", border: "1px solid transparent" }} />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>%</span>
                     </div>
                   </div>
                 </div>
@@ -323,154 +307,118 @@ export default function SwapInterface() {
             )}
           </AnimatePresence>
 
-          {/* Main Inputs */}
-          <div className="relative z-10 p-2 px-3 flex flex-col gap-1.5">
-            
-            {/* FROM INPUT */}
-            <div className="bg-black/40 border border-white/5 rounded-3xl p-5 transition-all hover:bg-black/60 hover:border-white/10 focus-within:border-indigo-500/30 focus-within:bg-black/60 focus-within:shadow-[0_0_30px_-10px_rgba(99,102,241,0.15)]">
-              <div className="flex justify-between mb-3">
-                <span className="text-sm font-medium text-slate-400">You pay</span>
-                <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
-                  Balance: {displayBalance}
-                  <button onClick={setMaxBalance} className="text-indigo-400 hover:text-indigo-300 font-bold ml-1 transition-colors">MAX</button>
+          {/* Inputs */}
+          <div className="px-3 pb-3 flex flex-col gap-1">
+            {/* FROM */}
+            <div style={{ background: "#222", borderRadius: 20, padding: 16 }}>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>You pay</span>
+                <span className="text-xs font-mono flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>
+                  {displayBalance}
+                  <button onClick={setMaxBalance} className="font-bold text-[10px] px-2 py-0.5 rounded-md"
+                    style={{ background: "rgba(250,78,255,0.12)", color: "#fa4eff" }}>
+                    MAX
+                  </button>
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
                 <input
-                  type="text"
-                  placeholder="0.0"
-                  value={amountIn}
+                  type="text" placeholder="0" value={amountIn}
                   onChange={(e) => {
-                    let val = e.target.value.replace(/,/g, '.');
-                    // Remove negative signs
-                    val = val.replace(/-/g, '');
-                    if (/^\d*\.?\d*$/.test(val)) {
-                      setAmountIn(val);
-                    }
+                    let val = e.target.value.replace(/,/g, ".").replace(/-/g, "");
+                    if (/^\d*\.?\d*$/.test(val)) setAmountIn(val);
                   }}
-                  className="w-full bg-transparent text-4xl sm:text-5xl font-mono font-semibold text-white outline-none placeholder:text-slate-700"
+                  className="flex-1 bg-transparent font-semibold text-white outline-none placeholder:text-white/10 min-w-0"
+                  style={{ fontSize: 40 }}
                 />
-                <button 
-                  onClick={() => setShowTokenSelector("from")}
-                  className="shrink-0 flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md pl-2 pr-4 py-2 rounded-full transition-all border border-white/10 shadow-lg group"
-                >
-                  <img src={fromToken.icon} alt={fromToken.symbol} className="w-7 h-7 rounded-full" />
-                  <span className="font-bold text-white text-lg">{fromToken.symbol}</span>
-                  <ChevronDown size={16} className="text-slate-400" />
+                <button onClick={() => setShowTokenSelector("from")} className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-2xl transition-colors"
+                  style={{ background: "#131313", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <img src={fromToken.icon} alt={fromToken.symbol} className="w-6 h-6 rounded-full" />
+                  <span className="font-bold text-white text-sm">{fromToken.symbol}</span>
+                  <ChevronDown size={14} style={{ color: "rgba(255,255,255,0.35)" }} />
                 </button>
               </div>
-              <div className="text-sm text-slate-500 mt-3 font-mono">
+              <div className="text-xs font-mono mt-2" style={{ color: "rgba(255,255,255,0.22)" }}>
                 ${amountIn ? (Number(amountIn) * fromToken.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0.00"}
               </div>
             </div>
 
-            {/* SWAP BUTTON (MIDDLE) */}
-            <div className="relative h-2 flex justify-center items-center z-20">
-              <button 
-                onClick={handleSwitchTokens}
-                className="absolute p-3 bg-zinc-800 border-[6px] border-[#0a0b0d] rounded-2xl hover:scale-110 hover:text-white hover:bg-indigo-500 transition-all text-slate-400 shadow-xl"
-              >
-                <ArrowDownUp size={18} />
+            {/* SWITCH */}
+            <div className="relative h-0 flex justify-center items-center z-20 my-0.5">
+              <button onClick={handleSwitchTokens}
+                className="absolute flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                style={{ width: 36, height: 36, borderRadius: 12, background: "#1b1b1b", border: "4px solid #131313", color: "rgba(255,255,255,0.35)" }}>
+                <ArrowDownUp size={16} />
               </button>
             </div>
 
-            {/* TO INPUT */}
-            <div className="bg-black/40 border border-white/5 rounded-3xl p-5 transition-all hover:bg-black/60 hover:border-white/10">
-              <div className="flex justify-between mb-3">
-                <span className="text-sm font-medium text-slate-400">You receive</span>
+            {/* TO */}
+            <div style={{ background: "#222", borderRadius: 20, padding: 16 }}>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>You receive</span>
               </div>
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
                 {isQuoting ? (
-                  <div className="flex-1 h-12 flex items-center">
-                    <div className="w-32 h-10 bg-white/[0.03] animate-pulse rounded-lg" />
+                  <div className="flex-1 flex items-center" style={{ height: 48 }}>
+                    <div className="w-28 h-9 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.04)" }} />
                   </div>
                 ) : (
-                  <input
-                    type="text"
-                    readOnly
-                    placeholder="0.0"
-                    value={quote ? quote.amountOut : ""}
-                    className="w-full bg-transparent text-4xl sm:text-5xl font-mono font-semibold text-white outline-none placeholder:text-slate-700"
-                  />
+                  <input type="text" readOnly placeholder="0" value={quote ? quote.amountOut : ""}
+                    className="flex-1 bg-transparent font-semibold text-white outline-none placeholder:text-white/10 min-w-0"
+                    style={{ fontSize: 40 }} />
                 )}
-                <button 
-                  onClick={() => setShowTokenSelector("to")}
-                  className="shrink-0 flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md pl-2 pr-4 py-2 rounded-full transition-all border border-white/10 shadow-lg group"
-                >
-                  <img src={toToken.icon} alt={toToken.symbol} className="w-7 h-7 rounded-full" />
-                  <span className="font-bold text-white text-lg">{toToken.symbol}</span>
-                  <ChevronDown size={16} className="text-slate-400" />
+                <button onClick={() => setShowTokenSelector("to")} className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-2xl transition-colors"
+                  style={{ background: "#131313", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <img src={toToken.icon} alt={toToken.symbol} className="w-6 h-6 rounded-full" />
+                  <span className="font-bold text-white text-sm">{toToken.symbol}</span>
+                  <ChevronDown size={14} style={{ color: "rgba(255,255,255,0.35)" }} />
                 </button>
               </div>
-              <div className="text-sm text-slate-500 mt-3 font-mono flex items-center gap-2">
+              <div className="text-xs font-mono mt-2 flex items-center gap-2" style={{ color: "rgba(255,255,255,0.22)" }}>
                 {isQuoting ? (
-                  <div className="w-20 h-4 bg-white/[0.03] animate-pulse rounded" />
+                  <div className="w-16 h-3 rounded animate-pulse" style={{ background: "rgba(255,255,255,0.04)" }} />
                 ) : (
-                  <>${quote ? (Number(quote.amountOut) * toToken.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0.00"}</>
-                )}
-                {quote && !isQuoting && (
-                  <span className="text-emerald-500/80 text-xs ml-2">
-                    (Best Price)
-                  </span>
+                  <>
+                    ${quote ? (Number(quote.amountOut) * toToken.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0.00"}
+                    {quote && <span style={{ color: "#40d97a" }}>· Best price</span>}
+                  </>
                 )}
               </div>
             </div>
           </div>
 
-          {/* QUOTE DETAILS */}
+          {/* Quote details */}
           <AnimatePresence>
             {quote && !isQuoting && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="px-6 py-2 overflow-hidden"
-              >
-                <div className="flex items-center justify-between text-sm text-slate-400 py-1.5">
-                  <span className="flex items-center gap-1 border-b border-dashed border-slate-500/50 cursor-help">Rate <Info size={12} /></span>
-                  <span className="font-mono text-slate-300">1 {fromToken.symbol} = {quote.rate.toFixed(4)} {toToken.symbol}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-slate-400 py-1.5">
-                  <span className="flex items-center gap-1 border-b border-dashed border-slate-500/50 cursor-help text-purple-400">Platform Fee (0.5%) <Info size={12} /></span>
-                  <span className="font-mono text-purple-400 font-semibold">
-                    {quote.platformFee ? `${Number(quote.platformFee).toFixed(4)} ${toToken.symbol}` : "0.00"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-slate-400 py-1.5">
-                  <span className="flex items-center gap-1 border-b border-dashed border-slate-500/50 cursor-help">Provider <Info size={12} /></span>
-                  <span className="font-mono text-slate-300 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    0x API Aggregator
-                  </span>
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.18 }} className="overflow-hidden px-5">
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "12px 0" }}>
+                  {[
+                    { label: "Rate", value: `1 ${fromToken.symbol} = ${quote.rate.toFixed(4)} ${toToken.symbol}` },
+                    { label: "Fee (0.5%)", value: quote.platformFee ? `${Number(quote.platformFee).toFixed(4)} ${toToken.symbol}` : "—" },
+                    { label: "Router", value: "0x Aggregator" },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-center justify-between py-1">
+                      <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{label}</span>
+                      <span className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.55)" }}>{value}</span>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* ACTION BUTTON */}
-          <div className="p-4 relative z-10">
+          {/* CTA button */}
+          <div className="px-3 pb-4">
             <button
               onClick={handleSwap}
               disabled={(!amountIn || txState !== "idle" || isApproving) && isConnected}
-              className={`w-full py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all duration-300 ${
-                txState === "success" ? "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                : txState === "pending" || isApproving ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
-                : txState === "confirming" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                : !isConnected ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:brightness-110 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
-                : !amountIn ? "bg-white/5 text-slate-500 cursor-not-allowed"
-                : needsApproval ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:brightness-110 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
-                : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:brightness-110 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
-              }`}
+              className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-200"
+              style={{ background: ctaBg, color: ctaColor, cursor: !amountIn && isConnected ? "not-allowed" : "pointer" }}
             >
-              {txState === "confirming" && (
-                <><Loader size={22} className="animate-spin" /> Confirming in Wallet...</>
-              )}
-              {(txState === "pending" || isApproving) && (
-                <><Loader size={22} className="animate-spin" /> {isApproving ? "Approving..." : "Swapping..."}</>
-              )}
-              {txState === "success" && (
-                <><CheckCircle2 size={24} /> Swap Successful</>
-              )}
+              {txState === "confirming" && <><Loader size={18} className="animate-spin" /> Confirm in Wallet</>}
+              {(txState === "pending" || isApproving) && <><Loader size={18} className="animate-spin" /> {isApproving ? "Approving…" : "Swapping…"}</>}
+              {txState === "success" && <><CheckCircle2 size={20} /> Swap Successful</>}
               {txState === "idle" && !isApproving && (
                 !isConnected ? "Connect Wallet"
                 : !amountIn ? "Enter an amount"
@@ -480,52 +428,38 @@ export default function SwapInterface() {
             </button>
           </div>
 
-          {/* TOKEN SELECTOR MODAL */}
+          {/* Token selector modal */}
           <AnimatePresence>
             {showTokenSelector && (
-              <motion.div 
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="absolute inset-0 z-50 bg-[#0a0b0d] flex flex-col"
-              >
-                <div className="flex items-center justify-between p-6 border-b border-white/5">
-                  <h3 className="text-white font-bold text-xl">Select a token</h3>
-                  <button onClick={() => setShowTokenSelector(null)} className="p-2 hover:bg-white/5 rounded-xl text-slate-400 transition-colors">
-                    <X size={24} />
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }} className="absolute inset-0 z-50 flex flex-col"
+                style={{ background: "#1b1b1b", borderRadius: 24 }}>
+                <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <span className="text-white font-semibold">Select token</span>
+                  <button onClick={() => setShowTokenSelector(null)} className="transition-colors hover:text-white"
+                    style={{ color: "rgba(255,255,255,0.35)" }}>
+                    <X size={20} />
                   </button>
                 </div>
                 <div className="p-4">
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
-                    <input 
-                      type="text" 
-                      placeholder="Search name or paste address" 
-                      value={tokenSearch}
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={16} style={{ color: "rgba(255,255,255,0.25)" }} />
+                    <input type="text" placeholder="Search tokens" value={tokenSearch}
                       onChange={(e) => setTokenSearch(e.target.value)}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors text-lg"
+                      className="w-full pl-10 pr-4 py-3 text-sm text-white rounded-xl focus:outline-none"
+                      style={{ background: "#222", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.8)" }}
                     />
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-2">
+                <div className="flex-1 overflow-y-auto px-3 pb-4">
                   {filteredTokens.map((token) => (
-                    <button 
-                      key={token.symbol}
-                      onClick={() => {
-                        if (showTokenSelector === "from") setFromToken(token);
-                        else setToToken(token);
-                        setShowTokenSelector(null);
-                        setTokenSearch("");
-                      }}
-                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 rounded-2xl transition-colors text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <img src={token.icon} alt={token.symbol} className="w-10 h-10 rounded-full" />
-                        <div>
-                          <div className="text-white font-bold text-lg">{token.symbol}</div>
-                          <div className="text-slate-500 text-sm">{token.name}</div>
-                        </div>
+                    <button key={token.symbol}
+                      onClick={() => { if (showTokenSelector === "from") setFromToken(token); else setToToken(token); setShowTokenSelector(null); setTokenSearch(""); }}
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl transition-colors text-left hover:bg-white/[0.04]">
+                      <img src={token.icon} alt={token.symbol} className="w-9 h-9 rounded-full" />
+                      <div>
+                        <div className="text-white font-semibold text-sm">{token.symbol}</div>
+                        <div className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{token.name}</div>
                       </div>
                     </button>
                   ))}
@@ -535,10 +469,10 @@ export default function SwapInterface() {
           </AnimatePresence>
         </div>
 
-        {/* AI Trade Insights Widget */}
-        <div className="w-full md:w-[320px] shrink-0 h-full">
+        {/* Market Signals */}
+        <div className="w-full md:w-[300px] shrink-0">
           <AITradeInsights onApplySuggestion={(tokenSymbol) => {
-            const token = TOKENS.find(t => t.symbol === tokenSymbol);
+            const token = TOKENS.find((t) => t.symbol === tokenSymbol);
             if (token) setToToken(token);
           }} />
         </div>

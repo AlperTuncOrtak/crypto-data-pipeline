@@ -42,38 +42,38 @@
 
 /* ── BASE THEMES ── */
 :root, [data-theme="midnight"] {
-  --bg-base:       #000000;
-  --bg-surface:    #0C0C0E;
-  --bg-elevated:   #131316;
-  --bg-card:       #09090B;
+  --bg-base:       #131313;
+  --bg-surface:    #1b1b1b;
+  --bg-elevated:   #222222;
+  --bg-card:       #1b1b1b;
   --bg-hover:      rgba(255, 255, 255, 0.04);
 
-  --border:        rgba(255, 255, 255, 0.06);
-  --border-soft:   rgba(255, 255, 255, 0.03);
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-soft:   rgba(255, 255, 255, 0.04);
   --border-mid:    rgba(255, 255, 255, 0.10);
-  --border-focus:  rgba(255, 255, 255, 0.15);
+  --border-focus:  rgba(255, 255, 255, 0.18);
 }
 
 [data-theme="dark"] {
-  --bg-base:       #111113;
-  --bg-surface:    #18181b;
-  --bg-elevated:   #27272a;
-  --bg-card:       #18181b;
-  --bg-hover:      rgba(255, 255, 255, 0.06);
+  --bg-base:       #131313;
+  --bg-surface:    #1b1b1b;
+  --bg-elevated:   #222222;
+  --bg-card:       #1b1b1b;
+  --bg-hover:      rgba(255, 255, 255, 0.05);
 
-  --border:        rgba(255, 255, 255, 0.08);
+  --border:        rgba(255, 255, 255, 0.07);
   --border-soft:   rgba(255, 255, 255, 0.04);
-  --border-mid:    rgba(255, 255, 255, 0.12);
-  --border-focus:  rgba(255, 255, 255, 0.20);
+  --border-mid:    rgba(255, 255, 255, 0.10);
+  --border-focus:  rgba(255, 255, 255, 0.18);
 }
 
 /* ── ACCENT COLORS ── */
 :root, [data-accent="zinc"] {
-  --accent:         #71717a;
-  --accent-hover:   #a1a1aa;
-  --accent-soft:    rgba(255, 255, 255, 0.06);
-  --accent-border:  rgba(255, 255, 255, 0.12);
-  --accent-glow:    rgba(255, 255, 255, 0.10);
+  --accent:         #fa4eff;
+  --accent-hover:   #f800ff;
+  --accent-soft:    rgba(250, 78, 255, 0.10);
+  --accent-border:  rgba(250, 78, 255, 0.25);
+  --accent-glow:    rgba(250, 78, 255, 0.18);
 }
 
 [data-accent="purple"] {
@@ -291,7 +291,7 @@ html { overflow-x: hidden; }
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
