@@ -483,8 +483,13 @@ export default function Navbar({
             margin: "0 auto",
           }}
         >
-          {/* LOGO */}
-          <AnimatedLogo />
+          {/* LOGO & BETA BADGE */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <AnimatedLogo />
+            <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-widest uppercase ml-[-20px] mr-[20px] shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+              Beta
+            </div>
+          </div>
 
           {/* NAV LINKS */}
           <nav
