@@ -291,7 +291,7 @@ html { overflow-x: hidden; }
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Inter', 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -302,7 +302,7 @@ body {
 
 /* ── Headings — tight tracking, editorial feel ── */
 h1, h2, h3, h4, h5, h6, .display-font {
-  font-family: 'Inter', 'Geist Sans', system-ui, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   letter-spacing: -0.03em;
   font-weight: 700;
   line-height: 1.15;
@@ -313,7 +313,7 @@ h3 { font-weight: 600; letter-spacing: -0.02em; }
 
 /* ── Tabular Monospace — for fintech metrics, prices, and tickers ── */
 .font-mono {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
@@ -509,7 +509,7 @@ img { max-width: 100%; height: auto; }
 .dashboard-page {
   min-height: 100vh;
   color: var(--text-primary);
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
 }
 
 .dashboard-container {
@@ -644,7 +644,7 @@ img { max-width: 100%; height: auto; }
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.03em;
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   line-height: 1.2;
 }
 
@@ -683,7 +683,7 @@ img { max-width: 100%; height: auto; }
   font-size: 13px;
   font-weight: 800;
   color: var(--text-primary);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .fng-label {
@@ -875,7 +875,7 @@ img { max-width: 100%; height: auto; }
 .rank-col {
   font-size: 12px;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   text-align: center;
 }
 
@@ -924,7 +924,7 @@ img { max-width: 100%; height: auto; }
 .asset-symbol {
   font-size: 11px;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   margin-top: 1px;
 }
 
@@ -933,7 +933,7 @@ img { max-width: 100%; height: auto; }
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .change-badge {
@@ -944,7 +944,7 @@ img { max-width: 100%; height: auto; }
   border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   letter-spacing: -0.01em;
 }
 
@@ -963,7 +963,7 @@ img { max-width: 100%; height: auto; }
   text-align: right;
   font-size: 12px;
   color: var(--text-secondary);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .sparkline-col {
@@ -1042,7 +1042,7 @@ img { max-width: 100%; height: auto; }
 .sidebar-rank {
   font-size: 11px;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   width: 16px;
   text-align: right;
   flex-shrink: 0;
@@ -1089,13 +1089,13 @@ img { max-width: 100%; height: auto; }
 .sidebar-item-symbol {
   font-size: 11px;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .sidebar-item-price {
   font-size: 11px;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* Mini Sparkline */
