@@ -260,7 +260,7 @@ export default function SwapInterface() {
         className="w-full mx-auto flex flex-col md:flex-row items-start justify-center gap-6 relative z-10"
       >
         {/* Main Swap Container */}
-        <div className="w-full max-w-[480px] rounded-[32px] bg-[#0a0b0d] border border-white/10 shadow-2xl overflow-hidden shrink-0 mx-auto md:mx-0">
+        <div className="w-full max-w-[480px] rounded-[32px] bg-[#0a0b0d]/90 backdrop-blur-3xl border border-white/10 shadow-[0_0_80px_-20px_rgba(131,80,232,0.15)] overflow-hidden shrink-0 mx-auto md:mx-0">
           
           {/* Header */}
           <div className="flex items-center justify-between p-6 pb-4">
@@ -271,7 +271,7 @@ export default function SwapInterface() {
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => window.open(`https://global.transak.com/?apiKey=YOUR_TRANSAK_API_KEY&cryptoCurrencyCode=${toToken.symbol}&walletAddress=${address || ''}`, "_blank")}
-                className="px-4 py-2 rounded-xl text-xs font-bold transition-colors bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 mr-2"
+                className="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 mr-2 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]"
               >
                 Buy with Fiat
               </button>
@@ -327,12 +327,12 @@ export default function SwapInterface() {
           <div className="relative z-10 p-2 px-3 flex flex-col gap-1.5">
             
             {/* FROM INPUT */}
-            <div className="bg-[#13151a] border border-white/5 rounded-3xl p-5 transition-colors hover:border-white/10 focus-within:border-cyan-500/30 focus-within:hover:border-cyan-500/30">
+            <div className="bg-black/40 border border-white/5 rounded-3xl p-5 transition-all hover:bg-black/60 hover:border-white/10 focus-within:border-indigo-500/30 focus-within:bg-black/60 focus-within:shadow-[0_0_30px_-10px_rgba(99,102,241,0.15)]">
               <div className="flex justify-between mb-3">
                 <span className="text-sm font-medium text-slate-400">You pay</span>
                 <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
                   Balance: {displayBalance}
-                  <button onClick={setMaxBalance} className="text-cyan-400 hover:text-cyan-300 font-bold ml-1">MAX</button>
+                  <button onClick={setMaxBalance} className="text-indigo-400 hover:text-indigo-300 font-bold ml-1 transition-colors">MAX</button>
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
@@ -345,7 +345,7 @@ export default function SwapInterface() {
                 />
                 <button 
                   onClick={() => setShowTokenSelector("from")}
-                  className="shrink-0 flex items-center gap-2 bg-[#273951]/40 hover:bg-[#273951]/80 pl-2 pr-4 py-2 rounded-full transition-colors border border-white/5"
+                  className="shrink-0 flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md pl-2 pr-4 py-2 rounded-full transition-all border border-white/10 shadow-lg group"
                 >
                   <img src={fromToken.icon} alt={fromToken.symbol} className="w-7 h-7 rounded-full" />
                   <span className="font-bold text-white text-lg">{fromToken.symbol}</span>
@@ -361,14 +361,14 @@ export default function SwapInterface() {
             <div className="relative h-2 flex justify-center items-center z-20">
               <button 
                 onClick={handleSwitchTokens}
-                className="absolute p-2.5 bg-[#0a0b0d] border-4 border-[#020817] rounded-xl hover:scale-110 hover:text-cyan-400 transition-all text-slate-400 shadow-xl"
+                className="absolute p-3 bg-zinc-800 border-[6px] border-[#0a0b0d] rounded-2xl hover:scale-110 hover:text-white hover:bg-indigo-500 transition-all text-slate-400 shadow-xl"
               >
                 <ArrowDownUp size={18} />
               </button>
             </div>
 
             {/* TO INPUT */}
-            <div className="bg-[#13151a] border border-white/5 rounded-3xl p-5 transition-colors hover:border-white/10">
+            <div className="bg-black/40 border border-white/5 rounded-3xl p-5 transition-all hover:bg-black/60 hover:border-white/10">
               <div className="flex justify-between mb-3">
                 <span className="text-sm font-medium text-slate-400">You receive</span>
               </div>
@@ -388,7 +388,7 @@ export default function SwapInterface() {
                 )}
                 <button 
                   onClick={() => setShowTokenSelector("to")}
-                  className="shrink-0 flex items-center gap-2 bg-[#273951]/40 hover:bg-[#273951]/80 pl-2 pr-4 py-2 rounded-full transition-colors border border-white/5"
+                  className="shrink-0 flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md pl-2 pr-4 py-2 rounded-full transition-all border border-white/10 shadow-lg group"
                 >
                   <img src={toToken.icon} alt={toToken.symbol} className="w-7 h-7 rounded-full" />
                   <span className="font-bold text-white text-lg">{toToken.symbol}</span>
@@ -445,14 +445,14 @@ export default function SwapInterface() {
             <button
               onClick={handleSwap}
               disabled={(!amountIn || txState !== "idle" || isApproving) && isConnected}
-              className={`w-full py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all ${
+              className={`w-full py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all duration-300 ${
                 txState === "success" ? "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                : txState === "pending" || isApproving ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                : txState === "pending" || isApproving ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
                 : txState === "confirming" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                : !isConnected ? "bg-cyan-500 text-[#020817] hover:bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+                : !isConnected ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:brightness-110 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
                 : !amountIn ? "bg-white/5 text-slate-500 cursor-not-allowed"
-                : needsApproval ? "bg-purple-500 text-white hover:bg-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.2)]"
-                : "bg-cyan-500 text-[#020817] hover:bg-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.3)]"
+                : needsApproval ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:brightness-110 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
+                : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:brightness-110 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
               }`}
             >
               {txState === "confirming" && (
