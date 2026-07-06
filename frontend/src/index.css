@@ -42,38 +42,38 @@
 
 /* ── BASE THEMES ── */
 :root, [data-theme="midnight"] {
-  --bg-base:       #131313;
-  --bg-surface:    #1b1b1b;
-  --bg-elevated:   #222222;
-  --bg-card:       #1b1b1b;
-  --bg-hover:      rgba(255, 255, 255, 0.04);
+  --bg-base:       #000000;
+  --bg-surface:    rgba(255, 255, 255, 0.03);
+  --bg-elevated:   rgba(255, 255, 255, 0.06);
+  --bg-card:       rgba(255, 255, 255, 0.03);
+  --bg-hover:      rgba(255, 255, 255, 0.05);
 
-  --border:        rgba(255, 255, 255, 0.07);
-  --border-soft:   rgba(255, 255, 255, 0.04);
-  --border-mid:    rgba(255, 255, 255, 0.10);
-  --border-focus:  rgba(255, 255, 255, 0.18);
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-soft:   rgba(255, 255, 255, 0.05);
+  --border-mid:    rgba(255, 255, 255, 0.12);
+  --border-focus:  rgba(34, 211, 238, 0.40);
 }
 
 [data-theme="dark"] {
-  --bg-base:       #131313;
-  --bg-surface:    #1b1b1b;
-  --bg-elevated:   #222222;
-  --bg-card:       #1b1b1b;
+  --bg-base:       #000000;
+  --bg-surface:    rgba(255, 255, 255, 0.03);
+  --bg-elevated:   rgba(255, 255, 255, 0.06);
+  --bg-card:       rgba(255, 255, 255, 0.03);
   --bg-hover:      rgba(255, 255, 255, 0.05);
 
-  --border:        rgba(255, 255, 255, 0.07);
-  --border-soft:   rgba(255, 255, 255, 0.04);
-  --border-mid:    rgba(255, 255, 255, 0.10);
-  --border-focus:  rgba(255, 255, 255, 0.18);
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-soft:   rgba(255, 255, 255, 0.05);
+  --border-mid:    rgba(255, 255, 255, 0.12);
+  --border-focus:  rgba(34, 211, 238, 0.40);
 }
 
 /* ── ACCENT COLORS ── */
 :root, [data-accent="zinc"] {
-  --accent:         #fa4eff;
-  --accent-hover:   #f800ff;
-  --accent-soft:    rgba(250, 78, 255, 0.10);
-  --accent-border:  rgba(250, 78, 255, 0.25);
-  --accent-glow:    rgba(250, 78, 255, 0.18);
+  --accent:         #22d3ee;
+  --accent-hover:   #67e8f9;
+  --accent-soft:    rgba(34, 211, 238, 0.10);
+  --accent-border:  rgba(34, 211, 238, 0.25);
+  --accent-glow:    rgba(34, 211, 238, 0.18);
 }
 
 [data-accent="purple"] {

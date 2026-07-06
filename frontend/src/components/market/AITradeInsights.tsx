@@ -2,101 +2,100 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, TrendingDown, RefreshCw, ArrowUpRight, ChevronDown } from "lucide-react";
 
+const GLASS_BG     = "rgba(255,255,255,0.03)";
+const GLASS_BORDER = "rgba(255,255,255,0.08)";
+
 const SIGNALS = [
   {
     id: 1,
     type: "BUY" as const,
     asset: "LINK",
-    pair: "/ USD",
-    summary: "Whale accumulation spike — breakout above $18.40 resistance.",
-    detail: "On-chain data shows 2.3M LINK moved to cold storage in the last 60 min. Volume is 4× the 30-day average. RSI at 58 — room to run.",
+    pair: "LINK / USD",
+    summary: "Whale accumulation spike — breakout above $18.40 imminent.",
+    detail: "2.3M LINK moved to cold storage in 60 min. Volume 4× the 30-day average. RSI at 58 — room to run. Breakout confirmed on 4h chart.",
     move: "+12.4%",
-    positive: true,
     timeframe: "12–24h",
     token: "LINK",
+    dotColor: "#10b981",
   },
   {
     id: 2,
     type: "SELL" as const,
     asset: "WIF",
-    pair: "/ USD",
+    pair: "WIF / USD",
     summary: "Extreme overbought — smart money distributing.",
-    detail: "RSI at 87 on the 4h chart. Funding rates flipped negative on perps. Similar setup preceded a 20% correction in April.",
+    detail: "RSI at 87 on the 4h. Funding rates negative on perps. Same setup preceded April's 20% correction. Stablecoin hedge recommended.",
     move: "−18.2%",
-    positive: false,
     timeframe: "6–12h",
     token: "USDC",
+    dotColor: "#f43f5e",
   },
   {
     id: 3,
     type: "ROTATE" as const,
     asset: "FET",
-    pair: "/ USD",
-    summary: "AI sector rotation — FET showing 3× relative strength vs BTC.",
-    detail: "Weekly capital flows into AI tokens outperforming BTC by 3.1×. Breakout from 3-month base on daily chart confirmed.",
+    pair: "FET / USD",
+    summary: "AI narrative flows accelerating. 3× relative strength.",
+    detail: "Weekly capital rotation into AI tokens outperforming BTC by 3.1×. AGIX and FET leading. Breakout from 3-month base on daily.",
     move: "+8.5%",
-    positive: true,
     timeframe: "24–72h",
     token: "FET",
+    dotColor: "#22d3ee",
   },
 ];
 
-type Signal = (typeof SIGNALS)[number];
-
-const TYPE_CONFIG = {
-  BUY:    { label: "Long",   Icon: TrendingUp,   color: "#22c55e", bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.2)" },
-  SELL:   { label: "Short",  Icon: TrendingDown,  color: "#ef4444", bg: "rgba(239,68,68,0.1)",   border: "rgba(239,68,68,0.2)" },
-  ROTATE: { label: "Rotate", Icon: RefreshCw,     color: "#fa4eff", bg: "rgba(250,78,255,0.1)",  border: "rgba(250,78,255,0.2)" },
+const TYPE_CFG = {
+  BUY:    { label: "Long",   Icon: TrendingUp,  color: "#10b981" },
+  SELL:   { label: "Short",  Icon: TrendingDown, color: "#f43f5e" },
+  ROTATE: { label: "Rotate", Icon: RefreshCw,    color: "#22d3ee" },
 };
+
+type Signal = (typeof SIGNALS)[number];
 
 function SignalRow({ s, onApply }: { s: Signal; onApply: () => void }) {
   const [open, setOpen] = useState(false);
-  const cfg = TYPE_CONFIG[s.type];
+  const cfg = TYPE_CFG[s.type];
   const Icon = cfg.Icon;
 
   return (
-    <div style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+    <div style={{ borderBottom: `1px solid ${GLASS_BORDER}` }}>
+      {/* Row */}
       <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full text-left px-4 py-4 flex items-center gap-3 transition-colors duration-150"
+        onClick={() => setOpen(v => !v)}
+        className="w-full text-left px-5 py-4 flex items-center gap-3 transition-colors group"
         style={{ background: "transparent" }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        onMouseEnter={e => (e.currentTarget.style.background = GLASS_BG)}
+        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
       >
-        {/* Type badge */}
-        <div
-          className="flex items-center gap-1.5 px-2 py-1 rounded-lg shrink-0"
-          style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
-        >
-          <Icon size={11} style={{ color: cfg.color }} strokeWidth={2.5} />
-          <span className="text-[10px] font-bold" style={{ color: cfg.color }}>
-            {cfg.label}
-          </span>
-        </div>
+        {/* Color dot */}
+        <div className="w-1.5 h-1.5 rounded-full shrink-0 mt-0.5" style={{ background: s.dotColor, boxShadow: `0 0 6px ${s.dotColor}` }} />
 
-        {/* Asset + summary */}
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-1 mb-0.5">
-            <span className="text-sm font-semibold text-white">{s.asset}</span>
-            <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>{s.pair}</span>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-xs font-bold text-white">{s.pair}</span>
+            <span
+              className="text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded"
+              style={{ background: `${cfg.color}14`, color: cfg.color }}
+            >
+              {cfg.label}
+            </span>
           </div>
-          <p className="text-[11px] leading-snug truncate" style={{ color: "rgba(255,255,255,0.35)" }}>
-            {s.summary}
-          </p>
+          <p className="text-[11px] text-slate-500 leading-snug truncate pr-2">{s.summary}</p>
         </div>
 
         {/* Move + chevron */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-sm font-bold font-mono" style={{ color: s.positive ? "#22c55e" : "#ef4444" }}>
+          <span className="text-sm font-bold font-mono" style={{ color: s.type === "SELL" ? "#f43f5e" : "#10b981" }}>
             {s.move}
           </span>
           <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }}>
-            <ChevronDown size={13} style={{ color: "rgba(255,255,255,0.25)" }} />
+            <ChevronDown size={13} className="text-slate-700" />
           </motion.div>
         </div>
       </button>
 
-      {/* Expanded */}
+      {/* Detail */}
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
@@ -104,38 +103,25 @@ function SignalRow({ s, onApply }: { s: Signal; onApply: () => void }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4" style={{ paddingTop: 0 }}>
-              <div
-                className="rounded-xl p-3"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
-              >
-                <p className="text-[12px] leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.45)" }}>
-                  {s.detail}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>
-                    Window: {s.timeframe}
-                  </span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onApply(); }}
-                    className="flex items-center gap-1.5 text-[11px] font-semibold transition-all"
-                    style={{
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.09)",
-                      borderRadius: 8,
-                      padding: "5px 11px",
-                      color: "rgba(255,255,255,0.7)",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#fff"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "rgba(255,255,255,0.7)"; }}
-                  >
-                    Use in Swap
-                    <ArrowUpRight size={11} />
-                  </button>
-                </div>
+            <div className="px-5 pb-4">
+              <p className="text-[12px] text-slate-400 leading-relaxed mb-3">{s.detail}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-700 font-mono">Target: {s.timeframe}</span>
+                <button
+                  onClick={e => { e.stopPropagation(); onApply(); }}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold text-white transition-all hover:opacity-80 active:scale-95"
+                  style={{
+                    background: GLASS_BG,
+                    border: `1px solid ${GLASS_BORDER}`,
+                    borderRadius: 8,
+                    padding: "5px 12px",
+                  }}
+                >
+                  Use in Swap <ArrowUpRight size={11} />
+                </button>
               </div>
             </div>
           </motion.div>
@@ -152,40 +138,43 @@ export default function AITradeInsights({
 }) {
   return (
     <div
-      className="w-full flex flex-col overflow-hidden"
+      className="w-full flex flex-col backdrop-blur-sm"
       style={{
-        background: "#1b1b1b",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: GLASS_BG,
+        border: `1px solid ${GLASS_BORDER}`,
         borderRadius: 24,
+        overflow: "hidden",
+        boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset",
       }}
     >
-      {/* Header — matches Swap card header exactly */}
+      {/* Top line — matches landing page card style */}
+      <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }} />
+
+      {/* Header */}
       <div
-        className="flex items-center justify-between px-5 pt-5 pb-4"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        className="flex items-center justify-between px-5 py-4"
+        style={{ borderBottom: `1px solid ${GLASS_BORDER}` }}
       >
         <div>
-          <span className="text-white font-semibold text-base">Market Signals</span>
-          <p className="text-[10px] font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>
-            3 active · 2m ago
-          </p>
+          <h3 className="text-[13px] font-semibold text-white tracking-tight">Market Signals</h3>
+          <p className="text-[10px] text-slate-600 mt-0.5 font-mono">3 active · live</p>
         </div>
         <div
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-          style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}
+          style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}
         >
           <motion.div
             animate={{ opacity: [1, 0.2, 1] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="w-1.5 h-1.5 rounded-full bg-green-500"
+            className="w-1.5 h-1.5 rounded-full bg-emerald-500"
           />
-          <span className="text-[10px] font-bold text-green-500 font-mono">LIVE</span>
+          <span className="text-[10px] font-bold text-emerald-500 font-mono">LIVE</span>
         </div>
       </div>
 
-      {/* Signal list */}
+      {/* Signals */}
       <div>
-        {SIGNALS.map((s) => (
+        {SIGNALS.map(s => (
           <SignalRow key={s.id} s={s} onApply={() => onApplySuggestion(s.token)} />
         ))}
       </div>
@@ -193,14 +182,10 @@ export default function AITradeInsights({
       {/* Footer */}
       <div
         className="px-5 py-3 flex items-center justify-between"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+        style={{ borderTop: `1px solid ${GLASS_BORDER}` }}
       >
-        <span className="text-[9px] font-mono uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.2)" }}>
-          Not financial advice
-        </span>
-        <span className="text-[9px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
-          91.2% accuracy
-        </span>
+        <span className="text-[9px] text-slate-700 font-mono uppercase tracking-wider">AI · Not financial advice</span>
+        <span className="text-[9px] text-slate-700 font-mono">91.2% avg accuracy</span>
       </div>
     </div>
   );
