@@ -111,10 +111,11 @@ export function LinearBento() {
                ))}
              </div>
              {/* Scan line */}
+             {/* TODO: Refine this scan line micro-animation further to be perfectly smooth across all devices */}
              <motion.div 
-               animate={{ y: [0, 100, 0] }} 
-               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-               className="absolute left-0 right-0 h-0.5 bg-cyan-400 shadow-[0_0_10px_#22d3ee] top-10 opacity-50"
+               animate={{ top: ["0%", "100%", "0%"] }} 
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute left-0 right-0 h-[1px] bg-cyan-400/50 shadow-[0_0_15px_#22d3ee] opacity-80"
              />
           </div>
         </BentoCard>
@@ -146,11 +147,13 @@ export function LinearBento() {
                  <span>Simulating 2022-2023...</span>
                  <span>RSI + MACD Cross</span>
                </div>
-               <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+               <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                 {/* TODO: Progress bar animation could be synced with actual data parsing in the future */}
                  <motion.div
-                   animate={{ width: ["0%", "100%", "0%"] }}
-                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                   className="h-full rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
+                   initial={{ width: "0%" }}
+                   animate={{ width: "100%" }}
+                   transition={{ duration: 3, repeat: Infinity, ease: "circInOut", repeatDelay: 0.5 }}
+                   className="h-full rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.3)]" 
                  />
                </div>
              </div>
