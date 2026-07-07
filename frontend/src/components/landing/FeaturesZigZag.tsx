@@ -1,7 +1,73 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, useInView, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 /* ─── Reusable animation wrappers ─── */
+function TiltCard({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 400, damping: 40 });
+  const mouseYSpring = useSpring(y, { stiffness: 400, damping: 40 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["2deg", "-2deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-2deg", "2deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      className="relative w-full h-full perspective-1000 group cursor-crosshair"
+    >
+      {/* Background Spotlight following the mouse inside the card */}
+      <motion.div
+        className="pointer-events-none absolute -inset-px z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[28px] mix-blend-screen"
+        style={{
+          background: useTransform(
+            [x, y],
+            ([xVal, yVal]) => `radial-gradient(circle at ${(xVal as number + 0.5) * 100}% ${(yVal as number + 0.5) * 100}%, rgba(255,255,255,0.06) 0%, transparent 60%)`
+          ),
+        }}
+      />
+      {children}
+    </motion.div>
+  );
+}
+
+/* ─── Reusable animation wrappers ─── */
+function PremiumPulse({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative flex h-2 w-2 items-center justify-center ${className}`}>
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75 duration-1000"></span>
+      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white"></span>
+    </div>
+  );
+}
+
 function SlideIn({ children, direction = "right", delay = 0, className = "" }: {
   children: React.ReactNode; direction?: "left" | "right"; delay?: number; className?: string;
 }) {
@@ -43,45 +109,51 @@ const WHALE_DATA = [
 ];
 
 function WhaleDemo() {
-  const [feed, setFeed] = useState(() => WHALE_DATA.slice(0, 3));
-  const idxRef = useRef(3);
+  const [feed, setFeed] = useState(() => WHALE_DATA.slice(0, 4));
+  const idxRef = useRef(4);
   useEffect(() => {
     const t = setInterval(() => {
       const next = idxRef.current % WHALE_DATA.length;
       idxRef.current = next + 1;
-      setFeed(f => [WHALE_DATA[next], ...f].slice(0, 3));
-    }, 2200);
+      setFeed(f => [WHALE_DATA[next], ...f].slice(0, 4));
+    }, 2800);
     return () => clearInterval(t);
   }, []);
 
   return (
     <div className="relative rounded-[28px] bg-[#000000] border border-white/10 p-4 shadow-2xl overflow-hidden group">
       <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full pointer-events-none opacity-20 group-hover:opacity-30 transition-opacity" />
-      <div className="relative z-10 bg-[#000000] rounded-2xl border border-white/5 p-5 shadow-inner space-y-3 min-h-[240px]">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+      <div className="relative z-10 bg-[#000000] rounded-2xl border border-white/5 p-5 shadow-inner flex flex-col h-[280px]">
+        <div className="flex items-center gap-2 mb-3">
+          <PremiumPulse />
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Whale Feed · All DEXs</span>
         </div>
-        <AnimatePresence initial={false} mode="popLayout">
-          {feed.map((row) => (
-            <motion.div key={row.id}
-              layout
-              initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 16 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${row.cls.row}`}>
+        <div className="relative flex-1 overflow-hidden" style={{ maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)" }}>
+          <AnimatePresence initial={false}>
+            {feed.map((row) => (
+              <motion.div key={row.id}
+                layout
+                initial={{ opacity: 0, scale: 0.96, y: -20, filter: "blur(4px)" }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.2 } }}
+                transition={{ type: "spring", stiffness: 400, damping: 40 }}
+                className={`flex items-center justify-between px-3 py-2.5 mb-2 rounded-xl border ${row.cls.row}`}>
               <div className="flex items-center gap-2.5">
                 <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${row.cls.badge}`}>{row.type}</span>
                 <span className="font-bold text-white text-sm">{row.token}</span>
               </div>
-              <div className="text-right">
-                <div className={`font-mono text-sm font-black ${row.cls.val}`}>{row.amt}</div>
-                <div className="text-[10px] text-slate-500">{row.time}</div>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                <div className="flex items-center gap-2.5">
+                  <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${row.cls.badge}`}>{row.type}</span>
+                  <span className="font-bold text-white text-sm">{row.token}</span>
+                </div>
+                <div className="text-right">
+                  <div className={`font-mono text-sm font-black ${row.cls.val}`}>{row.amt}</div>
+                  <div className="text-[10px] text-slate-500">{row.time}</div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
@@ -101,26 +173,21 @@ function BacktestDemo() {
     "Would recommend scaling into position over 3 tranches next time.",
   ];
 
-  const run = useCallback(() => {
-    if (running) return;
-    setProgress(0); setDone(false); setAiIdx(-1); setRunning(true);
-    let p = 0;
-    const t = setInterval(() => {
-      p += Math.random() * 10 + 5;
-      if (p >= 100) {
-        clearInterval(t);
-        setProgress(100); setRunning(false); setDone(true);
-        let i = 0;
-        const m = setInterval(() => {
-          setAiIdx(i);
-          i++;
-          if (i >= AI_MSGS.length) clearInterval(m);
-        }, 1400);
-      } else {
-        setProgress(p);
-      }
-    }, 80);
-  }, [running]);
+  useEffect(() => {
+    let t1: any, t2: any, t3: any, t4: any, t5: any;
+    const runCycle = () => {
+      setDone(false); setAiIdx(-1); setRunning(true);
+      t1 = setTimeout(() => {
+        setRunning(false); setDone(true);
+        t2 = setTimeout(() => setAiIdx(0), 400);
+        t3 = setTimeout(() => setAiIdx(1), 1800);
+        t4 = setTimeout(() => setAiIdx(2), 3200);
+        t5 = setTimeout(runCycle, 6000);
+      }, 2000);
+    };
+    runCycle();
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); };
+  }, []);
 
   return (
     <div className="relative rounded-[28px] bg-[#000000] border border-white/10 p-4 shadow-2xl overflow-hidden group">
@@ -132,14 +199,14 @@ function BacktestDemo() {
         </div>
 
         {/* Chart bars */}
-        <div className="flex items-end gap-1 h-20 w-full">
+        <div className="flex items-end gap-1 h-20 w-full overflow-hidden">
           {BT_BARS.map((h, i) => (
             <motion.div key={i}
-              initial={{ height: 0 }}
-              animate={{ height: `${(h / 110) * 100}%` }}
-              transition={{ delay: i * 0.04, duration: 0.5, ease: "easeOut" }}
+              initial={{ height: 0, opacity: 0 }}
+              animate={running || done ? { height: `${(h / 110) * 100}%`, opacity: 1 } : { height: 0, opacity: 0 }}
+              transition={{ delay: i * 0.05, type: "spring", stiffness: 200, damping: 20 }}
               className={`flex-1 rounded-t-sm relative ${i < 6 ? "bg-white/20" : "bg-white/60"}`}>
-              {i === 5 && <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] text-white whitespace-nowrap font-bold">BOTTOM</div>}
+              {i === 5 && done && <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] text-white whitespace-nowrap font-bold">BOTTOM</motion.div>}
             </motion.div>
           ))}
         </div>
@@ -147,14 +214,15 @@ function BacktestDemo() {
         {/* Progress bar */}
         <div className="space-y-1.5">
           <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-            <span>{Math.min(100, Math.round(progress))}%</span>
+            <span>{done ? "100%" : running ? "Simulating..." : "Ready"}</span>
             <span>RSI + EMA Cross</span>
           </div>
           <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
             <motion.div
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.1 }}
-              className="h-full rounded-full bg-white" />
+              initial={{ width: "0%" }}
+              animate={{ width: done ? "100%" : running ? "95%" : "0%" }}
+              transition={{ duration: running && !done ? 2 : 0.3, ease: running ? "linear" : "easeOut" }}
+              className="h-full rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
           </div>
         </div>
 
@@ -170,10 +238,6 @@ function BacktestDemo() {
           )}
         </AnimatePresence>
 
-        <button onClick={run}
-          className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${running ? "bg-white/5 text-slate-500 cursor-not-allowed" : done ? "bg-white/[0.04] border border-white/10 text-slate-400 hover:bg-white/10" : "bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)]"}`}>
-          {running ? "Simulating..." : done ? "↩ Reset & Run Again" : "▶  Run Time-Machine"}
-        </button>
       </div>
     </div>
   );
@@ -192,13 +256,25 @@ function CandleDemo() {
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">BTC/USDT · 1H</span>
           <button onClick={() => setAiOn(v => !v)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all duration-300 ${aiOn ? "bg-white border-white text-black shadow-[0_0_12px_rgba(255,255,255,0.3)]" : "bg-white/[0.04] border-white/10 text-slate-400 hover:border-white/20"}`}>
-            <span className={`w-1.5 h-1.5 rounded-full transition-colors ${aiOn ? "bg-black animate-pulse" : "bg-slate-600"}`} />
+            {aiOn ? <PremiumPulse className="!w-1.5 !h-1.5 [&>span]:bg-black" /> : <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />}
             AI Vision {aiOn ? "ON" : "OFF"}
           </button>
         </div>
 
         {/* Chart */}
         <div className="relative flex items-end gap-[3px] h-24 w-full">
+          {/* Laser Scanner */}
+          <AnimatePresence>
+            {aiOn && (
+              <motion.div
+                initial={{ top: 0, opacity: 0 }}
+                animate={{ top: ["0%", "100%", "0%"], opacity: [0, 1, 1, 0] }}
+                transition={{ duration: 3, ease: "linear", repeat: Infinity }}
+                className="absolute left-0 right-0 h-0.5 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] z-20 pointer-events-none"
+              />
+            )}
+          </AnimatePresence>
+
           {/* Support line */}
           <AnimatePresence>
             {aiOn && (
@@ -236,8 +312,8 @@ function CandleDemo() {
         {/* AI tags */}
         <AnimatePresence>
           {aiOn && (
-            <motion.div key="tags" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-              transition={{ delay: 0.3 }}
+            <motion.div key="tags" initial={{ opacity: 0, y: 16, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.9 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 25 }}
               className="grid grid-cols-3 gap-2">
               {[
                 { l: "Head & Shoulders", c: "bg-white/10 text-white border-white/20" },
@@ -279,7 +355,7 @@ export function FeaturesZigZag() {
       {/* Section Header */}
       <FadeUp className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/5 text-white text-xs font-semibold mb-6 uppercase tracking-widest">
-          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          <PremiumPulse />
           Exclusive Features
         </div>
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight leading-[1.1]">
@@ -299,11 +375,11 @@ export function FeaturesZigZag() {
           <div key={f.title} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text */}
             <FadeUp delay={0.1} className={f.flip ? "lg:order-2" : ""}>
-              <span className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border mb-6 border-white/20 bg-white/5 text-white`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-white" />
+              <span className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border mb-6 border-white/20 bg-white/5 text-white`}>
+                <PremiumPulse />
                 {f.tag}
               </span>
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-5 tracking-tight leading-tight">{f.title}</h3>
+              <h3 className="text-3xl md:text-4xl font-black mb-5 tracking-tight leading-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40">{f.title}</h3>
               <p className="text-slate-400 text-base leading-relaxed mb-8">{f.desc}</p>
               <ul className="space-y-3">
                 {f.bullets.map(b => (
@@ -317,7 +393,9 @@ export function FeaturesZigZag() {
 
             {/* Demo — rendered as component, not pre-created JSX */}
             <SlideIn direction={f.flip ? "left" : "right"} delay={0.2} className={f.flip ? "lg:order-1" : ""}>
-              <Demo />
+              <TiltCard>
+                <Demo />
+              </TiltCard>
             </SlideIn>
           </div>
         );
