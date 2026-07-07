@@ -19,7 +19,7 @@ import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
   ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, Activity
 } from "lucide-react";
-import { WhaleFeed } from "../components/dashboard/WhaleFeed";
+
 
 // ─── HELPERS ────────────────────────────────────────────────
 function fmt(n: number) {
@@ -373,10 +373,7 @@ export default function Dashboard() {
           {/* RIGHT: SIDEBAR */}
           <div className="flex flex-col gap-6">
             
-            {/* Whale Feed */}
-            <FadeIn delay={0.65} className="w-full">
-              <WhaleFeed />
-            </FadeIn>
+
 
             {/* Trending Box */}
             <FadeIn delay={0.7} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
