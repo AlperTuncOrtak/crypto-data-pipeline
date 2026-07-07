@@ -66,16 +66,17 @@ _ALLOWED_ORIGINS = _os.getenv(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://www.cryptoneko.online",
-        "https://cryptoneko.online"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from backend.routers import whale
+
+app.include_router(whale.router)
+
+
 
 
 # -----------------------
