@@ -1,3 +1,6 @@
+// ============================================================
+// pages/Dashboard.tsx  –  Premium Bento-Box Style Overhaul
+// ============================================================
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
@@ -14,8 +17,9 @@ import { useSparklines } from "../hooks/useSparklines";
 import PriceCell from "../components/ui/PriceCell";
 import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
-  ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight
+  ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, Activity
 } from "lucide-react";
+
 
 // ─── HELPERS ────────────────────────────────────────────────
 function fmt(n: number) {
@@ -40,8 +44,8 @@ function MiniSparkline({ data, up }: { data?: any[], up: boolean }) {
   
   if (!data || data.length < 2) {
     return (
-      <svg className="w-full h-8" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <polyline points="0,50 100,50" fill="none" stroke={color} strokeWidth="1" strokeDasharray="4 4" opacity={0.3}/>
+      <svg className="w-full h-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <polyline points="0,50 100,50" fill="none" stroke={color} strokeWidth="2" strokeDasharray="4 4" opacity={0.5}/>
       </svg>
     );
   }
@@ -58,15 +62,15 @@ function MiniSparkline({ data, up }: { data?: any[], up: boolean }) {
   }).join(" ");
 
   return (
-    <svg className="w-full h-8" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <svg className="w-full h-10" viewBox="0 0 100 100" preserveAspectRatio="none">
       <defs>
         <linearGradient id={`g-${up}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
       <polyline points={`0,100 ${pts} 100,100`} fill={`url(#g-${up})`} stroke="none" />
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
@@ -75,9 +79,9 @@ function MiniSparkline({ data, up }: { data?: any[], up: boolean }) {
 function ChangeBadge({ value }: { value: number }) {
   const isUp = value >= 0;
   return (
-    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-mono ${isUp ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'}`}>
-      {isUp ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
-      {Math.abs(value).toFixed(2)}%
+    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold font-mono ${isUp ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+      {isUp ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+      {isUp ? "+" : ""}{value.toFixed(2)}%
     </span>
   );
 }
@@ -91,7 +95,7 @@ function TH({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider ${align === "right" ? "ml-auto" : ""} ${active ? "text-[#f7f8f8]" : "text-[#8a8f98] hover:text-[#d0d6e0]"} transition-colors`}
+      className={`flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider ${align === "right" ? "ml-auto" : ""} ${active ? "text-white" : "text-gray-500 hover:text-gray-300"} transition-colors`}
     >
       {label}
       {active && (
@@ -106,13 +110,19 @@ function TH({
 // ─── FADE IN ─────────────────────────────────────────────────
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-20px" });
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 10 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-      transition={{ duration: 0.4, delay, ease: "easeOut" }}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={{
+        hidden: { opacity: 0, y: 20, filter: "blur(5px)" },
+        visible: { 
+          opacity: 1, y: 0, filter: "blur(0px)",
+          transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] } 
+        }
+      }}
       className={className}
     >
       {children}
@@ -153,8 +163,8 @@ export default function Dashboard() {
   const ethDom = statsData?.data?.market_cap_percentage?.eth?.toFixed(1) || calcEthDom;
   const fngValue = fng ? parseInt(fng.value) : null;
   
+  const fngColor = fngValue == null ? "#888" : fngValue <= 25 ? "#ef4444" : fngValue <= 45 ? "#f97316" : fngValue <= 55 ? "#eab308" : fngValue <= 75 ? "#22c55e" : "#10b981";
   const fngLabel = fngValue == null ? "—" : fngValue <= 25 ? "Extreme Fear" : fngValue <= 45 ? "Fear" : fngValue <= 55 ? "Neutral" : fngValue <= 75 ? "Greed" : "Extreme Greed";
-  const fngColorClass = fngValue == null ? "text-gray-500" : fngValue <= 45 ? "text-rose-500" : fngValue <= 55 ? "text-amber-500" : "text-emerald-500";
 
   const mcapFlow = getFlowData(totalMcap);
   const volFlow = getFlowData(totalVolume);
@@ -185,91 +195,120 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans overflow-x-hidden pt-24 pb-20 px-6 lg:px-12 relative">
-      <div className="max-w-[1280px] mx-auto">
+    <div className="min-h-screen bg-[#0a0b0d] text-white selection:bg-[#533afd] selection:text-white font-sans overflow-x-hidden pt-24 pb-20 px-6 lg:px-12 relative">
+      
+      {/* Background Mesh */}
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
+
+      <div className="relative z-10 max-w-[1400px] mx-auto">
         
         {/* HEADER */}
-        <FadeIn delay={0.1} className="flex items-end justify-between mb-8">
+        <FadeIn delay={0.1} className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-[#f7f8f8]">Market Overview</h1>
-            <p className="text-[#8a8f98] text-sm mt-1">Real-time market data & sentiment.</p>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-2">Market Overview</h1>
+            <p className="text-gray-400 font-medium text-sm md:text-base">Real-time algorithmic data and sentiment.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[#27a644]/10 border border-[#27a644]/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#27a644] animate-pulse"></span>
-              <span className="text-[10px] font-bold tracking-widest text-[#27a644] uppercase">Live</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/5 border border-green-500/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+              <span className="text-[10px] font-bold tracking-widest text-green-400/80 uppercase">Live</span>
             </div>
-            <button onClick={() => navigate("/analysis/ai")} className="px-3 py-1.5 rounded-md bg-[var(--bg-surface)] border border-[var(--border-soft)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-mid)] transition-colors flex items-center gap-2 text-xs font-medium text-[#f7f8f8]">
-              <Brain size={14} className="text-[#5e6ad2]" /> AI Signals
-            </button>
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("/analysis/ai")} className="px-5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-2 text-sm font-bold shadow-xl">
+              <Brain size={16} className="text-[var(--accent)]" /> AI Signals
+            </motion.button>
           </div>
         </FadeIn>
 
         {/* BENTO STATS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <FadeIn delay={0.2}>
-            <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-soft)] p-5 flex flex-col h-full hover:border-[var(--border-mid)] transition-colors">
-              <div className="text-[11px] font-medium text-[#8a8f98] uppercase tracking-wider mb-2">Global Market Cap</div>
-              <div className="text-2xl font-mono text-[#f7f8f8] tracking-tight">
-                <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
-              </div>
-              <div className="text-[11px] text-[#62666d] mt-auto pt-4">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
-            </div>
-          </FadeIn>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.2} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(16,185,129,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#10b981] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#10b981] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Global Market Cap</div>
+                 <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
+                   <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
+                 </div>
+                 <div className="text-sm text-gray-400 mt-2 font-medium">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
+               </div>
+            </FadeIn>
+          </motion.div>
 
-          <FadeIn delay={0.3}>
-            <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-soft)] p-5 flex flex-col h-full hover:border-[var(--border-mid)] transition-colors">
-              <div className="text-[11px] font-medium text-[#8a8f98] uppercase tracking-wider mb-2">24h Volume</div>
-              <div className="text-2xl font-mono text-[#f7f8f8] tracking-tight">
-                <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
-              </div>
-              <div className="text-[11px] text-[#62666d] mt-auto pt-4">Across all markets</div>
-            </div>
-          </FadeIn>
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.3} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(59,130,246,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#3b82f6] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3b82f6] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">24h Volume</div>
+                 <div className="text-3xl md:text-4xl font-black font-mono text-white tracking-tighter">
+                   <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
+                 </div>
+                 <div className="text-sm text-gray-400 mt-2 font-medium">Across all markets</div>
+               </div>
+            </FadeIn>
+          </motion.div>
 
-          <FadeIn delay={0.4}>
-            <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-soft)] p-5 flex flex-col h-full hover:border-[var(--border-mid)] transition-colors">
-              <div className="text-[11px] font-medium text-[#8a8f98] uppercase tracking-wider mb-2">BTC Dominance</div>
-              <div className="text-2xl font-mono text-[#f7f8f8] tracking-tight">{btcDom}%</div>
-              <div className="text-[11px] text-[#62666d] mt-auto pt-4">ETH: {ethDom}%</div>
-            </div>
-          </FadeIn>
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.4} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(245,158,11,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#f59e0b] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#f59e0b] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Dominance</div>
+                 <div className="flex items-end gap-2">
+                   <div className="text-3xl md:text-4xl font-black font-mono text-orange-400 tracking-tighter">{btcDom}%</div>
+                   <div className="text-sm font-bold text-gray-500 mb-1">BTC</div>
+                 </div>
+                 <div className="text-sm text-gray-400 mt-2 font-medium">ETH: <span className="text-white font-mono">{ethDom}%</span></div>
+               </div>
+            </FadeIn>
+          </motion.div>
 
-          <FadeIn delay={0.5}>
-            <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-soft)] p-5 flex flex-col h-full hover:border-[var(--border-mid)] transition-colors">
-              <div className="text-[11px] font-medium text-[#8a8f98] uppercase tracking-wider mb-2">Fear & Greed</div>
-              <div className={`text-2xl font-mono tracking-tight ${fngColorClass}`}>
-                {fngValue !== null ? fngValue : "—"}
-              </div>
-              <div className="text-[11px] text-[#62666d] mt-auto pt-4">{fngLabel}</div>
-            </div>
-          </FadeIn>
+          <motion.div whileHover={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }} className="md:col-span-1">
+            <FadeIn delay={0.5} className="relative overflow-hidden rounded-[32px] bg-[#16181c] border border-white/10 p-6 md:p-8 flex flex-col justify-between group shadow-[0_0_40px_rgba(139,92,246,0.1)] h-full">
+               <div className="absolute inset-0 bg-gradient-to-b from-[#8b5cf6] to-transparent opacity-10 rounded-[32px] blur-xl group-hover:opacity-20 transition-opacity duration-500"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#8b5cf6] opacity-10 blur-2xl rounded-full"></div>
+               
+               <div className="relative z-10">
+                 <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Fear & Greed</div>
+                 {fngValue !== null ? (
+                   <div className="flex items-center gap-4">
+                     <div className="relative w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.05) ${fngValue}% 100%)`, boxShadow: `0 0 20px ${fngColor}30` }}>
+                       <div className="absolute inset-[3px] rounded-full bg-[#16181c] flex items-center justify-center">
+                         <span className="text-lg font-black font-mono text-white">{fngValue}</span>
+                       </div>
+                     </div>
+                     <div>
+                       <div className="text-lg font-bold" style={{ color: fngColor }}>{fngLabel}</div>
+                       <div className="text-xs text-gray-400 mt-1 font-medium">Market Sentiment</div>
+                     </div>
+                   </div>
+                 ) : (
+                   <div className="text-3xl font-black text-gray-600">—</div>
+                 )}
+               </div>
+            </FadeIn>
+          </motion.div>
         </div>
 
         {/* MAIN TWO-COLUMN LAYOUT */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
           
           {/* LEFT: TABLE */}
-          <FadeIn delay={0.6} className="bg-[var(--bg-surface)] border border-[var(--border-soft)] rounded-xl overflow-hidden flex flex-col">
+          <FadeIn delay={0.6} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-2xl flex flex-col">
             {/* Toolbar */}
-            <div className="flex items-center justify-between p-4 border-b border-[var(--border-soft)] flex-wrap gap-4">
-              <div className="relative w-full max-w-[200px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#8a8f98]" size={14} />
-                <input 
-                  type="text" 
-                  value={search} 
-                  onChange={e => setSearch(e.target.value)} 
-                  placeholder="Filter assets..." 
-                  className="w-full bg-[var(--bg-base)] border border-[var(--border-soft)] rounded-md py-1.5 pl-8 pr-3 text-[13px] text-[#f7f8f8] placeholder-[#62666d] focus:outline-none focus:border-[#5e6ad2] transition-colors" 
-                />
+            <div className="flex items-center justify-between p-6 border-b border-white/5 flex-wrap gap-4 bg-white/[0.01]">
+              <div className="relative w-full max-w-[240px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search assets..." className="w-full bg-black/40 border border-white/5 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--accent)]/50 transition-colors" />
               </div>
-              <div className="flex items-center gap-1 bg-[var(--bg-base)] p-1 rounded-md border border-[var(--border-soft)]">
+              <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
                 {([ { key: "all", label: "All" }, { key: "gainers", label: "Gainers" }, { key: "losers", label: "Losers" }, { key: "trending", label: "Trending" } ] as const).map(tab => (
-                  <button 
-                    key={tab.key} 
-                    onClick={() => setActiveTab(tab.key)} 
-                    className={`px-3 py-1 rounded text-[12px] font-medium transition-colors ${activeTab === tab.key ? "bg-[var(--bg-surface)] text-[#f7f8f8] shadow-sm border border-[var(--border-soft)]" : "text-[#8a8f98] hover:text-[#d0d6e0] border border-transparent"}`}
-                  >
+                  <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${activeTab === tab.key ? "bg-white/10 text-white shadow-sm" : "text-gray-500 hover:text-white"}`}>
                     {tab.label}
                   </button>
                 ))}
@@ -278,46 +317,51 @@ export default function Dashboard() {
 
             {/* Table wrapper for scroll */}
             <div className="overflow-x-auto">
-              <div className="min-w-[700px]">
+              <div className="min-w-[800px]">
                 {/* Header */}
-                <div className="grid grid-cols-[40px_2.5fr_100px_100px_120px_120px_80px] gap-4 px-4 py-3 border-b border-[var(--border-soft)] bg-[var(--bg-base)]">
+                <div className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/5 bg-black/20">
                   <TH label="#" active={sortKey === "rank"} direction={sortDir} onClick={() => toggleSort("rank")} />
                   <TH label="Asset" active={sortKey === "rank"} direction={sortDir} onClick={() => toggleSort("rank")} />
                   <TH label="Price" align="right" active={sortKey === "price"} direction={sortDir} onClick={() => toggleSort("price")} />
-                  <TH label="24h" align="right" active={sortKey === "change"} direction={sortDir} onClick={() => toggleSort("change")} />
+                  <TH label="24h %" align="right" active={sortKey === "change"} direction={sortDir} onClick={() => toggleSort("change")} />
                   <TH label="Volume" align="right" active={sortKey === "volume"} direction={sortDir} onClick={() => toggleSort("volume")} />
-                  <TH label="Market Cap" align="right" active={sortKey === "mcap"} direction={sortDir} onClick={() => toggleSort("mcap")} />
-                  <div className="text-[11px] font-medium text-[#8a8f98] uppercase tracking-wider text-right pr-2">Trend</div>
+                  <TH label="Mkt Cap" align="right" active={sortKey === "mcap"} direction={sortDir} onClick={() => toggleSort("mcap")} />
+                  <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right pr-2">7d Trend</div>
                 </div>
 
                 {/* Body */}
                 <div className="flex flex-col">
                   {filtered.length === 0 ? (
-                    <div className="p-8 text-center text-[#8a8f98] text-[13px]">No matching assets found.</div>
+                    <div className="p-12 text-center text-gray-500 font-medium">No results found.</div>
                   ) : (
                     filtered.slice(0, 15).map((coin: any, i: number) => {
                       const change = Number(coin.price_change_percentage_24h) || 0;
                       const isUp = change >= 0;
                       return (
-                        <div
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-20px" }}
+                          transition={{ delay: (i % 10) * 0.05 }}
+                          whileHover={{ scale: 0.995, backgroundColor: "rgba(255,255,255,0.03)", transition: { type: "spring", stiffness: 400, damping: 30 } }}
                           key={coin.symbol + i}
                           onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                          className="grid grid-cols-[40px_2.5fr_100px_100px_120px_120px_80px] gap-4 px-4 py-3 border-b border-[var(--border-soft)] last:border-0 items-center cursor-pointer hover:bg-[var(--bg-hover)] transition-colors group"
+                          className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/[0.02] items-center cursor-pointer group"
                         >
-                          <div className="text-[#62666d] font-mono text-[13px]">{coin.market_cap_rank || i + 1}</div>
+                          <div className="text-gray-500 font-mono text-sm">{coin.market_cap_rank || i + 1}</div>
                           <div className="flex items-center gap-3">
-                            {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-5 h-5 rounded-sm" /> : <div className="w-5 h-5 rounded-sm bg-[var(--border-soft)] flex items-center justify-center text-[10px] font-bold">{coin.symbol?.[0]}</div>}
-                            <div className="flex items-baseline gap-2">
-                              <div className="font-medium text-[#f7f8f8] text-[13px] group-hover:text-[#5e6ad2] transition-colors">{coin.name}</div>
-                              <div className="text-[11px] text-[#8a8f98] font-mono">{coin.symbol?.toUpperCase()}</div>
+                            {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">{coin.symbol?.[0]}</div>}
+                            <div>
+                              <div className="font-bold text-white group-hover:text-[var(--accent)] transition-colors">{coin.name}</div>
+                              <div className="text-xs text-gray-500 font-mono">{coin.symbol?.toUpperCase()}</div>
                             </div>
                           </div>
-                          <div className="text-right text-[13px] text-[#f7f8f8] font-mono"><PriceCell price={coin.current_price} /></div>
+                          <div className="text-right"><PriceCell price={coin.current_price} /></div>
                           <div className="text-right flex justify-end"><ChangeBadge value={change} /></div>
-                          <div className="text-right font-mono text-[#d0d6e0] text-[13px]">{fmt(coin.total_volume)}</div>
-                          <div className="text-right font-mono text-[#d0d6e0] text-[13px]">{fmt(coin.market_cap)}</div>
+                          <div className="text-right font-mono text-gray-300 text-sm">{fmt(coin.total_volume)}</div>
+                          <div className="text-right font-mono text-gray-300 text-sm">{fmt(coin.market_cap)}</div>
                           <div className="pr-2"><MiniSparkline data={sparklineData?.[coin.symbol?.toUpperCase()]} up={isUp} /></div>
-                        </div>
+                        </motion.div>
                       );
                     })
                   )}
@@ -327,69 +371,79 @@ export default function Dashboard() {
           </FadeIn>
 
           {/* RIGHT: SIDEBAR */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             
+
+
             {/* Trending Box */}
-            <FadeIn delay={0.7} className="bg-[var(--bg-surface)] border border-[var(--border-soft)] rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between p-3 border-b border-[var(--border-soft)]">
+            <FadeIn delay={0.7} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
+              <div className="flex items-center justify-between p-5 border-b border-white/5">
                 <div className="flex items-center gap-2">
-                  <Flame size={14} className="text-orange-500" />
-                  <span className="text-[13px] font-medium text-[#f7f8f8]">Trending</span>
+                  <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+                    <Flame size={16} className="text-orange-500" />
+                  </div>
+                  <span className="font-bold text-white tracking-tight">Trending</span>
                 </div>
-                <button onClick={() => navigate("/market")} className="text-[11px] font-medium text-[#8a8f98] hover:text-[#d0d6e0] transition-colors">View all</button>
+                <button onClick={() => navigate("/market")} className="text-xs font-bold text-gray-500 hover:text-white transition-colors">View all</button>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col p-2">
                 {(safeTrending).slice(0, 5).map((coin: any, i: number) => (
-                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 border-b border-[var(--border-soft)] last:border-0 cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-[11px] text-[#62666d] font-mono w-3">{i + 1}</span>
-                      {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-4 h-4 rounded-sm" /> : <div className="w-4 h-4 rounded-sm bg-[var(--border-soft)]" />}
-                      <div className="font-medium text-[13px] text-[#d0d6e0]">{coin.symbol?.toUpperCase()}</div>
+                  <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-gray-600 font-mono w-4">{i + 1}</span>
+                      {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-6 h-6 rounded-full bg-white/5" /> : <div className="w-6 h-6 rounded-full bg-white/10" />}
+                      <div className="font-bold text-sm text-gray-300">{coin.symbol?.toUpperCase()}</div>
                     </div>
                     {coin.price_change_percentage_24h != null && <ChangeBadge value={Number(coin.price_change_percentage_24h)} />}
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </FadeIn>
 
             {/* Gainers Box */}
-            <FadeIn delay={0.8} className="bg-[var(--bg-surface)] border border-[var(--border-soft)] rounded-xl overflow-hidden">
-              <div className="flex items-center p-3 border-b border-[var(--border-soft)] gap-2">
-                <TrendingUp size={14} className="text-green-500" />
-                <span className="text-[13px] font-medium text-[#f7f8f8]">Top Gainers</span>
+            <FadeIn delay={0.8} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
+              <div className="flex items-center p-5 border-b border-white/5 gap-2">
+                <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
+                  <TrendingUp size={16} className="text-green-500" />
+                </div>
+                <span className="font-bold text-white tracking-tight">Top Gainers</span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col p-2">
                 {(safeGainers).slice(0, 5).map((coin: any, i: number) => (
-                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 border-b border-[var(--border-soft)] last:border-0 cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
-                    <div className="flex items-center gap-2.5">
-                      {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-4 h-4 rounded-sm" /> : <div className="w-4 h-4 rounded-sm bg-[var(--border-soft)]" />}
-                      <div className="flex flex-col">
-                        <div className="font-medium text-[13px] text-[#d0d6e0]">{coin.symbol?.toUpperCase()}</div>
+                  <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3">
+                      {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
+                      <div>
+                        <div className="font-bold text-sm text-gray-300">{coin.name}</div>
+                        <div className="text-xs font-mono text-gray-500">{fmt(coin.current_price)}</div>
                       </div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </FadeIn>
 
             {/* Losers Box */}
-            <FadeIn delay={0.9} className="bg-[var(--bg-surface)] border border-[var(--border-soft)] rounded-xl overflow-hidden">
-              <div className="flex items-center p-3 border-b border-[var(--border-soft)] gap-2">
-                <TrendingDown size={14} className="text-red-500" />
-                <span className="text-[13px] font-medium text-[#f7f8f8]">Top Losers</span>
+            <FadeIn delay={0.9} className="bg-[#16181c] border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-xl">
+              <div className="flex items-center p-5 border-b border-white/5 gap-2">
+                <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <TrendingDown size={16} className="text-red-500" />
+                </div>
+                <span className="font-bold text-white tracking-tight">Top Losers</span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col p-2">
                 {(safeLosers).slice(0, 5).map((coin: any, i: number) => (
-                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 border-b border-[var(--border-soft)] last:border-0 cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
-                    <div className="flex items-center gap-2.5">
-                      {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-4 h-4 rounded-sm" /> : <div className="w-4 h-4 rounded-sm bg-[var(--border-soft)]" />}
-                      <div className="flex flex-col">
-                        <div className="font-medium text-[13px] text-[#d0d6e0]">{coin.symbol?.toUpperCase()}</div>
+                  <motion.div whileHover={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)", transition: { type: "spring", stiffness: 400, damping: 25 } }} key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3">
+                      {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
+                      <div>
+                        <div className="font-bold text-sm text-gray-300">{coin.name}</div>
+                        <div className="text-xs font-mono text-gray-500">{fmt(coin.current_price)}</div>
                       </div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </FadeIn>
