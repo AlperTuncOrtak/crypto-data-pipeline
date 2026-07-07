@@ -42,29 +42,29 @@
 
 /* ── BASE THEMES ── */
 :root, [data-theme="midnight"] {
-  --bg-base:       #000000;
-  --bg-surface:    rgba(255, 255, 255, 0.03);
-  --bg-elevated:   rgba(255, 255, 255, 0.06);
-  --bg-card:       rgba(255, 255, 255, 0.03);
-  --bg-hover:      rgba(255, 255, 255, 0.05);
+  --bg-base:       #010102;
+  --bg-surface:    #0f1011;
+  --bg-elevated:   #141516;
+  --bg-card:       #0f1011;
+  --bg-hover:      #18191a;
 
-  --border:        rgba(255, 255, 255, 0.08);
-  --border-soft:   rgba(255, 255, 255, 0.05);
-  --border-mid:    rgba(255, 255, 255, 0.12);
-  --border-focus:  rgba(34, 211, 238, 0.40);
+  --border:        #34343a;
+  --border-soft:   #23252a;
+  --border-mid:    #3e3e44;
+  --border-focus:  #5e6ad2;
 }
 
 [data-theme="dark"] {
-  --bg-base:       #000000;
-  --bg-surface:    rgba(255, 255, 255, 0.03);
-  --bg-elevated:   rgba(255, 255, 255, 0.06);
-  --bg-card:       rgba(255, 255, 255, 0.03);
-  --bg-hover:      rgba(255, 255, 255, 0.05);
+  --bg-base:       #010102;
+  --bg-surface:    #0f1011;
+  --bg-elevated:   #141516;
+  --bg-card:       #0f1011;
+  --bg-hover:      #18191a;
 
-  --border:        rgba(255, 255, 255, 0.08);
-  --border-soft:   rgba(255, 255, 255, 0.05);
-  --border-mid:    rgba(255, 255, 255, 0.12);
-  --border-focus:  rgba(34, 211, 238, 0.40);
+  --border:        #34343a;
+  --border-soft:   #23252a;
+  --border-mid:    #3e3e44;
+  --border-focus:  #5e6ad2;
 }
 
 /* ── ACCENT COLORS ── */

@@ -133,17 +133,12 @@ function AppInner() {
       {location.pathname !== "/onboarding" && <CoinTicker />}
 
       {location.pathname !== "/onboarding" && location.pathname !== "/" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
-      {location.pathname !== "/onboarding" && location.pathname !== "/" && (
-        <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
-          <div className="w-[800px] h-[300px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute -top-[100px] left-[10%]"></div>
-          <div className="w-[600px] h-[250px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute top-[50px] right-[10%]"></div>
-        </div>
-      )}
+
       <main
         className={location.pathname === "/" || location.pathname === "/onboarding" ? "pb-20 md:pb-0" : "main-content pb-20 md:pb-0"}
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
-        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} /><Route path="/swap" element={<Navigate to="/portfolio?tab=swap" replace />} />
+        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#010102]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} /><Route path="/swap" element={<Navigate to="/portfolio?tab=swap" replace />} />
           {/* Public */}
           <Route
             path="/"
