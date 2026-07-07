@@ -4,98 +4,31 @@ import { useTranslation } from "react-i18next";
 import { Sparkles, X, TrendingUp, TrendingDown, Activity, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// ─── MOCK DATA ───────────────────────────────────────────────────
-const NARRATIVES = [
-  {
-    id: "meme",
-    name: "Memecoins",
-    size: 300,
-    color: "#e11d48", // Rose
-    sentiment: "Extreme Greed",
-    score: 98,
-    coins: ["PEPE", "WIF", "DOGE"],
-    summary: "Retail liquidity has rotated aggressively into Solana and Base memecoins, creating massive price swings and record DEX volume.",
-    x: "35%",
-    y: "15%",
-    delay: 0.5,
-    trend: "up"
-  },
-  {
-    id: "ai",
-    name: "Artificial Intelligence",
-    size: 240,
-    color: "#7c3aed", // Purple
-    sentiment: "Bullish",
-    score: 92,
-    coins: ["FET", "RNDR", "TAO"],
-    summary: "Recent announcements from OpenAI and major tech earnings have reignited massive volume across the entire AI crypto sector.",
-    x: "10%",
-    y: "40%",
-    delay: 0,
-    trend: "up"
-  },
-  {
-    id: "l2",
-    name: "L2 Scaling",
-    size: 220,
-    color: "#d97706", // Amber
-    sentiment: "Bearish",
-    score: 42,
-    coins: ["ARB", "OP", "STRK"],
-    summary: "Despite technological advancements (Dencun), token unlocks and fragmented liquidity have suppressed price action in major Layer 2s.",
-    x: "65%",
-    y: "10%",
-    delay: 0.6,
-    trend: "down"
-  },
-  {
-    id: "rwa",
-    name: "Real World Assets",
-    size: 180,
-    color: "#10b981", // Emerald
-    sentiment: "Bullish",
-    score: 85,
-    coins: ["ONDO", "PENDLE", "LINK"],
-    summary: "Institutional tokenized funds and expanding TradFi interest are driving real-world asset protocols to new highs.",
-    x: "70%",
-    y: "45%",
-    delay: 0.2,
-    trend: "up"
-  },
-  {
-    id: "depin",
-    name: "DePIN",
-    size: 150,
-    color: "#2563eb", // Blue
-    sentiment: "Neutral",
-    score: 65,
-    coins: ["FIL", "HNT", "AKT"],
-    summary: "Decentralized Physical Infrastructure Networks are seeing steady growth as hardware mining models prove sustainable.",
-    x: "20%",
-    y: "75%",
-    delay: 0.3,
-    trend: "up"
-  },
-  {
-    id: "gaming",
-    name: "GameFi",
-    size: 130,
-    color: "#059669", // Green
-    sentiment: "Neutral",
-    score: 55,
-    coins: ["IMX", "GALA", "RON"],
-    summary: "The AAA gaming sector is quietly building. Several major titles are entering beta phases this quarter.",
-    x: "55%",
-    y: "70%",
-    delay: 0.8,
-    trend: "up"
-  }
-];
+// Mock arrays removed. Data now fetched from API.
 
 export default function Narratives() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<any>(null);
+  const [narratives, setNarratives] = useState<any[]>([]);
+
+  import("react").then((React) => {
+    React.useEffect(() => {
+      const fetchNarratives = async () => {
+        try {
+          const apiUrl = import.meta.env.DEV ? "http://localhost:8000" : `https://${window.location.host}`;
+          const res = await fetch(`${apiUrl}/market/narratives`);
+          if (res.ok) {
+            const data = await res.json();
+            setNarratives(data);
+          }
+        } catch (e) {
+          console.error("Failed to fetch narratives", e);
+        }
+      };
+      fetchNarratives();
+    }, []);
+  });
 
   return (
     <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-10 px-6 lg:px-12 overflow-hidden font-sans">
@@ -134,7 +67,7 @@ export default function Narratives() {
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
           <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)", backgroundSize: "30px 30px" }}></div>
 
-          {NARRATIVES.map((orb) => {
+          {narratives.map((orb) => {
             const isSelected = selected?.id === orb.id;
             const isFaded = selected && !isSelected;
 

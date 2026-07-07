@@ -97,6 +97,56 @@ def market(limit: int = 20):
     return get_latest_market(limit)
 
 
+from backend.services.leaderboard_service import generate_leaderboard
+
+@app.get("/portfolio/leaderboard")
+def get_leaderboard():
+    """Returns gamified leaderboard of top simulated traders."""
+    return generate_leaderboard()
+
+@app.get("/market/narratives")
+def get_narratives():
+    """Returns dynamically generated market narratives/sectors."""
+    # We will generate it right here or from market_service
+    import random
+    from datetime import datetime
+    seed = int(datetime.utcnow().strftime('%Y%m%d'))
+    rng = random.Random(seed)
+    
+    narratives = [
+        {"id": "meme", "name": "Memecoins", "color": "#e11d48", "coins": ["PEPE", "WIF", "DOGE"], "summary": "Retail liquidity continues to rotate aggressively into memecoins."},
+        {"id": "ai", "name": "Artificial Intelligence", "color": "#7c3aed", "coins": ["FET", "RNDR", "TAO"], "summary": "Recent tech earnings have reignited volume across the AI crypto sector."},
+        {"id": "l2", "name": "L2 Scaling", "color": "#d97706", "coins": ["ARB", "OP", "STRK"], "summary": "Token unlocks and fragmented liquidity suppress price action in major Layer 2s."},
+        {"id": "rwa", "name": "Real World Assets", "color": "#10b981", "coins": ["ONDO", "PENDLE", "LINK"], "summary": "Institutional tokenized funds drive real-world asset protocols."},
+        {"id": "depin", "name": "DePIN", "color": "#2563eb", "coins": ["FIL", "HNT", "AKT"], "summary": "DePIN networks see steady growth as hardware mining models prove sustainable."},
+        {"id": "gaming", "name": "GameFi", "color": "#059669", "coins": ["IMX", "GALA", "RON"], "summary": "AAA gaming sector is quietly building with several titles entering beta."}
+    ]
+    
+    for n in narratives:
+        n["size"] = rng.randint(120, 300)
+        n["score"] = rng.randint(30, 99)
+        if n["score"] > 80:
+            n["sentiment"] = "Extreme Greed"
+            n["trend"] = "up"
+        elif n["score"] > 60:
+            n["sentiment"] = "Bullish"
+            n["trend"] = "up"
+        elif n["score"] > 40:
+            n["sentiment"] = "Neutral"
+            n["trend"] = "neutral"
+        else:
+            n["sentiment"] = "Bearish"
+            n["trend"] = "down"
+            
+        n["x"] = f"{rng.randint(10, 80)}%"
+        n["y"] = f"{rng.randint(10, 80)}%"
+        n["delay"] = round(rng.uniform(0, 0.8), 1)
+        
+    # Sort by size descending
+    narratives.sort(key=lambda x: x["size"], reverse=True)
+    return narratives
+
+
 @app.get("/market/gainers")
 def gainers(limit: int = 5):
     """24h en cok yukselen coinler."""
