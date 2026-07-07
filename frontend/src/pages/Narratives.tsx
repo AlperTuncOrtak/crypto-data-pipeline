@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Sparkles, X, TrendingUp, TrendingDown, Activity, ArrowRight } from "lucide-react";
@@ -12,23 +12,21 @@ export default function Narratives() {
   const [selected, setSelected] = useState<any>(null);
   const [narratives, setNarratives] = useState<any[]>([]);
 
-  import("react").then((React) => {
-    React.useEffect(() => {
-      const fetchNarratives = async () => {
-        try {
-          const apiUrl = import.meta.env.DEV ? "http://localhost:8000" : `https://${window.location.host}`;
-          const res = await fetch(`${apiUrl}/market/narratives`);
-          if (res.ok) {
-            const data = await res.json();
-            setNarratives(data);
-          }
-        } catch (e) {
-          console.error("Failed to fetch narratives", e);
+  useEffect(() => {
+    const fetchNarratives = async () => {
+      try {
+        const apiUrl = import.meta.env.DEV ? "http://localhost:8000" : `https://${window.location.host}`;
+        const res = await fetch(`${apiUrl}/market/narratives`);
+        if (res.ok) {
+          const data = await res.json();
+          setNarratives(data);
         }
-      };
-      fetchNarratives();
-    }, []);
-  });
+      } catch (e) {
+        console.error("Failed to fetch narratives", e);
+      }
+    };
+    fetchNarratives();
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-10 px-6 lg:px-12 overflow-hidden font-sans">
