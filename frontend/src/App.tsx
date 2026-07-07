@@ -266,7 +266,7 @@ function AppInner() {
         </Routes></Suspense></main>
       
       {location.pathname !== "/onboarding" && <MobileNav />}
-      {location.pathname !== "/onboarding" && <Footer />}
+      {location.pathname !== "/onboarding" && location.pathname !== "/" && <Footer />}
 
       <AIChatWidget />
 
