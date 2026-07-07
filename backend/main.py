@@ -551,15 +551,15 @@ ANALYSIS RULES:
 @app.post("/ai/chat")
 def ai_chat(payload: dict):
     """
-    Genel amaçlı AI kripto asistanı.
-    Body: { message: str, history?: [{role, content}] }
-    Groq (llama-3.3-70b) → Gemini flash fallback.
-    Canlı piyasa verisi otomatik eklenir (context injection).
+    Genel amaçlı AI kripto asistanı. (Streaming)
+    Body: { message: str, history?: [{role, content}], context?: {path: str} }
     """
-    import os, json, httpx, math
+    import os, json, httpx
+    from fastapi.responses import StreamingResponse
 
     message = (payload.get("message") or "").strip()
     history = payload.get("history") or []
+    context_data = payload.get("context") or {}
 
     if not message:
         raise HTTPException(status_code=400, detail="message is required")
@@ -574,58 +574,53 @@ def ai_chat(payload: dict):
     market_ctx = ""
     try:
         from backend.services.market_service import get_latest_market
+        from backend.services.coin_service import get_coin_by_slug
+        
+        lines = ["=== LIVE MARKET SNAPSHOT ==="]
+        
+        # Eğer spesifik bir coin sayfasındaysa (Örn: /coin/solana)
+        path = context_data.get("path", "")
+        if path.startswith("/coin/"):
+            slug = path.split("/")[-1]
+            try:
+                coin_data = get_coin_by_slug(slug)
+                if coin_data:
+                    lines.append(f"USER IS CURRENTLY VIEWING: {coin_data['name']} ({coin_data['symbol'].upper()})")
+                    lines.append(f"Price: ${float(coin_data.get('current_price',0)):,.4f}")
+                    lines.append(f"24h Change: {float(coin_data.get('price_change_percentage_24h',0)):+.2f}%")
+                    lines.append(f"Market Cap: ${float(coin_data.get('market_cap',0)):,.0f}")
+                    lines.append("----------------------------")
+            except Exception:
+                pass
+
         coins = get_latest_market(limit=50)
         btc = next((c for c in coins if c.get("symbol") == "BTC"), None)
         eth = next((c for c in coins if c.get("symbol") == "ETH"), None)
 
-        gainers = sorted(
-            [c for c in coins if float(c.get("price_change_percentage_24h") or 0) > 0],
-            key=lambda c: float(c.get("price_change_percentage_24h") or 0),
-            reverse=True,
-        )[:3]
-        losers = sorted(
-            [c for c in coins if float(c.get("price_change_percentage_24h") or 0) < 0],
-            key=lambda c: float(c.get("price_change_percentage_24h") or 0),
-        )[:3]
-
-        total_vol = sum(float(c.get("total_volume") or 0) for c in coins)
-
-        lines = ["=== LIVE MARKET SNAPSHOT (right now) ==="]
         if btc:
-            lines.append(f"BTC: ${float(btc.get('current_price',0)):,.0f}  ({float(btc.get('price_change_percentage_24h',0)):+.2f}% 24h)")
+            lines.append(f"BTC: ${float(btc.get('current_price',0)):,.0f} ({float(btc.get('price_change_percentage_24h',0)):+.2f}%)")
         if eth:
-            lines.append(f"ETH: ${float(eth.get('current_price',0)):,.0f}  ({float(eth.get('price_change_percentage_24h',0)):+.2f}% 24h)")
-        lines.append(f"Total 24h Volume (top 50): ${total_vol/1e9:.2f}B")
-
-        if gainers:
-            g_str = ", ".join(f"{c['symbol']} {float(c.get('price_change_percentage_24h',0)):+.1f}%" for c in gainers)
-            lines.append(f"Top gainers: {g_str}")
-        if losers:
-            l_str = ", ".join(f"{c['symbol']} {float(c.get('price_change_percentage_24h',0)):+.1f}%" for c in losers)
-            lines.append(f"Top losers:  {l_str}")
-
+            lines.append(f"ETH: ${float(eth.get('current_price',0)):,.0f} ({float(eth.get('price_change_percentage_24h',0)):+.2f}%)")
+        
         market_ctx = "\n".join(lines)
     except Exception:
         market_ctx = ""
 
     # ── System prompt ───────────────────────────────────────────
     system_prompt = (
-        "You are CryptoNeko AI Copilot, an expert crypto market assistant embedded in a "
-        "premium analytics terminal. You have deep knowledge of DeFi, on-chain metrics, "
-        "technical analysis, tokenomics, and macro crypto trends.\n\n"
+        "You are CryptoNeko AI Copilot, a Tier-1 elite crypto market analyst. "
+        "You provide robust, data-backed insights with a professional and confident tone.\n\n"
         "Rules:\n"
-        "- Be concise but insightful. 2-4 sentences max unless asked to elaborate.\n"
-        "- Always cite the live data when relevant.\n"
-        "- Never give explicit financial advice or tell users to buy/sell.\n"
-        "- Use emoji sparingly for readability.\n"
-        "- If asked about prices, always reference the live snapshot below.\n"
-        "- Answer in the same language the user writes in (Turkish or English).\n"
+        "- Give clear, concise answers (2-4 sentences) unless deep analysis is requested.\n"
+        "- Structure your answers beautifully using markdown, bold text for key metrics.\n"
+        "- If you talk about prices, YOU MUST reference the LIVE MARKET SNAPSHOT below.\n"
+        "- DO NOT give exact price predictions (e.g. 'BTC will hit 100k tomorrow'). Instead say 'Based on current technicals, the momentum points towards...'.\n"
+        "- Always add a brief disclaimer that this is not financial advice if discussing trades.\n"
+        "- Answer in the same language the user writes in.\n"
     )
     if market_ctx:
         system_prompt += f"\n{market_ctx}\n"
 
-    # ── Mesaj geçmişi ────────────────────────────────────────────
-    # Son 8 mesajı al (context window tasarrufu)
     recent_history = history[-8:] if len(history) > 8 else history
     messages_for_api = (
         [{"role": "system", "content": system_prompt}]
@@ -633,25 +628,36 @@ def ai_chat(payload: dict):
         + [{"role": "user", "content": message}]
     )
 
-    def try_groq():
-        resp = httpx.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {GROQ_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": messages_for_api,
-                "max_tokens": 512,
-                "temperature": 0.6,
-            },
-            timeout=20.0,
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"].strip()
+    def stream_groq():
+        with httpx.Client() as client:
+            with client.stream(
+                "POST",
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {GROQ_KEY}"},
+                json={
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": messages_for_api,
+                    "max_tokens": 1024,
+                    "temperature": 0.5,
+                    "stream": True,
+                },
+                timeout=20.0,
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if line.startswith("data: "):
+                        data = line[6:]
+                        if data == "[DONE]":
+                            break
+                        try:
+                            chunk = json.loads(data)
+                            token = chunk["choices"][0]["delta"].get("content", "")
+                            if token:
+                                yield f"data: {json.dumps({'text': token})}\n\n"
+                        except Exception:
+                            pass
 
-    def try_gemini():
+    def stream_gemini():
         from google import genai
         from google.genai import types
 
@@ -662,29 +668,13 @@ def ai_chat(payload: dict):
         contents.append(types.Content(role="user", parts=[types.Part.from_text(message)]))
 
         client = genai.Client(api_key=GEMINI_KEY)
-        resp = client.models.generate_content(
+        resp = client.models.generate_content_stream(
             model="gemini-2.0-flash",
             contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt
             )
         )
-        return resp.text.strip()
-
-    reply = None
-    if GROQ_KEY:
-        try:
-            reply = try_groq()
-        except Exception:
-            pass
-
-    if reply is None and GEMINI_KEY:
-        try:
-            reply = try_gemini()
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"AI error: {str(e)}")
-
-    if reply is None:
         raise HTTPException(status_code=500, detail="All AI models failed")
 
     return {"reply": reply}

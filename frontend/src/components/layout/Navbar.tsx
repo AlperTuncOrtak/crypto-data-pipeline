@@ -65,11 +65,10 @@ const NAV_ITEMS = [
       { to: "/heatmap", label: "Market Heatmap", Icon: LayoutGrid, desc: "Visual market overview", soon: false },
       { to: "/whale", label: "Whale X-Ray", Icon: Eye, desc: "Analyze wallet portfolios", soon: false },
       { to: "/timemachine", label: "Time Machine", Icon: History, desc: "Historical backtesting", soon: false },
+      { to: "/leaderboard", label: "Leaderboard", Icon: Trophy, desc: "Top traders rankings", soon: false },
       { to: "/alerts", label: "Active Alerts", Icon: Bell, desc: "Current market alerts", soon: false },
     ],
   },
-  { to: "/leaderboard", label: "Leaderboard", Icon: Trophy,
-  ArrowDownUp, dropdown: null },
   { to: "/pro", label: "Pro", Icon: Crown, dropdown: null },
 ];
 
@@ -441,7 +440,11 @@ export default function Navbar({
                 <span style={{ fontSize: 11, color: "var(--negative)", fontFamily: "monospace", fontWeight: 600 }}>▼ {losers}</span>
               </div>
               {safeMarketData?.slice(0, 10).map((coin) => (
-                <div key={coin.symbol} className="stat-item">
+                <div 
+                  key={coin.symbol} 
+                  className="stat-item cursor-pointer hover:bg-white/5 transition-colors"
+                  onClick={() => navigate(`/coin/${coin.symbol.toLowerCase()}`)}
+                >
                   <span style={{ fontSize: 10, color: getCoinColor(coin.symbol), fontWeight: 800 }}>{coin.symbol.toUpperCase()}</span>
                   <span style={{ fontSize: 11, fontFamily: "monospace", color: "var(--text-primary)" }}>
                     ${Number(coin.current_price) < 1 ? Number(coin.current_price).toFixed(4) : Number(coin.current_price).toLocaleString()}
@@ -508,14 +511,6 @@ export default function Navbar({
           {/* RIGHT SIDE */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             
-            <button 
-              onClick={() => navigate('/portfolio?tab=swap')}
-              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-500/50 text-purple-300 px-4 py-1.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(168,85,247,0.15)]"
-            >
-              <ArrowDownUp size={14} />
-              Swap
-            </button>
-
             {/* WATCHLIST */}
             <button
               onClick={onWatchlistOpen}

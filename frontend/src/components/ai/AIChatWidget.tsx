@@ -182,21 +182,75 @@ export default function AIChatWidget() {
         throw new Error(`HTTP ${res.status}`);
       }
 
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
       
+      if (!reader) throw new Error("No reader available");
+
+      // Add an empty assistant message that will be populated via stream
+      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+      setIsLoading(false); // Hide TypingDots since we are about to type characters
+
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const dataStr = line.substring(6).trim();
+            if (dataStr === "[DONE]") break;
+            if (!dataStr) continue;
+            try {
+              const data = JSON.parse(dataStr);
+              if (data.error) throw new Error(data.error);
+              if (data.text) {
+                fullText += data.text;
+                // Append text to the last message
+                setMessages(prev => {
+                  const newMsgs = [...prev];
+                  newMsgs[newMsgs.length - 1] = { ...newMsgs[newMsgs.length - 1], content: fullText };
+                  return newMsgs;
+                });
+              }
+            } catch (e) {
+              // Ignore partial JSON parsing errors
+            }
+          }
+        }
+      }
+
       // Speak the response if the user was using voice
-      speak(data.reply);
+      if (fullText) {
+        speak(fullText);
+      }
 
     } catch (err: any) {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: 'I am unable to reach the AI servers at the moment. Please ensure the Hetzner backend is running and reachable.',
-        isError: true,
-      }]);
-    } 
-    setIsLoading(false);
+      setMessages(prev => {
+        // If the last message is the empty assistant message we created, update it
+        const newMsgs = [...prev];
+        if (newMsgs[newMsgs.length - 1].role === 'assistant' && !newMsgs[newMsgs.length - 1].content) {
+          newMsgs[newMsgs.length - 1] = {
+            role: 'assistant',
+            content: 'I am unable to reach the AI servers at the moment. Please ensure the backend is running and reachable.',
+            isError: true,
+          };
+          return newMsgs;
+        }
+        return [...prev, {
+          role: 'assistant',
+          content: 'I am unable to reach the AI servers at the moment. Please ensure the backend is running and reachable.',
+          isError: true,
+        }];
+      });
+      setIsLoading(false);
+    }
   };
+
 
   const toggleVoice = () => {
     if (isListening) {
