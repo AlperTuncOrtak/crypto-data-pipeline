@@ -18,3 +18,10 @@ async def whale_feed_websocket(websocket: WebSocket):
         print("Client disconnected from whale feed")
     except Exception as e:
         print(f"Whale feed error: {e}")
+
+from backend.services.whale_service import analyze_wallet
+
+@router.get("/api/whales/analyze/{address}")
+def analyze_wallet_endpoint(address: str):
+    return analyze_wallet(address)
+

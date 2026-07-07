@@ -9,35 +9,29 @@ export default function WhaleXRay() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [hasResult, setHasResult] = useState(false);
+  const [data, setData] = useState<any>(null);
 
-  // Simulation data
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     
     setIsSearching(true);
     setHasResult(false);
+    setData(null);
     
-    setTimeout(() => {
-      setIsSearching(false);
+    try {
+      const apiUrl = import.meta.env.DEV ? "http://localhost:8000" : `https://${window.location.host}`;
+      const res = await fetch(`${apiUrl}/api/whales/analyze/${searchQuery}`);
+      if (!res.ok) throw new Error("API request failed");
+      const result = await res.json();
+      setData(result);
       setHasResult(true);
-    }, 2000); // simulate 2s loading
+    } catch (error) {
+      console.error("Failed to fetch whale data:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
-
-  const MOCK_ASSETS = [
-    { coin: "ETH", amount: "1,450.00", value: ",930,000", percentage: 45, color: "bg-blue-500" },
-    { coin: "PEPE", amount: "450B", value: ",150,000", percentage: 30, color: "bg-green-500" },
-    { coin: "LINK", amount: "85,000", value: ",615,000", percentage: 15, color: "bg-purple-500" },
-    { coin: "USDC", amount: "1,000,000", value: ",000,000", percentage: 10, color: "bg-gray-400" },
-  ];
-
-  const MOCK_TXS = [
-    { type: "buy", token: "PEPE", amount: "", time: "2 mins ago", dex: "Uniswap" },
-    { type: "sell", token: "WIF", amount: ".2M", time: "4 hours ago", dex: "Raydium" },
-    { type: "buy", token: "ETH", amount: "", time: "12 hours ago", dex: "1inch" },
-    { type: "transfer", token: "USDC", amount: "", time: "1 day ago", dex: "Binance" },
-  ];
 
   return (
     <div className="min-h-screen bg-[#0a0b0d] text-white pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
@@ -156,22 +150,24 @@ export default function WhaleXRay() {
                     <h3 className="text-gray-400 font-semibold uppercase tracking-wider text-sm">Portfolio Net Worth</h3>
                   </div>
                   <div className="flex items-end gap-4 mb-2">
-                    <h2 className="text-5xl font-black text-white tracking-tight">,695,000</h2>
+                    <h2 className="text-5xl font-black text-white tracking-tight">
+                      ${data?.assets?.reduce((sum: number, a: any) => sum + Number(a.value.replace(/[^0-9.-]+/g,"")), 0).toLocaleString(undefined, {maximumFractionDigits: 0}) || "0"}
+                    </h2>
                     <div className="flex items-center gap-1 text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full font-bold text-sm mb-2 border border-emerald-400/20">
                       <ArrowUpRight size={16} /> +12.4% (24h)
                     </div>
                   </div>
-                  <p className="text-gray-500 font-mono text-sm">0x71c...9A2b • Active 2 mins ago</p>
+                  <p className="text-gray-500 font-mono text-sm">{data?.address.slice(0, 6)}...{data?.address.slice(-4)} • Active recently</p>
                 </div>
 
                 <div className="relative z-10 mt-10 w-full h-1 bg-white/5 rounded-full overflow-hidden flex">
-                  {MOCK_ASSETS.map((asset, i) => (
+                  {data?.assets?.map((asset: any, i: number) => (
                     <div key={i} style={{ width: `${asset.percentage}%` }} className={`h-full ${asset.color}`} />
                   ))}
                 </div>
                 
                 <div className="relative z-10 mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {MOCK_ASSETS.map((asset, i) => (
+                  {data?.assets?.map((asset: any, i: number) => (
                     <div key={i} className="flex flex-col">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`w-2 h-2 rounded-full ${asset.color}`}></span>
@@ -195,12 +191,12 @@ export default function WhaleXRay() {
                   <div className="flex-1 flex flex-col items-center justify-center py-4 text-center">
                     <div className="w-24 h-24 rounded-full border-[6px] border-red-500/20 flex items-center justify-center mb-4 relative">
                       <svg className="absolute inset-0 w-full h-full -rotate-90">
-                        <circle cx="50%" cy="50%" r="42%" fill="transparent" stroke="#ef4444" strokeWidth="6" strokeDasharray="100 100" strokeDashoffset="25" strokeLinecap="round" />
+                        <circle cx="50%" cy="50%" r="42%" fill="transparent" stroke="#ef4444" strokeWidth="6" strokeDasharray="100 100" strokeDashoffset={100 - (data?.risk_score || 0)} strokeLinecap="round" />
                       </svg>
-                      <span className="text-3xl font-black text-white">85</span>
+                      <span className="text-3xl font-black text-white">{data?.risk_score || 50}</span>
                     </div>
-                    <h4 className="text-red-400 font-bold text-lg mb-1">High Risk Degen</h4>
-                    <p className="text-gray-500 text-sm">High allocation to unverified memecoins. Extreme volatility detected.</p>
+                    <h4 className="text-red-400 font-bold text-lg mb-1">{data?.risk_score > 70 ? "High Risk Degen" : data?.risk_score > 40 ? "Moderate Trader" : "Conservative"}</h4>
+                    <p className="text-gray-500 text-sm">{data?.ai_summary}</p>
                   </div>
                 </div>
               </motion.div>
@@ -217,8 +213,8 @@ export default function WhaleXRay() {
                   </div>
 
                   <div className="space-y-3">
-                    {MOCK_TXS.map((tx, i) => (
-                      <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white-[0.02] hover:bg-white/[0.04] transition-colors">
+                    {data?.transactions?.map((tx: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.02] hover:bg-white/[0.04] transition-colors">
                         <div className="flex items-center gap-4">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'buy' ? 'bg-green-500/10 text-green-400' : tx.type === 'sell' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
                             {tx.type === 'buy' ? <ArrowDownRight size={18} /> : tx.type === 'sell' ? <ArrowUpRight size={18} /> : <TrendingUp size={18} />}
