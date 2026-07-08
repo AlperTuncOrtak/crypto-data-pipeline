@@ -27,6 +27,7 @@ const Narratives = lazy(() => import("./pages/Narratives"));
 const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
 const TimeMachine = lazy(() => import("./pages/TimeMachine"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Swap = lazy(() => import("./pages/Swap"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
 const Heatmap = lazy(() => import("./pages/Heatmap"));
@@ -40,6 +41,8 @@ import SearchCommand from "./components/ui/SearchCommand";
 import DisclaimerModal from "./components/DisclaimerModal";
 const Settings = lazy(() => import("./pages/Settings"));
 const Landing = lazy(() => import("./pages/Landing"));
+const Success = lazy(() => import("./pages/Success"));
+const Cancel = lazy(() => import("./pages/Cancel"));
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Documentation from "./pages/Documentation";
@@ -50,7 +53,10 @@ import AuthModal from "./components/ui/AuthModal";
 import { ThemeProvider, useTheme } from "./hooks/useTheme";
 import AIChatWidget from "./components/ai/AIChatWidget";
 
+import { usePushNotifications } from "./hooks/usePushNotifications";
+
 function AppInner() {
+  usePushNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activePanel, setActivePanel] = useState("watchlist");
   const [authOpen, setAuthOpen] = useState(false);
@@ -143,7 +149,7 @@ function AppInner() {
         className={location.pathname === "/" || location.pathname === "/onboarding" ? "pb-20 md:pb-0" : "main-content pb-20 md:pb-0"}
         style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
       >
-        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} /><Route path="/swap" element={<Navigate to="/portfolio?tab=swap" replace />} />
+        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} /><Route path="/swap" element={<Swap />} />
           {/* Public */}
           <Route
             path="/"
@@ -184,6 +190,8 @@ function AppInner() {
             element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}
           />
           <Route path="/pro" element={<Pro />} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/cancel" element={<Cancel />} />
 
           {/* Login gerekli */}
           <Route

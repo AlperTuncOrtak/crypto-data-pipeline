@@ -15,6 +15,7 @@ import time
 import hmac
 import hashlib
 import httpx
+import pymysql
 from pydantic import BaseModel
 
 load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
@@ -72,11 +73,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from backend.routers import whale
+from backend.routers import whale, stripe_router
 
 app.include_router(whale.router)
-
-
+app.include_router(stripe_router.router)
 
 
 # -----------------------
@@ -549,13 +549,49 @@ ANALYSIS RULES:
 
 
 @app.post("/ai/chat")
-def ai_chat(payload: dict):
+def ai_chat(payload: dict, user: dict = Depends(verify_token)):
     """
     Genel amaçlı AI kripto asistanı. (Streaming)
     Body: { message: str, history?: [{role, content}], context?: {path: str} }
     """
     import os, json, httpx
     from fastapi.responses import StreamingResponse
+    from backend.auth import verify_pro
+    from shared.db import get_connection
+    from datetime import datetime, timezone
+
+    # ── Check Usage Limits ──────────────────────────────────────
+    # User's plan checks
+    try:
+        verify_pro(user)
+        is_pro = True
+    except HTTPException:
+        is_pro = False
+
+    if not is_pro:
+        conn = get_connection()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        
+        cur.execute("SELECT count, last_reset FROM user_ai_usage WHERE user_id = %s", (user['id'],))
+        row = cur.fetchone()
+        
+        if row:
+            if str(row['last_reset']) != today:
+                cur.execute("UPDATE user_ai_usage SET count = 0, last_reset = %s WHERE user_id = %s", (today, user['id']))
+                msg_count = 0
+            else:
+                msg_count = row['count']
+        else:
+            cur.execute("INSERT INTO user_ai_usage (user_id, count, last_reset) VALUES (%s, 0, %s)", (user['id'], today))
+            msg_count = 0
+            
+        if msg_count >= 5:
+            conn.close()
+            raise HTTPException(status_code=403, detail="Limit reached")
+            
+        cur.execute("UPDATE user_ai_usage SET count = count + 1 WHERE user_id = %s", (user['id'],))
+        conn.close()
 
     message = (payload.get("message") or "").strip()
     history = payload.get("history") or []

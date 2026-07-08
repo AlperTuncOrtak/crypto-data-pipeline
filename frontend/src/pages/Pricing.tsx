@@ -11,6 +11,8 @@ import { Sparkles as SparklesComp } from "../components/ui/sparkles";
 import { TimelineContent } from "../components/ui/timeline-animation";
 import { VerticalCutReveal } from "../components/ui/vertical-cut-reveal";
 import { cn } from "../lib/utils";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 import { apiClient } from "../api/client";
 
 import {
@@ -139,13 +141,17 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
     
     try {
       setLoadingPlan(planId);
-      const { data } = await apiClient.post('/create-checkout-session', {
+      const { data } = await apiClient.post('/stripe/create-checkout-session', {
         plan: planId,
         billing: isYearly ? 'yearly' : 'monthly'
       });
       
       if (data && data.url) {
-        window.location.href = data.url;
+        if (Capacitor.isNativePlatform()) {
+          await Browser.open({ url: data.url });
+        } else {
+          window.location.href = data.url;
+        }
       }
     } catch (err) {
       console.error("Stripe error:", err);

@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Brain, X, Send, Sparkles, TrendingUp, Activity, Shield, FileDown, Mic, MicOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useVoice } from '../../hooks/useVoice';
+import { supabase } from '../../lib/supabase';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -168,9 +169,19 @@ export default function AIChatWidget() {
     setIsLoading(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const res = await fetch(`${BASE_URL}/ai/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           message: msg,
           history: buildHistory(),
@@ -178,7 +189,11 @@ export default function AIChatWidget() {
         }),
       });
 
-      if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('AUTH_REQUIRED');
+      } else if (res.status === 403) {
+        throw new Error('LIMIT_REACHED');
+      } else if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
 
@@ -231,19 +246,26 @@ export default function AIChatWidget() {
 
     } catch (err: any) {
       setMessages(prev => {
-        // If the last message is the empty assistant message we created, update it
         const newMsgs = [...prev];
+        let errorMessage = 'I am unable to reach the AI servers at the moment. Please ensure the backend is running and reachable.';
+        
+        if (err.message === 'AUTH_REQUIRED') {
+          errorMessage = 'You need to be logged in to use CryptoNeko AI. Please sign in or create an account.';
+        } else if (err.message === 'LIMIT_REACHED') {
+          errorMessage = 'You have reached your daily limit of 5 AI messages on the Free plan.\n\n[Upgrade to PRO](/pricing) for unlimited AI chat, market narratives, and whale tracking.';
+        }
+
         if (newMsgs[newMsgs.length - 1].role === 'assistant' && !newMsgs[newMsgs.length - 1].content) {
           newMsgs[newMsgs.length - 1] = {
             role: 'assistant',
-            content: 'I am unable to reach the AI servers at the moment. Please ensure the backend is running and reachable.',
+            content: errorMessage,
             isError: true,
           };
           return newMsgs;
         }
         return [...prev, {
           role: 'assistant',
-          content: 'I am unable to reach the AI servers at the moment. Please ensure the backend is running and reachable.',
+          content: errorMessage,
           isError: true,
         }];
       });

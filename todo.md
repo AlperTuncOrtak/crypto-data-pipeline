@@ -29,15 +29,16 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)
 
 ### 1. Stripe Entegrasyonu ve Abonelik Sistemi
-- PRO özellikleri kilitlemek ve ödeme altyapısını kurmak için Stripe Checkout ve Webhook entegrasyonu. (Supabase Auth ile senkronize çalışacak).
+- [x] PRO özellikleri kilitlemek ve ödeme altyapısını kurmak için Stripe Checkout ve Webhook entegrasyonu. (Supabase Auth ile senkronize çalışacak).
 
 ### 2. Native Mobil Uygulama (iOS & Android) - [ÖNCELİKLİ]
 - **Açıklama:** Sitenin mevcut responsive yapısını tamamen "Native Mobil Uygulama" hissiyatına geçirmek. Masaüstü uygulamasından daha öncelikli olarak hedeflenmektedir.
 - **Görevler:**
-  - PWA (Progressive Web App) özelliklerini (Service Worker, Manifest) kusursuzlaştır.
-  - Capacitor.js kullanarak mevcut React uygulamasını App Store / Google Play'e yüklenebilecek formata getir.
-  - Alt menü (Bottom Navigation) ve kaydırma (Swipe) jestleri ekle.
-  - Mobil cihazlarda dokunmatik titreşim (Haptic Feedback) API'sini entegre et.
+  - [x] PWA (Progressive Web App) özelliklerini (Service Worker, Manifest) kusursuzlaştır.
+  - [x] Capacitor.js kullanarak mevcut React uygulamasını App Store / Google Play'e yüklenebilecek formata getir.
+  - [x] Alt menü (Bottom Navigation) ve kaydırma (Swipe) jestleri ekle.
+  - [x] Mobil cihazlarda dokunmatik titreşim (Haptic Feedback) API'sini entegre et.
+  - [ ] **Mobil Uygulama Testleri:** Xcode ve Android Studio üzerinde derleyip, gerçek cihaz/simülatör testlerinin (UI/UX, Stripe Modal, Haptics) yapılması.
 
 ## 📌 Sonraki Aşama (Backlog)
 

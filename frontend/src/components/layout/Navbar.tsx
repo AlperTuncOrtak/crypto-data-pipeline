@@ -45,6 +45,7 @@ import AnimatedLogo from "./AnimatedLogo";
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, dropdown: null },
   { to: "/portfolio", label: "Portfolio", Icon: Wallet, dropdown: null },
+  { to: "/swap", label: "Swap", Icon: ArrowDownUp, dropdown: null },
   {
     to: "/market",
     label: "Market",
@@ -473,7 +474,7 @@ export default function Navbar({
           position: "sticky",
           top: 0,
           zIndex: 100,
-          padding: "6px 20px",
+          padding: "calc(env(safe-area-inset-top) + 6px) 20px 6px 20px",
           transition: "border-color 0.2s ease",
         }}
       >

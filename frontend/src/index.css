@@ -298,6 +298,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  
+  /* Mobile Safe Areas & Native App Feel */
+  padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior-y: none; /* Disable browser pull-to-refresh */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 /* ── Headings — tight tracking, editorial feel ── */

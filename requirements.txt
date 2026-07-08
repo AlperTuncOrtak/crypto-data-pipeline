@@ -35,3 +35,5 @@ aiomysql
 redis
 websockets
 aiohttp
+
+stripe>=10.12.0

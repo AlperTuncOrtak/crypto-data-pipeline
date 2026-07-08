@@ -1,13 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, LineChart, Target, PieChart, Activity, ArrowDownUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
 
 export default function MobileNav() {
   const location = useLocation();
 
-  const handleHaptic = () => {
-    if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
-      // Light haptic feedback for mobile devices
+  const handleHaptic = async () => {
+    if (Capacitor.isNativePlatform()) {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    } else if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(50);
     }
   };
@@ -17,12 +20,15 @@ export default function MobileNav() {
     { path: "/market", icon: LineChart, label: "Market" },
     { path: "/whale", icon: Activity, label: "X-Ray" },
     { path: "/timemachine", icon: Target, label: "Time" },
-    { path: "/portfolio?tab=swap", icon: ArrowDownUp, label: "Swap" },
+    { path: "/swap", icon: ArrowDownUp, label: "Swap" },
     { path: "/portfolio", icon: PieChart, label: "Portfolio" },
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pb-safe">
+    <div 
+      className="md:hidden fixed bottom-0 left-0 right-0 z-[100]"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       <div className="absolute inset-0 bg-[#0a0b0d]/90 backdrop-blur-2xl border-t border-white/10 pointer-events-none"></div>
       
       <div className="relative z-10 flex items-center justify-between px-6 py-4">
@@ -30,11 +36,8 @@ export default function MobileNav() {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
           
-
-          
           return (
             <Link
- 
               key={item.path} 
               to={item.path}
               onClick={handleHaptic}
