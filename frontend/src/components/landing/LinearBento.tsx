@@ -48,13 +48,13 @@ function WhaleFeed() {
         {items.map((item, i) => (
           <motion.div 
             key={item}
-            initial={{ opacity: 0, y: 10, scale: 0.98 }}
-            animate={{ opacity: 1 - i * 0.25, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1 - i * 0.25, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="flex items-center justify-between p-2 rounded-lg bg-white/[0.03] border border-white/5"
           >
             <div className="flex gap-2 items-center">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-emerald-400" />
               <span className="text-xs text-white font-mono">1,000,000 USDT</span>
             </div>
             <span className="text-[10px] text-slate-500">Just now</span>
@@ -111,11 +111,10 @@ export function LinearBento() {
                ))}
              </div>
              {/* Scan line */}
-             {/* TODO: Refine this scan line micro-animation further to be perfectly smooth across all devices */}
              <motion.div 
                animate={{ top: ["0%", "100%", "0%"] }} 
-               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-               className="absolute left-0 right-0 h-[1px] bg-cyan-400/50 shadow-[0_0_15px_#22d3ee] opacity-80"
+               transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+               className="absolute left-0 right-0 h-[1px] bg-white/20 shadow-sm opacity-50"
              />
           </div>
         </BentoCard>
@@ -152,8 +151,8 @@ export function LinearBento() {
                  <motion.div
                    initial={{ width: "0%" }}
                    animate={{ width: "100%" }}
-                   transition={{ duration: 3, repeat: Infinity, ease: "circInOut", repeatDelay: 0.5 }}
-                   className="h-full rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.3)]" 
+                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                   className="h-full rounded-full bg-white opacity-80" 
                  />
                </div>
              </div>

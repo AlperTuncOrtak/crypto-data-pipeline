@@ -31,13 +31,13 @@ export function LinearHero() {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="group cursor-pointer mb-8"
         >
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-colors backdrop-blur-md">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
             <span className="px-2 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-bold uppercase tracking-wider">New</span>
             <span className="text-slate-300 text-xs sm:text-sm font-medium">CryptoNeko v2.0 is now live</span>
-            <ChevronRight size={14} className="text-slate-500 group-hover:text-white transition-colors group-hover:translate-x-0.5" />
+            <ChevronRight size={14} className="text-slate-500 group-hover:text-white transition-colors" />
           </div>
         </motion.div>
 
@@ -65,14 +65,14 @@ export function LinearHero() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
           <button 
             onClick={() => navigate(user ? "/dashboard" : "/login")}
-            className="w-full sm:w-auto px-6 py-3 rounded-md bg-white text-[#000000] font-semibold text-sm hover:bg-white/90 active:scale-95 transition-all flex items-center justify-center gap-2 group"
+            className="w-full sm:w-auto px-6 py-3 rounded-md bg-white text-[#000000] font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
           >
-            Start building <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            Start building <ArrowRight size={16} />
           </button>
         </motion.div>
       </div>
@@ -164,7 +164,7 @@ export function LinearHero() {
                   <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 400">
                     <path d="M0,350 Q100,320 200,340 T400,280 T600,200 T800,100 T1000,50" fill="none" stroke="rgba(34,211,238,0.4)" strokeWidth="2" strokeDasharray="4 4" />
                     <circle cx="800" cy="100" r="4" fill="#22d3ee" />
-                    <circle cx="1000" cy="50" r="4" fill="#22d3ee" className="animate-pulse" />
+                    <circle cx="1000" cy="50" r="4" fill="#22d3ee" />
                   </svg>
                   
                   {/* Candlesticks (HTML DOM) */}

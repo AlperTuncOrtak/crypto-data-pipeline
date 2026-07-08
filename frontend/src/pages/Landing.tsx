@@ -29,8 +29,8 @@ export default function Landing() {
       >
         <Link to="/" className="flex items-center gap-3 group">
           <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center text-[#000000] font-black text-sm shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+            whileHover={{ opacity: 0.8 }} 
+            className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center text-[#000000] font-black text-sm shadow-sm transition-opacity"
           >
             C
           </motion.div>
@@ -44,14 +44,14 @@ export default function Landing() {
           {loading ? null : user ? (
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-4 py-2 rounded-md bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 active:scale-95 transition-all backdrop-blur-md"
+              className="px-4 py-2 rounded-md bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 transition-colors backdrop-blur-md"
             >
               Dashboard
             </button>
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="px-4 py-2 rounded-md bg-white text-[#000000] font-medium text-sm hover:bg-white/90 active:scale-95 transition-all"
+              className="px-4 py-2 rounded-md bg-white text-[#000000] font-medium text-sm hover:bg-white/90 transition-colors"
             >
               Sign In
             </button>
