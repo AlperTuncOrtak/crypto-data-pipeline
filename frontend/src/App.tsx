@@ -28,6 +28,7 @@ const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
 const TimeMachine = lazy(() => import("./pages/TimeMachine"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Swap = lazy(() => import("./pages/Swap"));
+const Terminal = lazy(() => import("./pages/Terminal"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
 const Heatmap = lazy(() => import("./pages/Heatmap"));
@@ -136,10 +137,10 @@ function AppInner() {
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
 
       {/* Global Ticker */}
-      {location.pathname !== "/onboarding" && <CoinTicker />}
+      {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <CoinTicker />}
 
-      {location.pathname !== "/onboarding" && location.pathname !== "/" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
-      {location.pathname !== "/onboarding" && location.pathname !== "/" && (
+      {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
+      {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
         <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
           <div className="w-[800px] h-[300px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute -top-[100px] left-[10%]"></div>
           <div className="w-[600px] h-[250px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute top-[50px] right-[10%]"></div>
@@ -181,6 +182,7 @@ function AppInner() {
           <Route path="/whale" element={<WhaleXRay />} />
           <Route path="/timemachine" element={<TimeMachine />} />
           <Route path="/analysis" element={<Analysis />} />
+          <Route path="/terminal" element={<Terminal />} />
 
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
@@ -273,8 +275,8 @@ function AppInner() {
           />
         </Routes></Suspense></main>
       
-      {location.pathname !== "/onboarding" && <MobileNav />}
-      {location.pathname !== "/onboarding" && location.pathname !== "/" && <Footer />}
+      {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <MobileNav />}
+      {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && <Footer />}
 
       <AIChatWidget />
 
