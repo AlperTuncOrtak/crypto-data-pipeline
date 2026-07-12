@@ -8,7 +8,8 @@ import {
 import { useState, useEffect, lazy, Suspense } from "react";
 import { ToastProvider, useAlertMonitor, useToast } from "./hooks/useAlertMonitor.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
-import Navbar from "./components/layout/Navbar";
+import GlobalSidebar from "./components/layout/GlobalSidebar";
+import TopHeader from "./components/layout/TopHeader";
 import CoinTicker from "./components/market/CoinTicker";
 import RightSidebar from "./components/layout/WatchlistModal";
 import ReloadPrompt from "./components/layout/ReloadPrompt";
@@ -126,31 +127,38 @@ function AppInner() {
       style={{
         minHeight: "100vh",
         backgroundColor: "var(--bg-base)",
-        overflowX: "clip",
-        position: "relative",
+        overflow: "hidden",
+        display: "flex",
       }}
     >
-      
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Disclaimer — ilk girişte gösterilir, onaylanınca kaybolur */}
-      {/* Disclaimer Modal */}
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
 
-      {/* Global Ticker */}
-      {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <CoinTicker />}
-
-      {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (<><Navbar onWatchlistOpen={() => openPanel("watchlist")} watchlistCount={watchlist.length} onAuthOpen={(mode = "login") => { setAuthMode(mode); setAuthOpen(true); }} authOpen={authOpen} setAuthOpen={setAuthOpen} /></>)}
       {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
-        <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
-          <div className="w-[800px] h-[300px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute -top-[100px] left-[10%]"></div>
-          <div className="w-[600px] h-[250px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute top-[50px] right-[10%]"></div>
-        </div>
+        <GlobalSidebar onSearchOpen={() => setIsSearchOpen(true)} />
       )}
-      <main
-        className={location.pathname === "/" || location.pathname === "/onboarding" ? "pb-20 md:pb-0" : "main-content pb-20 md:pb-0"}
-        style={{ position: "relative", zIndex: 20, flex: 1, width: "100%" }}
-      >
-        <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}><Routes><Route path="/onboarding" element={<Onboarding />} /><Route path="/leaderboard" element={<Leaderboard />} /><Route path="/swap" element={<Swap />} />
+
+      <div className="flex-1 flex flex-col min-w-0 h-screen relative z-10">
+        {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
+          <TopHeader onMobileMenuToggle={() => setSidebarOpen(true)} />
+        )}
+
+        {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <CoinTicker />}
+
+        {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
+          <div className="absolute top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
+            <div className="w-[800px] h-[300px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute -top-[100px] left-[10%]"></div>
+            <div className="w-[600px] h-[250px] bg-white blur-[150px] rounded-[100%] opacity-5 absolute top-[50px] right-[10%]"></div>
+          </div>
+        )}
+
+        <main
+          className={location.pathname === "/" || location.pathname === "/onboarding" ? "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 flex flex-col" : "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 main-content flex flex-col"}
+        >
+        <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
+          <Routes>
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/swap" element={<Swap />} />
           {/* Public */}
           <Route
             path="/"
@@ -273,10 +281,14 @@ function AppInner() {
               </ProtectedRoute>
             }
           />
-        </Routes></Suspense></main>
+        </Routes></Suspense>
+        <div className="mt-auto">
+          {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && <Footer />}
+        </div>
+        </main>
+      </div>
       
       {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <MobileNav />}
-      {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && <Footer />}
 
       <AIChatWidget />
 
@@ -309,7 +321,6 @@ function AppInner() {
           initialMode={authMode}
         />
       )}
-      </div>
     </div>
   );
 }

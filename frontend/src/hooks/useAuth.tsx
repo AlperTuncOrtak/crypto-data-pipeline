@@ -57,18 +57,19 @@ export function AuthProvider({ children }) {
     setPlan("free");
   }
 
+  const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
   const value = {
-    user,
-    plan,
+    user: isDev ? { id: 'dev-user', email: 'dev@cryptoneko.com' } : user,
+    plan: isDev ? "pro" : plan,
     loading,
     signOut,
-    isLoggedIn: Boolean(user),
-    isPro: plan === "pro" || plan === "enterprise",
-    isEnterprise: plan === "enterprise",
-    displayName:
-      user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User",
+    isLoggedIn: isDev ? true : Boolean(user),
+    isPro: isDev ? true : (plan === "pro" || plan === "enterprise"),
+    isEnterprise: isDev ? true : (plan === "enterprise"),
+    displayName: isDev ? "Local Dev (PRO)" : (user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"),
     avatar: user?.user_metadata?.avatar_url || null,
-    email: user?.email || null,
+    email: isDev ? "dev@cryptoneko.com" : (user?.email || null),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

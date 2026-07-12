@@ -48,928 +48,11 @@ import {
   Lock,
 } from "lucide-react";
 
-// ── Formatters ────────────────────────────────────────────────
-const fmtUSD = (n) => {
-  const v = Number(n);
-  if (isNaN(v)) return "—";
-  if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
-  if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
-  if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(2)}K`;
-  return `$${v.toFixed(2)}`;
-};
-const fmtPct = (n) => `${Number(n) >= 0 ? "▲" : "▼"} ${Math.abs(Number(n)).toFixed(2)}%`;
-const fmtNum = (n) =>
-  Number(n).toLocaleString(undefined, { maximumFractionDigits: 6 });
 
-// ── Colors ───────────────────────────────────────────────────
-const COIN_COLORS = {
-  BTC: "#F7931A",
-  USDT: "#26A17B",
-  ETH: "#627EEA",
-  SOL: "#14F195",
-  BNB: "#F3BA2F",
-  XRP: "#23292F",
-  DOGE: "#C2A633",
-  ADA: "#0033AD",
-  LINK: "#2A5ADA",
-  AVAX: "#E84142",
-  DOT: "#E6007A",
-  MATIC: "#8247E5",
-  SHIB: "#E23D19",
-  TRX: "#FF0013",
-  LTC: "#345D9D",
-  UNI: "#FF007A",
-  ATOM: "#2E3148",
-  XLM: "#14B6E7",
-  BCH: "#8DC351",
-  ALGO: "#000000",
-  VET: "#15BDFF",
-  ICP: "#29ABE2",
-  FIL: "#0090FF"
-};
-
-const CHART_COLORS = [
-  "var(--accent)", // Neon Cyan
-  "#2dd4bf", // Teal
-  "#3b82f6", // Blue
-  "#a855f7", // Purple
-  "#f43f5e", // Rose
-  "#10b981", // Emerald
-  "#f59e0b", // Amber
-  "#6366f1", // Indigo
-  "#ec4899", // Pink
-  "#14b8a6", // Light Teal
-];
-
-// ── Exchange rehberleri ───────────────────────────────────────
-const EXCHANGE_GUIDES = {
-  binance: {
-    name: "Binance",
-    logo: "🟡",
-    color: "#F3BA2F",
-    steps: [
-      "Log in to your Binance account",
-      'Click the profile icon in the top right → select "Orders"',
-      'Go to the "Trade History" tab',
-      "Select date range (max 3 months, multiple exports may be needed)",
-      'Click "Export" → select CSV format',
-      "Upload the downloaded file here",
-    ],
-    note: "Binance exports a maximum of 3 months of data. Upload multiple files for longer history.",
-    columns: ["Date", "Pair", "Side", "Price", "Executed", "Amount", "Fee"],
-  },
-  bybit: {
-    name: "Bybit",
-    logo: "🟠",
-    color: "#F7A600",
-    steps: [
-      "Log in to your Bybit account",
-      'Click "Assets" → "Transaction History" in the top right',
-      'Select the "Trade" tab',
-      "Set the date range and coin filter",
-      'Click the "Export" button',
-      "Download the CSV file and upload it here",
-    ],
-    note: "Bybit spot and futures trades come in separate files.",
-    columns: ["Time", "Symbol", "Side", "Price", "Qty", "Value", "Fee"],
-  },
-  okx: {
-    name: "OKX",
-    logo: "⚫",
-    color: "#888",
-    steps: [
-      "Log in to your OKX account",
-      'Select "Trade" → "Order History" from the top menu',
-      'Go to the "Filled Orders" tab',
-      "Select the date range",
-      "Click the export icon in the top right",
-      "Download as CSV and upload it here",
-    ],
-    note: "OKX provides a maximum of 90 days of data.",
-    columns: [
-      "Order Time",
-      "Instrument",
-      "Trade Side",
-      "Filled Price",
-      "Filled Amount",
-      "Total",
-    ],
-  },
-  coinbase: {
-    name: "Coinbase",
-    logo: "🔵",
-    color: "#0052FF",
-    steps: [
-      "Log in to your Coinbase account",
-      'Click profile in the top right → "Statements"',
-      'Select "Generate custom statement"',
-      'Select the date range and "CSV" format',
-      'Click the "Generate" button',
-      "Click the link sent to your email to download and upload it here",
-    ],
-    note: "If you use Coinbase Pro, there is a separate export page.",
-    columns: [
-      "Timestamp",
-      "Transaction Type",
-      "Asset",
-      "Quantity Transacted",
-      "Spot Price",
-      "Total",
-    ],
-  },
-  kraken: {
-    name: "Kraken",
-    logo: "🟣",
-    color: "#5741d9",
-    steps: [
-      "Log in to your Kraken account",
-      'Select "History" → "Export" from the top menu',
-      'Select "Trades" as the export type',
-      "Set the date range",
-      'Click the "Submit" button',
-      "Download when ready and upload it here",
-    ],
-    note: "Kraken CSV preparation may take a few minutes.",
-    columns: ["txid", "pair", "time", "type", "price", "vol", "cost", "fee"],
-  },
-};
-
-// ── CSV Parser ────────────────────────────────────────────────
-
-// Smart CSV line splitter — handles commas inside quotes
-function splitCSVLine(line) {
-  const result = [];
-  let current = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') { inQuotes = !inQuotes; continue; }
-    if ((ch === "," || ch === "\t") && !inQuotes) {
-      result.push(current.trim());
-      current = "";
-    } else { current += ch; }
-  }
-  result.push(current.trim());
-  return result;
-}
-
-function normalizeHdr(h) {
-  return String(h).replace(/"/g, "").replace(/\(.*?\)/g, "").trim().toLowerCase();
-}
-
-function extractSymbol(pair) {
-  if (!pair) return null;
-  const clean = pair.toUpperCase()
-    .replace(/[-\/]?(USDT|BUSD|USD|BTC|ETH|BNB|TRY|EUR|USDC|DAI|TUSD|FDUSD)$/, "|")
-    .split("|")[0].replace(/[^A-Z0-9]/g, "");
-  return clean || null;
-}
-
-function detectExchange(headers) {
-  const h = headers.map(normalizeHdr);
-  const has = (k) => h.some(x => x.includes(k));
-  if (has("pair") && has("executed")) return "binance_trade";
-  if (has("market") && has("type") && has("amount")) return "binance_trade";
-  if ((has("coin") || has("asset")) && has("change")) return "binance_history";
-  if (has("symbol") && has("qty")) return "bybit";
-  if (has("instrument")) return "okx";
-  if (has("asset") && has("quantity transacted")) return "coinbase";
-  if (has("txid") && has("vol")) return "kraken";
-  return "unknown";
-}
-
-function getCol(row, ...keys) {
-  for (const k of keys) {
-    for (const rk of Object.keys(row)) {
-      if (normalizeHdr(rk).includes(k.toLowerCase())) return row[rk] || "";
-    }
-  }
-  return "";
-}
-
-function safeDate(str) {
-  if (!str) return new Date().toISOString();
-  const d = new Date(String(str).replace(/\//g, "-").replace(" ", "T"));
-  return isNaN(d) ? new Date().toISOString() : d.toISOString();
-}
-
-function safeNum(str) {
-  return parseFloat(String(str || 0).replace(/[^0-9.-]/g, "")) || 0;
-}
-
-function parseCSV(text) {
-  // Detect separator
-  const firstLine = text.split("\n")[0];
-  const sep = firstLine.includes("\t") ? "\t" : ",";
-
-  const lines = text.trim().split("\n").filter(l => l.trim() && !l.startsWith("//") && !l.startsWith("#"));
-  if (lines.length < 2) throw new Error("CSV dosyası çok kısa veya boş.");
-
-  const rawHeaders = splitCSVLine(lines[0]);
-  const exchange = detectExchange(rawHeaders);
-
-  if (exchange === "unknown") {
-    throw new Error(`Desteklenmeyen CSV formatı. Sütunlar: ${rawHeaders.slice(0,6).join(", ")}`);
-  }
-
-  const trades = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const cols = splitCSVLine(lines[i]);
-    const row = {};
-    rawHeaders.forEach((h, idx) => { row[h] = cols[idx] || ""; });
-
-    try {
-      let trade = null;
-
-      if (exchange === "binance_trade") {
-        const pairRaw = getCol(row, "pair", "market", "symbol");
-        const sym = extractSymbol(pairRaw);
-        if (!sym) continue;
-        const qty = safeNum(getCol(row, "executed", "filled", "qty").replace(/[A-Za-z]/g, ""));
-        const price = safeNum(getCol(row, "price", "avg price"));
-        const total = safeNum(getCol(row, "amount", "total", "value").replace(/[A-Za-z]/g, ""));
-        const side = getCol(row, "side", "type").toLowerCase().includes("buy") ? "buy" : "sell";
-        trade = {
-          symbol: sym,
-          side,
-          quantity: qty,
-          price: price || (qty > 0 && total > 0 ? total / qty : 0),
-          total,
-          fee: safeNum(getCol(row, "fee").replace(/[A-Za-z]/g, "")),
-          traded_at: safeDate(getCol(row, "date", "time", "createtime")),
-          exchange: "binance",
-        };
-      } else if (exchange === "binance_history") {
-        const op = getCol(row, "operation", "remark", "type").toLowerCase();
-        const sym = getCol(row, "coin", "asset").toUpperCase().replace(/[^A-Z0-9]/g, "");
-        if (!sym) continue;
-
-        // Skip stablecoins, fees, and non-trade operations
-        const stablecoins = ["USDT","BUSD","USDC","FDUSD","DAI","TUSD","USD","EUR","TRY"];
-        const isStable = stablecoins.includes(sym);
-        
-        // Binance uses many operation names for trades:
-        // "Buy", "Sell", "Transaction Revenue" (received crypto in buy), 
-        // "Transaction Spend" (spent USDT in buy), "Large OTC trading buy/sell",
-        // "Small Assets Exchange BNB", "POS savings purchase"
-        const isTrade = op.includes("buy") || op.includes("sell") || 
-                        op.includes("transaction revenue") || op.includes("transaction spend") ||
-                        op.includes("otc") || op.includes("convert") ||
-                        op.includes("exchange") || op.includes("trade");
-        
-        const isSkip = op.includes("fee") || op.includes("deposit") || 
-                       op.includes("withdraw") || op.includes("interest") ||
-                       op.includes("reward") || op.includes("referral") ||
-                       op.includes("staking") || op.includes("cashback") ||
-                       op.includes("savings") || op.includes("distribution");
-
-        if (!isTrade || isSkip) continue;
-        
-        // Skip stablecoin rows (the USDT "spend" side) — we only care about crypto side
-        if (isStable) continue;
-
-        const change = safeNum(getCol(row, "change", "amount"));
-        if (Math.abs(change) < 0.000001) continue;
-
-        // "Transaction Revenue" = received crypto = BUY
-        // "Transaction Spend" with crypto = SELL
-        const isBuy = op.includes("buy") || op.includes("revenue") || 
-                      op.includes("purchase") || change > 0;
-        trade = {
-          symbol: sym,
-          side: isBuy ? "buy" : "sell",
-          quantity: Math.abs(change),
-          price: 0,
-          total: 0,
-          fee: 0,
-          traded_at: safeDate(getCol(row, "utc_time", "time", "date")),
-          exchange: "binance",
-        };
-      } else if (exchange === "bybit") {
-        const sym = extractSymbol(getCol(row, "symbol", "pair"));
-        if (!sym) continue;
-        trade = {
-          symbol: sym,
-          side: getCol(row, "side").toLowerCase().includes("buy") ? "buy" : "sell",
-          quantity: safeNum(getCol(row, "qty", "quantity", "filled qty")),
-          price: safeNum(getCol(row, "price", "avg price")),
-          total: safeNum(getCol(row, "value", "total")),
-          fee: safeNum(getCol(row, "fee", "trading fee")),
-          traded_at: safeDate(getCol(row, "time", "createtime", "date")),
-          exchange: "bybit",
-        };
-      } else if (exchange === "okx") {
-        const inst = getCol(row, "instrument", "instid") || "";
-        const sym = inst.split("-")[0] || extractSymbol(inst);
-        if (!sym) continue;
-        trade = {
-          symbol: sym,
-          side: getCol(row, "trade side", "side").toLowerCase().includes("buy") ? "buy" : "sell",
-          quantity: safeNum(getCol(row, "filled amount", "size", "qty")),
-          price: safeNum(getCol(row, "filled price", "avg px", "price")),
-          total: safeNum(getCol(row, "total", "notional usd")),
-          fee: safeNum(getCol(row, "fee", "trading fee")),
-          traded_at: safeDate(getCol(row, "order time", "createtime", "time")),
-          exchange: "okx",
-        };
-      } else if (exchange === "coinbase") {
-        const txType = getCol(row, "transaction type").toLowerCase();
-        if (!txType.includes("buy") && !txType.includes("sell")) continue;
-        trade = {
-          symbol: getCol(row, "asset") || "",
-          side: txType.includes("buy") ? "buy" : "sell",
-          quantity: safeNum(getCol(row, "quantity transacted")),
-          price: safeNum(getCol(row, "spot price", "price at transaction")),
-          total: safeNum(getCol(row, "total", "subtotal")),
-          fee: 0,
-          traded_at: safeDate(getCol(row, "timestamp", "date")),
-          exchange: "coinbase",
-        };
-      } else if (exchange === "kraken") {
-        const pair = getCol(row, "pair") || "";
-        const sym = pair.replace(/USD$|USDT$|EUR$/, "").replace(/^X/, "").replace(/^Z/, "");
-        trade = {
-          symbol: sym,
-          side: getCol(row, "type") === "buy" ? "buy" : "sell",
-          quantity: safeNum(getCol(row, "vol", "volume")),
-          price: safeNum(getCol(row, "price")),
-          total: safeNum(getCol(row, "cost")),
-          fee: safeNum(getCol(row, "fee")),
-          traded_at: safeDate(getCol(row, "time", "date")),
-          exchange: "kraken",
-        };
-      }
-
-      if (trade && trade.quantity > 0 && trade.symbol && trade.symbol.length >= 2) {
-        trades.push(trade);
-      }
-    } catch (e) { /* skip bad row */ }
-  }
-
-  if (trades.length === 0) {
-    throw new Error(`CSV okundu (${exchange}) ama geçerli işlem bulunamadı. Dosyada alım/satım verisi var mı?`);
-  }
-
-  return { trades, exchange, count: trades.length };
-}
-
-// ── Holdings hesapla (FIFO) ───────────────────────────────────
-function calcHoldings(trades, marketData, walletHoldings = []) {
-  const priceMap = {};
-  (Array.isArray(marketData) ? marketData : []).forEach((c) => {
-    priceMap[c.symbol?.toUpperCase()] = {
-      price: parseFloat(c.current_price) || 0,
-      change24h: parseFloat(c.price_change_percentage_24h) || 0,
-      image_url: c.image_url,
-      name: c.name,
-      slug: c.slug,
-    };
-  });
-
-  const bySymbol = {};
-  for (const t of trades) {
-    const sym = t.symbol.toUpperCase();
-    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0, binanceQty: 0 };
-    if (t.side === "buy") bySymbol[sym].buys.push(t);
-    else bySymbol[sym].sells.push(t);
-  }
-  
-  for (const wh of walletHoldings) {
-    const sym = wh.symbol.toUpperCase();
-    if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0, binanceQty: 0 };
-    if (wh.source === "binance") {
-      bySymbol[sym].binanceQty += wh.quantity;
-    } else {
-      bySymbol[sym].walletQty += wh.quantity;
-    }
-  }
-
-  const holdings = [];
-  for (const [sym, { buys, sells, walletQty, binanceQty }] of Object.entries(bySymbol)) {
-    const totalBought = buys.reduce((s, t) => s + t.quantity, 0);
-    const totalSold = sells.reduce((s, t) => s + t.quantity, 0);
-    const qty = totalBought - totalSold + (walletQty || 0) + (binanceQty || 0);
-    if (qty <= 0.000001) continue;
-
-    const totalCost = buys.reduce((s, t) => s + t.total, 0);
-    const avgCost = totalBought > 0 ? totalCost / totalBought : 0;
-
-    const market = priceMap[sym] || {};
-    const curPrice = market.price || 0;
-    const value = qty * curPrice;
-    
-    let costBasis = qty * avgCost;
-    let pnl = value - costBasis;
-    let pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
-    
-    // If there is no trade history, assume cost basis is current value to avoid 100% false PnL
-    if (totalBought === 0) {
-      costBasis = value;
-      pnl = 0;
-      pnlPct = 0;
-    }
-
-    holdings.push({
-      symbol: sym,
-      name: market.name || sym,
-      slug: market.slug || sym.toLowerCase(),
-      image_url: market.image_url,
-      quantity: qty,
-      avg_cost: avgCost,
-      current_price: curPrice,
-      value,
-      cost_basis: costBasis,
-      pnl,
-      pnl_pct: pnlPct,
-      change_24h: market.change24h || 0,
-      trades_count: buys.length + sells.length,
-      has_wallet_balance: (walletQty || 0) > 0,
-      has_binance_balance: (binanceQty || 0) > 0,
-    });
-  }
-
-  return holdings.sort((a, b) => b.value - a.value);
-}
-
-// ── Tax hesapla (FIFO + short/long term) ─────────────────────
-function calcTax(trades) {
-  const bySymbol = {};
-  for (const t of [...trades].sort(
-    (a, b) => new Date(a.traded_at) - new Date(b.traded_at),
-  )) {
-    const sym = t.symbol.toUpperCase();
-    if (!bySymbol[sym]) bySymbol[sym] = { lots: [], realized: [] };
-    if (t.side === "buy") {
-      bySymbol[sym].lots.push({
-        qty: t.quantity,
-        price: t.price,
-        date: t.traded_at,
-      });
-    } else {
-      let remaining = t.quantity;
-      while (remaining > 0.000001 && bySymbol[sym].lots.length > 0) {
-        const lot = bySymbol[sym].lots[0];
-        const used = Math.min(lot.qty, remaining);
-        const gain = used * (t.price - lot.price);
-        const holdDays =
-          (new Date(t.traded_at) - new Date(lot.date)) / (1000 * 60 * 60 * 24);
-        const isLongTerm = holdDays >= 365;
-        bySymbol[sym].realized.push({
-          symbol: sym,
-          qty: used,
-          buy_price: lot.price,
-          sell_price: t.price,
-          buy_date: lot.date,
-          sell_date: t.traded_at,
-          gain,
-          holdDays: Math.round(holdDays),
-          isLongTerm,
-          year: new Date(t.traded_at).getFullYear(),
-        });
-        lot.qty -= used;
-        remaining -= used;
-        if (lot.qty <= 0.000001) bySymbol[sym].lots.shift();
-      }
-    }
-  }
-
-  const allRealized = Object.values(bySymbol).flatMap((x) => x.realized);
-  const shortTerm = allRealized.filter((r) => !r.isLongTerm);
-  const longTerm = allRealized.filter((r) => r.isLongTerm);
-
-  const totalGain = allRealized.reduce((s, r) => s + r.gain, 0);
-  const totalLoss = allRealized
-    .filter((r) => r.gain < 0)
-    .reduce((s, r) => s + r.gain, 0);
-  const shortGain = shortTerm.reduce((s, r) => s + r.gain, 0);
-  const longGain = longTerm.reduce((s, r) => s + r.gain, 0);
-
-  // Yıl bazında gruplama
-  const byYear = {};
-  for (const r of allRealized) {
-    if (!byYear[r.year]) byYear[r.year] = [];
-    byYear[r.year].push(r);
-  }
-
-  // Coin bazında özet
-  const byCoin = {};
-  for (const r of allRealized) {
-    if (!byCoin[r.symbol]) byCoin[r.symbol] = { gain: 0, count: 0 };
-    byCoin[r.symbol].gain += r.gain;
-    byCoin[r.symbol].count += 1;
-  }
-
-  // Vergi tahmini (TR/US karışık, kullanıcı kendi oranını girer)
-  const estShortTax = Math.max(0, shortGain) * 0.3;
-  const estLongTax = Math.max(0, longGain) * 0.15;
-  const estTotalTax = estShortTax + estLongTax;
-
-  return {
-    allRealized,
-    totalGain,
-    totalLoss,
-    net: totalGain,
-    shortTerm,
-    longTerm,
-    shortGain,
-    longGain,
-    byYear,
-    byCoin,
-    estShortTax,
-    estLongTax,
-    estTotalTax,
-  };
-}
-
-// ── CSV Export ────────────────────────────────────────────────
-function exportTaxCSV(taxData) {
-  const now = new Date();
-  const reportDate = now.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  const year = now.getFullYear();
-
-  // Summary section
-  const summaryRows = [
-    ["CRYPTO TAX REPORT", "", "", "", "", "", "", "", "", ""],
-    [`Generated: ${reportDate}`, "", "", "", "", "", "", "", "", ""],
-    [
-      "Tax Method: FIFO (First In First Out)",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["=== SUMMARY ===", "", "", "", "", "", "", "", "", ""],
-    [
-      "Total Realized Gain/Loss",
-      `$${taxData.net.toFixed(2)}`,
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    [
-      "Short-Term Gain/Loss",
-      `$${taxData.shortGain.toFixed(2)}`,
-      "(held < 1 year, 30% est. rate)",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    [
-      "Long-Term Gain/Loss",
-      `$${taxData.longGain.toFixed(2)}`,
-      "(held ≥ 1 year, 15% est. rate)",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    [
-      "Estimated Short-Term Tax",
-      `$${taxData.estShortTax.toFixed(2)}`,
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    [
-      "Estimated Long-Term Tax",
-      `$${taxData.estLongTax.toFixed(2)}`,
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    [
-      "Estimated Total Tax",
-      `$${taxData.estTotalTax.toFixed(2)}`,
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    [
-      "Total Transactions",
-      taxData.allRealized.length,
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    ["", "", "", "", "", "", "", "", "", ""],
-    [
-      "DISCLAIMER: Tax estimates are for illustration only. Consult a tax professional.",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    ["", "", "", "", "", "", "", "", "", ""],
-  ];
-
-  // Per-asset summary
-  const assetRows = [
-    ["=== BY ASSET ===", "", "", "", "", "", "", "", "", ""],
-    [
-      "Asset",
-      "Total Gain/Loss",
-      "Transactions",
-      "Short-Term G/L",
-      "Long-Term G/L",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    ...Object.entries(taxData.byCoin)
-      .sort((a, b) => Math.abs(b[1].gain) - Math.abs(a[1].gain))
-      .map(([sym, d]) => {
-        const shortGain = taxData.allRealized
-          .filter((r) => r.symbol === sym && !r.isLongTerm)
-          .reduce((s, r) => s + r.gain, 0);
-        const longGain = taxData.allRealized
-          .filter((r) => r.symbol === sym && r.isLongTerm)
-          .reduce((s, r) => s + r.gain, 0);
-        return [
-          sym,
-          `$${d.gain.toFixed(2)}`,
-          d.count,
-          `$${shortGain.toFixed(2)}`,
-          `$${longGain.toFixed(2)}`,
-          "",
-          "",
-          "",
-          "",
-          "",
-        ];
-      }),
-    ["", "", "", "", "", "", "", "", "", ""],
-  ];
-
-  // Transaction detail
-  const txRows = [
-    ["=== TRANSACTION DETAIL ===", "", "", "", "", "", "", "", "", ""],
-    [
-      "Year",
-      "Asset",
-      "Type",
-      "Buy Date",
-      "Sell Date",
-      "Hold (Days)",
-      "Quantity",
-      "Buy Price (USD)",
-      "Sell Price (USD)",
-      "Gain/Loss (USD)",
-    ],
-    ...taxData.allRealized.map((r) => [
-      r.year,
-      r.symbol,
-      r.isLongTerm ? "Long-Term" : "Short-Term",
-      new Date(r.buy_date).toLocaleDateString("en-US"),
-      new Date(r.sell_date).toLocaleDateString("en-US"),
-      r.holdDays,
-      r.qty.toFixed(8),
-      r.buy_price.toFixed(8),
-      r.sell_price.toFixed(8),
-      r.gain.toFixed(2),
-    ]),
-  ];
-
-  const allRows = [...summaryRows, ...assetRows, ...txRows];
-  const csv = allRows
-    .map((r) =>
-      r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-    )
-    .join("\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }); // BOM for Excel
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `crypto_tax_report_${year}_${now.toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ── Guide Modal ───────────────────────────────────────────────
-function GuideModal({ exchange, onClose }) {
-  const g = EXCHANGE_GUIDES[exchange];
-  if (!g) return null;
-  return (
-    <>
-      <div
-        onClick={onClose}
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 998,
-          background: "rgba(0,0,0,0.8)",
-          backdropFilter: "blur(8px)",
-        }}
-      />
-      <div
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
-          zIndex: 999,
-          width: "100%",
-          maxWidth: 520,
-          padding: "0 16px",
-        }}
-      >
-        <div
-          style={{
-            background: "var(--bg-card)",
-            border: "1px solid var(--border-soft)",
-            borderRadius: 20,
-            overflow: "hidden",
-            boxShadow: "0 24px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)",
-          }}
-        >
-          <div
-            style={{
-              height: 3,
-              background: `linear-gradient(90deg, ${g.color}, transparent)`,
-            }}
-          />
-          <div style={{ padding: "24px 28px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 20,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 24 }}>{g.logo}</span>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 16 }}>
-                    {g.name} Export Guide
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                    Step-by-step instructions
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--text-muted)",
-                }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 20,
-              }}
-            >
-              {g.steps.map((step, i) => (
-                <div
-                  key={i}
-                  style={{ display: "flex", gap: 12, alignItems: "flex-start" }}
-                >
-                  <div
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: "50%",
-                      background: `${g.color}20`,
-                      border: `1px solid ${g.color}40`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: g.color,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      color: "var(--text-secondary)",
-                      lineHeight: 1.5,
-                      paddingTop: 2,
-                    }}
-                  >
-                    {step}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {g.note && (
-              <div
-                style={{
-                  padding: "10px 14px",
-                  background: "var(--accent-soft)",
-                  border: "1px solid var(--accent-soft)",
-                  borderRadius: 10,
-                  display: "flex",
-                  gap: 8,
-                }}
-              >
-                <Info
-                  size={14}
-                  style={{
-                    color: "var(--accent)",
-                    flexShrink: 0,
-                    marginTop: 1,
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "var(--text-muted)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {g.note}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// SOFT CARD
-// ─────────────────────────────────────────────────────────────────
-function SoftCard({ children, className = "", noPadding = false }) {
-  return (
-    <div
-      className={[
-        "bg-[var(--bg-surface)] backdrop-blur-xl border border-[var(--border)] rounded-[24px]",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] transition-all duration-300 ease-out overflow-hidden relative",
-        noPadding ? "" : "p-6 sm:p-8",
-        className,
-      ].filter(Boolean).join(" ")}
-    >
-      {children}
-    </div>
-  );
-}
+import {
+  fmtUSD, fmtPct, fmtNum, COIN_COLORS, CHART_COLORS, EXCHANGE_GUIDES,
+  parseCSV, calcHoldings, calcTax, exportTaxCSV, GuideModal, GlassCard, SoftCard
+} from "../components/portfolio/PortfolioUtils";
 
 // ─────────────────────────────────────────────────────────────────
 // MAIN PORTFOLIO PAGE
@@ -1015,6 +98,7 @@ export default function Portfolio() {
     catch { return []; }
   });
     const [walletHoldings, setWalletHoldings] = useState([]);
+    const [web3Holdings, setWeb3Holdings] = useState([]);
 
     // --- LIVE WALLET BALANCES (WAGMI) ---
     const { address, isConnected } = useAccount();
@@ -1035,7 +119,7 @@ export default function Portfolio() {
 
     useEffect(() => {
       if (!isConnected || !address) {
-        setWalletHoldings([]);
+        setWeb3Holdings([]);
         return;
       }
 
@@ -1085,7 +169,7 @@ export default function Portfolio() {
         });
       }
 
-      setWalletHoldings(newHoldings);
+      setWeb3Holdings(newHoldings);
     }, [isConnected, address, ethBalance, tokenBalances, marketData, erc20Tokens]);
     // ------------------------------------
   const [isFetchingWallet, setIsFetchingWallet] = useState(false);
@@ -1160,8 +244,8 @@ export default function Portfolio() {
   const [isChartLoading, setIsChartLoading] = useState(false);
 
   const holdings = useMemo(
-    () => calcHoldings(trades, marketData, [...walletHoldings, ...binanceHoldings]),
-    [trades, marketData, walletHoldings, binanceHoldings]
+    () => calcHoldings(trades, marketData, [...walletHoldings, ...web3Holdings, ...binanceHoldings]),
+    [trades, marketData, walletHoldings, web3Holdings, binanceHoldings]
   );
   
   const taxData = useMemo(() => calcTax(trades), [trades]);
@@ -1312,50 +396,50 @@ export default function Portfolio() {
   const worstPerformer = holdings.length > 0 ? [...holdings].sort((a, b) => a.pnl_pct - b.pnl_pct)[0] : null;
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white">
-      <div className="max-w-[1600px] mx-auto pb-16 px-4 sm:px-6 relative z-10">
+    <div className="min-h-screen bg-[#0a0b0d] text-white">
+      <div className="max-w-[1200px] mx-auto pb-16 px-4 sm:px-6 relative z-10">
 
       {/* HERO */}
       <div className="relative flex flex-col items-center justify-center pt-20 pb-10 text-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[500px] h-[300px] rounded-full blur-[120px] bg-[var(--accent)]/10" />
+          <div className="w-[600px] h-[300px] rounded-full blur-[120px] bg-[var(--accent)]/5" />
         </div>
-        <p className="relative z-10 text-xs font-bold uppercase tracking-[0.25em] mb-5 text-gray-500">
+        <p className="relative z-10 text-[12px] font-bold uppercase tracking-[0.2em] mb-4 text-[#6b707a]">
           {t('portfolio.title')}
         </p>
-        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white drop-shadow-sm break-words max-w-full px-4 flex items-baseline justify-center gap-2 font-mono">
-          <span className="text-gray-400 text-4xl">$</span>
+        <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-sm break-words max-w-full px-4 flex items-baseline justify-center gap-2">
+          <span className="text-[#6b707a] text-4xl">$</span>
           <NumberFlow value={Number.isNaN(Number(totalValue)) ? 0 : Number(totalValue)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
         </h1>
-        <div className={`relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-[32px] border text-base font-bold transition-all duration-300 shadow-lg ${isPos ? "text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.1)]" : "text-red-400 bg-red-500/10 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]"}`}>
-          {isPos ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
-          <span className="flex items-center gap-1 font-mono">
+        <div className={`relative z-10 inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] border text-[14px] font-semibold transition-all duration-300 ${isPos ? "text-[#14F195] bg-[#14F195]/10 border-[#14F195]/20" : "text-[#FF0013] bg-[#FF0013]/10 border-[#FF0013]/20"}`}>
+          {isPos ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+          <span className="flex items-center gap-1">
             {isPos ? "+" : "-"}$
             <NumberFlow value={Number.isNaN(Number(totalPnl)) ? 0 : Math.abs(Number(totalPnl))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />
           </span>
-          <span className="text-sm opacity-70 font-mono ml-1 flex items-center">
-            (<NumberFlow value={Number.isNaN(Number(pnlPct)) ? 0 : Math.abs(Number(pnlPct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%)
+          <span className="text-[12px] opacity-80 ml-1 flex items-center bg-black/20 px-2 py-0.5 rounded-[6px]">
+            {isPos ? "+" : ""}<NumberFlow value={Number.isNaN(Number(pnlPct)) ? 0 : Number(pnlPct)} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
           </span>
         </div>
 
         {/* TABS */}
-        <div className="relative z-10 flex items-center justify-center gap-2 mt-12 bg-white/[0.02] border border-white/[0.08] p-1 rounded-2xl w-max mx-auto shadow-2xl">
+        <div className="relative z-10 flex items-center justify-center gap-2 mt-12 bg-[#0a0b0d] border border-[#1e1e1e] p-1.5 rounded-[16px] w-max mx-auto shadow-lg">
           <button
             onClick={() => handleTabChange("overview")}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+            className={`px-8 py-2.5 rounded-[12px] text-[14px] font-semibold transition-all duration-300 ${
               activeTab === "overview"
-                ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10"
-                : "text-slate-400 hover:text-white hover:bg-white/[0.02]"
+                ? "bg-[#1a1d21] text-white shadow-sm"
+                : "text-[#6b707a] hover:text-white hover:bg-[#111214]"
             }`}
           >
             Overview
           </button>
           <button
             onClick={() => handleTabChange("swap")}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+            className={`px-8 py-2.5 rounded-[12px] text-[14px] font-semibold transition-all duration-300 ${
               activeTab === "swap"
-                ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10"
-                : "text-slate-400 hover:text-white hover:bg-white/[0.02]"
+                ? "bg-[#1a1d21] text-white shadow-sm"
+                : "text-[#6b707a] hover:text-white hover:bg-[#111214]"
             }`}
           >
             Trade & Swap
@@ -1394,10 +478,10 @@ export default function Portfolio() {
                   <button
                     key={hours}
                     onClick={() => setChartRange(hours)}
-                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                    className={`px-3 py-1 text-[12px] font-semibold rounded-[8px] transition-all ${
                       chartRange === hours
-                        ? "bg-[var(--accent)] text-white shadow-sm"
-                        : "bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                        ? "bg-[#1a1d21] text-white shadow-sm"
+                        : "bg-transparent text-[#6b707a] hover:text-white hover:bg-[#111214]"
                     }`}
                   >
                     {labels[hours]}
@@ -1406,7 +490,7 @@ export default function Portfolio() {
               })}
             </div>
             
-            <div className="h-[250px] w-full">
+            <div className="h-[250px] w-full bg-[#0a0b0d] rounded-[16px] border border-[#1e1e1e] p-4 shadow-lg">
               {isChartLoading ? (
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="animate-spin w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full opacity-50" />
@@ -1416,8 +500,8 @@ export default function Portfolio() {
                   <AreaChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#14F195" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#14F195" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <XAxis 
@@ -1434,11 +518,11 @@ export default function Portfolio() {
                           const data = payload[0].payload;
                           const date = new Date(data.fullTime);
                           return (
-                            <div className="glass-panel px-4 py-3 rounded-xl border-none shadow-xl">
-                              <p className="text-[var(--text-muted)] text-xs font-semibold mb-1">
+                            <div className="bg-[#111214] border border-[#2a2d31] px-4 py-3 rounded-[12px] shadow-xl">
+                              <p className="text-[#6b707a] text-[12px] font-semibold mb-1">
                                 {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </p>
-                              <p className="text-[var(--text-primary)] font-black text-lg">
+                              <p className="text-white font-bold text-[16px]">
                                 <NumberFlow value={Number(data.value) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 2 }} />
                               </p>
                             </div>
@@ -1446,12 +530,12 @@ export default function Portfolio() {
                         }
                         return null;
                       }}
-                      cursor={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                      cursor={{ stroke: '#2a2d31', strokeWidth: 1, strokeDasharray: '4 4' }}
                     />
                     <Area 
                       type="monotone" 
                       dataKey="value" 
-                      stroke="var(--accent)" 
+                      stroke="#14F195" 
                       strokeWidth={3}
                       fillOpacity={1} 
                       fill="url(#colorValue)" 
@@ -1481,28 +565,28 @@ export default function Portfolio() {
         {/* TOP MOVERS WIDGETS */}
         {topPerformer && worstPerformer && topPerformer.symbol !== worstPerformer.symbol && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-green-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-green-500/20 group-hover:scale-150 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp size={14} className="text-green-400" /> Top Performer</h3>
+            <div className="bg-[#0a0b0d] border border-[#1e1e1e] rounded-[16px] p-5 shadow-lg relative overflow-hidden group">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-[#14F195]/5 rounded-full blur-[50px] pointer-events-none group-hover:bg-[#14F195]/10 group-hover:scale-150 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
+              <h3 className="text-[12px] font-semibold text-[#8b909a] uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp size={14} className="text-[#14F195]" /> Top Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
-                {topPerformer.image_url ? <img src={topPerformer.image_url} alt={topPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-300">{topPerformer.symbol[0]}</div>}
+                {topPerformer.image_url ? <img src={topPerformer.image_url} alt={topPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[14px] font-bold text-white">{topPerformer.symbol[0]}</div>}
                 <div>
-                  <div className="text-xl font-black text-white">{topPerformer.symbol}</div>
-                  <div className="text-sm font-bold text-green-400 flex items-center gap-1">
+                  <div className="text-[18px] font-bold text-white">{topPerformer.symbol}</div>
+                  <div className="text-[13px] font-semibold text-[#14F195] flex items-center gap-1">
                     ▲ <NumberFlow value={Number.isNaN(Number(topPerformer.pnl_pct)) ? 0 : Math.abs(Number(topPerformer.pnl_pct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-5 shadow-xl relative overflow-hidden group">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-red-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-red-500/20 group-hover:scale-150 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingDown size={14} className="text-red-400" /> Worst Performer</h3>
+            <div className="bg-[#0a0b0d] border border-[#1e1e1e] rounded-[16px] p-5 shadow-lg relative overflow-hidden group">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-[#FF0013]/5 rounded-full blur-[50px] pointer-events-none group-hover:bg-[#FF0013]/10 group-hover:scale-150 transition-all duration-500 transform translate-x-1/2 -translate-y-1/2"></div>
+              <h3 className="text-[12px] font-semibold text-[#8b909a] uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingDown size={14} className="text-[#FF0013]" /> Worst Performer</h3>
               <div className="flex items-center gap-4 relative z-10">
-                {worstPerformer.image_url ? <img src={worstPerformer.image_url} alt={worstPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-300">{worstPerformer.symbol[0]}</div>}
+                {worstPerformer.image_url ? <img src={worstPerformer.image_url} alt={worstPerformer.symbol} className="w-10 h-10 rounded-full" /> : <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[14px] font-bold text-white">{worstPerformer.symbol[0]}</div>}
                 <div>
-                  <div className="text-xl font-black text-white">{worstPerformer.symbol}</div>
-                  <div className="text-sm font-bold text-red-400 flex items-center gap-1">
+                  <div className="text-[18px] font-bold text-white">{worstPerformer.symbol}</div>
+                  <div className="text-[13px] font-semibold text-[#FF0013] flex items-center gap-1">
                     ▼ <NumberFlow value={Number.isNaN(Number(worstPerformer.pnl_pct)) ? 0 : Math.abs(Number(worstPerformer.pnl_pct))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                   </div>
                 </div>
@@ -1514,143 +598,146 @@ export default function Portfolio() {
         {/* Data Sources (Collapsible) */}
         <div className="w-full">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-black text-[var(--text-primary)]">{t('portfolio.your_holdings')}</h2>
+            <h2 className="text-[18px] font-bold text-white">{t('portfolio.your_holdings')}</h2>
             <button
               onClick={() => setShowAddSource(v => !v)}
-              className="text-xs font-bold px-4 py-2 rounded-lg bg-white/[0.03] text-gray-300 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white transition-all duration-300 flex items-center gap-2"
+              className="text-[12px] font-semibold px-4 py-2 rounded-[8px] bg-[#0a0b0d] text-[#6b707a] border border-[#1e1e1e] hover:bg-[#111214] hover:text-white transition-all duration-300 flex items-center gap-2"
             >
               <Wallet size={14} />
               {showAddSource ? t('portfolio.close_options') : "Manage Sources"}
             </button>
           </div>
-
-          {showAddSource && (
-            <div className="mb-6 bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] rounded-[32px] p-6 shadow-2xl relative overflow-hidden">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Wallet size={14} className="text-[var(--accent)]" /> Import Data
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4 mb-2 rounded-[32px] bg-white/[0.02] border border-[#273951]/50">
-                <ConnectButton.Custom>
-                  {({ account, chain, openAccountModal, openConnectModal, authenticationStatus, mounted }) => {
-                    const ready = mounted && authenticationStatus !== 'loading';
-                    const connected = ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated');
+            {showAddSource && (
+              <div className="bg-[#0a0b0d] border border-[#1e1e1e] rounded-[16px] p-6 shadow-lg mb-6 relative overflow-hidden">
+                {/* Exchange buttons */}
+                <p className="text-[12px] font-semibold text-[#8b909a] uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Wallet size={14} className="text-[var(--accent)]" /> Import Data
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-4 mb-5 rounded-[12px] bg-[#111214] border border-[#2a2d31]">
+                  <ConnectButton.Custom>
+                    {({ account, chain, openAccountModal, openConnectModal, authenticationStatus, mounted }) => {
+                      const ready = mounted && authenticationStatus !== 'loading';
+                      const connected = ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated');
+                      return (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (connected && openAccountModal) openAccountModal();
+                            else if (openConnectModal) openConnectModal();
+                          }}
+                          className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-[12px] border transition-all duration-300 group overflow-hidden ${
+                            connected 
+                              ? "bg-purple-500/10 border-purple-500/30 cursor-pointer" 
+                              : "bg-[#1a1d21] border-[#2a2d31] hover:bg-[#222529] hover:border-[#3a3d41]"
+                          }`}
+                        >
+                          {connected && (
+                            <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_6px_rgba(168,85,247,0.8)]" />
+                          )}
+                          <span className="text-2xl">🦊</span>
+                          <span className={`text-[11px] font-semibold text-center truncate w-full transition-colors ${
+                            connected ? "text-purple-400" : "text-[#8b909a] group-hover:text-white"
+                          }`}>
+                            {connected ? "Wallet Connected" : "Connect Web3"}
+                          </span>
+                        </button>
+                      );
+                    }}
+                  </ConnectButton.Custom>
+                  {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => {
+                    const isExConnected = trades.some(t => t.exchange === ex.name);
                     return (
                       <button
-                        onClick={connected ? openAccountModal : openConnectModal}
-                        className={`relative flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] border transition-all duration-300 group overflow-hidden shadow-lg ${
-                          connected 
-                            ? "bg-purple-500/10 border-purple-500/30 cursor-pointer" 
-                            : "bg-[#16181c] border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98]"
+                        key={key}
+                        onClick={() => !isExConnected && setConnectingExchange(ex)}
+                        className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-[12px] border transition-all duration-300 group overflow-hidden ${
+                          isExConnected 
+                            ? "bg-[#14F195]/5 border-[#14F195]/20 cursor-default" 
+                            : "bg-[#1a1d21] border-[#2a2d31] hover:bg-[#222529] hover:border-[#3a3d41]"
                         }`}
                       >
-                        {connected && (
-                          <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                        {isExConnected && (
+                          <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#14F195] shadow-[0_0_6px_rgba(20,241,149,0.8)]" />
                         )}
-                        <span className={`text-3xl transition-transform duration-300 drop-shadow-2xl ${!connected && "group-hover:scale-110"}`}>
-                          🦊
-                        </span>
-                        <span className={`text-xs font-bold text-center truncate w-full transition-colors ${
-                          connected ? "text-purple-400" : "text-gray-400 group-hover:text-white"
+                        <span className="text-2xl">{ex.logo}</span>
+                        <span className={`text-[11px] font-semibold text-center truncate w-full transition-colors ${
+                          isExConnected ? "text-[#14F195]" : "text-[#8b909a] group-hover:text-white"
                         }`}>
-                          {connected ? "Wallet Connected" : "Connect Web3"}
+                          {isExConnected ? "Connected" : ex.name}
                         </span>
                       </button>
                     );
-                  }}
-                </ConnectButton.Custom>
-                {Object.entries(EXCHANGE_GUIDES).map(([key, ex]) => {
-                  const isExConnected = trades.some(t => t.exchange === ex.name);
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => !isExConnected && setConnectingExchange(ex)}
-                      className={`relative flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-[32px] border transition-all duration-300 group overflow-hidden shadow-lg ${
-                        isExConnected 
-                          ? "bg-green-500/5 border-green-500/20 cursor-default" 
-                          : "bg-[#16181c] border-[#273951]/50 hover:bg-white/[0.04] hover:border-[#273951]/50 hover:scale-[0.98]"
-                      }`}
-                    >
-                      {isExConnected && (
-                        <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
-                      )}
-                      <span className={`text-3xl transition-transform duration-300 drop-shadow-2xl ${!isExConnected && "group-hover:scale-110"}`}>{ex.logo}</span>
-                      <span className={`text-xs font-bold text-center truncate w-full transition-colors ${
-                        isExConnected ? "text-green-400" : "text-gray-400 group-hover:text-white"
-                      }`}>
-                        {isExConnected ? "Connected" : ex.name}
-                      </span>
-                    </button>
-                  );
-                })}
-                <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
-              </div>
-            </div>
-          )}
+                  })}
+                  <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
+                </div>
 
-          <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] rounded-[32px] p-6 shadow-2xl mb-6">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <RefreshCw size={14} className="text-[var(--accent)]" /> {t('portfolio.eth_wallet')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input 
-                value={walletInput} 
-                onChange={e => setWalletInput(e.target.value)} 
-                placeholder="0x..."
-                className="flex-1 min-w-0 bg-[#121212] border border-[#273951]/50 rounded-xl px-4 py-3 sm:px-5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[var(--accent)]/50 focus:bg-[#121212] transition-all duration-300" 
-              />
-              <button 
-                onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
-                className="px-6 py-3 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
-              >
-                {isFetchingWallet ? t('portfolio.fetching') : t('portfolio.add_wallet')}
-              </button>
-            </div>
-            {wallets.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {wallets.map(w => (
-                  <span 
-                    key={w} 
-                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-gray-400 font-mono hover:bg-white/[0.05] transition-colors"
+                {/* ETH Wallet Input */}
+                <p className="text-[12px] font-semibold text-[#8b909a] uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <RefreshCw size={14} className="text-[var(--accent)]" /> {t('portfolio.eth_wallet')}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input 
+                    value={walletInput} 
+                    onChange={e => setWalletInput(e.target.value)} 
+                    placeholder="0x..."
+                    className="flex-1 min-w-0 bg-[#111214] border border-[#2a2d31] rounded-[10px] px-4 py-3 sm:px-5 text-[14px] text-white placeholder-[#6b707a] focus:outline-none focus:border-[var(--accent)]/50 transition-all duration-300" 
+                  />
+                  <button 
+                    onClick={() => { if (walletInput.trim()) { setWallets(prev => [...new Set([...prev, walletInput.trim()])]); setWalletInput(""); } }}
+                    className="px-6 py-3 rounded-[10px] bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 text-[13px] font-semibold whitespace-nowrap transition-all duration-300"
                   >
-                    {w.slice(0,6)}...{w.slice(-4)}
-                    <button 
-                      onClick={() => setWallets(prev => prev.filter(x => x !== w))} 
-                      className="text-gray-500 hover:text-red-400 transition-colors"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
+                    {isFetchingWallet ? t('portfolio.fetching') : t('portfolio.add_wallet')}
+                  </button>
+                </div>
+                {wallets.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {wallets.map(w => (
+                      <span 
+                        key={w} 
+                        className="flex items-center gap-2 px-3.5 py-1.5 rounded-[8px] bg-[#111214] border border-[#2a2d31] text-[12px] text-[#8b909a] font-mono hover:bg-[#1a1d21] transition-colors"
+                      >
+                        {w.slice(0,6)}...{w.slice(-4)}
+                        <button 
+                          onClick={() => setWallets(prev => prev.filter(x => x !== w))} 
+                          className="text-[#6b707a] hover:text-red-400 transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
-          </div>
 
-          <div className="flex flex-wrap gap-2 pt-4 border-t border-white/[0.04] items-center justify-between">
+          <div className="flex flex-wrap gap-2 pt-4 border-t border-[#1e1e1e] items-center justify-between">
             <div className="flex flex-wrap gap-2">
               {trades.length > 0 && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[12px] font-semibold bg-teal-500/10 text-teal-400 border border-teal-500/20">
                   <CheckCircle size={12} /> {trades.length} CSV Trades
                 </span>
               )}
               {binanceKeys.key && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[12px] font-semibold bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
                   <CheckCircle size={12} /> Binance Synced
                 </span>
               )}
               {wallets.length > 0 && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[12px] font-semibold bg-[#1a1d21] text-[#8b909a] border border-[#2a2d31]">
                   <Wallet size={12} /> {wallets.length} Wallet{wallets.length > 1 ? "s" : ""}
                 </span>
               )}
               {trades.length === 0 && !binanceKeys.key && wallets.length === 0 && (
-                <span className="text-xs font-medium text-gray-500">{t('portfolio.no_sources')}</span>
+                <span className="text-[12px] font-medium text-[#6b707a]">{t('portfolio.no_sources')}</span>
               )}
             </div>
             
             {trades.length > 0 && (
               <button 
                 onClick={handleClearTrades} 
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 ml-auto uppercase tracking-wider"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 ml-auto"
               >
                 {t('portfolio.clear_csv')}
               </button>
@@ -1660,13 +747,13 @@ export default function Portfolio() {
 
       {/* HOLDINGS TABLE */}
       {holdings.length > 0 ? (
-        <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden shadow-2xl">
+        <div className="bg-[#0a0b0d] border border-[#1e1e1e] shadow-lg rounded-[16px] overflow-hidden">
           <div className="overflow-x-auto w-full">
             <table className="w-full border-collapse min-w-[700px]">
               <thead>
-                <tr className="border-b border-white/[0.05] bg-white/[0.02]">
+                <tr className="border-b border-[#1e1e1e] bg-[#111214]">
                   {[t('portfolio.table.asset'), t('portfolio.table.price'), t('portfolio.table.balance'), t('portfolio.table.value'), t('portfolio.table.avg_cost'), t('portfolio.table.pnl')].map((h, i) => (
-                    <th key={h} className={`px-5 py-4 text-xs font-bold uppercase tracking-wider text-gray-400 ${i === 0 ? "text-left rounded-tl-2xl" : "text-right"} ${i === 5 ? "rounded-tr-2xl" : ""}`}>
+                    <th key={h} className={`px-5 py-4 text-[12px] font-semibold uppercase tracking-wider text-[#6b707a] ${i === 0 ? "text-left" : "text-right"}`}>
                       {h}
                     </th>
                   ))}
@@ -1682,13 +769,13 @@ export default function Portfolio() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: i * 0.02 }}
-                      className="transition-colors cursor-pointer group border-b border-[#273951]/50 hover:bg-white/[0.03]"
+                      className="transition-colors cursor-pointer group border-b border-[#1e1e1e] hover:bg-[#111214]"
                     >
                       <td className="px-5 py-5">
                         <div className="flex items-center gap-3">
                           {h.image_url
                             ? <img src={h.image_url} alt={h.symbol} className="w-8 h-8 rounded-full shrink-0 transition-transform group-hover:scale-105" />
-                            : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold bg-white/[0.05] text-gray-400">
+                            : <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[13px] font-bold bg-[#1a1d21] text-[#8b909a]">
                                 {h.symbol[0]}
                               </div>
                           }
@@ -1728,16 +815,17 @@ export default function Portfolio() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center p-12 bg-white/[0.02] border border-white/[0.05] rounded-3xl text-center">
-          <Wallet size={48} className="text-gray-600 mb-4" />
-          <h3 className="text-lg font-bold text-gray-300 mb-2">No Assets Found</h3>
-          <p className="text-sm text-gray-500 max-w-sm">Connect a wallet or import a CSV from your exchange to start tracking your portfolio.</p>
+        <div className="flex flex-col items-center justify-center p-12 bg-[#0a0b0d] border border-[#1e1e1e] rounded-[16px] shadow-lg text-center relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 w-40 h-40 bg-[var(--accent)]/5 rounded-full blur-[60px] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+          <BarChart2 size={48} className="text-[#4b4f58] mb-4 relative z-10" />
+          <h3 className="text-[18px] font-bold text-white mb-2 relative z-10">{t('portfolio.empty.title')}</h3>
+          <p className="text-[14px] text-[#8b909a] max-w-sm mx-auto relative z-10">{t('portfolio.empty.desc')}</p>
           {!showAddSource && (
             <button
               onClick={() => setShowAddSource(true)}
-              className="mt-6 text-sm font-bold px-6 py-3 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300"
+              className="mt-6 text-[13px] font-semibold px-6 py-3 rounded-[10px] bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 relative z-10"
             >
-              Add Data Source
+              {t('portfolio.empty.btn')}
             </button>
           )}
         </div>
@@ -1749,15 +837,15 @@ export default function Portfolio() {
         {/* RIGHT COLUMN: Donut + AI Insights + Tax Summary */}
         <div className="lg:col-span-4 flex flex-col gap-6">
         {/* Donut */}
-        <div className="w-full flex flex-col min-h-[380px] bg-[#16181c] border border-[#273951]/50 rounded-[32px] p-6 shadow-2xl relative overflow-hidden group">
+        <div className="w-full flex flex-col min-h-[380px] bg-[#0a0b0d] border border-[#1e1e1e] rounded-[16px] p-6 shadow-lg relative overflow-hidden group">
           <div className="absolute left-1/2 top-1/2 w-[300px] h-[300px] bg-[var(--accent)]/5 rounded-full blur-[80px] pointer-events-none transform -translate-x-1/2 -translate-y-1/2 group-hover:bg-[var(--accent)]/10 transition-all duration-700"></div>
-          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] mb-4 shrink-0 relative z-10 flex items-center justify-center">
+          <h3 className="text-[14px] font-semibold text-white mb-4 shrink-0 relative z-10 flex items-center justify-center">
             {t('portfolio.asset_allocation')}
           </h3>
           
           <div className="flex-1 w-full relative min-h-[200px]">
             {holdings.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500">{t('portfolio.no_assets')}</div>
+              <div className="absolute inset-0 flex items-center justify-center text-[13px] font-medium text-[#6b707a]">{t('portfolio.no_assets')}</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -1766,8 +854,8 @@ export default function Portfolio() {
                   </Pie>
                   <RechartTooltip
                     formatter={(v) => fmtUSD(v)}
-                    contentStyle={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "16px", color: "var(--text-primary)", fontSize: 13, fontWeight: 600 }}
-                    itemStyle={{ color: "var(--text-primary)" }}
+                    contentStyle={{ backgroundColor: "#111214", border: "1px solid #2a2d31", borderRadius: "12px", color: "white", fontSize: 13, fontWeight: 600, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)" }}
+                    itemStyle={{ color: "white" }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -1775,9 +863,9 @@ export default function Portfolio() {
           </div>
 
           {pieData.length > 0 && (
-            <div className="shrink-0 flex flex-wrap justify-center gap-x-4 gap-y-2 mt-6 pt-4 border-t border-white/[0.04]">
+            <div className="shrink-0 flex flex-wrap justify-center gap-x-4 gap-y-2 mt-6 pt-4 border-t border-[#1e1e1e]">
               {pieData.map((d) => (
-                <span key={d.name} className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
+                <span key={d.name} className="flex items-center gap-1.5 text-[12px] font-semibold text-[#8b909a]">
                   <span className="w-2.5 h-2.5 rounded-full inline-block shadow-sm" style={{ backgroundColor: d.color }} />
                   {d.name}
                 </span>
@@ -1935,19 +1023,7 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Empty state */}
-      {holdings.length === 0 && trades.length === 0 && wallets.length === 0 && !binanceKeys.key && (
-        <SoftCard className="text-center py-20">
-          <BarChart2 size={36} className="mx-auto mb-4 text-gray-600" />
-          <p className="font-semibold text-base mb-2 text-gray-400">{t('portfolio.empty.title')}</p>
-          <p className="text-sm mb-6 text-gray-500">{t('portfolio.empty.desc')}</p>
-          <button onClick={() => setShowAddSource(true)} 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-[32px] font-bold text-sm bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all duration-300 shadow-[0_0_15px_var(--accent-soft)] hover:shadow-[0_0_20px_var(--accent-soft)]"
-          >
-            {t('portfolio.empty.btn')}
-          </button>
-        </SoftCard>
-      )}
+
 
       {guide && <GuideModal exchange={guide} onClose={() => setGuide(null)} />}
 

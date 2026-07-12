@@ -212,6 +212,7 @@ export function useAlertMonitor(marketData, isPro = false) {
 
   // Volume spike'ları backend'den çek ve bildirim gönder
   const checkVolumeSpikes = useCallback(async () => {
+    return; // DISABLED: Prevent spam during development
     if (!isPro) return; // Volume spikes — Pro plan only
     const settings = { ...DEFAULT_SETTINGS, ...getNotificationSettings() };
     if (!settings.volume_spikes) return;
@@ -259,6 +260,7 @@ export function useAlertMonitor(marketData, isPro = false) {
   }, [addToast, isPro]);
 
   const checkAlerts = useCallback(async () => {
+    return; // DISABLED: Prevent spam during development
     const settings = { ...DEFAULT_SETTINGS, ...getNotificationSettings() };
     if (!settings.price_alerts) return;
     if (!marketData?.length) return;

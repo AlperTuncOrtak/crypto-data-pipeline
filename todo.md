@@ -45,8 +45,6 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ### 1. Masaüstü Uygulaması (Tauri / Electron)
 - Mobilden sonra değerlendirilecek. Kullanıcıların bilgisayarına indirip Alt Bar'a sabitleyebileceği, terminal hissiyatlı standalone uygulama.
 
-### 2. Sesli AI Asistan (Voice Mode + Audio Visualizer)
-- Sağ alttaki AI Chat ekranına mikrofon butonu ekle. Web Speech API ile sesi metne (STT), metni sese (TTS) çevir ve yanıt gelirken şık bir ses dalgası (visualizer) animasyonu oynat.
 
 ### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
 - 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla.
