@@ -62,17 +62,17 @@ function formatTimeAxis(iso, hours) {
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload || !payload.length) return null
   return (
-    <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '12px 16px', minWidth: 180, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>
+    <div className="bg-[#121212]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 min-w-[180px] shadow-[0_12px_40px_rgba(0,0,0,0.8)]">
+      <div className="text-[11px] text-gray-500 mb-3 font-semibold uppercase tracking-wider">
         {new Date(label).toLocaleString()}
       </div>
       {payload.map(entry => (
-        <div key={entry.dataKey} className="flex items-center justify-between gap-4" style={{ marginBottom: 4 }}>
+        <div key={entry.dataKey} className="flex items-center justify-between gap-4 mb-1.5">
           <div className="flex items-center gap-2">
-            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.stroke, display: 'inline-block' }} />
-            <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{entry.dataKey}</span>
+            <span className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: entry.stroke }} />
+            <span className="text-xs font-bold font-mono text-gray-200">{entry.dataKey}</span>
           </div>
-          <span style={{ fontSize: 12, fontFamily: 'monospace', color: Number(entry.value) >= 0 ? '#2ecc71' : '#e74c3c', fontWeight: 700 }}>
+          <span className={`text-xs font-bold font-mono ${Number(entry.value) >= 0 ? 'text-[#14F195]' : 'text-red-400'}`}>
             {Number(entry.value) >= 0 ? '+' : ''}{Number(entry.value).toFixed(2)}%
           </span>
         </div>
@@ -93,49 +93,42 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
     : []
 
   return (
-    <div className="relative" style={{ width: 280 }}>
-      <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{
-        backgroundColor: 'var(--bg-elevated)',
-        border: `1px solid ${open ? 'var(--accent-border)' : 'var(--border)'}`,
-        transition: 'border-color 0.2s',
-      }}>
-        <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+    <div className="relative w-[280px]">
+      <div className={`flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#111113] border transition-colors duration-200 ${open ? 'border-[var(--accent)]' : 'border-white/10'}`}>
+        <Search size={14} className="text-gray-500 shrink-0" />
         <input
           type="text"
           placeholder={t("analysis.search_placeholder")}
           value={search}
           onChange={e => { setSearch(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 150)}
-          className="bg-transparent outline-none text-sm w-full"
-          style={{ color: 'var(--text-primary)', caretColor: 'var(--accent)' }}
+          onBlur={() => setOpen(false)}
+          className="bg-transparent outline-none text-sm w-full text-white placeholder-white/30"
+          style={{ caretColor: 'var(--accent)' }}
         />
       </div>
       {open && filtered.length > 0 && (
-        <div className="absolute top-full mt-1 left-0 right-0 rounded-xl overflow-hidden z-50" style={{
-          backgroundColor: '#1a1a1a', border: '1px solid var(--border)',
-          boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
-        }}>
+        <div className="absolute top-full mt-2 left-0 right-0 rounded-xl overflow-hidden z-50 bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.8)]">
           {filtered.map(coin => {
             const isSelected = selected.includes(coin.symbol)
             return (
               <div
                 key={coin.symbol}
-                onClick={() => { if (!isSelected && selected.length < 5) { onAdd(coin.symbol); setSearch(''); setOpen(false) } }}
-                className="flex items-center gap-3 px-4 py-3 transition-all"
-                style={{ opacity: isSelected ? 0.4 : 1, cursor: isSelected ? 'not-allowed' : 'pointer' }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)' }}
-                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
+                onMouseDown={(e) => { 
+                  e.preventDefault(); 
+                  if (!isSelected && selected.length < 5) { onAdd(coin.symbol); setSearch(''); setOpen(false) } 
+                }}
+                className={`flex items-center gap-3 px-4 py-3 transition-colors ${isSelected ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-white/5'}`}
               >
                 {coin.image_url
-                  ? <img src={coin.image_url} style={{ width: 24, height: 24, borderRadius: '50%' }} />
-                  : <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>{coin.symbol?.slice(0,1)}</div>
+                  ? <img src={coin.image_url} className="w-6 h-6 rounded-full" />
+                  : <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px] font-bold text-[var(--accent)]">{coin.symbol?.slice(0,1)}</div>
                 }
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{coin.name}</div>
-                  <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{coin.symbol?.toUpperCase()}</div>
+                  <div className="text-sm font-semibold text-white">{coin.name}</div>
+                  <div className="text-xs font-mono text-gray-500">{coin.symbol?.toUpperCase()}</div>
                 </div>
-                <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{formatPrice(coin.current_price)}</div>
+                <div className="text-xs font-mono text-gray-400 font-bold">{formatPrice(coin.current_price)}</div>
               </div>
             )
           })}
@@ -170,22 +163,24 @@ export default function Analysis() {
   }, [allCoins])
 
   return (
-    <div style={{ color: 'var(--text-primary)', maxWidth: 1100, margin: '0 auto' }}>
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
+      {/* BACKGROUND GLOWS */}
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
+        <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[#059669] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
+      </div>
+
+      <div className="max-w-[1100px] mx-auto relative z-20">
 
       {/* HEADER */}
-      <div style={{ marginBottom: 28 }}>
+      <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div style={{
-            width: 48, height: 48, borderRadius: 16,
-            background: 'linear-gradient(135deg, var(--accent-soft), var(--accent-soft))',
-            border: '1px solid var(--accent-soft)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <GitCompare size={22} style={{ color: 'var(--accent)' }} />
+          <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center">
+            <GitCompare size={22} className="text-[var(--accent)]" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t("analysis.title")}</h1>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+            <h1 className="text-4xl font-black tracking-tight">{t("analysis.title")}</h1>
+            <p className="text-sm mt-1 text-gray-400 font-medium">
               {t("analysis.subtitle")}
             </p>
           </div>
@@ -193,7 +188,7 @@ export default function Analysis() {
       </div>
 
       {/* COIN SEÇİCİ */}
-      <div className="rounded-[32px]" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '20px', marginBottom: 24 }}>
+      <div className="rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl p-5 mb-6">
         <div className="flex items-center gap-3 flex-wrap">
           <CoinSearchDropdown allCoins={allCoins || []} selected={selected} onAdd={addCoin} />
           {selected.map((sym, i) => {
@@ -221,15 +216,12 @@ export default function Analysis() {
 
       {/* EMPTY STATE */}
       {selected.length < 2 && (
-        <div className="flex flex-col items-center justify-center rounded-[32px]" style={{
-          backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)',
-          padding: '64px 24px', textAlign: 'center',
-        }}>
-          <GitCompare size={40} style={{ color: 'var(--text-muted)', opacity: 0.3, marginBottom: 16 }} />
-          <div className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
+        <div className="flex flex-col items-center justify-center rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl py-16 px-6 text-center">
+          <GitCompare size={40} className="text-gray-500 opacity-50 mb-4" />
+          <div className="text-sm font-semibold text-gray-300">
             {selected.length === 0 ? t("analysis.empty_state_1") : t("analysis.empty_state_2")}
           </div>
-          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{t("analysis.empty_state_desc")}</div>
+          <div className="text-xs mt-1 text-gray-500">{t("analysis.empty_state_desc")}</div>
         </div>
       )}
 
@@ -246,13 +238,7 @@ export default function Analysis() {
                 const colorIdx = selected.indexOf(row.symbol)
                 const color = CHART_COLORS[colorIdx >= 0 ? colorIdx : i]
                 return (
-                  <div key={row.symbol} className="rounded-[32px]" style={{
-                    backgroundColor: 'var(--bg-surface)',
-                    border: `1px solid ${color}30`,
-                    padding: '20px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}>
+                  <div key={row.symbol} className="rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border shadow-xl p-5 relative overflow-hidden" style={{ borderColor: `${color}30` }}>
                     {/* bg glow */}
                     <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', backgroundColor: `${color}10`, filter: 'blur(20px)', pointerEvents: 'none' }} />
 
@@ -293,7 +279,7 @@ export default function Analysis() {
           )}
 
           {/* CHART */}
-          <div className="rounded-[32px]" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', padding: '24px' }}>
+          <div className="rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl p-6">
             {/* Chart header */}
             <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
               <div>
@@ -341,21 +327,21 @@ export default function Analysis() {
             {chartData.length > 0 && (
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-soft)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis
                     dataKey="time"
                     tickFormatter={t => formatTimeAxis(t, hours)}
-                    stroke="var(--border)"
-                    tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+                    stroke="rgba(255,255,255,0.05)"
+                    tick={{ fill: '#6b7280', fontSize: 11 }}
                     interval="preserveStartEnd"
                   />
                   <YAxis
                     tickFormatter={v => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`}
-                    stroke="var(--border)"
-                    tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+                    stroke="rgba(255,255,255,0.05)"
+                    tick={{ fill: '#6b7280', fontSize: 11 }}
                     width={65}
                   />
-                  <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="4 4" />
+                  <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" strokeDasharray="4 4" />
                   <Tooltip
                     cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '3 3' }}
                     content={<CustomTooltip />}
@@ -384,6 +370,7 @@ export default function Analysis() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

@@ -18,9 +18,12 @@ import {
   PanelLeftClose,
   ChevronDown,
   ChevronUp,
-  ChevronsUpDown
+  ChevronsUpDown,
+  MessageCircle,
+  Globe
 } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
+import SettingsModal from '../ui/SettingsModal';
 
 const mainNavSections = [
   {
@@ -37,12 +40,7 @@ const mainNavSections = [
       { 
         name: 'Market Data', 
         path: '/market', 
-        icon: BarChart2,
-        subItems: [
-          { name: 'All Assets', path: '/market' },
-          { name: 'Trending', path: '/market?tab=trending' },
-          { name: 'Gainers & Losers', path: '/market?tab=gainers' }
-        ]
+        icon: BarChart2
       },
       { name: 'AI Analysis', path: '/analysis', icon: Brain },
       { name: 'Whale X-Ray', path: '/whale', icon: Activity },
@@ -59,13 +57,15 @@ const supportSection = {
     { name: 'Alerts', path: '/alerts', icon: Bell },
     { name: 'Leaderboard', path: '/leaderboard', icon: Users },
     { name: 'Help & Support', path: '/support', icon: HelpCircle },
-    { name: 'Settings', path: '/settings', icon: Settings },
+    { name: 'Settings', path: '#', icon: Settings },
+    { name: 'Contact Me', path: '/contact', icon: MessageCircle },
   ]
 };
 
 export default function GlobalSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState<string[]>(['Market Data']); // Default expand 'Market Data'
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const toggleExpand = (name: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -82,7 +82,16 @@ export default function GlobalSidebar({ onSearchOpen }: { onSearchOpen: () => vo
       <div key={item.name}>
         <NavLink
           to={item.subItems ? '#' : item.path}
-          onClick={(e) => item.subItems ? toggleExpand(item.name, e) : null}
+          onClick={(e) => {
+            if (item.name === 'Settings') {
+              e.preventDefault();
+              setIsSettingsOpen(true);
+              return;
+            }
+            if (item.subItems) {
+              toggleExpand(item.name, e);
+            }
+          }}
           className={`flex items-center gap-3 px-2.5 h-[34px] rounded-[6px] text-[13.5px] font-medium transition-all duration-200 group ${
             isActive && !item.subItems
               ? 'bg-[#1a1d21] text-white border border-white/5' 
@@ -127,8 +136,8 @@ export default function GlobalSidebar({ onSearchOpen }: { onSearchOpen: () => vo
       {/* Header Area */}
       <div className="h-[60px] flex items-center justify-between px-5 shrink-0">
         <NavLink to="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black font-bold text-xs">
-            <span style={{ transform: 'scale(1.2)' }}>CN</span>
+          <div className="w-7 h-7 flex items-center justify-center rounded-md overflow-hidden bg-white/5 border border-white/10">
+            <img src="/cat-head.png" alt="CryptoNeko" className="w-[80%] h-[80%] object-contain" />
           </div>
           <span className="font-semibold text-white text-[15px] tracking-tight">CryptoNeko</span>
         </NavLink>
@@ -189,6 +198,11 @@ export default function GlobalSidebar({ onSearchOpen }: { onSearchOpen: () => vo
           <ChevronsUpDown size={14} className="text-gray-500 mr-1" />
         </div>
       </div>
+
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+      />
     </div>
   );
 }

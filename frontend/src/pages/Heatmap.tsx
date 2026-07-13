@@ -8,14 +8,14 @@ import { LayoutGrid, RefreshCw } from "lucide-react";
 // Değişim yüzdesine göre 7 kademeli renk skalası
 function changeColor(pct) {
   const p = Number(pct) || 0;
-  if (p >= 10) return { bg: "#0d6b35", text: "#6efaaa", border: "#1a9e52" };
-  if (p >= 5) return { bg: "#0f7a3a", text: "#7dfdb5", border: "#1db356" };
-  if (p >= 2) return { bg: "#155e30", text: "#86f5b0", border: "#20a050" };
-  if (p >= 0) return { bg: "#163d25", text: "#5ddc8a", border: "#1e7a44" };
-  if (p >= -2) return { bg: "#4a1515", text: "#f47878", border: "#7a2222" };
-  if (p >= -5) return { bg: "#5c1010", text: "#f96060", border: "#921a1a" };
-  if (p >= -10) return { bg: "#6b0d0d", text: "#ff5252", border: "#a01c1c" };
-  return { bg: "#7a0a0a", text: "#ff3838", border: "#b01515" };
+  if (p >= 10) return { bg: "#0d4d29", text: "#6efaaa", border: "#14F195" };
+  if (p >= 5) return { bg: "#0a3d21", text: "#7dfdb5", border: "#10c97c" };
+  if (p >= 2) return { bg: "#08331b", text: "#86f5b0", border: "#0d9e61" };
+  if (p >= 0) return { bg: "#052212", text: "#5ddc8a", border: "#096940" };
+  if (p >= -2) return { bg: "#330808", text: "#f47878", border: "#7a1313" };
+  if (p >= -5) return { bg: "#4a0b0b", text: "#f96060", border: "#a31818" };
+  if (p >= -10) return { bg: "#610e0e", text: "#ff5252", border: "#d41c1c" };
+  return { bg: "#7a1111", text: "#ff3838", border: "#f01f1f" };
 }
 
 // ─── Fiyat formatlama ─────────────────────────────────────────
@@ -139,90 +139,35 @@ function Tooltip({ coin, pos }) {
   return (
     <div
       style={{
-        position: "fixed",
-        left,
-        top,
-        zIndex: 9999,
-        background: "rgba(25, 25, 28, 0.8)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: `1px solid ${colors.border}`,
-        borderRadius: "1.2rem",
-        padding: "16px",
-        pointerEvents: "none",
-        width: TW,
+        position: "fixed", left, top, zIndex: 9999, pointerEvents: "none", width: TW,
+        borderColor: `${colors.border}80`,
         boxShadow: `0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px ${colors.border}44`,
       }}
+      className="bg-[#1a1a1a]/95 backdrop-blur-2xl border rounded-2xl p-4"
     >
       {/* Header: logo + isim */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 9,
-          marginBottom: 10,
-          borderBottom: "1px solid #2a2a2a",
-          paddingBottom: 9,
-        }}
-      >
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-white/10">
         {coin.image_url ? (
-          <img
-            src={coin.image_url}
-            alt={coin.symbol}
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              flexShrink: 0,
-            }}
-          />
+          <img src={coin.image_url} alt={coin.symbol} className="w-7 h-7 rounded-full shrink-0" />
         ) : (
           <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              background: colors.bg,
-              border: `1px solid ${colors.border}`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 11,
-              color: colors.text,
-              fontWeight: 700,
-              flexShrink: 0,
-            }}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 border"
+            style={{ background: colors.bg, borderColor: colors.border, color: colors.text }}
           >
             {coin.symbol?.[0]}
           </div>
         )}
-        <div style={{ minWidth: 0 }}>
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#f0f0f0",
-              lineHeight: 1.1,
-            }}
-          >
-            {coin.name}
-          </div>
-          <div style={{ fontSize: 11, color: "#666", marginTop: 1 }}>
-            {coin.symbol}
-          </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-[13px] font-bold text-white leading-tight truncate">{coin.name}</div>
+          <div className="text-[11px] text-gray-400 mt-0.5">{coin.symbol?.toUpperCase()}</div>
         </div>
         {/* 24h badge */}
         <div
+          className="shrink-0 px-2 py-0.5 rounded-md text-[11px] font-bold border"
           style={{
-            marginLeft: "auto",
-            flexShrink: 0,
-            background: isUp ? "rgba(46,204,113,0.15)" : "rgba(231,76,60,0.15)",
-            border: `1px solid ${isUp ? "#2ecc7144" : "#e74c3c44"}`,
-            borderRadius: 6,
-            padding: "3px 7px",
-            fontSize: 12,
-            fontWeight: 700,
-            color: isUp ? "#2ecc71" : "#e74c3c",
+            background: isUp ? "rgba(20,241,149,0.15)" : "rgba(239,68,68,0.15)",
+            borderColor: isUp ? "rgba(20,241,149,0.3)" : "rgba(239,68,68,0.3)",
+            color: isUp ? "#14F195" : "#ef4444",
           }}
         >
           {isUp ? "▲" : "▼"} {Math.abs(pct).toFixed(2)}%
@@ -230,34 +175,15 @@ function Tooltip({ coin, pos }) {
       </div>
 
       {/* Veri satırları */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+      <div className="flex flex-col gap-2">
         {[
-          { label: t("heatmap.price"), value: fmt(coin.current_price), mono: true },
-          { label: t("heatmap.market_cap"), value: fmtCap(coin.market_cap), mono: true },
-          {
-            label: t("heatmap.volume_24h"),
-            value: fmtCap(coin.total_volume),
-            mono: true,
-          },
+          { label: t("heatmap.price"), value: fmt(coin.current_price) },
+          { label: t("heatmap.market_cap"), value: fmtCap(coin.market_cap) },
+          { label: t("heatmap.volume_24h"), value: fmtCap(coin.total_volume) },
         ].map(({ label, value }) => (
-          <div
-            key={label}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ fontSize: 11, color: "#666" }}>{label}</span>
-            <span
-              style={{
-                fontSize: 12,
-                color: "#d0d0d0",
-                fontFamily: "monospace",
-              }}
-            >
-              {value}
-            </span>
+          <div key={label} className="flex justify-between items-center">
+            <span className="text-[11px] text-gray-400">{label}</span>
+            <span className="text-[12px] text-gray-200 font-mono font-medium">{value}</span>
           </div>
         ))}
       </div>
@@ -404,65 +330,45 @@ export default function Heatmap() {
 
   // Legend bantları
   const legend = [
-    { label: "≥+10%", color: "#0d6b35", text: "#6efaaa" },
-    { label: "+5~10%", color: "#0f7a3a", text: "#7dfdb5" },
-    { label: "+2~5%", color: "#155e30", text: "#86f5b0" },
-    { label: "0~+2%", color: "#163d25", text: "#5ddc8a" },
-    { label: "0~-2%", color: "#4a1515", text: "#f47878" },
-    { label: "-2~-5%", color: "#5c1010", text: "#f96060" },
-    { label: "-5~-10%", color: "#6b0d0d", text: "#ff5252" },
-    { label: "≤-10%", color: "#7a0a0a", text: "#ff3838" },
+    { label: "≥+10%", color: "#0d4d29", text: "#14F195" },
+    { label: "+5~10%", color: "#0a3d21", text: "#10c97c" },
+    { label: "+2~5%", color: "#08331b", text: "#0d9e61" },
+    { label: "0~+2%", color: "#052212", text: "#096940" },
+    { label: "0~-2%", color: "#330808", text: "#7a1313" },
+    { label: "-2~-5%", color: "#4a0b0b", text: "#a31818" },
+    { label: "-5~-10%", color: "#610e0e", text: "#d41c1c" },
+    { label: "≤-10%", color: "#7a1111", text: "#f01f1f" },
   ];
 
   return (
-    <div style={{ color: "var(--text-primary)" }}>
+    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
+      {/* BACKGROUND GLOWS */}
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
+        <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[#059669] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
+      </div>
+
+      <div className="max-w-[1100px] mx-auto relative z-20">
       {/* HEADER */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          marginBottom: 20,
-        }}
-      >
+      <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1
-            style={{
-              fontSize: 28,
-              fontWeight: 700,
-              letterSpacing: "-0.5px",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <LayoutGrid size={24} style={{ color: "var(--accent)" }} />
+          <h1 className="text-4xl font-black tracking-tight flex items-center gap-3">
+            <LayoutGrid size={28} className="text-[var(--accent)]" />
             {t("heatmap.title")}
           </h1>
-          <p style={{ marginTop: 4, fontSize: 13, color: "var(--text-muted)" }}>
+          <p className="text-sm mt-1 text-gray-400 font-medium">
             {t("heatmap.subtitle")}
           </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="flex items-center gap-3">
           {/* Coin sayısı seçici */}
-          <div style={{ display: "flex", gap: 4 }}>
+          <div className="flex gap-1 bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-xl p-1 shadow-lg">
             {LIMITS.map((l) => (
               <button
                 key={l}
                 onClick={() => setLimit(l)}
-                style={{
-                  padding: "6px 14px",
-                  borderRadius: 8,
-                  border: `1px solid ${limit === l ? "var(--accent)" : "rgba(255,255,255,0.05)"}`,
-                  background: limit === l ? "var(--accent)" : "rgba(255,255,255,0.02)",
-                  color: limit === l ? "#111" : "rgba(255,255,255,0.6)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                  boxShadow: limit === l ? "0 0 15px var(--accent-soft)" : "none",
-                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${limit === l ? "bg-[var(--accent)] text-[#111] shadow-[0_0_15px_var(--accent-soft)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
               >
                 {t("heatmap.top", { count: l })}
               </button>
@@ -472,21 +378,10 @@ export default function Heatmap() {
           {/* Refresh */}
           <button
             onClick={() => market.refetch()}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "5px 12px",
-              borderRadius: 6,
-              border: "1px solid var(--border)",
-              background: "var(--bg-surface)",
-              color: "var(--text-muted)",
-              fontSize: 12,
-              cursor: "pointer",
-            }}
+            className="flex items-center gap-2 px-4 py-2 bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-xl text-xs font-bold text-gray-400 hover:text-white hover:bg-white/10 transition-all shadow-lg"
           >
             <RefreshCw
-              size={12}
+              size={14}
               style={{
                 animation: market.isFetching
                   ? "spin 1s linear infinite"
@@ -499,39 +394,17 @@ export default function Heatmap() {
       </div>
 
       {/* LEGEND */}
-      <div
-        style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap" }}
-      >
+      <div className="flex gap-3 mb-4 flex-wrap bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-xl p-3 shadow-lg max-w-fit">
         {legend.map((l) => (
-          <div
-            key={l.label}
-            style={{ display: "flex", alignItems: "center", gap: 5 }}
-          >
-            <div
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 3,
-                background: l.color,
-                border: `1px solid ${l.text}33`,
-              }}
-            />
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-              {l.label}
-            </span>
+          <div key={l.label} className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-[3px] border" style={{ background: l.color, borderColor: `${l.text}55` }} />
+            <span className="text-[11px] font-medium text-gray-400">{l.label}</span>
           </div>
         ))}
       </div>
 
       {/* TREEMAP */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%`,
-          backgroundColor: "#16181cCC", backdropFilter: "blur(20px)", border: "1px solid rgba(39, 57, 81, 0.5)", borderRadius: 32, overflow: "hidden", boxShadow: "inset 0 0 80px rgba(39,57,81,0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.8)"
-        }}
-      >
+      <div className="relative w-full rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden p-1" style={{ paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%` }}>
         <div
           style={{
             position: "absolute",
@@ -749,6 +622,7 @@ export default function Heatmap() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
+      </div>
     </div>
   );
 }

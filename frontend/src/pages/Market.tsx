@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Search, Star, ChevronUp, ChevronDown } from 
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import NumberFlow from "@number-flow/react";
+import LivePrice from "../components/ui/LivePrice";
 
 const PAGE_SIZE = 100;
 
@@ -47,6 +48,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
   const { t } = useTranslation();
   const { data: marketData, isLoading, isError, error } = useMarket(10000);
   const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
   const [sort, setSort] = useState({ key: "market_cap", direction: "desc" });
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
@@ -61,16 +63,39 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
   const filteredAndSorted = useMemo(() => {
     if (!marketData) return [];
+    
+    let rows = [...(marketData as any[])];
+    
+    // Tab filters
+    if (activeTab === "gainers") {
+       rows = rows.filter(c => c.price_change_percentage_24h > 0);
+    } else if (activeTab === "losers") {
+       rows = rows.filter(c => c.price_change_percentage_24h < 0);
+    }
+    
     const term = search.trim().toLowerCase();
-    let rows = marketData as any[];
     if (term) rows = rows.filter(c => (c.symbol || "").toLowerCase().includes(term) || (c.name || "").toLowerCase().includes(term));
+    
     return sortRows(rows, sort.key, sort.direction);
-  }, [marketData, search, sort]);
+  }, [marketData, search, sort, activeTab]);
 
   const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
   const paginated = filteredAndSorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const symbols = useMemo(() => paginated.map((c: any) => c.symbol).filter(Boolean), [paginated]);
   const { data: sparklineData } = useSparklines(symbols, 24);
+
+  const topGainers = useMemo(() => {
+    if (!marketData) return [];
+    return [...(marketData as any[])].sort((a, b) => Number(b.price_change_percentage_24h) - Number(a.price_change_percentage_24h)).slice(0, 5);
+  }, [marketData]);
+
+  useEffect(() => {
+    if (!marketData) return;
+    const btc = (marketData as any[]).find(c => c.symbol === "btc");
+    if (btc) {
+      document.title = `BTC $${Number(btc.current_price).toLocaleString()} | CryptoNeko`;
+    }
+  }, [marketData]);
 
   function handleSort(key: string) {
     setPage(1);
@@ -108,7 +133,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
       <button
         onClick={() => setPage(p => Math.max(1, p - 1))}
         disabled={page === 1}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#273951]/50 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
       >
         <ChevronLeft size={13} /> Prev
       </button>
@@ -122,8 +147,8 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
             onClick={() => setPage(Number(p))}
             className={`w-8 h-8 rounded-lg border text-xs font-bold transition-all ${
               p === page 
-                ? "bg-white text-black border-white" 
-                : "bg-white/5 text-gray-400 border-[#273951]/50 hover:bg-white/10 hover:text-white"
+                ? "bg-[var(--accent)] text-black border-[var(--accent)]" 
+                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white"
             }`}
           >
             {p}
@@ -134,7 +159,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
       <button
         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
         disabled={page === totalPages}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#273951]/50 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-white/10 text-white"
       >
         Next <ChevronRight size={13} />
       </button>
@@ -145,8 +170,8 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
     <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
       {/* BACKGROUND GLOWS (Stripe inspired mesh at the top) */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
-        <div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div>
-        <div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
+        <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[#059669] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
       </div>
 
       <div className="max-w-[1320px] mx-auto relative z-20">
@@ -175,36 +200,92 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
         </div>
       </FadeIn>
 
+      {/* LIVE MARQUEE TICKER */}
+      <FadeIn delay={0.15}>
+        <div className="mb-6 bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden flex items-center px-4 py-2 shadow-lg">
+          <div className="text-[11px] font-black text-gray-500 uppercase tracking-widest mr-4 shrink-0 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)] animate-pulse" />
+            Top Gainers
+          </div>
+          <div className="flex-1 overflow-hidden relative flex items-center h-6">
+            <div className="animate-marquee whitespace-nowrap flex gap-8 items-center absolute">
+              {topGainers.map((coin: any, i: number) => (
+                <div key={i} className="flex items-center gap-2 text-sm font-bold">
+                  <span className="text-white">{coin.symbol.toUpperCase()}</span>
+                  <span className="text-[var(--accent)]">+{Number(coin.price_change_percentage_24h).toFixed(2)}%</span>
+                </div>
+              ))}
+              {/* Duplicate for seamless loop */}
+              {topGainers.map((coin: any, i: number) => (
+                <div key={`dup-${i}`} className="flex items-center gap-2 text-sm font-bold">
+                  <span className="text-white">{coin.symbol.toUpperCase()}</span>
+                  <span className="text-[var(--accent)]">+{Number(coin.price_change_percentage_24h).toFixed(2)}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
       {/* MAIN TABLE BENTO BOX */}
       <FadeIn delay={0.2}>
-        <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-2xl rounded-[32px] overflow-hidden">
+        <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-[32px] overflow-hidden">
           
           {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-[#273951]/50 bg-white/[0.02]">
-            <div className="relative w-[300px]">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-              <input
-                value={search}
-                onChange={e => { setSearch(e.target.value); setPage(1); }}
-                placeholder={t("market.search_placeholder")}
-                className="w-full bg-[#111113] border border-[#273951]/50 rounded-xl py-2 pl-9 pr-4 text-[13px] font-medium text-white placeholder-white/30 outline-none focus:border-[var(--accent)] transition-all"
-              />
+          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-white/5 bg-white/[0.02]">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative w-[300px]">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                <input
+                  value={search}
+                  onChange={e => { setSearch(e.target.value); setPage(1); }}
+                  placeholder={t("market.search_placeholder")}
+                  className="w-full bg-[#111113] border border-white/10 rounded-xl py-2 pl-9 pr-4 text-[13px] font-medium text-white placeholder-white/30 outline-none focus:border-[var(--accent)] transition-all"
+                />
+              </div>
+
+              {/* Segmented Tabs */}
+              <div className="flex items-center p-1 bg-[#111113] border border-white/10 rounded-xl hidden md:flex">
+                {[
+                  { id: "all", label: "🔥 All Assets" },
+                  { id: "trending", label: "💎 Trending" },
+                  { id: "gainers", label: "🚀 Top Gainers" },
+                  { id: "losers", label: "🩸 Top Losers" }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setPage(1);
+                      if (tab.id === "gainers") setSort({ key: "price_change_percentage_24h", direction: "desc" });
+                      else if (tab.id === "losers") setSort({ key: "price_change_percentage_24h", direction: "asc" });
+                      else if (tab.id === "trending") setSort({ key: "total_volume", direction: "desc" });
+                      else setSort({ key: "market_cap", direction: "desc" });
+                    }}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === tab.id ? "bg-white/10 text-white shadow-sm" : "text-gray-500 hover:text-gray-300 hover:bg-white/5"}`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <Pagination />
           </div>
 
-          {/* Column Headers */}
-          <div className="grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 border-b border-[#273951]/50 bg-white/[0.02] items-center gap-2">
-            <div />
-            <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500">#</div>
-            <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500">{t("market.table.name")}</div>
-            <TH label={t("market.table.price")} sortKey="current_price" />
-            <TH label={t("market.table.change")} sortKey="price_change_percentage_24h" />
-            <TH label={t("market.table.volume")} sortKey="total_volume" />
-            <TH label={t("market.table.mcap")} sortKey="market_cap" />
-            <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500 text-right">{t("market.table.sparkline")}</div>
-            <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500 text-right">{t("market.table.updated")}</div>
-          </div>
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-[950px]">
+              {/* Column Headers */}
+              <div className="grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 border-b border-white/5 bg-[#121212]/95 backdrop-blur-xl items-center gap-2 sticky top-0 z-10 shadow-md">
+                <div />
+                <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500">#</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500">{t("market.table.name")}</div>
+                <TH label={t("market.table.price")} sortKey="current_price" />
+                <TH label={t("market.table.change")} sortKey="price_change_percentage_24h" />
+                <TH label={t("market.table.volume")} sortKey="total_volume" />
+                <TH label={t("market.table.mcap")} sortKey="market_cap" />
+                <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500 text-right">{t("market.table.sparkline")}</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-gray-500 text-right">{t("market.table.updated")}</div>
+              </div>
 
           {/* Loading state */}
           {isLoading && (
@@ -229,107 +310,109 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
             </div>
           )}
 
-          {/* Rows */}
-          <div className="divide-y divide-white/5">
-            {paginated.map((coin: any, idx: number) => {
-              const change = Number(coin.price_change_percentage_24h);
-              const isUp = change >= 0;
-              const sparkPrices = sparklineData?.[coin.symbol] || [];
-              const rank = (page - 1) * PAGE_SIZE + idx + 1;
-              const watched = isWatched?.(coin.symbol);
+              {/* Rows */}
+              <div className="divide-y divide-white/5">
+                {paginated.map((coin: any, idx: number) => {
+                  const change = Number(coin.price_change_percentage_24h);
+                  const isUp = change >= 0;
+                  const sparkPrices = sparklineData?.[coin.symbol] || [];
+                  const rank = (page - 1) * PAGE_SIZE + idx + 1;
+                  const watched = isWatched?.(coin.symbol);
 
-              // freshness
-              const secs = coin.last_updated ? Math.floor((Date.now() - new Date(coin.last_updated).getTime()) / 1000) : null;
-              const mins = secs != null ? Math.floor(secs / 60) : null;
-              const live = coin.data_source === "binance" && secs != null && secs < 120;
-              const freshnessColor = live ? "text-green-500" : mins != null && mins < 10 ? "text-[var(--accent)]" : mins != null && mins < 60 ? "text-orange-500" : "text-gray-500";
-              const freshnessLabel = live ? "LIVE" : mins != null && mins < 60 ? `${mins}m` : secs != null ? `${Math.floor((mins ?? 0) / 60)}h` : "—";
+                  // freshness
+                  const secs = coin.last_updated ? Math.floor((Date.now() - new Date(coin.last_updated).getTime()) / 1000) : null;
+                  const mins = secs != null ? Math.floor(secs / 60) : null;
+                  const live = coin.data_source === "binance" && secs != null && secs < 120;
+                  const freshnessColor = live ? "text-[var(--accent)]" : mins != null && mins < 10 ? "text-[var(--accent)]" : mins != null && mins < 60 ? "text-orange-500" : "text-gray-500";
+                  const freshnessLabel = live ? "LIVE" : mins != null && mins < 60 ? `${mins}m` : secs != null ? `${Math.floor((mins ?? 0) / 60)}h` : "—";
 
-              return (
-                <motion.div
-                  key={coin.symbol}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: idx * 0.01 }}
-                  onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                  className={`grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 items-center gap-2 group transition-colors ${coin.slug ? "cursor-pointer hover:bg-white/[0.03]" : ""}`}
-                >
-                  {/* Star */}
-                  <div onClick={e => e.stopPropagation()}>
-                    <button
-                      onClick={() => toggleWatchlist?.(coin.symbol)}
-                      className={`p-1.5 rounded-lg transition-all ${watched ? "text-yellow-500" : "text-gray-600 hover:text-yellow-500/50 hover:bg-white/5"}`}
+                  return (
+                    <motion.div
+                      key={coin.symbol}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: idx * 0.01 }}
+                      onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
+                      className={`grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 items-center gap-2 group transition-colors ${coin.slug ? "cursor-pointer hover:bg-white/[0.03]" : ""}`}
                     >
-                      <Star size={14} fill={watched ? "currentColor" : "none"} strokeWidth={watched ? 1 : 2} />
-                    </button>
-                  </div>
-
-                  {/* Rank */}
-                  <span className="font-mono text-xs font-bold text-gray-500 group-hover:text-gray-300 transition-colors">
-                    {rank}
-                  </span>
-
-                  {/* Name */}
-                  <div className="flex items-center gap-3 min-w-0">
-                    {coin.image_url ? (
-                      <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full shrink-0" onError={(e: any) => (e.target.style.display = "none")} />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                        {coin.symbol?.[0]}
+                      {/* Star */}
+                      <div onClick={e => e.stopPropagation()}>
+                        <button
+                          onClick={() => toggleWatchlist?.(coin.symbol)}
+                          className={`p-1.5 rounded-lg transition-all ${watched ? "text-[var(--accent)]" : "text-gray-600 hover:text-[var(--accent)] hover:bg-white/5"}`}
+                        >
+                          <Star size={14} fill={watched ? "currentColor" : "none"} strokeWidth={watched ? 1 : 2} />
+                        </button>
                       </div>
-                    )}
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-white truncate">{coin.name}</div>
-                      <div className="text-[11px] font-black tracking-widest text-gray-500 uppercase mt-0.5">{coin.symbol}</div>
-                    </div>
-                  </div>
 
-                  {/* Price */}
-                  <div className="text-right font-mono text-sm font-bold text-white">
-                    <NumberFlow 
-                      value={Number.isNaN(Number(coin.current_price)) ? 0 : Number(coin.current_price)} 
-                      format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: coin.current_price < 0.01 ? 6 : (coin.current_price < 1 ? 4 : 2) }} 
-                    />
-                  </div>
+                      {/* Rank */}
+                      <span className="font-mono text-xs font-bold text-gray-500 group-hover:text-gray-300 transition-colors">
+                        {rank}
+                      </span>
 
-                  {/* 24h Change */}
-                  <div className="text-right">
-                    <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${isUp ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
-                      {isUp ? "▲" : "▼"} 
-                      <NumberFlow value={Number.isNaN(Number(change)) ? 0 : Math.abs(Number(change))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
-                    </span>
-                  </div>
+                      {/* Name */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        {coin.image_url ? (
+                          <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full shrink-0" onError={(e: any) => (e.target.style.display = "none")} />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                            {coin.symbol?.[0]}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-white truncate">{coin.name}</div>
+                          <div className="text-[11px] font-black tracking-widest text-gray-500 uppercase mt-0.5">{coin.symbol}</div>
+                        </div>
+                      </div>
 
-                  {/* Volume */}
-                  <div className="text-right font-mono text-xs font-medium text-gray-400">
-                    {fmt(coin.total_volume)}
-                  </div>
+                      {/* Price */}
+                      <div className="text-right font-mono text-sm font-bold text-white flex justify-end">
+                        <LivePrice 
+                          value={Number.isNaN(Number(coin.current_price)) ? 0 : Number(coin.current_price)} 
+                          format={{ style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: coin.current_price < 0.01 ? 6 : (coin.current_price < 1 ? 4 : 2) }} 
+                        />
+                      </div>
 
-                  {/* Market Cap */}
-                  <div className="text-right font-mono text-xs font-medium text-gray-400">
-                    {fmt(coin.market_cap)}
-                  </div>
+                      {/* 24h Change */}
+                      <div className="text-right">
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${isUp ? "bg-green-500/10 text-[var(--accent)]" : "bg-red-500/10 text-red-400"}`}>
+                          {isUp ? "▲" : "▼"} 
+                          <NumberFlow value={Number.isNaN(Number(change)) ? 0 : Math.abs(Number(change))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
+                        </span>
+                      </div>
 
-                  {/* Sparkline */}
-                  <div className="flex justify-end pr-2">
-                    <Sparkline prices={sparkPrices} width={70} height={24} trendOverride={isUp ? "up" : "down"} />
-                  </div>
+                      {/* Volume */}
+                      <div className="text-right font-mono text-xs font-medium text-gray-400">
+                        {fmt(coin.total_volume)}
+                      </div>
 
-                  {/* Updated */}
-                  <div className="text-right flex items-center justify-end">
-                    <span className={`text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5 ${freshnessColor}`}>
-                      {live && <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_4px_#22c55e]" />}
-                      {freshnessLabel}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
+                      {/* Market Cap */}
+                      <div className="text-right font-mono text-xs font-medium text-gray-400">
+                        {fmt(coin.market_cap)}
+                      </div>
+
+                      {/* Sparkline */}
+                      <div className="flex justify-end pr-2">
+                        <Sparkline prices={sparkPrices} width={70} height={24} trendOverride={isUp ? "up" : "down"} />
+                      </div>
+
+                      {/* Updated */}
+                      <div className="text-right flex items-center justify-end">
+                        <span className={`text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5 ${freshnessColor}`}>
+                          {live && <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]" />}
+                          {freshnessLabel}
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Bottom Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center p-4 border-t border-[#273951]/50 bg-black/20">
+            <div className="flex justify-center p-4 border-t border-white/5 bg-black/20">
               <Pagination />
             </div>
           )}

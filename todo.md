@@ -49,5 +49,10 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
 - 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla.
 
+### 4. UI/UX ve Genel İyileştirmeler
+- [x] Orijinal kedi logosunun (CryptoNeko) sisteme tekrar entegre edilmesi.
+- [x] Ayarlar (Settings) menüsüne dil değiştirme (Language Switcher) seçeneğinin eklenmesi.
+- [x] Destek (Support) veya iletişim kısımlarına "Contact Me" bölümünün eklenmesi.
+
 ---
 **Tasarım Notu:** Yeni eklenecek tüm özelliklerde `bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl` cam efekti ve Framer Motion geçişleri kullanılması zorunludur.

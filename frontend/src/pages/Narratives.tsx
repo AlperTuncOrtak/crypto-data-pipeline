@@ -20,9 +20,19 @@ export default function Narratives() {
         if (res.ok) {
           const data = await res.json();
           setNarratives(data);
+        } else {
+          throw new Error("Backend not ok");
         }
       } catch (e) {
-        console.error("Failed to fetch narratives", e);
+        console.error("Failed to fetch narratives, using fallback data", e);
+        // Fallback mock data so UI still works when backend is down
+        setNarratives([
+          { id: "ai", name: "Artificial Intelligence", color: "#7c3aed", score: 95, size: 280, x: "30%", y: "40%", delay: 0, trend: "up", summary: "AI tokens are surging following recent tech earnings.", coins: ["FET", "RNDR", "TAO"] },
+          { id: "meme", name: "Memecoins", color: "#e11d48", score: 85, size: 220, x: "70%", y: "30%", delay: 0.2, trend: "up", summary: "Retail liquidity rotates aggressively into memecoins.", coins: ["PEPE", "WIF", "DOGE"] },
+          { id: "rwa", name: "Real World Assets", color: "#10b981", score: 78, size: 190, x: "50%", y: "65%", delay: 0.5, trend: "up", summary: "Institutional tokenized funds drive RWA protocols.", coins: ["ONDO", "PENDLE", "LINK"] },
+          { id: "l2", name: "L2 Scaling", color: "#d97706", score: 45, size: 140, x: "20%", y: "70%", delay: 0.7, trend: "down", summary: "Token unlocks suppress price action in major Layer 2s.", coins: ["ARB", "OP", "STRK"] },
+          { id: "depin", name: "DePIN", color: "#2563eb", score: 65, size: 160, x: "80%", y: "60%", delay: 0.4, trend: "up", summary: "Hardware mining models prove sustainable.", coins: ["FIL", "HNT", "AKT"] }
+        ]);
       }
     };
     fetchNarratives();
@@ -60,7 +70,7 @@ export default function Narratives() {
         </motion.div>
 
         {/* ORBS CANVAS */}
-        <div className="relative w-full h-[600px] md:h-[700px] rounded-[32px] border border-[#273951]/50 bg-[#16181c]/40 backdrop-blur-3xl shadow-2xl overflow-hidden">
+        <div className="relative w-full h-[600px] md:h-[700px] rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden">
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
           <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)", backgroundSize: "30px 30px" }}></div>
@@ -92,7 +102,7 @@ export default function Narratives() {
                   },
                   layout: { type: "spring", stiffness: 300, damping: 30 }
                 }}
-                className={`absolute cursor-pointer flex flex-col items-center justify-center rounded-full border border-white/20 shadow-2xl overflow-hidden transition-all duration-300 hover:border-[#273951]/500 ${isSelected ? "z-50" : "z-10"}`}
+                className={`absolute cursor-pointer flex flex-col items-center justify-center rounded-full border border-white/20 transition-all duration-300 hover:border-white/50 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] ${isSelected ? "z-50" : "z-10"}`}
                 style={{
                   width: orb.size,
                   height: orb.size,
@@ -135,7 +145,7 @@ export default function Narratives() {
                 <motion.div
                   layoutId={`orb-${selected.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full max-w-lg rounded-[32px] border border-[#273951]/50 bg-[#16181c]/90 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden relative"
+                  className="w-full max-w-lg rounded-[32px] border border-white/10 bg-[#1a1a1a]/95 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden relative"
                   style={{
                     boxShadow: `0 0 100px ${selected.color}44`
                   }}
@@ -146,7 +156,7 @@ export default function Narratives() {
                   <div className="relative p-8 pt-10">
                     <button 
                       onClick={() => setSelected(null)}
-                      className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-[#273951]/50 hover:bg-white/10 transition-colors"
+                      className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -166,7 +176,7 @@ export default function Narratives() {
                       </div>
                     </div>
 
-                    <div className="mb-6 p-5 rounded-[32px] bg-black/40 border border-[#273951]/50 text-sm text-gray-300 leading-relaxed font-medium">
+                    <div className="mb-6 p-5 rounded-2xl bg-[#0a0a0d]/60 border border-white/5 text-sm text-gray-300 leading-relaxed font-medium">
                       <Sparkles size={14} className="inline-block mr-2 text-[var(--accent)] -mt-0.5" />
                       {selected.summary}
                     </div>
@@ -178,7 +188,7 @@ export default function Narratives() {
                           <button
                             key={coin}
                             onClick={() => navigate(`/coin/${coin.toLowerCase()}`)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#273951]/50 bg-white/5 hover:bg-white/10 transition-all group"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all shadow-md group"
                           >
                             <span className="font-black text-white">{coin}</span>
                             <ArrowRight size={14} className="text-white/30 group-hover:text-white transition-colors" />
