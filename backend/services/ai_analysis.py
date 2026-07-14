@@ -942,3 +942,70 @@ def analyze_coin(
         "bullishness_score": comment.get("bullishness_score", 50),
         "action_tags": comment.get("action_tags", []),
     }
+
+
+def analyze_portfolio(portfolio_data: dict) -> str:
+    """
+    Analyzes the entire user portfolio using Groq (Llama 3.3 70B) and returns a Markdown formatted advice report.
+    """
+    try:
+        import os
+        import httpx
+        from dotenv import load_dotenv
+        load_dotenv()
+        
+        groq_key = os.getenv("GROQ_API_KEY")
+        if not groq_key:
+            return "Error: GROQ_API_KEY not found in environment."
+
+        # Fetch market context (Fear and Greed)
+        fg_index = _fetch_fear_and_greed()
+        fg_value = fg_index.get("value", "N/A")
+        fg_class = fg_index.get("value_classification", "N/A")
+
+        prompt = f"""
+        Act as an elite cryptocurrency financial advisor for an institutional Prop-Firm dashboard.
+        Your client has provided their current crypto portfolio.
+        
+        Market Context:
+        - Fear & Greed Index: {fg_value} ({fg_class})
+        
+        Client's Portfolio Data:
+        {portfolio_data}
+        
+        Please provide a professional, structured analysis of this portfolio in Markdown format.
+        Do NOT output JSON. Output beautifully formatted Markdown with headers, bullet points, and actionable advice.
+        Include the following sections:
+        1. **Executive Summary**: A brief, punchy overview of their current standing.
+        2. **Risk & Exposure Analysis**: Point out if they are overexposed to a specific sector (e.g. Meme coins) or asset.
+        3. **Market Alignment**: How well this portfolio is positioned given the current Fear & Greed index.
+        4. **Actionable Rebalancing Steps**: Specific recommendations (e.g. "Take 10% profit from X and move to stablecoins").
+        """
+
+        resp = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {groq_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a professional crypto technical analyst and portfolio manager. Output only valid Markdown text."
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                "max_tokens": 1500,
+                "temperature": 0.3,
+            },
+            timeout=30.0,
+        )
+        resp.raise_for_status()
+        text = resp.json()["choices"][0]["message"]["content"].strip()
+        return text
+    except Exception as e:
+        import logging
+        logging.error(f"Portfolio Analysis Error: {e}")
+        return f"Sorry, I encountered an error while analyzing your portfolio: {str(e)}"

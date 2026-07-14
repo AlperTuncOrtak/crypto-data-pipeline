@@ -1040,3 +1040,30 @@ async def get_swap_quote(sellToken: str, buyToken: str, sellAmount: str):
 @app.post("/api/exchanges/sync")
 async def api_exchange_sync(req: ExchangeSyncRequest):
     return await sync_exchange_balance(req.exchange_id, req.api_key, req.secret, req.password)
+
+
+@app.get("/market/news")
+async def get_market_news():
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://min-api.cryptocompare.com/data/v2/news/?lang=EN")
+            data = resp.json()
+            if data.get("Data"):
+                # Return the latest 5 news items
+                news = [{"id": item["id"], "title": item["title"], "source": item["source_info"]["name"], "url": item["url"], "published_on": item["published_on"]} for item in data["Data"][:5]]
+                return {"ok": True, "news": news}
+            return {"ok": False, "news": []}
+    except Exception as e:
+        return {"ok": False, "news": [], "error": str(e)}
+
+
+@app.post("/ai/analyze-portfolio")
+def api_analyze_portfolio(payload: dict, user: dict = Depends(verify_token)):
+    from backend.services.ai_analysis import analyze_portfolio
+    portfolio_data = payload.get("portfolio", {})
+    if not portfolio_data:
+        return {"status": "error", "message": "No portfolio data provided."}
+    
+    analysis = analyze_portfolio(portfolio_data)
+    return {"status": "success", "analysis": analysis}

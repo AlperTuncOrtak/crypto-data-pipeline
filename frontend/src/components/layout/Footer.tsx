@@ -28,9 +28,8 @@ export default function Footer() {
   return (
     <footer style={{ 
       borderTop: '1px solid rgba(255,255,255,0.05)', 
-      marginTop: 'auto',
       padding: '40px 24px',
-      backgroundColor: 'transparent',
+      backgroundColor: 'var(--bg-base, #0a0b0d)',
       position: 'relative',
       zIndex: 10
     }}>

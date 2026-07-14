@@ -119,3 +119,28 @@ export function useMarketStats() {
     staleTime: 30 * 1000,
   });
 }
+
+
+// -----------------------
+// SPARKLINES
+// -----------------------
+async function fetchSparklines(symbols, hours) {
+  if (!symbols || symbols.length === 0) return {};
+  
+  // Construct query string for multiple symbols: ?symbols=BTC&symbols=ETH
+  const params = new URLSearchParams();
+  symbols.forEach(sym => params.append("symbols", sym));
+  params.append("hours", hours.toString());
+  
+  const response = await apiClient.get(`/market/sparklines?${params.toString()}`);
+  return response.data;
+}
+
+export function useSparklines(symbols = [], hours = 24) {
+  return useQuery({
+    queryKey: ["sparklines", symbols, hours],
+    queryFn: () => fetchSparklines(symbols, hours),
+    enabled: symbols.length > 0,
+    refetchInterval: 60 * 1000, // Refresh every minute
+  });
+}

@@ -282,9 +282,7 @@ function AppInner() {
             }
           />
         </Routes></Suspense>
-        <div className="mt-auto">
-          {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && <Footer />}
-        </div>
+        {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && <Footer />}
         </main>
       </div>
       

@@ -1,6 +1,7 @@
 import React from "react";
 import { X, Copy, CheckCircle } from "lucide-react";
 
+
 // ── Formatters ────────────────────────────────────────────────
 export const fmtUSD = (n) => {
   const v = Number(n);
@@ -58,7 +59,8 @@ export const CHART_COLORS = [
 export const EXCHANGE_GUIDES = {
   binance: {
     name: "Binance",
-    logo: "🟡",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png",
+    id: "binance",
     color: "#F3BA2F",
     steps: [
       "Log in to your Binance account",
@@ -73,7 +75,8 @@ export const EXCHANGE_GUIDES = {
   },
   bybit: {
     name: "Bybit",
-    logo: "🟠",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png",
+    id: "bybit",
     color: "#F7A600",
     steps: [
       "Log in to your Bybit account",
@@ -88,7 +91,8 @@ export const EXCHANGE_GUIDES = {
   },
   okx: {
     name: "OKX",
-    logo: "⚫",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/311.png",
+    id: "okx",
     color: "#888",
     steps: [
       "Log in to your OKX account",
@@ -110,7 +114,8 @@ export const EXCHANGE_GUIDES = {
   },
   coinbase: {
     name: "Coinbase",
-    logo: "🔵",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png",
+    id: "coinbase",
     color: "#0052FF",
     steps: [
       "Log in to your Coinbase account",
@@ -132,7 +137,8 @@ export const EXCHANGE_GUIDES = {
   },
   kraken: {
     name: "Kraken",
-    logo: "🟣",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png",
+    id: "kraken",
     color: "#5741d9",
     steps: [
       "Log in to your Kraken account",
@@ -405,7 +411,7 @@ export function calcHoldings(trades, marketData, walletHoldings = []) {
     const qty = totalBought - totalSold + (walletQty || 0) + (binanceQty || 0);
     if (qty <= 0.000001) continue;
 
-    const totalCost = buys.reduce((s, t) => s + t.total, 0);
+    const totalCost = buys.reduce((s, t) => s + (t.total || (t.quantity * t.price) || 0), 0);
     const avgCost = totalBought > 0 ? totalCost / totalBought : 0;
 
     const market = priceMap[sym] || {};
@@ -800,7 +806,7 @@ export function GuideModal({ exchange, onClose }) {
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 24 }}>{g.logo}</span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, fontSize: 24 }}>{g.logo}</div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 16 }}>
                     {g.name} Export Guide
@@ -923,3 +929,51 @@ export function SoftCard({ children, className = "", noPadding = false }) {
     </div>
   );
 }
+
+// ─── Dynamic Hanson Box Calculators ──────────────────────────────
+export const calcBuyingPower = (holdings) => {
+  const stablecoins = ["USDT", "USDC", "DAI", "FDUSD", "TUSD", "BUSD"];
+  return holdings
+    .filter(h => stablecoins.includes(h.symbol.toUpperCase()))
+    .reduce((sum, h) => sum + Number(h.value || 0), 0);
+};
+
+export const calcAllocation = (holdings) => {
+  const layer1 = ["BTC", "ETH", "SOL", "ADA", "AVAX", "DOT", "MATIC", "LINK", "ATOM", "XRP"];
+  const stablecoins = ["USDT", "USDC", "DAI", "FDUSD", "TUSD", "BUSD"];
+  const meme = ["DOGE", "SHIB", "PEPE", "FLOKI", "BONK", "WIF"];
+  
+  let l1Value = 0;
+  let stableValue = 0;
+  let memeValue = 0;
+  let otherValue = 0;
+  
+  let totalValue = 0;
+
+  holdings.forEach(h => {
+    const val = Number(h.value || 0);
+    const sym = h.symbol.toUpperCase();
+    totalValue += val;
+    
+    if (layer1.includes(sym)) l1Value += val;
+    else if (stablecoins.includes(sym)) stableValue += val;
+    else if (meme.includes(sym)) memeValue += val;
+    else otherValue += val;
+  });
+
+  if (totalValue === 0) {
+    return [
+      { name: "Layer 1", pct: 0, color: "#14F195" },
+      { name: "Stable", pct: 0, color: "#2dd4bf" },
+      { name: "Meme", pct: 0, color: "#f43f5e" },
+      { name: "DeFi/Alt", pct: 0, color: "#3b82f6" }
+    ];
+  }
+
+  return [
+    { name: "Layer 1", pct: (l1Value / totalValue) * 100, color: "#14F195" },
+    { name: "Stable", pct: (stableValue / totalValue) * 100, color: "#2dd4bf" },
+    { name: "Meme", pct: (memeValue / totalValue) * 100, color: "#f43f5e" },
+    { name: "DeFi/Alt", pct: (otherValue / totalValue) * 100, color: "#3b82f6" }
+  ];
+};
