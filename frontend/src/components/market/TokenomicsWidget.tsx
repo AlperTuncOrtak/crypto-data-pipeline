@@ -1,6 +1,7 @@
 import React from "react";
 import { Lock, AlertTriangle } from "lucide-react";
 import { getCoinColor } from "../../utils/colors";
+import { motion } from "framer-motion";
 
 function fmtLarge(n: number) {
   if (!n) return "—";
@@ -12,7 +13,7 @@ function fmtLarge(n: number) {
 }
 
 export default function TokenomicsWidget({ coin }: { coin: any }) {
-  const brandColor = getCoinColor(coin?.symbol) || "var(--accent)";
+  const brandColor = getCoinColor(coin?.symbol) || "#0052ff";
 
   const circ = Number(coin?.circulating_supply) || 0;
   const total = Number(coin?.total_supply) || circ;
@@ -29,54 +30,65 @@ export default function TokenomicsWidget({ coin }: { coin: any }) {
   if (!circ && !total && !max) return null;
 
   return (
-    <div className="glass-panel w-full" style={{ padding: "24px", borderRadius: "20px" }}>
-      <div className="flex items-center gap-2 mb-6">
-        <Lock size={16} style={{ color: "var(--text-muted)" }} />
-        <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+    <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-2xl p-6 flex flex-col gap-6 w-full relative overflow-hidden group">
+      
+      {/* Background ambient glow based on tokenomics */}
+      <div 
+        className="absolute -top-20 -left-20 w-40 h-40 rounded-full blur-[80px] opacity-20 transition-colors duration-1000"
+        style={{ backgroundColor: brandColor }}
+      />
+
+      <div className="flex items-center gap-2 mb-2 relative z-10">
+        <Lock size={18} className="text-gray-400" />
+        <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wider">
           Tokenomics & Supply
         </h3>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 relative z-10">
         {/* Supply Progress */}
         <div>
-          <div className="flex justify-between items-end mb-2">
+          <div className="flex justify-between items-end mb-3">
             <div>
-              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Circulating</p>
-              <p className="text-lg font-black text-[var(--text-primary)] font-mono">{fmtLarge(circ)} <span className="text-xs text-[var(--text-muted)] ml-1">{coin?.symbol}</span></p>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1">Circulating</p>
+              <p className="text-xl font-black text-white font-mono">{fmtLarge(circ)} <span className="text-xs text-gray-500 ml-1">{coin?.symbol}</span></p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">{max > 0 ? "Max Supply" : "Total Supply"}</p>
-              <p className="text-lg font-black text-[var(--text-primary)] font-mono">{fmtLarge(baseSupply)}</p>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1">{max > 0 ? "Max Supply" : "Total Supply"}</p>
+              <p className="text-xl font-black text-gray-300 font-mono">{fmtLarge(baseSupply)}</p>
             </div>
           </div>
           
-          <div className="h-3 w-full bg-[var(--bg-base)] rounded-full overflow-hidden border border-[var(--border)] relative">
-            <div 
+          <div className="h-2.5 w-full bg-[#1a1d21] rounded-full overflow-hidden border border-white/5 relative">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${circPct}%` }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
               className="absolute top-0 left-0 h-full rounded-full" 
-              style={{ 
-                width: `${circPct}%`, 
-                backgroundColor: brandColor,
-                transition: "width 1s ease-in-out"
-              }} 
+              style={{ backgroundColor: brandColor }} 
             />
           </div>
-          <p className="text-right text-xs font-bold mt-2 text-[var(--text-muted)]">
+          <p className="text-right text-xs font-bold mt-2 text-gray-500">
             {circPct.toFixed(1)}% Unlocked
           </p>
         </div>
 
         {/* Mock Upcoming Unlocks */}
         {hasMockUnlocks && (
-          <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/5 flex items-start gap-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="p-4 rounded-xl border border-red-500/20 bg-red-500/5 flex items-start gap-3 mt-2"
+          >
             <AlertTriangle size={18} className="text-red-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-sm font-bold text-red-400 mb-1">Upcoming Unlock Warning</p>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                <span className="font-bold text-[var(--text-primary)]">{fmtLarge(Number(unlockAmount))} {coin?.symbol}</span> (approx. 2.4% of total supply) will be unlocked in <span className="font-bold text-[var(--text-primary)]">{unlockDays} days</span>. This may introduce significant sell pressure.
+              <p className="text-xs text-gray-400 leading-relaxed">
+                <span className="font-bold text-gray-200">{fmtLarge(Number(unlockAmount))} {coin?.symbol}</span> (approx. 2.4% of total supply) will be unlocked in <span className="font-bold text-gray-200">{unlockDays} days</span>. This may introduce significant sell pressure.
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

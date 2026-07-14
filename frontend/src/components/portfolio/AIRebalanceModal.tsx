@@ -25,31 +25,34 @@ export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebala
     }
 
     const runAnalysis = async () => {
-      setScanText("Analyzing your portfolio allocation...");
-      
-      // Wait briefly for effect
-      await new Promise(r => setTimeout(r, 1000));
-      setScanText("Querying Llama 3.3 70B Engine...");
-      
-      // Wait again for effect
-      await new Promise(r => setTimeout(r, 1500));
-      
-      const mockAnalysis = `
-# Executive Summary
-Your portfolio is well-diversified, but heavily skewed towards high-cap assets. Given the current market conditions, a slight rebalance is recommended to optimize risk-adjusted returns.
+      try {
+        setScanText("Analyzing your portfolio allocation...");
+        
+        // Wait briefly for effect
+        await new Promise(r => setTimeout(r, 500));
+        setScanText("Querying Llama 3.3 70B Engine...");
+        
+        const response = await apiClient.post("/ai/analyze-portfolio", {
+          portfolio: {
+            total_value: holdings.reduce((sum, h) => sum + (h.value || 0), 0),
+            assets: holdings.map(h => ({
+              symbol: h.symbol,
+              allocation_pct: h.allocation || 0,
+              value: h.value || 0
+            }))
+          }
+        });
 
-# Risk & Exposure Analysis
-- **Overexposed:** You have a significant allocation in Bitcoin. While this provides stability, it limits potential upside in a bullish market.
-- **Underexposed:** You lack exposure to emerging sectors like Layer-2 solutions and DeFi protocols.
-
-# Actionable Rebalancing Steps
-1. **Reduce BTC exposure:** Consider taking a 5-10% profit from your Bitcoin holdings.
-2. **Reallocate to Alts:** Move the freed capital into high-conviction Layer-2 tokens (e.g., ARB, OP) or established DeFi blue-chips.
-3. **Maintain Cash Buffer:** Keep at least 10% in Stablecoins (USDC/USDT) to buy potential dips.
-      `;
-      
-      setAiAnalysis(mockAnalysis.trim());
-      setPhase("results");
+        if (response.data && response.data.status === "success") {
+          setAiAnalysis(response.data.analysis);
+        } else {
+          throw new Error(response.data?.message || "Failed to analyze portfolio");
+        }
+      } catch (err: any) {
+        setAiAnalysis(`### 🚨 Analysis Failed\n\nCould not connect to the AI Engine. Please check your network or try again later.\n\n**Error Details:** ${err.message}`);
+      } finally {
+        setPhase("results");
+      }
     };
 
     runAnalysis();

@@ -147,6 +147,33 @@ def get_narratives():
     return narratives
 
 
+@app.get("/market/stats")
+def market_stats():
+    """Global market istatistiklerini hesaplar ve döner."""
+    coins = get_latest_market(3000)
+    
+    total_mcap = sum(float(c.get("market_cap") or 0) for c in coins)
+    total_vol = sum(float(c.get("total_volume") or 0) for c in coins)
+    
+    btc = next((c for c in coins if c.get("symbol", "").upper() == "BTC"), None)
+    eth = next((c for c in coins if c.get("symbol", "").upper() == "ETH"), None)
+    
+    btc_mcap = float(btc.get("market_cap") or 0) if btc else 0
+    eth_mcap = float(eth.get("market_cap") or 0) if eth else 0
+    
+    btc_dom = (btc_mcap / total_mcap * 100) if total_mcap > 0 else 0
+    eth_dom = (eth_mcap / total_mcap * 100) if total_mcap > 0 else 0
+    
+    return {
+        "total_market_cap": {"usd": total_mcap},
+        "total_volume": {"usd": total_vol},
+        "market_cap_percentage": {
+            "btc": btc_dom,
+            "eth": eth_dom
+        }
+    }
+
+
 @app.get("/market/gainers")
 def gainers(limit: int = 5):
     """24h en cok yukselen coinler."""

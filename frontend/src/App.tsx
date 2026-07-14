@@ -30,6 +30,7 @@ const TimeMachine = lazy(() => import("./pages/TimeMachine"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Swap = lazy(() => import("./pages/Swap"));
 const Terminal = lazy(() => import("./pages/Terminal"));
+const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
 const Heatmap = lazy(() => import("./pages/Heatmap"));
@@ -249,6 +250,22 @@ function AppInner() {
                 }}
               >
                 <AIAnalysis />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/dashboard/builder"
+            element={
+              <ProtectedRoute
+                requirePro
+                featureName="Customizable Dashboard"
+                onAuthOpen={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
+              >
+                <WidgetBuilder />
               </ProtectedRoute>
             }
           />

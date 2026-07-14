@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, TrendingDown, RefreshCw, ArrowUpRight, ChevronDown } from "lucide-react";
 
 const GLASS_BG     = "rgba(255,255,255,0.03)";
 const GLASS_BORDER = "rgba(255,255,255,0.08)";
 
-const SIGNALS = [
+const FALLBACK_SIGNALS = [
   {
     id: 1,
     type: "BUY" as const,
@@ -50,7 +50,7 @@ const TYPE_CFG = {
   ROTATE: { label: "Rotate", Icon: RefreshCw,    color: "#22d3ee" },
 };
 
-type Signal = (typeof SIGNALS)[number];
+type Signal = (typeof FALLBACK_SIGNALS)[number];
 
 function SignalRow({ s, onApply }: { s: Signal; onApply: () => void }) {
   const [open, setOpen] = useState(false);
@@ -136,6 +136,29 @@ export default function AITradeInsights({
 }: {
   onApplySuggestion: (tokenSymbol: string) => void;
 }) {
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSignals = async () => {
+      try {
+        const { apiClient } = await import("../../api/client");
+        const res = await apiClient.get("/ai/signals");
+        if (res.data && res.data.ok && Array.isArray(res.data.signals)) {
+          setSignals(res.data.signals);
+        } else {
+          setSignals(FALLBACK_SIGNALS);
+        }
+      } catch (err) {
+        console.error("Failed to fetch AI signals:", err);
+        setSignals(FALLBACK_SIGNALS);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSignals();
+  }, []);
+
   return (
     <div
       className="w-full flex flex-col backdrop-blur-sm"
@@ -173,10 +196,17 @@ export default function AITradeInsights({
       </div>
 
       {/* Signals */}
-      <div>
-        {SIGNALS.map(s => (
-          <SignalRow key={s.id} s={s} onApply={() => onApplySuggestion(s.token)} />
-        ))}
+      <div className="relative min-h-[220px]">
+        {loading ? (
+          <div className="absolute inset-0 flex flex-col justify-center items-center gap-4 bg-[#0a0b0d]/50 backdrop-blur-sm z-10">
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
+            <span className="text-xs font-mono text-emerald-500/70 animate-pulse uppercase tracking-widest">Generating AI Signals</span>
+          </div>
+        ) : (
+          signals.map(s => (
+            <SignalRow key={s.id} s={s} onApply={() => onApplySuggestion(s.token)} />
+          ))
+        )}
       </div>
 
       {/* Footer */}

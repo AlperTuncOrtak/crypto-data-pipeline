@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { AlertCircle, Activity, MessageCircle, Info } from "lucide-react";
+import { motion } from "framer-motion";
 
 export interface HypeRealityData {
   socialHypeScore: number;
@@ -9,15 +10,13 @@ export interface HypeRealityData {
 
 // Simulated mock generator based on symbol
 const generateMockData = (symbol: string): HypeRealityData => {
-  // Deterministic mock generation based on string length and char codes
   const seed = symbol.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   
-  // Some coins intentionally rigged for testing warning state (e.g., DOGE, SHIB)
-  const isMeme = ["DOGE", "SHIB", "PEPE", "FLOKI"].includes(symbol.toUpperCase());
-  const isSolid = ["BTC", "ETH", "SOL", "LINK"].includes(symbol.toUpperCase());
+  const isMeme = ["DOGE", "SHIB", "PEPE", "FLOKI", "BONK", "WIF"].includes(symbol.toUpperCase());
+  const isSolid = ["BTC", "ETH", "SOL", "LINK", "AVAX"].includes(symbol.toUpperCase());
   
-  let socialHypeScore = (seed % 60) + 40; // 40-100
-  let onChainActivityScore = ((seed * 13) % 70) + 30; // 30-100
+  let socialHypeScore = (seed % 60) + 40; 
+  let onChainActivityScore = ((seed * 13) % 70) + 30;
 
   if (isMeme) {
     socialHypeScore = 92;
@@ -35,7 +34,7 @@ const generateMockData = (symbol: string): HypeRealityData => {
   } else if (onChainActivityScore >= socialHypeScore) {
     aiVerdict = "Strong fundamental adoption backing social mentions. Healthy and sustainable growth profile.";
   } else {
-    aiVerdict = "Social hype outpaces on-chain metrics slightly, but remains within normal retail cyclical bounds.";
+    aiVerdict = "Social hype outpaces on-chain metrics slightly, but remains within normal retail bounds.";
   }
 
   return { socialHypeScore, onChainActivityScore, aiVerdict };
@@ -52,63 +51,96 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
   const isWarning = diff > 30;
   const isHealthy = data.onChainActivityScore >= data.socialHypeScore;
 
-  // Colors aligned with the professional dark theme (Zerion/Uniswap style)
-  const themeAccent = isWarning ? "var(--negative)" : isHealthy ? "var(--positive)" : "var(--accent)";
-  const themeBg = isWarning ? "var(--negative-soft)" : isHealthy ? "var(--positive-soft)" : "var(--accent-soft)";
-
   return (
-    <div className="glass-card" style={{ padding: "24px", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Activity size={18} color="var(--text-secondary)" />
-          <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+    <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-2xl p-6 flex flex-col gap-6 w-full relative overflow-hidden group">
+      
+      {/* Background ambient glow based on health */}
+      <div 
+        className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[80px] opacity-20 transition-colors duration-1000 ${
+          isWarning ? 'bg-red-500' : isHealthy ? 'bg-green-500' : 'bg-blue-500'
+        }`}
+      />
+
+      <div className="flex items-center justify-between relative z-10">
+        <div className="flex items-center gap-2">
+          <Activity size={18} className="text-gray-400" />
+          <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wider">
             Hype vs. Reality
           </h3>
         </div>
         {isWarning && (
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", color: themeAccent, background: themeBg, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center gap-1.5 text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider"
+          >
             <AlertCircle size={14} />
             <span>Bubble Risk</span>
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Bars Container */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="flex flex-col gap-5 relative z-10">
         {/* Social Hype Bar */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", marginBottom: "8px", color: "var(--text-secondary)", fontWeight: 500 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="flex justify-between text-[13px] mb-2 text-gray-400 font-medium">
+            <div className="flex items-center gap-2">
               <MessageCircle size={15} /> <span>Social Hype</span>
             </div>
-            <span style={{ fontWeight: 700, color: "var(--text-primary)", fontFamily: "monospace", fontSize: "14px" }}>{data.socialHypeScore}<span style={{color: "var(--text-muted)", fontSize: "11px"}}>/100</span></span>
+            <span className="font-bold text-white font-mono text-[14px]">
+              {data.socialHypeScore}<span className="text-gray-600 text-[11px]">/100</span>
+            </span>
           </div>
-          <div style={{ width: "100%", height: "8px", background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "4px", overflow: "hidden" }}>
-            <div style={{ width: `${data.socialHypeScore}%`, height: "100%", background: isWarning ? "var(--negative)" : "var(--accent)", borderRadius: "4px", transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+          <div className="w-full h-2 bg-[#1a1d21] border border-white/5 rounded-full overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${data.socialHypeScore}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className={`h-full rounded-full ${isWarning ? 'bg-red-500' : 'bg-[#0052ff]'}`} 
+            />
           </div>
         </div>
 
         {/* On-Chain Reality Bar */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", marginBottom: "8px", color: "var(--text-secondary)", fontWeight: 500 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="flex justify-between text-[13px] mb-2 text-gray-400 font-medium">
+            <div className="flex items-center gap-2">
               <Activity size={15} /> <span>On-Chain Reality</span>
             </div>
-            <span style={{ fontWeight: 700, color: "var(--text-primary)", fontFamily: "monospace", fontSize: "14px" }}>{data.onChainActivityScore}<span style={{color: "var(--text-muted)", fontSize: "11px"}}>/100</span></span>
+            <span className="font-bold text-white font-mono text-[14px]">
+              {data.onChainActivityScore}<span className="text-gray-600 text-[11px]">/100</span>
+            </span>
           </div>
-          <div style={{ width: "100%", height: "8px", background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "4px", overflow: "hidden" }}>
-            <div style={{ width: `${data.onChainActivityScore}%`, height: "100%", background: isWarning ? "var(--text-muted)" : "var(--positive)", borderRadius: "4px", transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+          <div className="w-full h-2 bg-[#1a1d21] border border-white/5 rounded-full overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${data.onChainActivityScore}%` }}
+              transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+              className={`h-full rounded-full ${isWarning ? 'bg-gray-600' : 'bg-[#14F195]'}`} 
+            />
           </div>
         </div>
       </div>
 
       {/* AI Verdict */}
-      <div style={{ background: "var(--bg-surface)", borderRadius: "10px", padding: "16px", borderLeft: `3px solid ${themeAccent}`, marginTop: "4px" }}>
-        <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0, display: "flex", gap: "10px", alignItems: "flex-start" }}>
-          <Info size={18} color={themeAccent} style={{ flexShrink: 0, marginTop: "2px" }} />
-          <span><strong style={{ color: "var(--text-primary)", fontWeight: 600 }}>AI Verdict:</strong> {data.aiVerdict}</span>
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className={`bg-[#16181c] rounded-xl p-4 mt-1 border-l-4 relative z-10 ${
+          isWarning ? 'border-red-500' : isHealthy ? 'border-[#14F195]' : 'border-[#0052ff]'
+        }`}
+      >
+        <p className="text-[13px] text-gray-400 leading-relaxed m-0 flex gap-3 items-start">
+          <Info size={18} className={`shrink-0 mt-0.5 ${
+            isWarning ? 'text-red-400' : isHealthy ? 'text-[#14F195]' : 'text-[#0052ff]'
+          }`} />
+          <span>
+            <strong className="text-white font-semibold">AI Verdict: </strong> 
+            {data.aiVerdict}
+          </span>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

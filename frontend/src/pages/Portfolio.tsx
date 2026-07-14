@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
@@ -27,6 +27,7 @@ import {
   calcAllocation,
   parseCSV,
 } from "../components/portfolio/PortfolioUtils";
+import { apiClient } from "../api/client";
 
 export default function Portfolio() {
   const { t } = useTranslation();
@@ -93,6 +94,69 @@ export default function Portfolio() {
 
   const [chartData, setChartData] = useState([]);
   const [marketNews, setMarketNews] = useState([]);
+  const [chartTimeframe, setChartTimeframe] = useState('24h');
+
+  // Fetch historical portfolio balance
+  useEffect(() => {
+    if (holdings.length === 0) {
+      setChartData([]);
+      return;
+    }
+    
+    const fetchHistory = async () => {
+      try {
+        const uniqueSymbols = Array.from(new Set(holdings.map(h => h.symbol)));
+        if (uniqueSymbols.length === 0) return;
+        const qs = uniqueSymbols.map(s => `symbols=${s}`).join('&');
+        
+        // 24 hours historical data
+        const res = await apiClient.get(`/analysis/history?${qs}&hours=24`);
+        if (res.data && Array.isArray(res.data)) {
+          // Group by time
+          const groupedByTime: Record<string, any> = {};
+          res.data.forEach((row: any) => {
+            if (!groupedByTime[row.time]) {
+              groupedByTime[row.time] = {};
+            }
+            groupedByTime[row.time][row.symbol] = row.current_price;
+          });
+
+          // Sort times chronologically
+          const sortedTimes = Object.keys(groupedByTime).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+          
+          const lastKnownPrice: Record<string, number> = {};
+          
+          const aggregated = sortedTimes.map(timeStr => {
+            const prices = groupedByTime[timeStr];
+            let totalVal = 0;
+            
+            holdings.forEach(h => {
+              const price = prices[h.symbol] || lastKnownPrice[h.symbol] || 0;
+              if (price) {
+                lastKnownPrice[h.symbol] = price;
+              }
+              totalVal += price * h.quantity;
+            });
+            
+            const date = new Date(timeStr);
+            const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            return {
+              time: formattedTime,
+              fullDate: timeStr,
+              value: totalVal
+            };
+          });
+
+          setChartData(aggregated as any);
+        }
+      } catch (err) {
+        console.error("Failed to fetch history for chart:", err);
+      }
+    };
+
+    fetchHistory();
+  }, [holdings]);
 
   return (
     <div className="min-h-screen bg-[#0a0b0d] pt-24 pb-32 overflow-x-hidden selection:bg-[#14F195]/30 relative font-sans">

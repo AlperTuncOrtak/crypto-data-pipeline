@@ -14,7 +14,7 @@ import { useSparklines } from "../hooks/useSparklines";
 import PriceCell from "../components/ui/PriceCell";
 import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
-  ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight
+  ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, LayoutDashboard
 } from "lucide-react";
 
 // ─── HELPERS ────────────────────────────────────────────────
@@ -200,6 +200,14 @@ export default function Dashboard() {
               <span className="w-2 h-2 rounded-full bg-[#05b169] animate-pulse"></span>
               <span className="text-xs font-semibold tracking-wide text-[#05b169] uppercase">Live</span>
             </div>
+            <motion.button 
+              whileHover={{ scale: 1.02 }} 
+              whileTap={{ scale: 0.98 }} 
+              onClick={() => navigate("/dashboard/builder")} 
+              className="px-4 py-2.5 rounded-full bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-500/20 transition-colors flex items-center gap-2 text-[14px] font-semibold shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+            >
+              <LayoutDashboard size={16} /> Personalize (PRO)
+            </motion.button>
             <motion.button 
               whileHover={{ scale: 1.02 }} 
               whileTap={{ scale: 0.98 }} 

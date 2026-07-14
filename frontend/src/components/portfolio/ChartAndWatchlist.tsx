@@ -65,6 +65,8 @@ export default function ChartAndWatchlist({
                 <RechartTooltip
                   contentStyle={{ backgroundColor: '#1a1d21', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
                   itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+                  formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'Portfolio Value']}
+                  labelFormatter={(label) => `Time: ${label}`}
                 />
                 <Area type="monotone" dataKey="value" stroke="#14F195" strokeWidth={3} fill="url(#colorValue)" />
               </AreaChart>

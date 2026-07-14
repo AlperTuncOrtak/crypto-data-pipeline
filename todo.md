@@ -23,8 +23,8 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 - [x] **Whale X-Ray:** Balina hareketleri ve on-chain para akışı.
 - [x] **Time-Machine Backtesting:** Geçmişe dönük simülasyon ve portföy performansı.
 - [x] **AI Candlestick Vision:** Grafikler üzerinde yapay zekanın formasyonları çizmesi (destek, direnç, whale zone).
-- [ ] **Sınırsız AI Chat:** Ücretsiz kullanıcılara günlük 5 mesaj, PRO'lara sınırsız sohbet.
-- [ ] **Özelleştirilebilir Dashboard (Widget Builder):** Kullanıcının ana sayfasını kendi istediği grafiklerle dizayn etmesi. (PRO)
+- [x] **Sınırsız AI Chat:** Ücretsiz kullanıcılara günlük 5 mesaj, PRO'lara sınırsız sohbet.
+- [x] **Özelleştirilebilir Dashboard (Widget Builder):** Kullanıcının ana sayfasını kendi istediği grafiklerle dizayn etmesi. (PRO)
 
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)
 
@@ -47,7 +47,7 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 
 ### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
-- 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla.
+- [x] 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla. (Li.Fi Widget ile tamamlandı)
 
 ### 4. UI/UX ve Genel İyileştirmeler
 - [x] Orijinal kedi logosunun (CryptoNeko) sisteme tekrar entegre edilmesi.
@@ -56,3 +56,5 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 ---
 **Tasarım Notu:** Yeni eklenecek tüm özelliklerde `bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl` cam efekti ve Framer Motion geçişleri kullanılması zorunludur.
+
+- [x] TODO: Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine (AI Rebalance live API 404/SSL errors)

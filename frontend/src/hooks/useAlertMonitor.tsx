@@ -260,7 +260,6 @@ export function useAlertMonitor(marketData, isPro = false) {
   }, [addToast, isPro]);
 
   const checkAlerts = useCallback(async () => {
-    return; // DISABLED: Prevent spam during development
     const settings = { ...DEFAULT_SETTINGS, ...getNotificationSettings() };
     if (!settings.price_alerts) return;
     if (!marketData?.length) return;
@@ -280,7 +279,7 @@ export function useAlertMonitor(marketData, isPro = false) {
 
     const now = Date.now();
 
-    alerts.forEach((alert) => {
+    alerts.forEach(async (alert) => {
       if (!alert.active) return;
       const coin = marketData.find((c) => c.symbol === alert.symbol);
       if (!coin) return;
@@ -314,7 +313,7 @@ export function useAlertMonitor(marketData, isPro = false) {
       const sub = `Current price: $${price.toLocaleString(undefined, { maximumFractionDigits: 4 })}`;
 
       // 1. In-app toast
-      addToast({ title, body, sub, color, icon: emoji, duration: 8000 });
+      addToast({ title, body, sub, color, icon: emoji, duration: 10000 });
 
       // 2. Browser notification
       if (settings.browser_notif)
@@ -322,6 +321,18 @@ export function useAlertMonitor(marketData, isPro = false) {
 
       // 3. Ses
       if (settings.sound) playAlertSound(isUp ? "up" : "down");
+      
+      // 4. Supabase deaktive et (sadece mutlak fiyat hedefleri için tek seferlik)
+      if (alert.type === "price_above" || alert.type === "price_below") {
+        try {
+          await supabase
+            .from("user_alerts")
+            .update({ active: false })
+            .eq("id", alert.id);
+        } catch (e) {
+          console.error("Failed to deactivate alert", e);
+        }
+      }
     });
   }, [marketData, addToast]);
 
