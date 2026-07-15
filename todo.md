@@ -28,9 +28,11 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)
 
-### 1. Data Engineering & ETL Pipeline (Tüm AI Modülleri İçin)
-- [ ] **Açıklama:** Gate.io / Bybit / OKX WebSocket üzerinden saniyede akan yüksek frekanslı piyasa ve emir defteri verilerini (Tick Data) alıp işleyerek kalıcı bir Data Warehouse'a (BigQuery/Postgres) aktaran bir Airflow ETL Pipeline kurulması.
-- [ ] **Amacı:** Toplanan bu devasa tarihsel veri havuzunun (Proprietary Data); Deep AI Analysis, AI Trade Signals, Whale X-Ray ve AI Chat dahil olmak üzere sistemdeki tüm yapay zeka modüllerine bir "Hafıza (RAG)" ve eşsiz analiz yeteneği kazandırmak için ana besleme kaynağı olarak kullanılması.
+### 1. Uçtan Uca Data Engineering & Machine Learning Pipeline
+- [ ] **Faz 1: ETL Pipeline (Veri Ambarı)**: Gate.io / Bybit / OKX WebSocket'lerinden saniyede akan yüksek frekanslı emir defteri ve hacim verilerini (Tick Data) alıp işleyerek kalıcı bir Data Warehouse'a (BigQuery/Postgres) düzenli olarak aktaran Apache Airflow yapısının kurulması.
+- [ ] **Faz 2: Feature Engineering**: Toplanan bu ham tarihsel veri havuzu üzerinde özellik mühendisliği (Feature Engineering) yapılarak modelin anlayabileceği sinyallerin (hareketli ortalamalar, hacim anomalileri, RSI uyumsuzlukları) üretilmesi.
+- [ ] **Faz 3: Kendi ML Modelimizi Eğitme**: Sadece Groq/Gemini gibi dış API'lere prompt göndermek yerine; kendi altyapımızda çalışan (scikit-learn vb.) ve bu temizlenmiş verilerle eğitilen "Özel Yapay Zeka (ML) Modelinin" kurulması.
+- [ ] **Amacı:** Bu üçlü yapı (ETL → Feature Engineering → Custom ML Model), CV için sıradan bir API entegrasyonundan çok daha güçlü olan gerçek bir "Uçtan Uca Veri Mühendisliği" hikayesi sunacak ve sistemdeki tüm analitik modülleri (Whale X-Ray, Trade Signals vb.) benzersiz bir zekayla besleyecek.
 
 ### 2. Stripe Entegrasyonu ve Abonelik Sistemi
 - [x] PRO özellikleri kilitlemek ve ödeme altyapısını kurmak için Stripe Checkout ve Webhook entegrasyonu. (Supabase Auth ile senkronize çalışacak).
