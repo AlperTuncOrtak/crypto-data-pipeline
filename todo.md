@@ -28,7 +28,11 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)
 
-### 1. Stripe Entegrasyonu ve Abonelik Sistemi
+### 1. Data Engineering & ETL Pipeline (Tüm AI Modülleri İçin)
+- [ ] **Açıklama:** Gate.io / Bybit / OKX WebSocket üzerinden saniyede akan yüksek frekanslı piyasa ve emir defteri verilerini (Tick Data) alıp işleyerek kalıcı bir Data Warehouse'a (BigQuery/Postgres) aktaran bir Airflow ETL Pipeline kurulması.
+- [ ] **Amacı:** Toplanan bu devasa tarihsel veri havuzunun (Proprietary Data); Deep AI Analysis, AI Trade Signals, Whale X-Ray ve AI Chat dahil olmak üzere sistemdeki tüm yapay zeka modüllerine bir "Hafıza (RAG)" ve eşsiz analiz yeteneği kazandırmak için ana besleme kaynağı olarak kullanılması.
+
+### 2. Stripe Entegrasyonu ve Abonelik Sistemi
 - [x] PRO özellikleri kilitlemek ve ödeme altyapısını kurmak için Stripe Checkout ve Webhook entegrasyonu. (Supabase Auth ile senkronize çalışacak).
 
 ### 2. Native Mobil Uygulama (iOS & Android) - [ÖNCELİKLİ]
