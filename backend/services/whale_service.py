@@ -151,3 +151,42 @@ def analyze_wallet(address: str) -> dict:
         "ai_summary": summary_text,
         "risk_score": rng.randint(10, 90)
     }
+
+import sqlalchemy
+from shared.db import get_connection
+
+def get_ml_anomalies(symbol: str = None, limit: int = 10):
+    """Fetches real ML anomalies identified by the Isolation Forest model."""
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            query = """
+                SELECT symbol, timestamp, vwap_1h, total_volume, anomaly_score
+                FROM features_vwap
+                WHERE anomaly_score > 0
+            """
+            params = []
+            if symbol:
+                query += " AND symbol = %s"
+                params.append(symbol)
+                
+            query += " ORDER BY timestamp DESC LIMIT %s"
+            params.append(limit)
+            
+            cursor.execute(query, tuple(params))
+            results = cursor.fetchall()
+            
+            anomalies = []
+            for row in results:
+                anomalies.append({
+                    "symbol": row["symbol"],
+                    "timestamp": row["timestamp"].isoformat() if hasattr(row["timestamp"], "isoformat") else str(row["timestamp"]),
+                    "vwap": row["vwap_1h"],
+                    "volume": row["total_volume"],
+                    "score": row["anomaly_score"],
+                    "severity": "CRITICAL" if row["anomaly_score"] > 0.1 else "WARNING"
+                })
+            return anomalies
+    finally:
+        conn.close()
+

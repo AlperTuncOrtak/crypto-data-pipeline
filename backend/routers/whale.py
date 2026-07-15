@@ -25,3 +25,8 @@ from backend.services.whale_service import analyze_wallet
 def analyze_wallet_endpoint(address: str):
     return analyze_wallet(address)
 
+from backend.services.whale_service import get_ml_anomalies
+
+@router.get("/api/whales/ml-anomalies")
+def ml_anomalies_endpoint(symbol: str = None, limit: int = 10):
+    return get_ml_anomalies(symbol, limit)
