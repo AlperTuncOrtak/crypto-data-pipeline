@@ -16,6 +16,7 @@ import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
   ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, LayoutDashboard
 } from "lucide-react";
+import { MLAnomalyWidget } from "../components/dashboard/MLAnomalyWidget";
 
 // ─── HELPERS ────────────────────────────────────────────────
 function fmt(n: number) {
@@ -358,6 +359,11 @@ export default function Dashboard() {
           {/* RIGHT: SIDEBAR (4 cols) */}
           <div className="xl:col-span-4 flex flex-col gap-8">
             
+            {/* ML Anomalies Box */}
+            <FadeIn delay={0.65} className="h-[300px]">
+              <MLAnomalyWidget />
+            </FadeIn>
+
             {/* Trending Box */}
             <FadeIn delay={0.7} className="bg-[#111214] border border-white/10 rounded-[24px] overflow-hidden shadow-sm">
               <div className="flex items-center justify-between p-6 border-b border-white/10">
