@@ -29,11 +29,13 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)
 
 ### 1. Uçtan Uca Data Engineering & Machine Learning Pipeline (Whale Anomaly Detection)
-- [ ] **Faz 1: ETL Pipeline (MVP / Veri Ambarı)**: Kapsamı şişirmemek adına ağır order book (emir defteri) verisi yerine; Gate.io / Bybit / OKX WebSocket'lerinden saniyede akan *Trade (Alım/Satım)* ve *Fiyat Tick* verilerini alıp temizleyerek Data Warehouse'a (BigQuery/Postgres) düzenli aktaran minimal Airflow yapısının kurulması.
+- [ ] **Faz 1: ETL Pipeline (MVP / Veri Ambarı)**: Kapsamı yönetilebilir tutmak adına tüm coinler yerine **sadece en yüksek hacimli Top 20-50 coin (BTC, ETH vb.)** ile sınırlanarak; Gate.io / Bybit / OKX WebSocket'lerinden saniyede akan *Trade (Alım/Satım)* ve *Fiyat Tick* verilerini alıp temizleyerek Data Warehouse'a (BigQuery/Postgres) düzenli aktaran minimal Airflow yapısının kurulması.
 - [ ] **Faz 2: Feature Engineering**: Toplanan ham "Trade Tick" verileri üzerinde özellik mühendisliği yapılarak modelin anlayabileceği "Hacim Sıçramaları", "Zaman Ağırlıklı Ortalamalar (VWAP)" ve "Anormal İşlem Boyutları" gibi veri noktalarının üretilmesi.
 - [ ] **Faz 3: Özel ML Modeli (Anomaly Detection)**: Gerçekleşmesi çok zor olan "kesin fiyat tahmini" yerine, somut ve ölçülebilir bir problem olan "Balina Hareketlerinin Tespiti" (Anomaly Detection / Unsupervised Learning - Isolation Forest vb.) üzerine odaklanan bir Makine Öğrenmesi modelinin eğitilip Whale X-Ray modülüne bağlanması.
-- [ ] **Faz 4: Değerlendirme & Backtesting (Başarı Ölçütü)**: Kurulan ML modelinin geçmiş tarihli verilerle test edilmesi (Backtesting) ve "Modelin balina cüzdan transferlerini / hacim sıçramalarını %X doğrulukla önceden tespit etmesi" gibi somut metriklerle ölçümlenerek raporlanması.
-- [ ] **Amacı:** Bu dörtlü yapı, CV için sıradan bir "API Entegrasyonu" yerine "Minimum Viable bir ETL kurdum, Feature Engineering yaptım, ML modelimi eğittim ve performansını %X olarak test ettim" diyebileceğin kusursuz bir uçtan uca veri mühendisliği hikayesi sunacak.
+- [ ] **Faz 4: Değerlendirme & Backtesting (Ground Truth & Başarı Ölçütü)**: Unsupervised (etiketsiz) veride klasik 'doğruluk (accuracy)' ölçülemeyeceği için;
+  - Modelin işaretlediği anomalilerin (Whale Alert API veya on-chain verileri gibi) **gerçek dış kaynaklarla (Ground Truth) çapraz doğrulanması**.
+  - Performansın "Accuracy" yerine **"Tespit Oranı (Hit Rate) ve Precision@k"** gibi doğru metriklerle ölçümlenerek raporlanması.
+- [ ] **Amacı:** Bu dörtlü yapı, CV için "Top 50 coinin canlı verisiyle Minimum Viable bir ETL kurdum, VWAP ve hacim sıçraması feature'ları ürettim, Isolation Forest modeli eğittim ve performansını dış on-chain verilerle (Ground Truth) doğruladım" diyebileceğin, mülakatlarda her türlü teknik sorguya dayanıklı kusursuz bir veri mühendisliği hikayesi sunacak.
 
 ### 2. Stripe Entegrasyonu ve Abonelik Sistemi
 - [x] PRO özellikleri kilitlemek ve ödeme altyapısını kurmak için Stripe Checkout ve Webhook entegrasyonu. (Supabase Auth ile senkronize çalışacak).
