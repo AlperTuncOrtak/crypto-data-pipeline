@@ -53,28 +53,25 @@ export function MLAnomalyWidget() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+      <div className="flex-1 w-full flex items-center overflow-x-auto pb-2 space-x-3 custom-scrollbar">
         {loading ? (
-          <div className="flex items-center justify-center h-full text-sm text-slate-500 animate-pulse">
+          <div className="flex items-center justify-center w-full text-sm text-slate-500 animate-pulse">
             Analyzing live data...
           </div>
         ) : anomalies.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-4">
-            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
-              <Brain className="text-slate-500" size={20} />
-            </div>
-            <p className="text-sm text-slate-400 font-medium">No Anomalies Detected</p>
-            <p className="text-xs text-slate-500 mt-1">The ML model has not detected any whale activity recently.</p>
+          <div className="flex items-center gap-3 justify-center w-full text-center">
+            <Brain className="text-slate-500" size={16} />
+            <p className="text-sm text-slate-400 font-medium">No Anomalies Detected. Market is acting normally.</p>
           </div>
         ) : (
           <AnimatePresence>
             {anomalies.map((a, i) => (
               <motion.div
                 key={`${a.symbol}-${a.timestamp}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.02] hover:bg-white/[0.05] transition-colors"
+                className="flex-shrink-0 flex items-center justify-between min-w-[280px] p-3 rounded-xl bg-white/[0.03] border border-white/[0.02] hover:bg-white/[0.05] transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${a.severity === "CRITICAL" ? "bg-rose-500/20 text-rose-400" : "bg-orange-500/20 text-orange-400"}`}>

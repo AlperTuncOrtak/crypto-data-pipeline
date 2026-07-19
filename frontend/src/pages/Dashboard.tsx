@@ -220,6 +220,11 @@ export default function Dashboard() {
           </div>
         </FadeIn>
 
+        {/* ML ANOMALIES TICKER */}
+        <FadeIn delay={0.15} className="mb-8 w-full h-[120px]">
+          <MLAnomalyWidget />
+        </FadeIn>
+
         {/* BENTO STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           
@@ -359,11 +364,6 @@ export default function Dashboard() {
           {/* RIGHT: SIDEBAR (4 cols) */}
           <div className="xl:col-span-4 flex flex-col gap-8">
             
-            {/* ML Anomalies Box */}
-            <FadeIn delay={0.65} className="h-[300px]">
-              <MLAnomalyWidget />
-            </FadeIn>
-
             {/* Trending Box */}
             <FadeIn delay={0.7} className="bg-[#111214] border border-white/10 rounded-[24px] overflow-hidden shadow-sm">
               <div className="flex items-center justify-between p-6 border-b border-white/10">

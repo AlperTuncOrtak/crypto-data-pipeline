@@ -58,6 +58,23 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
 - [x] 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla. (Li.Fi Widget ile tamamlandı)
 
+### 4. Sanal Borsa & Kağıt Üstünde Al-Sat (Paper Trading)
+- Kullanıcılara sanal 100.000$ bakiye verilmesi.
+- Kendi paralarını riske atmadan yapay zeka alarmlarına göre sanal long/short pozisyonları açabilmeleri.
+- Portföy kâr/zarar (PnL) durumunun grafiksel takibi.
+
+### 5. Telegram Botu & Canlı E-posta Alarmları (Push Notifications)
+- Makine öğrenmesi modeli balina anormalliği yakaladığında PRO üyelere anında Telegram mesajı atılması.
+- Resend altyapısı kullanılarak şık e-posta bildirimleri gönderilmesi.
+
+### 6. Gerçek Web3 Cüzdan Analizi (On-Chain)
+- Alchemy (EVM) veya Helius (Solana) API'leri kullanılarak cüzdan okuma işlemlerinin simülasyondan gerçeğe dönüştürülmesi.
+- Girilen cüzdan adresinin gerçek blockchain bakiyelerinin ve işlemlerinin çekilmesi.
+
+### 7. Kripto Sosyal Ağı (Copy Trading Feed)
+- Kullanıcıların liderlik tablosundaki başarılı "Trader"ları takip edebilmesi.
+- Diğer kullanıcıların işlemlerini Twitter (X) akışı gibi görebilme ve tek tuşla portföy kopyalama.
+
 ### 4. UI/UX ve Genel İyileştirmeler
 - [x] Orijinal kedi logosunun (CryptoNeko) sisteme tekrar entegre edilmesi.
 - [x] Ayarlar (Settings) menüsüne dil değiştirme (Language Switcher) seçeneğinin eklenmesi.
