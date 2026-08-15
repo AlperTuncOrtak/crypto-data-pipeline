@@ -295,7 +295,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         : handleForgot;
 
   const titles = {
-    login: { title: "Welcome back 👋", sub: "Sign in to CryptoAnalytics" },
+    login: { title: "Welcome back 👋", sub: "Sign in to CryptoNeko" },
     signup: {
       title: "Create account ✨",
       sub: "Free forever. No credit card.",
