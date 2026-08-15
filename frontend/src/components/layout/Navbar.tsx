@@ -1075,7 +1075,10 @@ export default function Navbar({
                           icon: User,
                           label: t("nav.profile"),
                           soon: false,
-                          action: null,
+                          action: () => {
+                            setProfileOpen(false);
+                            navigate("/settings");
+                          },
                         },
                         {
                           icon: Star,

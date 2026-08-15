@@ -280,7 +280,8 @@ export default function Settings() {
   }
 
   function toggleNotif(key: string) {
-    const updated = { ...notif, [key]: !notif[key] };
+    const currentValue = notif[key] !== false; // Default is true
+    const updated = { ...notif, [key]: !currentValue };
     setNotif(updated);
     localStorage.setItem("notification_settings", JSON.stringify(updated));
   }

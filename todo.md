@@ -29,13 +29,13 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ## 🎯 Sıradaki Öncelikli İşler (Yeni Özellikler)
 
 ### 1. Uçtan Uca Data Engineering & Machine Learning Pipeline (Whale Anomaly Detection)
-- [x] **Faz 1: ETL Pipeline (MVP / Veri Ambarı)**: Kapsamı yönetilebilir tutmak adına tüm coinler yerine **sadece en yüksek hacimli Top 20-50 coin (BTC, ETH vb.)** ile sınırlanarak; Gate.io / Bybit / OKX WebSocket'lerinden saniyede akan *Trade (Alım/Satım)* ve *Fiyat Tick* verilerini alıp temizleyerek Data Warehouse'a (BigQuery/Postgres) düzenli aktaran minimal Airflow yapısının kurulması.
-- [x] **Faz 2: Feature Engineering**: Toplanan ham "Trade Tick" verileri üzerinde özellik mühendisliği yapılarak modelin anlayabileceği "Hacim Sıçramaları", "Zaman Ağırlıklı Ortalamalar (VWAP)" ve "Anormal İşlem Boyutları" gibi veri noktalarının üretilmesi.
-- [x] **Faz 3: Özel ML Modeli (Anomaly Detection)**: Gerçekleşmesi çok zor olan "kesin fiyat tahmini" yerine, somut ve ölçülebilir bir problem olan "Balina Hareketlerinin Tespiti" (Anomaly Detection / Unsupervised Learning - Isolation Forest vb.) üzerine odaklanan bir Makine Öğrenmesi modelinin eğitilip Whale X-Ray modülüne bağlanması.
-- [x] **Faz 4: Değerlendirme & Backtesting (Ground Truth & Başarı Ölçütü)**: Unsupervised (etiketsiz) veride klasik 'doğruluk (accuracy)' ölçülemeyeceği için;
+- [ ] **Faz 1: ETL Pipeline (MVP / Veri Ambarı)**: Kapsamı yönetilebilir tutmak adına tüm coinler yerine **sadece en yüksek hacimli Top 20-50 coin (BTC, ETH vb.)** ile sınırlanarak; Gate.io / Bybit / OKX WebSocket'lerinden saniyede akan *Trade (Alım/Satım)* ve *Fiyat Tick* verilerini alıp temizleyerek Data Warehouse'a (BigQuery/Postgres) düzenli aktaran minimal Airflow yapısının kurulması.
+- [ ] **Faz 2: Feature Engineering**: Toplanan ham "Trade Tick" verileri üzerinde özellik mühendisliği yapılarak modelin anlayabileceği "Hacim Sıçramaları", "Zaman Ağırlıklı Ortalamalar (VWAP)" ve "Anormal İşlem Boyutları" gibi veri noktalarının üretilmesi.
+- [ ] **Faz 3: Özel ML Modeli (Anomaly Detection)**: Gerçekleşmesi çok zor olan "kesin fiyat tahmini" yerine, somut ve ölçülebilir bir problem olan "Balina Hareketlerinin Tespiti" (Anomaly Detection / Unsupervised Learning - Isolation Forest vb.) üzerine odaklanan bir Makine Öğrenmesi modelinin eğitilip Whale X-Ray modülüne bağlanması.
+- [ ] **Faz 4: Değerlendirme & Backtesting (Ground Truth & Başarı Ölçütü)**: Unsupervised (etiketsiz) veride klasik 'doğruluk (accuracy)' ölçülemeyeceği için;
   - Modelin işaretlediği anomalilerin (Whale Alert API veya on-chain verileri gibi) **gerçek dış kaynaklarla (Ground Truth) çapraz doğrulanması**.
   - Performansın "Accuracy" yerine **"Tespit Oranı (Hit Rate) ve Precision@k"** gibi doğru metriklerle ölçümlenerek raporlanması.
-- [x] **Amacı:** Bu dörtlü yapı, CV için "Top 50 coinin canlı verisiyle Minimum Viable bir ETL kurdum, VWAP ve hacim sıçraması feature'ları ürettim, Isolation Forest modeli eğittim ve performansını dış on-chain verilerle (Ground Truth) doğruladım" diyebileceğin, mülakatlarda her türlü teknik sorguya dayanıklı kusursuz bir veri mühendisliği hikayesi sunacak.
+- [ ] **Amacı:** Bu dörtlü yapı, CV için "Top 50 coinin canlı verisiyle Minimum Viable bir ETL kurdum, VWAP ve hacim sıçraması feature'ları ürettim, Isolation Forest modeli eğittim ve performansını dış on-chain verilerle (Ground Truth) doğruladım" diyebileceğin, mülakatlarda her türlü teknik sorguya dayanıklı kusursuz bir veri mühendisliği hikayesi sunacak.
 
 ### 2. Stripe Entegrasyonu ve Abonelik Sistemi
 - [x] PRO özellikleri kilitlemek ve ödeme altyapısını kurmak için Stripe Checkout ve Webhook entegrasyonu. (Supabase Auth ile senkronize çalışacak).
@@ -51,29 +51,8 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 ## 📌 Sonraki Aşama (Backlog)
 
-### 1. Masaüstü Uygulaması (Tauri / Electron)
-- Mobilden sonra değerlendirilecek. Kullanıcıların bilgisayarına indirip Alt Bar'a sabitleyebileceği, terminal hissiyatlı standalone uygulama.
-
-
 ### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
 - [x] 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla. (Li.Fi Widget ile tamamlandı)
-
-### 4. Sanal Borsa & Kağıt Üstünde Al-Sat (Paper Trading)
-- Kullanıcılara sanal 100.000$ bakiye verilmesi.
-- Kendi paralarını riske atmadan yapay zeka alarmlarına göre sanal long/short pozisyonları açabilmeleri.
-- Portföy kâr/zarar (PnL) durumunun grafiksel takibi.
-
-### 5. Telegram Botu & Canlı E-posta Alarmları (Push Notifications)
-- Makine öğrenmesi modeli balina anormalliği yakaladığında PRO üyelere anında Telegram mesajı atılması.
-- Resend altyapısı kullanılarak şık e-posta bildirimleri gönderilmesi.
-
-### 6. Gerçek Web3 Cüzdan Analizi (On-Chain)
-- Alchemy (EVM) veya Helius (Solana) API'leri kullanılarak cüzdan okuma işlemlerinin simülasyondan gerçeğe dönüştürülmesi.
-- Girilen cüzdan adresinin gerçek blockchain bakiyelerinin ve işlemlerinin çekilmesi.
-
-### 7. Kripto Sosyal Ağı (Copy Trading Feed)
-- Kullanıcıların liderlik tablosundaki başarılı "Trader"ları takip edebilmesi.
-- Diğer kullanıcıların işlemlerini Twitter (X) akışı gibi görebilme ve tek tuşla portföy kopyalama.
 
 ### 4. UI/UX ve Genel İyileştirmeler
 - [x] Orijinal kedi logosunun (CryptoNeko) sisteme tekrar entegre edilmesi.

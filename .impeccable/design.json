@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-20T02:19:00Z",
+  "title": "Design System: Crypto Data Pipeline",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Blue Accent", "canonical": "#3b82f6" },
+      "neutral-bg": { "role": "neutral", "displayName": "Deep Void", "canonical": "#19191c" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Devasa istatistikler ve karşılama mesajı" }
+    },
+    "shadows": [
+      { "name": "card-glow", "value": "0 0 20px rgba(59, 130, 246, 0.1)", "purpose": "Vurgulu paneller ve aktif sekmeler için sinematik parlama" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bento Card",
+      "kind": "card",
+      "refersTo": "card-base",
+      "description": "Temel veri taşıyıcı konteyner.",
+      "html": "<div class=\"ds-card\"><h3>Veri Başlığı</h3><p>Burada kripto analizleri yer alır.</p></div>",
+      "css": ".ds-card { background: rgba(39, 39, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 24px; color: #ffffff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cinematic Terminal",
+    "overview": "Bu sistem, karmaşık finansal verileri ultra-modern, sinematik ve elit bir terminal havasında sunar. Glassmorphism ve yumuşak parlamalar kullanılarak, verilerin adeta ekrandan dışarı taşması sağlanır.",
+    "keyCharacteristics": [
+      "Derinlik hissi veren koyu arka planlar.",
+      "Kritik noktalarda kullanılan yumuşak ve dikkat çekici neon parlamalar.",
+      "Sade, geniş boşluklu (breathing room) Bento Box düzenleri."
+    ],
+    "rules": [
+      { "name": "The Background Glow Rule", "body": "Renkli vurgular asla büyük bloklar halinde kullanılmaz; sadece ince çizgilerde, ikonlarda veya arka planda çok düşük opacity ile yumuşak bir parlama olarak yer alır.", "section": "colors" },
+      { "name": "The Glass Border Rule", "body": "Derinlik yaratmak için kartların etrafına her zaman çok ince, yarı saydam bir beyaz sınır eklenir.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do veri panellerini birbirinden ayırmak için Bento Box (yuvarlatılmış cam kartlar) düzenini kullan.",
+      "Do finansal verilerin rahat okunması için Label tipografisini hafif gri (Muted Dust) ve uppercase olarak kullan."
+    ],
+    "donts": [
+      "Don't asla düz, opak beyaz veya açık gri arka planlar kullanma. (Standart SaaS görünümünden kaçın).",
+      "Don't içi içe geçmiş (kart içinde kart) tasarımlar yapma."
+    ]
+  }
+}

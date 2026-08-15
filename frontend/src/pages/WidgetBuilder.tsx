@@ -21,7 +21,7 @@ const WIDGET_LIBRARY = [
 ];
 
 export default function WidgetBuilder() {
-  const { user } = useAuth();
+  const { user, isPro, isEnterprise } = useAuth();
   const navigate = useNavigate();
   const [width, widthRef] = useContainerWidth();
   
@@ -80,7 +80,7 @@ export default function WidgetBuilder() {
   };
 
   // PRO Guard
-  if (user?.plan !== "pro") {
+  if (!isPro && !isEnterprise) {
     return (
       <div className="min-h-screen pt-24 px-6 pb-20 flex flex-col items-center justify-center text-center">
         <motion.div 

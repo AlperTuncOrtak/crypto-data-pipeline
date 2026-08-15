@@ -11,31 +11,25 @@ export interface FearGreedData {
 
 export function useFearAndGreed() {
   const [data, setData] = useState<FearGreedData | null>(null);
+  const [history, setHistory] = useState<FearGreedData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiClient.get('/market/fear-and-greed');
-        const json = response.data;
+        // Fallback to direct fetch since we want 30 days history 
+        // (if backend doesn't support limit=30 easily, we'll just hit alternative.me directly)
+        const directResponse = await fetch('https://api.alternative.me/fng/?limit=30');
+        const directJson = await directResponse.json();
         
-        if (json && json.data && json.data.length > 0) {
-          setData(json.data[0]);
+        if (directJson && directJson.data && directJson.data.length > 0) {
+          setData(directJson.data[0]);
+          setHistory(directJson.data);
           return;
         }
       } catch (err: any) {
-        // Fallback to direct fetch if backend isn't deployed yet
-        try {
-          const directResponse = await fetch('https://api.alternative.me/fng/');
-          const directJson = await directResponse.json();
-          if (directJson && directJson.data && directJson.data.length > 0) {
-            setData(directJson.data[0]);
-            return;
-          }
-        } catch (directErr: any) {
-          setError(directErr.message || err.message);
-        }
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -47,7 +41,7 @@ export function useFearAndGreed() {
     return () => clearInterval(interval);
   }, []);
 
-  return { data, loading, error };
+  return { data, history, loading, error };
 }
 
 export function getAiAnalysisText(score: number): string {

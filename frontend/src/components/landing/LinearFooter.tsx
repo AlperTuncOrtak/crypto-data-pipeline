@@ -14,7 +14,7 @@ const IconGithub = ({ size = 18 }) => (
   </svg>
 );
 
-export function LinearFooter() {
+export function LinearFooter({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
   return (
     <footer className="relative z-10 border-t border-white/5 bg-[#000000] pt-32 pb-12 overflow-hidden">
       
@@ -31,12 +31,14 @@ export function LinearFooter() {
           <p className="text-slate-400 text-lg md:text-xl mb-10 max-w-2xl">
             Join elite traders who rely on CryptoNeko's intelligence layer to navigate the markets with precision.
           </p>
-          <Link 
-            to="/login"
+          <button 
+            onClick={() => {
+              if (onAuthOpen) onAuthOpen("login");
+            }}
             className="px-8 py-4 rounded-md bg-white text-[#000000] font-bold text-sm hover:bg-white/90 active:scale-95 transition-all flex items-center justify-center gap-2 group"
           >
             Create free account <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </button>
         </div>
 
         {/* Minimal Footer Links */}

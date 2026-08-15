@@ -8,7 +8,7 @@ import { LinearBento } from "../components/landing/LinearBento";
 import { LinearSpeed } from "../components/landing/LinearSpeed";
 import { LinearFooter } from "../components/landing/LinearFooter";
 
-export default function Landing() {
+export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { scrollYProgress } = useScroll();
@@ -50,7 +50,9 @@ export default function Landing() {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => {
+                if (onAuthOpen) onAuthOpen("login");
+              }}
               className="px-4 py-2 rounded-md bg-white text-[#000000] font-medium text-sm hover:bg-white/90 transition-colors"
             >
               Sign In
@@ -60,10 +62,12 @@ export default function Landing() {
       </motion.header>
 
       {/* 🔴 LINEAR MODULAR SECTIONS 🔴 */}
-      <LinearHero />
+      <div className="pt-24 pb-20">
+        <LinearHero onAuthOpen={onAuthOpen} />
+      </div>
       <LinearBento />
       <LinearSpeed />
-      <LinearFooter />
+      <LinearFooter onAuthOpen={onAuthOpen} />
 
     </div>
   );

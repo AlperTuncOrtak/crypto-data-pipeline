@@ -152,41 +152,67 @@ def analyze_wallet(address: str) -> dict:
         "risk_score": rng.randint(10, 90)
     }
 
-import sqlalchemy
-from shared.db import get_connection
+import os
+import joblib
 
 def get_ml_anomalies(symbol: str = None, limit: int = 10):
-    """Fetches real ML anomalies identified by the Isolation Forest model."""
-    conn = get_connection()
+    """
+    Fetches real ML anomalies by querying the latest features from PostgreSQL 
+    and passing them through the trained Isolation Forest model.
+    """
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
     try:
-        with conn.cursor() as cursor:
-            query = """
-                SELECT symbol, timestamp, vwap_1h, total_volume, anomaly_score
-                FROM features_vwap
-                WHERE anomaly_score > 0
-            """
-            params = []
-            if symbol:
-                query += " AND symbol = %s"
-                params.append(symbol)
-                
-            query += " ORDER BY timestamp DESC LIMIT %s"
-            params.append(limit)
+        from data_pipeline.ml.feature_extractor import CryptoFeatureExtractor
+    except ImportError:
+        print("Could not import CryptoFeatureExtractor.")
+        return []
+        
+    model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data_pipeline', 'ml', 'models', 'isolation_forest.pkl')
+    
+    if not os.path.exists(model_path):
+        print(f"Model not found at {model_path}. Please run train_model.py first.")
+        return []
+        
+    try:
+        model = joblib.load(model_path)
+    except Exception as e:
+        print(f"Failed to load ML model: {e}")
+        return []
+
+    target_symbol = symbol or 'btcusdt'
+    
+    # We fetch a slightly larger window to compute rolling features properly
+    extractor = CryptoFeatureExtractor()
+    dataset = extractor.get_training_dataset(symbol=target_symbol, hours_back=2)
+    
+    if dataset.empty:
+        return []
+        
+    # Get the most recent records
+    recent_data = dataset.tail(limit)
+    
+    # Predict (-1 for anomaly, 1 for normal)
+    predictions = model.predict(recent_data)
+    scores = model.decision_function(recent_data)
+    
+    anomalies = []
+    
+    for i, (idx, row) in enumerate(recent_data.iterrows()):
+        is_anomaly = predictions[i] == -1
+        if is_anomaly:
+            # Reconstruct original features for display if needed, but we only have rolling features in dataset
+            anomalies.append({
+                "symbol": target_symbol.upper(),
+                "timestamp": idx.isoformat(),
+                "vwap_roc_5m": f"{row['vwap_roc_5m']*100:.2f}%",
+                "volume_spike_ratio": f"{row['volume_spike_ratio']:.2f}x",
+                "score": float(scores[i]),
+                "severity": "CRITICAL" if scores[i] < -0.1 else "WARNING"
+            })
             
-            cursor.execute(query, tuple(params))
-            results = cursor.fetchall()
-            
-            anomalies = []
-            for row in results:
-                anomalies.append({
-                    "symbol": row["symbol"],
-                    "timestamp": row["timestamp"].isoformat() if hasattr(row["timestamp"], "isoformat") else str(row["timestamp"]),
-                    "vwap": row["vwap_1h"],
-                    "volume": row["total_volume"],
-                    "score": row["anomaly_score"],
-                    "severity": "CRITICAL" if row["anomaly_score"] > 0.1 else "WARNING"
-                })
-            return anomalies
-    finally:
-        conn.close()
+    # Sort by timestamp descending
+    anomalies.reverse()
+    return anomalies
 

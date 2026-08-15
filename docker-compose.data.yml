@@ -20,6 +20,16 @@ x-airflow-common:
   user: "${AIRFLOW_UID:-50000}:0"
 
 services:
+  ws-consumer:
+    build: 
+      context: .
+      dockerfile: data_pipeline/Dockerfile
+    restart: always
+    volumes:
+      - ./data_lake:/app/data_lake
+    environment:
+      - PYTHONPATH=/app
+
   postgres:
     image: postgres:13
     environment:
@@ -28,6 +38,8 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s

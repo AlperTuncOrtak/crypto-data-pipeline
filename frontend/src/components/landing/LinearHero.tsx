@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useRef, useState } from "react";
 
-export function LinearHero() {
+export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,13 @@ export function LinearHero() {
           className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
           <button 
-            onClick={() => navigate(user ? "/dashboard" : "/login")}
+            onClick={() => {
+              if (user) {
+                navigate("/dashboard");
+              } else if (onAuthOpen) {
+                onAuthOpen("login");
+              }
+            }}
             className="w-full sm:w-auto px-6 py-3 rounded-md bg-white text-[#000000] font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
           >
             Start building <ArrowRight size={16} />
@@ -146,8 +152,6 @@ export function LinearHero() {
                 {activeTab === "ai" && <AiTab key="ai" />}
               </AnimatePresence>
             </div>
-
-          </div>
 
           {/* Fade out bottom overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-transparent to-transparent opacity-60 pointer-events-none z-30" />

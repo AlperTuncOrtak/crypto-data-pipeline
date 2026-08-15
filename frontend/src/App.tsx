@@ -135,7 +135,13 @@ function AppInner() {
       <DisclaimerModal onAccept={() => setDisclaimerAccepted(true)} />
 
       {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
-        <GlobalSidebar onSearchOpen={() => setIsSearchOpen(true)} />
+        <GlobalSidebar 
+          onSearchOpen={() => setIsSearchOpen(true)} 
+          onAuthOpen={() => {
+            setAuthMode("login");
+            setAuthOpen(true);
+          }}
+        />
       )}
 
       <div className="flex-1 flex flex-col min-w-0 h-screen relative z-10">

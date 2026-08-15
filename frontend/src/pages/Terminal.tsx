@@ -4,6 +4,8 @@ import {
   Star, Bell, ChevronDown, ArrowUpDown, Settings,
   Maximize2, Minimize2, X, Info, Plus
 } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { toast } from "sonner";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface OrderBookEntry { price: number; size: number; total: number; }
@@ -262,7 +264,8 @@ function RecentTrades({ mid }: { mid: number }) {
 }
 
 // ─── Order Form Component ─────────────────────────────────────────────────────
-function OrderForm({ mid }: { mid: number }) {
+function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, balanceUSDC: string, balanceBTC: string, onTrade: () => void }) {
+  const { token } = useAuth();
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [orderType, setOrderType] = useState<"limit" | "market" | "stop">("limit");
   const [price, setPrice] = useState(mid.toFixed(2));
@@ -278,10 +281,30 @@ function OrderForm({ mid }: { mid: number }) {
     if (v && price) setAmount((parseFloat(v) / parseFloat(price)).toFixed(6));
   };
   const handlePct = (pct: number) => {
-    const avail = 0.01; // mock available balance
+    const avail = side === "buy" ? parseFloat(balanceUSDC) / parseFloat(price) : parseFloat(balanceBTC);
     const a = (avail * pct).toFixed(6);
     setAmount(a);
     if (price) setTotal((parseFloat(a) * parseFloat(price)).toFixed(2));
+  };
+
+  const handleTrade = async () => {
+    if (!token) return toast.error("Please login to trade");
+    if (!amount || parseFloat(amount) <= 0) return toast.error("Enter a valid amount");
+    try {
+      const res = await fetch("http://localhost:8000/paper/trade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ symbol: "BTC", side, amount: parseFloat(amount) })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Trade failed");
+      toast.success(`Successfully ${side === 'buy' ? 'bought' : 'sold'} ${amount} BTC`);
+      setAmount("");
+      setTotal("");
+      onTrade();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   return (
@@ -321,8 +344,8 @@ function OrderForm({ mid }: { mid: number }) {
 
         {/* Available */}
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-[#848e9c]">Available (USDC)</span>
-          <span className="text-[11px] text-white">0.01 ⓘ</span>
+          <span className="text-[11px] text-[#848e9c]">Available ({side === "buy" ? "USDC" : "BTC"})</span>
+          <span className="text-[11px] text-white">{side === "buy" ? balanceUSDC : balanceBTC} ⓘ</span>
         </div>
 
         {/* Limit price */}
@@ -405,7 +428,7 @@ function OrderForm({ mid }: { mid: number }) {
 
       {/* Submit button */}
       <div className="p-3 shrink-0">
-        <button className={`w-full py-3 rounded text-[13px] font-semibold transition-all ${
+        <button onClick={handleTrade} className={`w-full py-3 rounded text-[13px] font-semibold transition-all ${
           side === "buy"
             ? "bg-[#26a69a] hover:bg-[#2bbbad] text-white"
             : "bg-[#ef5350] hover:bg-[#f44336] text-white"
@@ -420,12 +443,34 @@ function OrderForm({ mid }: { mid: number }) {
 
 // ─── Main Terminal Page ───────────────────────────────────────────────────────
 export default function Terminal() {
+  const { token } = useAuth();
   const [ticker, setTicker] = useState<TickerInfo>({
     symbol: "BTC-USDC", name: "Bitcoin",
     last: 62168.97, change24h: -2.29, changePct24h: -2.29,
     high24h: 63883.69, low24h: 61453.09, vol24h: 473878634.72
   });
   const [midPanel, setMidPanel] = useState<"orderbook" | "trades">("orderbook");
+  const [balanceUSDC, setBalanceUSDC] = useState("0.00");
+  const [balanceBTC, setBalanceBTC] = useState("0.00");
+
+  const fetchPortfolio = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch("http://localhost:8000/paper/portfolio", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setBalanceUSDC(data.cash_balance?.toFixed(2) || "0.00");
+      const btcPos = data.positions?.find((p: any) => p.symbol === "BTC");
+      setBalanceBTC(btcPos ? btcPos.amount.toString() : "0");
+    } catch (e) {}
+  }, [token]);
+
+  useEffect(() => {
+    fetchPortfolio();
+    const t = setInterval(fetchPortfolio, 5000);
+    return () => clearInterval(t);
+  }, [fetchPortfolio]);
 
   // Slowly tick price
   useEffect(() => {
@@ -580,7 +625,7 @@ export default function Terminal() {
             <button className="px-2"><Maximize2 size={11} className="text-[#848e9c]" /></button>
           </div>
           <div className="flex-1 min-h-0 overflow-hidden">
-            <OrderForm mid={ticker.last} />
+            <OrderForm mid={ticker.last} balanceUSDC={balanceUSDC} balanceBTC={balanceBTC} onTrade={fetchPortfolio} />
           </div>
 
           {/* Balance summary */}
@@ -593,11 +638,11 @@ export default function Terminal() {
             <div className="px-3 py-2 space-y-1.5">
               <div className="flex justify-between text-[11px]">
                 <span className="text-[#848e9c]">USDC</span>
-                <span className="text-white">0.01 ⓘ</span>
+                <span className="text-white">{balanceUSDC} ⓘ</span>
               </div>
               <div className="flex justify-between text-[11px]">
                 <span className="text-[#848e9c]">BTC</span>
-                <span className="text-white">0 ⓘ</span>
+                <span className="text-white">{balanceBTC} ⓘ</span>
               </div>
             </div>
           </div>

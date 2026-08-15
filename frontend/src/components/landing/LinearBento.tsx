@@ -35,73 +35,108 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode, cl
 }
 
 // ----------------------------------------------------
-// CARD 1: Real-time Whale Tracking
-// A Bloomberg-style continuous data stream with a radar ping.
+// CARD 1: AI Whale Anomaly Radar
+// A premium, scanning radar interface with glowing alerts.
 // ----------------------------------------------------
 function WhaleFeed() {
   const [items, setItems] = useState([
-    { id: 1, type: "BUY", amount: "1,200", asset: "BTC", time: "Just now" },
-    { id: 2, type: "SELL", amount: "45,000", asset: "ETH", time: "2s ago" },
-    { id: 3, type: "BUY", amount: "890,000", asset: "SOL", time: "5s ago" },
+    { id: 1, type: "WHALE BUY", amount: "1,200", asset: "BTC", score: 92, time: "Just now" },
+    { id: 2, type: "ANOMALY", amount: "45,000", asset: "ETH", score: 88, time: "2s ago" },
+    { id: 3, type: "WHALE SELL", amount: "890k", asset: "SOL", score: 95, time: "5s ago" },
   ]);
 
   useEffect(() => {
     let idCounter = 4;
     const assets = ["BTC", "ETH", "SOL", "LINK", "AVAX"];
-    const types = ["BUY", "SELL"];
+    const types = ["WHALE BUY", "ANOMALY", "WHALE SELL"];
     
     const int = setInterval(() => {
       setItems(prev => {
-        const isBuy = Math.random() > 0.4; // Slightly more buys
+        const typeStr = types[Math.floor(Math.random() * types.length)];
+        const isSell = typeStr.includes("SELL");
         const newItems = [
           { 
             id: idCounter++, 
-            type: isBuy ? "BUY" : "SELL",
-            amount: isBuy ? `${Math.floor(Math.random() * 500 + 10)}` : `${Math.floor(Math.random() * 9000 + 1000)}`, 
+            type: typeStr,
+            amount: isSell ? `${Math.floor(Math.random() * 9000 + 1000)}` : `${Math.floor(Math.random() * 500 + 10)}`, 
             asset: assets[Math.floor(Math.random() * assets.length)],
+            score: Math.floor(Math.random() * 20 + 80),
             time: "Just now" 
           },
           ...prev.map(p => ({ ...p, time: parseInt(p.time) ? `${parseInt(p.time) + 2}s ago` : "2s ago" }))
         ];
         return newItems.slice(0, 3);
       });
-    }, 2000);
+    }, 2500);
     return () => clearInterval(int);
   }, []);
 
   return (
-    <div className="relative h-44 w-full overflow-hidden mask-image-bottom mt-4 border border-white/5 bg-black/40 rounded-xl p-3 flex flex-col justify-start">
-      {/* "Live" indicator */}
-      <div className="flex items-center gap-2 mb-3 px-1">
+    <div className="relative h-56 w-full overflow-hidden mt-4 border border-white/5 bg-[#030303] rounded-xl p-4 flex flex-col justify-start shadow-inner">
+      {/* Radar Sweep Background */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/[0.05] opacity-80 pointer-events-none"
+        style={{
+          background: "conic-gradient(from 0deg, transparent 60%, rgba(52, 211, 153, 0.4) 100%)"
+        }}
+      />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-emerald-500/20 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border border-emerald-500/30 pointer-events-none bg-emerald-500/[0.02]" />
+
+      {/* "Live AI" indicator */}
+      <div className="flex items-center gap-2 mb-4 px-1 relative z-10">
         <div className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-100"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_#34d399]"></span>
         </div>
-        <span className="text-[9px] uppercase tracking-widest text-emerald-500 font-bold">Network Stream</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]">AI Scanner Active</span>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3 relative z-10 mask-image-bottom h-full">
         <AnimatePresence initial={false}>
-          {items.map((item) => (
-            <motion.div 
-              layout
-              key={item.id}
-              initial={{ opacity: 0, x: -20, height: 0 }}
-              animate={{ opacity: 1, x: 0, height: "auto" }}
-              exit={{ opacity: 0, transition: { duration: 0.2 } }}
-              transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
-              className="flex items-center justify-between py-1.5 px-3 rounded bg-white/[0.02] border-l-2"
-              style={{ borderLeftColor: item.type === "BUY" ? "#34d399" : "#f87171" }}
-            >
-              <div className="flex gap-3 items-center">
-                <span className={`text-[10px] font-black w-8 ${item.type === "BUY" ? "text-emerald-400" : "text-red-400"}`}>
-                  {item.type}
-                </span>
-                <span className="text-xs text-white font-mono">{item.amount} <span className="text-slate-500">{item.asset}</span></span>
-              </div>
-              <span className="text-[9px] text-slate-500 font-mono">{item.time}</span>
-            </motion.div>
-          ))}
+          {items.map((item) => {
+            const isBuy = item.type.includes("BUY");
+            const isAnomaly = item.type === "ANOMALY";
+            const color = isAnomaly ? "text-purple-400" : (isBuy ? "text-emerald-400" : "text-red-400");
+            const borderColor = isAnomaly ? "#a855f7" : (isBuy ? "#34d399" : "#f87171");
+            const glow = isAnomaly ? "shadow-[0_0_20px_rgba(168,85,247,0.5)]" : (isBuy ? "shadow-[0_0_20px_rgba(52,211,153,0.5)]" : "shadow-[0_0_20px_rgba(248,113,113,0.5)]");
+            
+            return (
+              <motion.div 
+                layout
+                key={item.id}
+                initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, filter: "blur(4px)", scale: 0.9 }}
+                transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
+                whileHover={{ scale: 1.02, x: 5 }}
+                className={`flex items-center justify-between py-2.5 px-4 rounded-lg bg-white/[0.04] border-l-[3px] border border-white/10 backdrop-blur-md cursor-pointer ${glow}`}
+                style={{ borderLeftColor: borderColor }}
+              >
+                <div className="flex gap-4 items-center w-full">
+                  <motion.span 
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className={`text-[10px] font-black w-20 tracking-wider whitespace-nowrap ${color}`}
+                  >
+                    {item.type}
+                  </motion.span>
+                  <span className="text-sm text-white font-mono font-bold flex-1">
+                    {item.amount} <span className="text-slate-400 font-medium ml-1">{item.asset}</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 shrink-0">
+                  <div className="flex flex-col items-end">
+                    <span className="text-[8px] text-slate-500 uppercase tracking-widest">Score</span>
+                    <span className={`text-[11px] font-black ${color}`}>{item.score}%</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-mono w-12 text-right">{item.time}</span>
+                </div>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
       </div>
     </div>
@@ -264,10 +299,10 @@ export function LinearBento() {
               <div className="w-10 h-10 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-center shrink-0">
                 <Activity size={20} className="text-emerald-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white tracking-tight">Real-time Whale Tracking</h3>
+              <h3 className="text-xl font-semibold text-white tracking-tight">AI Whale Anomaly Radar</h3>
             </div>
             <p className="text-sm text-slate-400 max-w-md">
-              Detect massive institutional flows before they move the market. Our latency is measured in milliseconds, giving you the edge.
+              Detect massive institutional flows and algorithmic anomalies before they move the market using our Isolation Forest ML model.
             </p>
             <WhaleFeed />
           </div>
@@ -293,6 +328,7 @@ export function LinearBento() {
                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
                className="absolute left-0 right-0 h-[2px] bg-emerald-400 shadow-[0_0_20px_#34d399] opacity-90 z-20"
              />
+          </div>
           </div>
         </BentoCard>
 

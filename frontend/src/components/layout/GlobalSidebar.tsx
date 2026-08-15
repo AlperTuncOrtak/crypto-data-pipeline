@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  ArrowRightLeft, 
-  BarChart2, 
-  Bell, 
-  BookOpen, 
-  Search, 
-  Settings, 
-  Users, 
+import {
+  LayoutDashboard,
+  ArrowRightLeft,
+  BarChart2,
+  Bell,
+  BookOpen,
+  Search,
+  Settings,
+  Users,
   HelpCircle,
   Activity,
   Map as MapIcon,
@@ -20,10 +20,13 @@ import {
   ChevronUp,
   ChevronsUpDown,
   MessageCircle,
-  Globe
+  Globe,
+  LogOut,
+  User
 } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
 import SettingsModal from '../ui/SettingsModal';
+import { useAuth } from '../../hooks/useAuth';
 
 const mainNavSections = [
   {
@@ -62,8 +65,9 @@ const supportSection = {
   ]
 };
 
-export default function GlobalSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
+export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOpen: () => void, onAuthOpen?: () => void }) {
   const location = useLocation();
+  const { isLoggedIn, displayName, email, avatar, signOut } = useAuth();
   const [expanded, setExpanded] = useState<string[]>(['Market Data']); // Default expand 'Market Data'
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -187,15 +191,42 @@ export default function GlobalSidebar({ onSearchOpen }: { onSearchOpen: () => vo
 
       {/* User Profile Footer */}
       <div className="p-4 shrink-0 bg-[#0a0b0d]">
-        <div className="flex items-center gap-3 p-2 bg-[#1a1d21] border border-white/5 rounded-xl hover:bg-[#22262b] cursor-pointer transition-colors">
-          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-black font-bold text-xs tracking-tight">
-            CN
-          </div>
-          <div className="flex-1 overflow-hidden flex flex-col justify-center">
-            <p className="text-[13px] font-semibold text-white leading-tight truncate">CryptoNeko Pro</p>
-            <p className="text-[11px] text-[#8b909a] truncate mt-[2px]">pro@cryptoneko.com</p>
-          </div>
-          <ChevronsUpDown size={14} className="text-gray-500 mr-1" />
+        <div 
+          onClick={isLoggedIn ? undefined : onAuthOpen}
+          className="flex items-center gap-3 p-2 bg-[#1a1d21] border border-white/5 rounded-xl hover:bg-[#22262b] cursor-pointer transition-colors"
+        >
+          {isLoggedIn ? (
+            <>
+              {avatar ? (
+                <img src={avatar} alt="Avatar" className="w-8 h-8 rounded-full border border-white/10 object-cover" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-black font-bold text-xs tracking-tight">
+                  {displayName ? displayName.slice(0, 1).toUpperCase() : "U"}
+                </div>
+              )}
+              <div className="flex-1 overflow-hidden flex flex-col justify-center">
+                <p className="text-[13px] font-semibold text-white leading-tight truncate">{displayName || "User"}</p>
+                <p className="text-[11px] text-[#8b909a] truncate mt-[2px]">{email || "Pro Member"}</p>
+              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); signOut(); }} 
+                className="text-gray-500 hover:text-gray-300 p-1"
+                title="Sign Out"
+              >
+                <LogOut size={14} />
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white font-bold text-xs tracking-tight">
+                <User size={14} className="text-gray-400" />
+              </div>
+              <div className="flex-1 overflow-hidden flex flex-col justify-center">
+                <p className="text-[13px] font-semibold text-white leading-tight truncate">Sign In</p>
+                <p className="text-[11px] text-[#8b909a] truncate mt-[2px]">Sync your portfolio</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

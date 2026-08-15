@@ -14,7 +14,7 @@ const fadeUp = {
   })
 };
 
-export function Hero() {
+export function Hero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -96,7 +96,10 @@ export function Hero() {
           className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
           <button 
-            onClick={() => navigate(user ? "/dashboard" : "/login")}
+            onClick={() => {
+              if (user) navigate("/dashboard");
+              else if (onAuthOpen) onAuthOpen("login");
+            }}
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-[#020817] font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 group"
           >
             Start Trading <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />

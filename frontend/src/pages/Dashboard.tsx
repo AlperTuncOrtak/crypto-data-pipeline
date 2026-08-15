@@ -10,6 +10,7 @@ import {
   useTrending,
 } from "../hooks/useMarket";
 import { useFearAndGreed } from "../hooks/useFearAndGreed";
+import { useGlobalHistory } from "../hooks/useGlobalHistory";
 import { useSparklines } from "../hooks/useSparklines";
 import PriceCell from "../components/ui/PriceCell";
 import {
@@ -17,6 +18,8 @@ import {
   ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, LayoutDashboard
 } from "lucide-react";
 import { MLAnomalyWidget } from "../components/dashboard/MLAnomalyWidget";
+import { FearGreedModal } from "../components/dashboard/FearGreedModal";
+import { GlobalStatsModal } from "../components/dashboard/GlobalStatsModal";
 
 // ─── HELPERS ────────────────────────────────────────────────
 function fmt(n: number) {
@@ -30,8 +33,8 @@ function fmt(n: number) {
 function getFlowData(n: number) {
   if (!n || isNaN(n)) return { val: 0, suffix: "" };
   if (n >= 1e12) return { val: n / 1e12, suffix: "T" };
-  if (n >= 1e9)  return { val: n / 1e9, suffix: "B" };
-  if (n >= 1e6)  return { val: n / 1e6, suffix: "M" };
+  if (n >= 1e9) return { val: n / 1e9, suffix: "B" };
+  if (n >= 1e6) return { val: n / 1e6, suffix: "M" };
   return { val: n, suffix: "" };
 }
 
@@ -106,7 +109,7 @@ function TH({
 }
 
 // ─── FADE IN ─────────────────────────────────────────────────
-function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
+function FadeIn({ children, delay = 0, className = "", onClick }: { children: React.ReactNode, delay?: number, className?: string, onClick?: () => void }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-20px" });
   return (
@@ -116,6 +119,7 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
       transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
+      onClick={onClick}
     >
       {children}
     </motion.div>
@@ -133,12 +137,15 @@ export default function Dashboard() {
   const { data: losersData } = useLosers();
   const { data: statsData } = useMarketStats();
   const { data: trendingData } = useTrending();
-  const { data: fng } = useFearAndGreed();
+  const { data: fng, history: fngHistory } = useFearAndGreed();
+  const { data: globalHistory } = useGlobalHistory(30);
 
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("rank");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [activeTab, setActiveTab] = useState<"all" | "gainers" | "losers" | "trending">("all");
+  const [isFngModalOpen, setIsFngModalOpen] = useState(false);
+  const [statsModalType, setStatsModalType] = useState<"mcap" | "volume" | "dominance" | null>(null);
 
   // Derived stats
   const safeCoins = Array.isArray(coins) ? coins : [];
@@ -229,9 +236,9 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn delay={0.2} className="h-full rounded-[24px] bg-[#111214] border border-white/10 p-8 flex flex-col justify-between shadow-none hover:shadow-none transition-all">
+            <FadeIn onClick={() => setStatsModalType("mcap")} delay={0.2} className="h-full cursor-pointer rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-white/10 transition-all">
                <div>
-                 <div className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-4">Global Market Cap</div>
+                 <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">Global Market Cap</div>
                  <div className="text-3xl md:text-4xl font-medium font-mono text-white tracking-tight">
                    <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
                  </div>
@@ -241,21 +248,21 @@ export default function Dashboard() {
           </motion.div>
 
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn delay={0.3} className="h-full rounded-[24px] bg-[#111214] border border-white/10 p-8 flex flex-col justify-between shadow-none hover:shadow-none transition-all">
+            <FadeIn onClick={() => setStatsModalType("volume")} delay={0.3} className="h-full cursor-pointer rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-white/10 transition-all">
                <div>
-                 <div className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-4">24h Volume</div>
+                 <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">24h Volume</div>
                  <div className="text-3xl md:text-4xl font-medium font-mono text-white tracking-tight">
                    <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
                  </div>
-                 <div className="text-[14px] text-gray-500 mt-2">Across all markets</div>
+                 <div className="text-[14px] text-gray-500 mt-2">Global trading activity</div>
                </div>
             </FadeIn>
           </motion.div>
 
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn delay={0.4} className="h-full rounded-[24px] bg-[#111214] border border-white/10 p-8 flex flex-col justify-between shadow-none hover:shadow-none transition-all">
+            <FadeIn onClick={() => setStatsModalType("dominance")} delay={0.4} className="h-full cursor-pointer rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-white/10 transition-all">
                <div>
-                 <div className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-4">Dominance</div>
+                 <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">Dominance</div>
                  <div className="flex items-end gap-2">
                    <div className="text-3xl md:text-4xl font-medium font-mono text-[#f4b000] tracking-tight">{btcDom}%</div>
                    <div className="text-[14px] font-semibold text-gray-400 mb-1">BTC</div>
@@ -266,19 +273,22 @@ export default function Dashboard() {
           </motion.div>
 
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn delay={0.5} className="h-full rounded-[24px] bg-[#111214] border border-white/10 p-8 flex flex-col justify-between shadow-none hover:shadow-none transition-all">
+            <FadeIn delay={0.5} className="h-full rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] hover:border-[#3b82f6]/30 transition-all cursor-pointer group" onClick={() => setIsFngModalOpen(true)}>
                <div>
-                 <div className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-4">Fear & Greed</div>
+                 <div className="flex items-center justify-between mb-4">
+                   <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider group-hover:text-[#3b82f6] transition-colors">Fear & Greed</div>
+                   <div className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-gray-400 group-hover:text-white transition-colors">History</div>
+                 </div>
                  {fngValue !== null ? (
                    <div className="flex items-center gap-4">
-                     <div className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, #eef0f3 ${fngValue}% 100%)` }}>
-                       <div className="absolute inset-[4px] rounded-full bg-[#111214] flex items-center justify-center">
+                     <div className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.1) ${fngValue}% 100%)` }}>
+                       <div className="absolute inset-[4px] rounded-full bg-[#19191c] flex items-center justify-center">
                          <span className="text-[16px] font-medium font-mono text-white">{fngValue}</span>
                        </div>
                      </div>
                      <div>
                        <div className="text-[18px] font-semibold" style={{ color: fngColor }}>{fngLabel}</div>
-                       <div className="text-[14px] text-gray-500 mt-0.5">Market Sentiment</div>
+                       <div className="text-[14px] text-[#a1a1aa] mt-0.5">Market Sentiment</div>
                      </div>
                    </div>
                  ) : (
@@ -294,7 +304,7 @@ export default function Dashboard() {
           
           {/* LEFT: TABLE (8 cols) */}
           <div className="xl:col-span-8">
-            <FadeIn delay={0.6} className="bg-[#111214] border border-white/10 rounded-[24px] overflow-hidden shadow-sm flex flex-col h-full">
+            <FadeIn delay={0.6} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm flex flex-col h-full">
               {/* Toolbar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/10 gap-4">
                 <div className="relative w-full max-w-[280px]">
@@ -325,7 +335,7 @@ export default function Dashboard() {
                   </div>
 
                   {/* Body */}
-                  <div className="flex flex-col bg-[#111214]">
+                  <div className="flex flex-col bg-transparent">
                     {filtered.length === 0 ? (
                       <div className="p-16 text-center text-gray-500 font-medium text-[16px]">No assets found.</div>
                     ) : (
@@ -365,7 +375,7 @@ export default function Dashboard() {
           <div className="xl:col-span-4 flex flex-col gap-8">
             
             {/* Trending Box */}
-            <FadeIn delay={0.7} className="bg-[#111214] border border-white/10 rounded-[24px] overflow-hidden shadow-sm">
+            <FadeIn delay={0.7} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm">
               <div className="flex items-center justify-between p-6 border-b border-white/10">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#f4b000]/10 flex items-center justify-center">
@@ -390,7 +400,7 @@ export default function Dashboard() {
             </FadeIn>
 
             {/* Gainers Box */}
-            <FadeIn delay={0.8} className="bg-[#111214] border border-white/10 rounded-[24px] overflow-hidden shadow-sm">
+            <FadeIn delay={0.8} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm">
               <div className="flex items-center p-6 border-b border-white/10 gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#05b169]/10 flex items-center justify-center">
                   <TrendingUp size={20} className="text-[#05b169]" />
@@ -414,7 +424,7 @@ export default function Dashboard() {
             </FadeIn>
 
             {/* Losers Box */}
-            <FadeIn delay={0.9} className="bg-[#111214] border border-white/10 rounded-[24px] overflow-hidden shadow-sm">
+            <FadeIn delay={0.9} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm">
               <div className="flex items-center p-6 border-b border-white/10 gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#cf202f]/10 flex items-center justify-center">
                   <TrendingDown size={20} className="text-[#cf202f]" />
@@ -441,6 +451,17 @@ export default function Dashboard() {
         </div>
 
       </div>
+      <FearGreedModal 
+        isOpen={isFngModalOpen} 
+        onClose={() => setIsFngModalOpen(false)} 
+        history={fngHistory || []} 
+      />
+      <GlobalStatsModal 
+        isOpen={statsModalType !== null}
+        onClose={() => setStatsModalType(null)}
+        type={statsModalType || "mcap"}
+        data={globalHistory}
+      />
     </div>
   );
 }

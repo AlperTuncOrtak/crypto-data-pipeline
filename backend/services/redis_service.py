@@ -29,35 +29,39 @@ MIN_CHANGE_PCT = 0.5
 
 
 def get_all_tickers(limit=500):
-    symbols = list(r.smembers("tickers"))
-    if not symbols:
+    try:
+        symbols = list(r.smembers("tickers"))
+        if not symbols:
+            return []
+
+        keys = [f"ticker:{symbol}USDT" for symbol in symbols]
+        raw_values = r.mget(keys)
+
+        results = []
+        for symbol, raw in zip(symbols, raw_values):
+            if raw:
+                try:
+                    data = json.loads(raw)
+                    results.append(
+                        {
+                            "symbol": symbol,
+                            "current_price": float(data.get("price", 0)),
+                            "price_change_percentage_24h": float(data.get("change_24h", 0)),
+                            "total_volume": float(data.get("volume", 0)),
+                            "high_24h": float(data.get("high_24h", 0)),
+                            "low_24h": float(data.get("low_24h", 0)),
+                            "data_source": data.get("source", "unknown"),
+                            "updated_at": str(data.get("ts", "")),
+                        }
+                    )
+                except Exception:
+                    pass
+
+        results.sort(key=lambda x: x["total_volume"], reverse=True)
+        return results[:limit]
+    except Exception as e:
+        print(f"Redis get_all_tickers failed: {e}")
         return []
-
-    keys = [f"ticker:{symbol}USDT" for symbol in symbols]
-    raw_values = r.mget(keys)
-
-    results = []
-    for symbol, raw in zip(symbols, raw_values):
-        if raw:
-            try:
-                data = json.loads(raw)
-                results.append(
-                    {
-                        "symbol": symbol,
-                        "current_price": float(data.get("price", 0)),
-                        "price_change_percentage_24h": float(data.get("change_24h", 0)),
-                        "total_volume": float(data.get("volume", 0)),
-                        "high_24h": float(data.get("high_24h", 0)),
-                        "low_24h": float(data.get("low_24h", 0)),
-                        "data_source": data.get("source", "unknown"),
-                        "updated_at": str(data.get("ts", "")),
-                    }
-                )
-            except Exception:
-                pass
-
-    results.sort(key=lambda x: x["total_volume"], reverse=True)
-    return results[:limit]
 
 
 def get_ticker(symbol):

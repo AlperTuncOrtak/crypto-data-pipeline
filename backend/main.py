@@ -30,6 +30,7 @@ from backend.services.market_service import (
     get_top_losers,
     get_highest_volume,
     get_sparklines,
+    get_global_market_history,
 )
 from backend.services.alert_service import get_alerts
 from backend.services.analysis_service import (
@@ -73,10 +74,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from backend.routers import whale, stripe_router
+from backend.routers import whale, stripe_router, paper
 
 app.include_router(whale.router)
 app.include_router(stripe_router.router)
+app.include_router(paper.router)
 
 
 # -----------------------
@@ -172,6 +174,12 @@ def market_stats():
             "eth": eth_dom
         }
     }
+
+
+@app.get("/market/global-history")
+def global_market_history(days: int = 30):
+    """30 gunluk global market cap, volume ve dominance gecmisi."""
+    return get_global_market_history(days)
 
 
 @app.get("/market/gainers")

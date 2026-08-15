@@ -135,7 +135,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
 
   const handleSubscribe = async (planId: string) => {
     if (!user) {
-      navigate('/login?redirect=/pricing');
+      if (onAuthOpen) onAuthOpen();
       return;
     }
     
