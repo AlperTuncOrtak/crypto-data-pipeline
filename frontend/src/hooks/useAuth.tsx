@@ -8,6 +8,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [plan, setPlan] = useState("free");
   const [loading, setLoading] = useState(true);
 
@@ -34,6 +35,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setToken(session?.access_token ?? null);
       if (session?.user) fetchPlan(session.user.id);
       else setPlan("free");
       setLoading(false);
@@ -43,6 +45,7 @@ export function AuthProvider({ children }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setToken(session?.access_token ?? null);
       if (session?.user) fetchPlan(session.user.id);
       else setPlan("free");
       setLoading(false);
@@ -54,22 +57,22 @@ export function AuthProvider({ children }) {
   async function signOut() {
     await supabase.auth.signOut();
     setUser(null);
+    setToken(null);
     setPlan("free");
   }
 
-  const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
   const value = {
-    user: isDev ? { id: 'dev-user', email: 'dev@cryptoneko.com' } : user,
-    plan: isDev ? "pro" : plan,
+    user,
+    token,
+    plan,
     loading,
     signOut,
-    isLoggedIn: isDev ? true : Boolean(user),
-    isPro: isDev ? true : (plan === "pro" || plan === "enterprise"),
-    isEnterprise: isDev ? true : (plan === "enterprise"),
-    displayName: isDev ? "Local Dev (PRO)" : (user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"),
+    isLoggedIn: Boolean(user),
+    isPro: (plan === "pro" || plan === "enterprise"),
+    isEnterprise: (plan === "enterprise"),
+    displayName: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User",
     avatar: user?.user_metadata?.avatar_url || null,
-    email: isDev ? "dev@cryptoneko.com" : (user?.email || null),
+    email: user?.email || null,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

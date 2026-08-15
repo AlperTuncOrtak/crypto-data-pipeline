@@ -152,6 +152,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
                 {activeTab === "ai" && <AiTab key="ai" />}
               </AnimatePresence>
             </div>
+          </div>
 
           {/* Fade out bottom overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-transparent to-transparent opacity-60 pointer-events-none z-30" />
