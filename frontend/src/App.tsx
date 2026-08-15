@@ -161,151 +161,158 @@ function AppInner() {
         <main
           className={location.pathname === "/" || location.pathname === "/onboarding" ? "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 flex flex-col" : "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 main-content flex flex-col"}
         >
-        <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
-          <Routes>
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/swap" element={<Swap />} />
-          {/* Public */}
-          <Route
-            path="/"
-            element={
-              <Landing onAuthOpen={(mode = "login") => {
-                setAuthMode(mode);
-                setAuthOpen(true);
-              }} />
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <Dashboard
-                isWatched={isWatched}
-                toggleWatchlist={toggleWatchlist}
+          <div className="flex-1 shrink-0 flex flex-col w-full">
+            <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
+              <Routes>
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/swap" element={<Swap />} />
+              {/* Public */}
+              <Route
+                path="/"
+                element={
+                  <Landing onAuthOpen={(mode = "login") => {
+                    setAuthMode(mode);
+                    setAuthOpen(true);
+                  }} />
+                }
               />
-            }
-          />
-          <Route
-            path="/market"
-            element={
-              <Market isWatched={isWatched} toggleWatchlist={toggleWatchlist} />
-            }
-          />
-          <Route path="/coin/:slug" element={<CoinDetail />} />
-          <Route path="/heatmap" element={<Heatmap />} />
-          <Route path="/narratives" element={<Narratives />} />
-          <Route path="/whale" element={<WhaleXRay />} />
-          <Route path="/timemachine" element={<TimeMachine />} />
-          <Route path="/analysis" element={<Analysis />} />
-          <Route path="/terminal" element={<Terminal />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <Dashboard
+                    isWatched={isWatched}
+                    toggleWatchlist={toggleWatchlist}
+                  />
+                }
+              />
+              <Route
+                path="/market"
+                element={
+                  <Market isWatched={isWatched} toggleWatchlist={toggleWatchlist} />
+                }
+              />
+              <Route path="/coin/:slug" element={<CoinDetail />} />
+              <Route path="/heatmap" element={<Heatmap />} />
+              <Route path="/narratives" element={<Narratives />} />
+              <Route path="/whale" element={<WhaleXRay />} />
+              <Route path="/timemachine" element={<TimeMachine />} />
+              <Route path="/analysis" element={<Analysis />} />
+              <Route path="/terminal" element={<Terminal />} />
 
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/docs" element={<Documentation />} />
-          <Route
-            path="/pricing"
-            element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}
-          />
-          <Route path="/pro" element={<Pro />} />
-          <Route path="/success" element={<Success />} />
-          <Route path="/cancel" element={<Cancel />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/docs" element={<Documentation />} />
+              <Route
+                path="/pricing"
+                element={<Pricing onAuthOpen={() => setAuthOpen(true)} />}
+              />
+              <Route path="/pro" element={<Pro />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/cancel" element={<Cancel />} />
 
-          {/* Login gerekli */}
-          <Route
-            path="/alerts"
-            element={
-              <ProtectedRoute
-                featureName="alerts"
-                onAuthOpen={() => {
-                  setAuthMode("login");
-                  setAuthOpen(true);
-                }}
-              >
-                <Alerts />
-              </ProtectedRoute>
-            }
-          />
+              {/* Login gerekli */}
+              <Route
+                path="/alerts"
+                element={
+                  <ProtectedRoute
+                    featureName="alerts"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <Alerts />
+                  </ProtectedRoute>
+                }
+              />
 
-          {/* Pro gerekli — Custom Alerts */}
-          <Route
-            path="/alerts/create"
-            element={
-              <ProtectedRoute
-                requirePro
-                featureName="Custom Alerts & Notifications"
-                onAuthOpen={() => {
-                  setAuthMode("login");
-                  setAuthOpen(true);
-                }}
-              >
-                <CreateAlert />
-              </ProtectedRoute>
-            }
-          />
+              {/* Pro gerekli — Custom Alerts */}
+              <Route
+                path="/alerts/create"
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="Custom Alerts & Notifications"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <CreateAlert />
+                  </ProtectedRoute>
+                }
+              />
 
-          {/* Pro gerekli */}
-          <Route
-            path="/analysis/ai"
-            element={
-              <ProtectedRoute
-                requirePro
-                featureName="AI Technical Analysis"
-                onAuthOpen={() => {
-                  setAuthMode("login");
-                  setAuthOpen(true);
-                }}
-              >
-                <AIAnalysis />
-              </ProtectedRoute>
-            }
-          />
-          
-          <Route
-            path="/dashboard/builder"
-            element={
-              <ProtectedRoute
-                requirePro
-                featureName="Customizable Dashboard"
-                onAuthOpen={() => {
-                  setAuthMode("login");
-                  setAuthOpen(true);
-                }}
-              >
-                <WidgetBuilder />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portfolio"
-            element={
-              <ProtectedRoute
-                requirePro
-                featureName="Portfolio Tracker & Tax Reporting"
-                onAuthOpen={() => {
-                  setAuthMode("login");
-                  setAuthOpen(true);
-                }}
-              >
-                <Portfolio />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute
-                featureName="Settings"
-                onAuthOpen={() => {
-                  setAuthMode("login");
-                  setAuthOpen(true);
-                }}
-              >
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-        </Routes></Suspense>
-        {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && <Footer />}
+              {/* Pro gerekli */}
+              <Route
+                path="/analysis/ai"
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="AI Technical Analysis"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <AIAnalysis />
+                  </ProtectedRoute>
+                }
+              />
+              
+              <Route
+                path="/dashboard/builder"
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="Customizable Dashboard"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <WidgetBuilder />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portfolio"
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="Portfolio Tracker & Tax Reporting"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <Portfolio />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute
+                    featureName="Settings"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+            </Suspense>
+          </div>
+          {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
+            <div className="shrink-0 w-full mt-auto">
+              <Footer />
+            </div>
+          )}
         </main>
       </div>
       
