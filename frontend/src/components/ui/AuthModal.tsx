@@ -12,7 +12,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 function GoogleIcon() {
   return (
@@ -136,11 +135,9 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [captchaToken, setCaptchaToken] = useState(null);
   const [failCount, setFailCount] = useState(0);
   const [lockUntil, setLockUntil] = useState(null);
   const [countdown, setCountdown] = useState(0);
-  const captchaRef = useRef(null);
 
   useEffect(() => {
     if (!lockUntil) return;
@@ -178,8 +175,6 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
     setMode(m);
     setError("");
     setSuccess("");
-    setCaptchaToken(null);
-    captchaRef.current?.resetCaptcha();
   }
 
   if (!isOpen) return null;
@@ -205,23 +200,16 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
   async function handleLogin(e) {
     e.preventDefault();
     if (isLocked) return;
-    if (!captchaToken) {
-      setError("Please complete the CAPTCHA.");
-      return;
-    }
     setLoading(true);
     setError("");
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: { captchaToken },
       });
       if (error) {
         if (error.message && error.message.toLowerCase().includes("email not confirmed")) {
           setError("Please confirm your email address first. Check your inbox.");
-          captchaRef.current?.resetCaptcha();
-          setCaptchaToken(null);
           return;
         }
         
@@ -240,8 +228,6 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         } else {
           setError(`${error.message} (${FAIL_LIMIT - next} attempts left)`);
         }
-        captchaRef.current?.resetCaptcha();
-        setCaptchaToken(null);
         return;
       }
       setFailCount(0);
@@ -256,10 +242,6 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
 
   async function handleSignup(e) {
     e.preventDefault();
-    if (!captchaToken) {
-      setError("Please complete the CAPTCHA.");
-      return;
-    }
     if (getStrength(password).score < 2) {
       setError("Password too weak. Add uppercase, numbers, or symbols.");
       return;
@@ -272,18 +254,13 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
         password,
         options: { 
           data: { full_name: name }, 
-          captchaToken,
           emailRedirectTo: window.location.origin + "/?verified=true"
         },
       });
       if (error) throw error;
       setSuccess("Account created! Check your email to verify.");
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     } catch (err) {
       setError(err.message);
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     } finally {
       setLoading(false);
     }
@@ -336,8 +313,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
       : mode === "signup"
         ? "Create Account"
         : "Send Reset Link";
-  const needsCaptcha = mode === "login" || mode === "signup";
-  const submitDisabled = loading || isLocked || (needsCaptcha && !captchaToken);
+  const submitDisabled = loading || isLocked;
 
   return (
     <>
@@ -678,24 +654,6 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                       >
                         Forgot password?
                       </button>
-                    </div>
-                  )}
-
-                  {needsCaptcha && (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginTop: 4,
-                      }}
-                    >
-                      <HCaptcha
-                        ref={captchaRef}
-                        sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
-                        onVerify={(token) => setCaptchaToken(token)}
-                        onExpire={() => setCaptchaToken(null)}
-                        theme="dark"
-                      />
                     </div>
                   )}
 
