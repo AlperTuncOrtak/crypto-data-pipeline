@@ -35,6 +35,7 @@ const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
 const Heatmap = lazy(() => import("./pages/Heatmap"));
 const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
+const TradingViewAnalyst = lazy(() => import("./pages/TradingViewAnalyst"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Pro = lazy(() => import("./pages/Pro"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
@@ -257,6 +258,21 @@ function AppInner() {
                     }}
                   >
                     <AIAnalysis />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tv-analyst"
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="TradingView OS Analyst"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <TradingViewAnalyst />
                   </ProtectedRoute>
                 }
               />

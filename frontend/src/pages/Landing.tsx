@@ -62,9 +62,7 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
       </motion.header>
 
       {/* 🔴 LINEAR MODULAR SECTIONS 🔴 */}
-      <div className="pt-24 pb-20">
-        <LinearHero onAuthOpen={onAuthOpen} />
-      </div>
+      <LinearHero onAuthOpen={onAuthOpen} />
       <LinearBento />
       <LinearSpeed />
       <LinearFooter onAuthOpen={onAuthOpen} />

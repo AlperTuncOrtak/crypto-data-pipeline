@@ -1,9 +1,9 @@
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Activity, CandlestickChart, ShieldAlert, GitBranch, ArrowRight, TrendingUp, AlertTriangle } from "lucide-react";
+import { Activity, CandlestickChart, ShieldAlert, GitBranch } from "lucide-react";
 
-// Spotlight Card Wrapper
-function BentoCard({ children, className = "" }: { children: React.ReactNode, className?: string }) {
+// Double-Bezel Premium Card Wrapper
+function BentoCard({ children, className = "", delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -14,12 +14,16 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode, cl
   }
 
   return (
-    <div 
+    <motion.div 
+      initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, delay, ease: [0.32, 0.72, 0, 1] }}
       onMouseMove={onMouseMove}
-      className={`group relative rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-base)] overflow-hidden transition-colors hover:border-[var(--border-base)] ${className}`}
+      className={`group relative rounded-[2rem] p-1.5 bg-white/5 border border-[var(--border-subtle)] overflow-hidden transition-colors hover:border-white/10 ${className}`}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-300 group-hover:opacity-100 z-0"
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-500 group-hover:opacity-100 z-0"
         style={{
           background: useTransform(
             [mouseX, mouseY],
@@ -27,16 +31,17 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode, cl
           )
         }}
       />
-      <div className="relative z-10 h-full flex flex-col">
+      
+      {/* Inner Core */}
+      <div className="relative z-10 w-full h-full rounded-[calc(2rem-0.375rem)] border border-[var(--border-base)] bg-[var(--bg-base)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] overflow-hidden flex flex-col p-8">
         {children}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 // ----------------------------------------------------
 // CARD 1: AI Whale Anomaly Radar
-// A premium, scanning radar interface with glowing alerts.
 // ----------------------------------------------------
 function WhaleFeed() {
   const [items, setItems] = useState([
@@ -72,36 +77,28 @@ function WhaleFeed() {
   }, []);
 
   return (
-    <div className="relative h-56 w-full overflow-hidden mt-4 border border-[var(--border-subtle)] bg-[var(--bg-base)] rounded-3xl p-4 flex flex-col justify-start shadow-inner">
-      {/* Radar Sweep Background */}
+    <div className="relative flex-1 w-full overflow-hidden mt-6 rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-base)] p-4 flex flex-col justify-start">
       <motion.div 
         animate={{ rotate: 360 }}
         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/[0.05] opacity-80 pointer-events-none"
-        style={{
-          background: "conic-gradient(from 0deg, transparent 60%, rgba(52, 211, 153, 0.4) 100%)"
-        }}
+        style={{ background: "conic-gradient(from 0deg, transparent 60%, rgba(52, 211, 153, 0.4) 100%)" }}
       />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-emerald-500/20 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border border-emerald-500/30 pointer-events-none bg-emerald-500/[0.02]" />
-
-      {/* "Live AI" indicator */}
       <div className="flex items-center gap-2 mb-4 px-1 relative z-10">
-        <div className="relative flex h-2 w-2">
+        <div className="relative flex h-1.5 w-1.5">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-100"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_#34d399]"></span>
+          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]">AI Scanner Active</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)] font-medium">Scanner Active</span>
       </div>
 
-      <div className="flex flex-col gap-3 relative z-10 mask-image-bottom h-full">
+      <div className="flex flex-col gap-2 relative z-10 mask-image-bottom h-full">
         <AnimatePresence initial={false}>
           {items.map((item) => {
             const isBuy = item.type.includes("BUY");
             const isAnomaly = item.type === "ANOMALY";
-            const color = isAnomaly ? "text-purple-400" : (isBuy ? "text-emerald-400" : "text-red-400");
-            const borderColor = isAnomaly ? "#a855f7" : (isBuy ? "#34d399" : "#f87171");
-            const glow = isAnomaly ? "shadow-[0_0_20px_var(--accent)]" : (isBuy ? "shadow-[0_0_20px_var(--accent)]" : "shadow-[0_0_20px_var(--accent)]");
+            const color = isAnomaly ? "text-orange-400" : (isBuy ? "text-emerald-400" : "text-red-400");
+            const borderColor = isAnomaly ? "border-orange-500/50" : (isBuy ? "border-emerald-500/50" : "border-red-500/50");
             
             return (
               <motion.div 
@@ -110,29 +107,19 @@ function WhaleFeed() {
                 initial={{ opacity: 0, x: -20, scale: 0.95 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, filter: "blur(4px)", scale: 0.9 }}
-                transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
-                whileHover={{ scale: 1.02, x: 5 }}
-                className={`flex items-center justify-between py-2.5 px-4 rounded-2xl bg-white/[0.04] border-l-[3px] border border-[var(--border-base)] backdrop-blur-md cursor-pointer ${glow}`}
-                style={{ borderLeftColor: borderColor }}
+                transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+                className={`flex items-center justify-between py-2 px-3 rounded-xl bg-white/[0.02] border-l-2 border border-white/5 backdrop-blur-md ${borderColor}`}
               >
-                <div className="flex gap-4 items-center w-full">
-                  <motion.span 
-                    animate={{ opacity: [0.7, 1, 0.7] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className={`text-[10px] font-black w-20 tracking-wider whitespace-nowrap ${color}`}
-                  >
-                    {item.type}
-                  </motion.span>
-                  <span className="text-sm text-[var(--text-main)] font-mono font-bold flex-1">
-                    {item.amount} <span className="text-[var(--text-muted)] font-medium ml-1">{item.asset}</span>
+                <div className="flex gap-4 items-center">
+                  <span className={`text-[9px] font-bold w-16 tracking-wider ${color}`}>{item.type}</span>
+                  <span className="text-xs text-[var(--text-main)] font-mono font-bold">
+                    {item.amount} <span className="text-[var(--text-muted)] ml-0.5">{item.asset}</span>
                   </span>
                 </div>
-                <div className="flex items-center gap-4 shrink-0">
+                <div className="flex items-center gap-3">
                   <div className="flex flex-col items-end">
-                    <span className="text-[8px] text-[var(--text-muted)] uppercase tracking-widest">Score</span>
-                    <span className={`text-[11px] font-black ${color}`}>{item.score}%</span>
+                    <span className={`text-[10px] font-bold ${color}`}>{item.score}%</span>
                   </div>
-                  <span className="text-[10px] text-[var(--text-muted)] font-mono w-12 text-right">{item.time}</span>
                 </div>
               </motion.div>
             );
@@ -144,7 +131,7 @@ function WhaleFeed() {
 }
 
 // ----------------------------------------------------
-// CARD 2: AI Candlestick Vision (User likes it, keeping it similar but polished)
+// CARD 2: AI Candlestick Vision
 // ----------------------------------------------------
 function AnimatedCandles() {
   const [heights, setHeights] = useState([40, 55, 30, 70, 80, 50, 90]);
@@ -155,7 +142,7 @@ function AnimatedCandles() {
         const delta = (Math.random() - 0.5) * 30;
         return Math.max(20, Math.min(95, h + delta));
       }));
-    }, 2500); // Slowed down from 1500
+    }, 2500); 
     return () => clearInterval(int);
   }, []);
 
@@ -165,11 +152,10 @@ function AnimatedCandles() {
         <motion.div 
           key={i} 
           animate={{ height: `${h}%` }} 
-          transition={{ duration: 1.5, type: "spring", bounce: 0.2 }} // Slowed down duration
-          className={`flex-1 rounded-[1px] relative ${i % 2 === 0 ? 'bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : 'bg-red-500/80 shadow-[0_0_10px_rgba(239,68,68,0.3)]'}`}
+          transition={{ duration: 1.5, ease: [0.32, 0.72, 0, 1] }} 
+          className={`flex-1 rounded-sm relative ${i % 2 === 0 ? 'bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'bg-red-500/80 shadow-[0_0_10px_rgba(239,68,68,0.2)]'}`}
         >
-          {/* Candle Wick */}
-          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[1px] bg-white/30 -my-3" />
+          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[1px] bg-white/20 -my-3" />
         </motion.div>
       ))}
     </div>
@@ -178,186 +164,135 @@ function AnimatedCandles() {
 
 // ----------------------------------------------------
 // CARD 3: Institutional Grade Risk
-// A visual "Rule Builder" pipeline (If X AND Y -> Execute Action).
 // ----------------------------------------------------
 function RiskMonitor() {
   return (
-    <div className="h-32 mt-6 rounded-3xl bg-[var(--bg-base)] border border-[var(--border-subtle)] relative p-4 flex flex-col justify-center items-center overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-indigo-500/10 blur-2xl rounded-full" />
+    <div className="flex-1 mt-6 rounded-[1.5rem] bg-[var(--bg-base)] border border-[var(--border-subtle)] relative p-4 flex flex-col justify-center items-center overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-orange-500/5 blur-3xl rounded-full pointer-events-none" />
       
       <div className="flex items-center gap-1.5 w-full justify-center relative z-10">
-        {/* Trigger 1: Volume */}
-        <motion.div 
-          animate={{ borderColor: ["rgba(255,255,255,0.05)", "rgba(59,130,246,0.4)", "rgba(255,255,255,0.05)"] }}
-          transition={{ duration: 2.5, repeat: Infinity, delay: 0 }}
-          className="flex flex-col items-center justify-center w-[52px] h-[52px] bg-black border rounded-3xl shadow-lg shrink-0"
-        >
-          <Activity size={14} className="text-blue-400 mb-1" />
-          <span className="text-[7px] text-[var(--text-muted)] font-mono tracking-tighter">VOL &gt; 300%</span>
-        </motion.div>
+        <div className="flex flex-col items-center justify-center w-[48px] h-[48px] bg-[#0a0a0a] border border-white/5 rounded-2xl shadow-sm shrink-0">
+          <Activity size={12} className="text-orange-400 mb-1" />
+          <span className="text-[6px] text-[var(--text-muted)] font-mono tracking-tighter">VOL &gt; 300%</span>
+        </div>
 
-        {/* Connecting Line 1 */}
         <div className="w-4 sm:w-6 h-[1px] bg-white/10 relative overflow-hidden shrink-0">
           <motion.div 
             animate={{ x: ["-100%", "200%"] }}
-            transition={{ duration: 2.5, repeat: Infinity, delay: 0 }}
-            className="absolute top-0 bottom-0 w-full bg-gradient-to-r from-transparent via-blue-400 to-transparent"
+            transition={{ duration: 3, repeat: Infinity }}
+            className="absolute top-0 bottom-0 w-full bg-gradient-to-r from-transparent via-orange-400 to-transparent"
           />
         </div>
 
-        {/* AND Gate Operator */}
-        <div className="px-1.5 py-1 rounded bg-white/5 border border-[var(--border-base)] text-[6px] font-black text-[var(--text-muted)] shrink-0 uppercase tracking-widest shadow-inner">
+        <div className="px-1.5 py-1 rounded bg-white/5 border border-white/5 text-[5px] font-bold text-[var(--text-muted)] shrink-0 uppercase tracking-widest">
           AND
         </div>
 
-        {/* Connecting Line 2 */}
         <div className="w-4 sm:w-6 h-[1px] bg-white/10 relative overflow-hidden shrink-0">
           <motion.div 
             animate={{ x: ["-100%", "200%"] }}
-            transition={{ duration: 2.5, repeat: Infinity, delay: 0.8 }}
-            className="absolute top-0 bottom-0 w-full bg-gradient-to-r from-transparent via-purple-400 to-transparent"
+            transition={{ duration: 3, repeat: Infinity, delay: 0.8 }}
+            className="absolute top-0 bottom-0 w-full bg-gradient-to-r from-transparent via-red-400 to-transparent"
           />
         </div>
 
-        {/* Action Node: Hedge */}
         <motion.div 
-          animate={{ borderColor: ["rgba(255,255,255,0.05)", "rgba(168,85,247,0.5)", "rgba(255,255,255,0.05)"], scale: [1, 1.05, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, delay: 1.6 }}
-          className="flex flex-col items-center justify-center w-[52px] h-[52px] bg-black border rounded-3xl shadow-[0_0_15px_rgba(168,85,247,0.1)] shrink-0"
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 3, repeat: Infinity, delay: 1.6 }}
+          className="flex flex-col items-center justify-center w-[48px] h-[48px] bg-[#0a0a0a] border border-white/5 rounded-2xl shadow-[0_0_15px_rgba(239,68,68,0.15)] shrink-0"
         >
-          <ShieldAlert size={14} className="text-purple-400 mb-1" />
-          <span className="text-[7px] text-purple-400 font-black font-mono tracking-tighter">HEDGE</span>
+          <ShieldAlert size={12} className="text-red-400 mb-1" />
+          <span className="text-[6px] text-red-400 font-bold font-mono tracking-tighter">HEDGE</span>
         </motion.div>
       </div>
-
-      {/* Floating particles to make it feel "active" */}
-      <motion.div 
-        animate={{ y: [-5, 5, -5], opacity: [0.2, 0.5, 0.2] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-2 right-4 text-[8px] text-[var(--text-muted)] font-mono"
-      >
-        [ACTIVE]
-      </motion.div>
     </div>
   );
 }
-
-// ----------------------------------------------------
-// CARD 4: Time-Machine Backtesting
-// A wide timeline chart showing years passing rapidly and a portfolio growing.
-// ----------------------------------------------------
-// ----------------------------------------------------
-// CARD 4: Time-Machine Backtesting
-// A highly graphical Equity Curve scanner with interactive-looking tooltips and trade grid.
-// ----------------------------------------------------
-// ----------------------------------------------------
-// CARD 4: Time-Machine Backtesting
-// Reverted to original state for future redesign.
-// ----------------------------------------------------
-function BacktestEngine() {
-  return (
-    <div className="h-32 mt-6 rounded-3xl bg-[var(--bg-base)] border border-[var(--border-subtle)] relative flex items-end p-4 overflow-hidden group-hover:border-[var(--border-base)] transition-colors">
-       {/* Progress Bar Demo */}
-       <div className="w-full">
-         <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono mb-2">
-           <span>Simulating 2022-2023...</span>
-           <span>RSI + MACD Cross</span>
-         </div>
-         <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-           <motion.div
-             initial={{ width: "0%" }}
-             animate={{ width: "100%" }}
-             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-             className="h-full rounded-full bg-white opacity-80" 
-           />
-         </div>
-       </div>
-    </div>
-  );
-}
-
 
 export function LinearBento() {
   return (
-    <section className="py-24 px-6 max-w-[1200px] mx-auto relative z-10">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-[var(--text-main)] mb-4">
-          Built for the modern trader.
+    <section className="py-32 px-6 max-w-[1400px] mx-auto relative z-10">
+      
+      {/* Eyebrow for the section (Allowed once) */}
+      <div className="text-center mb-24">
+        <span className="inline-block mb-6 px-3 py-1 rounded-full border border-[var(--border-subtle)] text-[10px] uppercase tracking-[0.2em] font-medium text-[var(--text-muted)] bg-white/[0.02]">
+          Platform Architecture
+        </span>
+        <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-[var(--text-main)] mb-6 leading-[1.1]">
+          Engineered for the <br className="hidden sm:block" /> absolute frontier.
         </h2>
         <p className="text-[var(--text-muted)] text-lg max-w-xl mx-auto">
           Every tool you need to analyze, execute, and scale your crypto strategy without the noise.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[340px]">
+      {/* Asymmetrical Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[400px]">
         
-        {/* Card 1: Wide */}
-        <BentoCard className="md:col-span-2 p-8 flex flex-col justify-between">
+        {/* Card 1: Main Highlight (Large) */}
+        <BentoCard className="md:col-span-8 md:row-span-2" delay={0}>
           <div className="flex flex-col h-full">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-white/[0.03] border border-[var(--border-base)] flex items-center justify-center shrink-0">
-                <Activity size={20} className="text-emerald-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-[var(--text-main)] tracking-tight">AI Whale Anomaly Radar</h3>
-            </div>
-            <p className="text-sm text-[var(--text-muted)] max-w-md">
+            <h3 className="text-2xl font-bold text-[var(--text-main)] tracking-tight mb-2">AI Whale Anomaly Radar</h3>
+            <p className="text-sm text-[var(--text-muted)] max-w-md mb-4 leading-relaxed">
               Detect massive institutional flows and algorithmic anomalies before they move the market using our Isolation Forest ML model.
             </p>
             <WhaleFeed />
           </div>
         </BentoCard>
 
-        {/* Card 2: Square */}
-        <BentoCard className="p-8 flex flex-col">
-          <div className="w-10 h-10 rounded-2xl bg-white/[0.03] border border-[var(--border-base)] flex items-center justify-center mb-4">
-            <CandlestickChart size={20} className="text-[var(--text-main)]" />
-          </div>
-          <h3 className="text-xl font-semibold text-[var(--text-main)] tracking-tight mb-2">AI Candlestick Vision</h3>
-          <p className="text-sm text-[var(--text-muted)] mb-6">
-            Automatically detect support, resistance, and key technical patterns with 94% accuracy.
-          </p>
-          
-          <div className="flex-1 rounded-3xl bg-black border border-[var(--border-subtle)] relative overflow-hidden flex items-end">
-             {/* Grid background */}
-             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMjBoMjBWMEgweiIgZmlsbD0ibm9uZSIvPjxwaGF0aCBkPSJNMCAxOS41aDIwbS0yMC0xOS41djIwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMikiLz48L3N2Zz4=')] opacity-50 pointer-events-none" />
-             <AnimatedCandles />
-             {/* Scan line */}
-             <motion.div 
-               animate={{ top: ["-10%", "110%", "-10%"] }} 
-               transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-               className="absolute left-0 right-0 h-[2px] bg-emerald-400 shadow-[0_0_20px_#34d399] opacity-90 z-20"
-             />
-          </div>
-        </BentoCard>
-
-        {/* Card 3: Square */}
-        <BentoCard className="p-8 flex flex-col justify-between">
-          <div>
-            <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
-              <ShieldAlert size={20} className="text-red-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-[var(--text-main)] tracking-tight mb-2">Institutional Grade Risk</h3>
-            <p className="text-sm text-[var(--text-muted)]">
-              Set highly complex conditional alerts based on volume spikes and sentiment changes.
-            </p>
-          </div>
-          <RiskMonitor />
-        </BentoCard>
-
-        {/* Card 4: Wide */}
-        <BentoCard className="md:col-span-2 p-8 flex flex-col justify-between">
+        {/* Card 2: Square Top Right */}
+        <BentoCard className="md:col-span-4 md:row-span-1" delay={0.1}>
           <div className="flex flex-col h-full">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                <GitBranch size={20} className="text-blue-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-[var(--text-main)] tracking-tight">Time-Machine Backtesting</h3>
-            </div>
-            <p className="text-sm text-[var(--text-muted)] max-w-md">
-              Run your strategies against 5 years of historical tick-level data in seconds. Test before you risk a single satoshi.
+            <h3 className="text-xl font-bold text-[var(--text-main)] tracking-tight mb-2">Candlestick Vision</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-4">
+              Detect key technical patterns with 94% accuracy.
             </p>
-            <BacktestEngine />
+            <div className="flex-1 rounded-[1.5rem] bg-[#050505] border border-[var(--border-subtle)] relative overflow-hidden flex items-end">
+               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMjBoMjBWMEgweiIgZmlsbD0ibm9uZSIvPjxwaGF0aCBkPSJNMCAxOS41aDIwbS0yMC0xOS41djIwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMikiLz48L3N2Zz4=')] opacity-30 pointer-events-none" />
+               <AnimatedCandles />
+            </div>
+          </div>
+        </BentoCard>
+
+        {/* Card 3: Square Bottom Right */}
+        <BentoCard className="md:col-span-4 md:row-span-1" delay={0.2}>
+          <div className="flex flex-col h-full justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-[var(--text-main)] tracking-tight mb-2">Institutional Risk</h3>
+              <p className="text-sm text-[var(--text-muted)]">
+                Set complex conditional alerts based on volume spikes and sentiment changes.
+              </p>
+            </div>
+            <RiskMonitor />
+          </div>
+        </BentoCard>
+
+        {/* Card 4: Wide Full Bottom */}
+        <BentoCard className="md:col-span-12 md:row-span-1" delay={0.3}>
+          <div className="flex flex-col md:flex-row h-full gap-8">
+            <div className="flex-1 flex flex-col justify-center">
+              <h3 className="text-2xl font-bold text-[var(--text-main)] tracking-tight mb-2">Time-Machine Backtesting</h3>
+              <p className="text-sm text-[var(--text-muted)] max-w-md leading-relaxed">
+                Run your strategies against 5 years of historical tick-level data in seconds. Test before you risk a single satoshi.
+              </p>
+            </div>
+            
+            <div className="flex-[1.5] rounded-[2rem] bg-[#050505] border border-[var(--border-subtle)] relative flex items-end p-6 overflow-hidden">
+               <div className="w-full">
+                 <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono mb-3">
+                   <span className="uppercase tracking-widest font-semibold">Simulating 2022-2023</span>
+                   <span className="uppercase tracking-widest font-semibold">RSI + MACD Cross</span>
+                 </div>
+                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                   <motion.div
+                     initial={{ width: "0%" }}
+                     animate={{ width: "100%" }}
+                     transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                     className="h-full rounded-full bg-white opacity-80" 
+                   />
+                 </div>
+               </div>
+            </div>
           </div>
         </BentoCard>
 
