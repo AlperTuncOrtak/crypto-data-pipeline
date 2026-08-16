@@ -55,10 +55,21 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function signOut() {
-    await supabase.auth.signOut();
-    setUser(null);
-    setToken(null);
-    setPlan("free");
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error("Sign out error:", err);
+    } finally {
+      setUser(null);
+      setToken(null);
+      setPlan("free");
+      // Clear supabase local storage items
+      for (const key of Object.keys(localStorage)) {
+        if (key.startsWith('sb-')) {
+          localStorage.removeItem(key);
+        }
+      }
+    }
   }
 
   const value = {
