@@ -14,34 +14,34 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-white/5">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
         <div>
-          <h2 className="text-xl font-bold text-white mb-1">Transaction History</h2>
-          <p className="text-[13px] text-gray-400">All your manual trades and synced exchange history</p>
+          <h2 className="text-xl font-bold text-[var(--text-main)] mb-1">Transaction History</h2>
+          <p className="text-[13px] text-[var(--text-muted)]">All your manual trades and synced exchange history</p>
         </div>
         <div className="flex items-center gap-3 mt-4 md:mt-0 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
             <input
               type="text"
               placeholder="Search assets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1a1d21] border border-white/5 rounded-xl pl-10 pr-4 py-2 text-[13px] text-white focus:outline-none focus:border-[#14F195]/50 transition-all"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-3xl pl-10 pr-4 py-2 text-[13px] text-[var(--text-main)] focus:outline-none focus:border-[#14F195]/50 transition-all"
             />
           </div>
-          <button className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#1a1d21] border border-white/5 text-gray-400 hover:text-white transition-all">
+          <button className="flex items-center justify-center w-10 h-10 rounded-3xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">
             <Filter size={16} />
           </button>
         </div>
       </div>
 
-      <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-xl rounded-[20px] overflow-hidden">
+      <div className="bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl rounded-[20px] overflow-hidden">
         {filteredTrades.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/5 text-[11px] font-bold text-gray-500 uppercase tracking-wider bg-white/[0.02]">
+                <tr className="border-b border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider bg-white/[0.02]">
                   <th className="px-6 py-4">Asset</th>
                   <th className="px-6 py-4">Type</th>
                   <th className="px-6 py-4">Price</th>
@@ -54,7 +54,7 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
               <tbody className="text-[13px] text-gray-300 divide-y divide-white/5">
                 {filteredTrades.map((trade, idx) => (
                   <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-4 font-bold text-white flex items-center gap-3">
+                    <td className="px-6 py-4 font-bold text-[var(--text-main)] flex items-center gap-3">
                       <img
                         src={`https://assets.coincap.io/assets/icons/${trade.symbol.toLowerCase()}@2x.png`}
                         className="w-6 h-6 rounded-full bg-white/10"
@@ -67,7 +67,7 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
                     </td>
                     <td className="px-6 py-4">
                       <div
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold ${
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-2xl text-[11px] font-bold ${
                           trade.side === "buy" ? "bg-[#14F195]/10 text-[#14F195]" : "bg-red-500/10 text-red-400"
                         }`}
                       >
@@ -78,17 +78,17 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
                     <td className="px-6 py-4">
                       ${Number(trade.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                     </td>
-                    <td className="px-6 py-4 font-medium text-white">
+                    <td className="px-6 py-4 font-medium text-[var(--text-main)]">
                       {trade.side === "buy" ? "+" : "-"}{Number(trade.quantity).toLocaleString()} {trade.symbol.toUpperCase()}
                     </td>
                     <td className="px-6 py-4">
                       ${Number(trade.total || trade.quantity * trade.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="px-6 py-4 text-[var(--text-muted)]">
                       {new Date(trade.traded_at).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <span className="inline-block px-2.5 py-1 rounded-md bg-[#1a1d21] border border-white/5 text-[10px] font-bold text-gray-400 capitalize">
+                      <span className="inline-block px-2.5 py-1 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--text-muted)] capitalize">
                         {trade.exchange || "Manual"}
                       </span>
                     </td>
@@ -99,11 +99,11 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
           </div>
         ) : (
           <div className="p-12 text-center flex flex-col items-center justify-center opacity-50">
-            <div className="w-16 h-16 rounded-full bg-[#1a1d21] border border-white/5 flex items-center justify-center mb-4">
-              <Filter size={24} className="text-gray-500" />
+            <div className="w-16 h-16 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)] flex items-center justify-center mb-4">
+              <Filter size={24} className="text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">No Transactions Found</h3>
-            <p className="text-sm text-gray-400 max-w-md">
+            <h3 className="text-lg font-bold text-[var(--text-main)] mb-2">No Transactions Found</h3>
+            <p className="text-sm text-[var(--text-muted)] max-w-md">
               We couldn't find any trades matching your criteria. Try syncing an exchange or uploading a CSV file.
             </p>
           </div>

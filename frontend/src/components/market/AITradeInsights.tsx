@@ -73,7 +73,7 @@ function SignalRow({ s, onApply }: { s: Signal; onApply: () => void }) {
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-xs font-bold text-white">{s.pair}</span>
+            <span className="text-xs font-bold text-[var(--text-main)]">{s.pair}</span>
             <span
               className="text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded"
               style={{ background: `${cfg.color}14`, color: cfg.color }}
@@ -81,7 +81,7 @@ function SignalRow({ s, onApply }: { s: Signal; onApply: () => void }) {
               {cfg.label}
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 leading-snug truncate pr-2">{s.summary}</p>
+          <p className="text-[11px] text-[var(--text-muted)] leading-snug truncate pr-2">{s.summary}</p>
         </div>
 
         {/* Move + chevron */}
@@ -107,12 +107,12 @@ function SignalRow({ s, onApply }: { s: Signal; onApply: () => void }) {
             className="overflow-hidden"
           >
             <div className="px-5 pb-4">
-              <p className="text-[12px] text-slate-400 leading-relaxed mb-3">{s.detail}</p>
+              <p className="text-[12px] text-[var(--text-muted)] leading-relaxed mb-3">{s.detail}</p>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-slate-700 font-mono">Target: {s.timeframe}</span>
                 <button
                   onClick={e => { e.stopPropagation(); onApply(); }}
-                  className="flex items-center gap-1.5 text-[11px] font-semibold text-white transition-all hover:opacity-80 active:scale-95"
+                  className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--text-main)] transition-all hover:opacity-80 active:scale-95"
                   style={{
                     background: GLASS_BG,
                     border: `1px solid ${GLASS_BORDER}`,
@@ -179,7 +179,7 @@ export default function AITradeInsights({
         style={{ borderBottom: `1px solid ${GLASS_BORDER}` }}
       >
         <div>
-          <h3 className="text-[13px] font-semibold text-white tracking-tight">Market Signals</h3>
+          <h3 className="text-[13px] font-semibold text-[var(--text-main)] tracking-tight">Market Signals</h3>
           <p className="text-[10px] text-slate-600 mt-0.5 font-mono">3 active · live</p>
         </div>
         <div
@@ -198,7 +198,7 @@ export default function AITradeInsights({
       {/* Signals */}
       <div className="relative min-h-[220px]">
         {loading ? (
-          <div className="absolute inset-0 flex flex-col justify-center items-center gap-4 bg-[#0a0b0d]/50 backdrop-blur-sm z-10">
+          <div className="absolute inset-0 flex flex-col justify-center items-center gap-4 bg-[var(--bg-base)]/50 backdrop-blur-sm z-10">
             <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
             <span className="text-xs font-mono text-emerald-500/70 animate-pulse uppercase tracking-widest">Generating AI Signals</span>
           </div>

@@ -61,7 +61,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
           {/* Backdrop */}
           <div
             onClick={onClose}
-            className="absolute inset-0 bg-[#0a0b0d]/60 backdrop-blur-md"
+            className="absolute inset-0 bg-[var(--bg-base)]/60 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -70,7 +70,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-            className="relative w-full max-w-2xl bg-[#27272a]/90 backdrop-blur-xl border border-white/5 rounded-[24px] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden p-6"
+            className="relative w-full max-w-2xl bg-[var(--bg-elevated)]/90 backdrop-blur-xl border border-[var(--border-subtle)] rounded-[24px] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden p-6"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -79,13 +79,13 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
                   {activeConfig.icon}
                 </div>
                 <div>
-                  <h2 className="text-xl font-medium text-white tracking-tight">{activeConfig.title}</h2>
+                  <h2 className="text-xl font-medium text-[var(--text-main)] tracking-tight">{activeConfig.title}</h2>
                   <p className="text-sm text-[#a1a1aa]">{activeConfig.subtitle}</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-white/5 text-[#a1a1aa] hover:text-white transition-colors"
+                className="p-2 rounded-full hover:bg-[var(--border-subtle)] text-[#a1a1aa] hover:text-[var(--text-main)] transition-colors"
               >
                 <X size={20} />
               </button>
@@ -94,7 +94,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
             {/* Chart */}
             <div className="h-[300px] w-full mt-4">
               {chartData.length === 0 ? (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                <div className="w-full h-full flex items-center justify-center text-[var(--text-muted)]">
                   Loading data...
                 </div>
               ) : (
@@ -132,7 +132,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
                           return (
-                            <div className="bg-[#19191c]/90 border border-white/10 rounded-xl p-3 shadow-xl backdrop-blur-xl">
+                            <div className="bg-[var(--bg-elevated)]/90 border border-[var(--border-base)] rounded-3xl p-3 shadow-xl backdrop-blur-xl">
                               <div className="text-xs text-[#a1a1aa] mb-1">{data.displayDate}</div>
                               <div className="text-lg font-bold font-mono" style={{ color: activeConfig.color }}>
                                 {activeConfig.formatter(data[activeConfig.dataKey])}

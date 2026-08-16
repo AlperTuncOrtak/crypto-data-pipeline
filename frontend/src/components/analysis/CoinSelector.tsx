@@ -102,7 +102,7 @@ export default function CoinSelector({
           ))}
 
           {selected.length >= maxSelection && (
-            <span className="text-xs text-slate-500 self-center ml-2">
+            <span className="text-xs text-[var(--text-muted)] self-center ml-2">
               Max {maxSelection} coins
             </span>
           )}
@@ -127,13 +127,13 @@ export default function CoinSelector({
             : 'Add another coin...'
         }
         disabled={selected.length >= maxSelection}
-        className="w-full max-w-md px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full max-w-md px-4 py-2 bg-slate-800 border border-slate-700 rounded-2xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       />
 
 
       {/* DROPDOWN */}
       {isOpen && filtered.length > 0 && selected.length < maxSelection && (
-        <div className="absolute z-10 mt-1 w-full max-w-md max-h-72 overflow-y-auto bg-slate-800 border border-slate-700 rounded-lg shadow-lg">
+        <div className="absolute z-10 mt-1 w-full max-w-md max-h-72 overflow-y-auto bg-slate-800 border border-slate-700 rounded-2xl shadow-lg">
           {filtered.map((c) => (
             <button
               key={c.symbol}
@@ -142,11 +142,11 @@ export default function CoinSelector({
             >
               <div className="flex flex-col">
                 <span className="font-semibold text-slate-100">{c.name}</span>
-                <span className="text-xs text-slate-500 font-mono">
+                <span className="text-xs text-[var(--text-muted)] font-mono">
                   {c.symbol?.toUpperCase()}
                 </span>
               </div>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-[var(--text-muted)] font-mono">
                 ${Number(c.current_price).toLocaleString(undefined, { maximumFractionDigits: 2 })}
               </span>
             </button>
@@ -157,7 +157,7 @@ export default function CoinSelector({
 
       {/* DROPDOWN BOS */}
       {isOpen && filtered.length === 0 && search && (
-        <div className="absolute z-10 mt-1 w-full max-w-md p-3 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-500">
+        <div className="absolute z-10 mt-1 w-full max-w-md p-3 bg-slate-800 border border-slate-700 rounded-2xl text-sm text-[var(--text-muted)]">
           No coins match "{search}"
         </div>
       )}

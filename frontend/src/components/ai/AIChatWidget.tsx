@@ -10,7 +10,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function TypingDots() {
   return (
-    <div className="flex gap-1.5 p-3 w-fit items-center bg-[#16181c] border border-[#273951]/50 rounded-2xl rounded-tl-none shadow-[inset_0_0_20px_rgba(39,57,81,0.2)]">
+    <div className="flex gap-1.5 p-3 w-fit items-center bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-2xl rounded-tl-none shadow-[inset_0_0_20px_rgba(39,57,81,0.2)]">
       {[0, 0.2, 0.4].map((delay, i) => (
         <motion.div
           key={i}
@@ -37,8 +37,8 @@ function Message({ msg }: { msg: any }) {
           isError
             ? 'bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl rounded-tl-none'
             : isUser
-            ? 'bg-white text-black rounded-2xl rounded-tr-none font-medium shadow-[0_0_20px_rgba(255,255,255,0.1)]'
-            : 'bg-[#16181c] border border-[#273951]/50 text-gray-200 rounded-2xl rounded-tl-none shadow-[inset_0_0_20px_rgba(39,57,81,0.2)]'
+            ? 'bg-white text-black rounded-2xl rounded-tr-none font-medium shadow-[0_0_20px_var(--accent)]'
+            : 'bg-[var(--bg-subtle)] border border-[var(--border-base)] text-gray-200 rounded-2xl rounded-tl-none shadow-[inset_0_0_20px_rgba(39,57,81,0.2)]'
         }`}
       >
         {msg.content}
@@ -61,7 +61,7 @@ function AudioVisualizer({ isSpeaking, isListening }: { isSpeaking: boolean, isL
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="flex flex-col items-center justify-center p-6 bg-[#0a0b0d]/50 rounded-2xl border border-white/5 mx-5 mb-4"
+      className="flex flex-col items-center justify-center p-6 bg-[var(--bg-base)]/50 rounded-2xl border border-[var(--border-subtle)] mx-5 mb-4"
     >
       <div className="flex items-center gap-1.5 mb-3 h-10">
         {Array.from({ length: barCount }).map((_, i) => (
@@ -79,7 +79,7 @@ function AudioVisualizer({ isSpeaking, isListening }: { isSpeaking: boolean, isL
           />
         ))}
       </div>
-      <div className="text-xs font-mono text-gray-400 uppercase tracking-widest animate-pulse">
+      <div className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest animate-pulse">
         {label}
       </div>
     </motion.div>
@@ -307,26 +307,26 @@ export default function AIChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-6 right-6 w-[380px] h-[600px] max-w-[calc(100vw-48px)] max-h-[80vh] bg-[#0a0b0d]/90 backdrop-blur-3xl border border-[#273951]/50 rounded-[32px] shadow-[inset_0_0_80px_rgba(39,57,81,0.2),0_30px_60px_-12px_rgba(0,0,0,0.8)] z-[9999] flex flex-col overflow-hidden"
+            className="fixed bottom-6 right-6 w-[380px] h-[600px] max-w-[calc(100vw-48px)] max-h-[80vh] bg-[var(--bg-base)]/90 backdrop-blur-3xl border border-[var(--border-base)] rounded-[32px] shadow-[inset_0_0_80px_rgba(39,57,81,0.2),0_30px_60px_-12px_rgba(0,0,0,0.8)] z-[9999] flex flex-col overflow-hidden"
           >
-            <div className="flex items-center justify-between p-5 border-b border-[#273951]/30 bg-[#16181c]/50">
+            <div className="flex items-center justify-between p-5 border-b border-[var(--border-base)] bg-[var(--bg-subtle)]/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative">
                   <Brain size={20} strokeWidth={2.5} />
-                  <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-[#0a0b0d] rounded-full flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-[var(--bg-base)] rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   </div>
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">CryptoNeko AI</h3>
-                  <div className="text-xs text-gray-400">Context-Aware Assistant</div>
+                  <div className="text-xs text-[var(--text-muted)]">Context-Aware Assistant</div>
                 </div>
               </div>
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] transition-colors"
               >
                 <X size={18} />
               </motion.button>
@@ -359,7 +359,7 @@ export default function AIChatWidget() {
                       whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleSend(action.label)}
-                      className="flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-full border border-white/10 bg-white/5 text-gray-300 transition-colors"
+                      className="flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-full border border-[var(--border-base)] bg-white/5 text-gray-300 transition-colors"
                     >
                       {Icon && <Icon size={12} />}
                       {action.label}
@@ -369,8 +369,8 @@ export default function AIChatWidget() {
               </div>
             )}
 
-            <div className="p-4 bg-[#16181c]/80 border-t border-[#273951]/30">
-              <div className="flex items-center gap-2 bg-[#0a0b0d] border border-[#273951]/50 rounded-[20px] p-1.5 focus-within:border-white/30 transition-colors shadow-inner">
+            <div className="p-4 bg-[var(--bg-subtle)]/80 border-t border-[var(--border-base)]">
+              <div className="flex items-center gap-2 bg-[var(--bg-base)] border border-[var(--border-base)] rounded-[20px] p-1.5 focus-within:border-white/30 transition-colors shadow-inner">
                 
                 {isSupported && (
                   <motion.button
@@ -379,10 +379,10 @@ export default function AIChatWidget() {
                     onClick={toggleVoice}
                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                       isListening 
-                        ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]' 
+                        ? 'bg-purple-500 text-[var(--text-main)] shadow-[0_0_15px_rgba(168,85,247,0.5)]' 
                         : isSpeaking 
-                        ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]'
-                        : 'bg-white/5 text-gray-400 hover:text-white'
+                        ? 'bg-blue-500 text-[var(--text-main)] shadow-[0_0_15px_rgba(59,130,246,0.5)]'
+                        : 'bg-white/5 text-[var(--text-muted)] hover:text-[var(--text-main)]'
                     }`}
                   >
                     {isListening ? <Mic size={18} className="animate-pulse" /> : <Mic size={18} />}
@@ -396,7 +396,7 @@ export default function AIChatWidget() {
                   onKeyDown={e => e.key === 'Enter' && handleSend('')}
                   placeholder={isListening ? "Listening..." : "Ask me anything..."}
                   disabled={isListening}
-                  className="flex-1 bg-transparent text-sm text-white px-2 py-2 outline-none placeholder-gray-500 disabled:opacity-50"
+                  className="flex-1 bg-transparent text-sm text-[var(--text-main)] px-2 py-2 outline-none placeholder-gray-500 disabled:opacity-50"
                 />
                 
                 <motion.button
@@ -406,8 +406,8 @@ export default function AIChatWidget() {
                   disabled={!inputValue.trim() || isLoading}
                   className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${
                     inputValue.trim() && !isLoading
-                      ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                      : 'bg-white/5 text-gray-500'
+                      ? 'bg-white text-black shadow-[0_0_20px_var(--accent)]'
+                      : 'bg-white/5 text-[var(--text-muted)]'
                   }`}
                 >
                   <Send size={18} className={inputValue.trim() && !isLoading ? "ml-1" : ""} />

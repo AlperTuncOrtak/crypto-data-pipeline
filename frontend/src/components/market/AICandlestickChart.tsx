@@ -223,24 +223,24 @@ export default function AICandlestickChart({ symbol, data }: AICandlestickChartP
 
   return (
     <ProPaywall featureName="AI Candlestick Vision" inline={true}>
-    <div className="relative w-full h-full flex flex-col bg-[#0a0b0d] rounded-2xl overflow-hidden border border-[#273951]/50 shadow-[inset_0_0_40px_rgba(39,57,81,0.1)]">
+    <div className="relative w-full h-full flex flex-col bg-[var(--bg-base)] rounded-2xl overflow-hidden border border-[var(--border-base)] shadow-[inset_0_0_40px_rgba(39,57,81,0.1)]">
       
       {/* Chart Header & Controls */}
-      <div className="flex items-center justify-between p-4 border-b border-white/5 bg-[#16181c]/50">
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50">
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
-            <span className="text-white font-bold tracking-wider">{symbol.toUpperCase()}/USD</span>
-            <span className="text-xs text-gray-500 font-mono">1D Timeframe</span>
+            <span className="text-[var(--text-main)] font-bold tracking-wider">{symbol.toUpperCase()}/USD</span>
+            <span className="text-xs text-[var(--text-muted)] font-mono">1D Timeframe</span>
           </div>
         </div>
 
         {/* AI Vision Toggle */}
         <button
           onClick={() => setIsAIVision(!isAIVision)}
-          className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${
+          className={`relative flex items-center gap-2 px-4 py-2 rounded-3xl text-sm font-bold transition-all duration-300 overflow-hidden ${
             isAIVision 
-              ? 'bg-purple-500/10 text-purple-400 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]' 
-              : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
+              ? 'bg-purple-500/10 text-purple-400 border border-purple-500/50 shadow-[0_0_20px_var(--accent)]' 
+              : 'bg-white/5 text-[var(--text-muted)] border border-[var(--border-base)] hover:bg-[var(--border-base)]'
           }`}
         >
           {isAIVision && (
@@ -267,7 +267,7 @@ export default function AICandlestickChart({ symbol, data }: AICandlestickChartP
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-20 left-4 z-10 pointer-events-none"
           >
-            <div className="bg-[#0a0b0d]/80 backdrop-blur-md border border-purple-500/30 rounded-lg p-3 shadow-xl">
+            <div className="bg-[var(--bg-base)]/80 backdrop-blur-md border border-purple-500/30 rounded-2xl p-3 shadow-xl">
               <div className="flex items-center gap-2 text-purple-400 text-xs font-mono font-bold mb-2">
                 <Target size={12} className="animate-spin-slow" />
                 <span>{aiStatus}</span>

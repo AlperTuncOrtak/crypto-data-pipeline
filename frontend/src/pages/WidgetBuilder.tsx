@@ -86,7 +86,7 @@ export default function WidgetBuilder() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-[#121212] border border-white/10 rounded-3xl p-8 relative overflow-hidden"
+          className="max-w-md w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl p-8 relative overflow-hidden"
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-blue-500" />
           
@@ -94,14 +94,14 @@ export default function WidgetBuilder() {
             <Lock size={32} className="text-purple-400" />
           </div>
           
-          <h2 className="text-2xl font-bold text-white mb-3">PRO Feature</h2>
-          <p className="text-gray-400 text-[15px] leading-relaxed mb-8">
+          <h2 className="text-2xl font-bold text-[var(--text-main)] mb-3">PRO Feature</h2>
+          <p className="text-[var(--text-muted)] text-[15px] leading-relaxed mb-8">
             The Customizable Dashboard is exclusive to CryptoNeko PRO members. Upgrade your plan to build your own workspace.
           </p>
           
           <button 
             onClick={() => navigate("/pricing")}
-            className="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:bg-gray-100 transition-colors"
+            className="w-full bg-white text-black font-bold py-3.5 rounded-3xl hover:bg-gray-100 transition-colors"
           >
             Upgrade to PRO
           </button>
@@ -129,24 +129,24 @@ export default function WidgetBuilder() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <LayoutDashboard className="text-purple-400" />
-              <h1 className="text-3xl font-bold text-white">Widget Builder</h1>
-              <div className="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider">
+              <h1 className="text-3xl font-bold text-[var(--text-main)]">Widget Builder</h1>
+              <div className="px-2 py-0.5 rounded-2xl bg-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider">
                 PRO
               </div>
             </div>
-            <p className="text-gray-400">Build your custom command center. Drag to move, pull bottom right corner to resize.</p>
+            <p className="text-[var(--text-muted)]">Build your custom command center. Drag to move, pull bottom right corner to resize.</p>
           </div>
           
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setShowMenu(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a1d21] hover:bg-[#22262b] border border-white/5 text-white text-sm font-semibold transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-3xl bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-main)] text-sm font-semibold transition-colors"
             >
               <Plus size={16} /> Add Widget
             </button>
             <button 
               onClick={saveLayout}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold transition-colors shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-3xl bg-purple-600 hover:bg-purple-700 text-[var(--text-main)] text-sm font-semibold transition-colors shadow-[0_0_20px_var(--accent)]"
             >
               <Save size={16} /> Save Layout
             </button>
@@ -154,10 +154,10 @@ export default function WidgetBuilder() {
         </div>
 
         {/* Dashboard Grid */}
-        <div ref={widthRef} className="bg-[#0a0b0d] border border-white/5 rounded-3xl min-h-[600px] p-4 relative">
+        <div ref={widthRef} className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-3xl min-h-[600px] p-4 relative">
           
           {activeWidgets.length === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--text-muted)]">
               <LayoutDashboard size={48} className="mb-4 opacity-50" />
               <p>Your dashboard is empty. Add some widgets to start!</p>
             </div>
@@ -179,12 +179,12 @@ export default function WidgetBuilder() {
                 <div key={id} className="relative group">
                   {/* Drag Handle & Remove Button */}
                   <div className="absolute top-2 right-2 z-50 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="drag-handle cursor-move bg-black/50 backdrop-blur-md p-1.5 rounded-md hover:bg-white/20 transition-colors text-white">
+                    <div className="drag-handle cursor-move bg-black/50 backdrop-blur-md p-1.5 rounded-2xl hover:bg-white/20 transition-colors text-[var(--text-main)]">
                       <LayoutDashboard size={14} />
                     </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); removeWidget(id); }}
-                      className="bg-black/50 backdrop-blur-md p-1.5 rounded-md hover:bg-red-500/80 transition-colors text-white cursor-pointer"
+                      className="bg-black/50 backdrop-blur-md p-1.5 rounded-2xl hover:bg-red-500/80 transition-colors text-[var(--text-main)] cursor-pointer"
                     >
                       <X size={14} />
                     </button>
@@ -209,11 +209,11 @@ export default function WidgetBuilder() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg bg-[#121212] border border-white/10 rounded-2xl p-6"
+              className="w-full max-w-lg bg-[var(--bg-base)] border border-[var(--border-base)] rounded-2xl p-6"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">Widget Library</h3>
-                <button onClick={() => setShowMenu(false)} className="text-gray-400 hover:text-white">
+                <h3 className="text-xl font-bold text-[var(--text-main)]">Widget Library</h3>
+                <button onClick={() => setShowMenu(false)} className="text-[var(--text-muted)] hover:text-[var(--text-main)]">
                   <X size={20} />
                 </button>
               </div>
@@ -224,11 +224,11 @@ export default function WidgetBuilder() {
                     key={w.id}
                     onClick={() => addWidget(w.id)}
                     disabled={activeWidgets.includes(w.id)}
-                    className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-[#1a1d21] hover:bg-[#22262b] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-left"
+                    className="flex items-center justify-between p-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-left"
                   >
                     <div>
-                      <div className="text-white font-semibold mb-1">{w.label}</div>
-                      <div className="text-xs text-gray-400">Default Size: {w.w}x{w.h}</div>
+                      <div className="text-[var(--text-main)] font-semibold mb-1">{w.label}</div>
+                      <div className="text-xs text-[var(--text-muted)]">Default Size: {w.w}x{w.h}</div>
                     </div>
                     {activeWidgets.includes(w.id) ? (
                       <span className="text-xs font-bold text-[#14F195] uppercase tracking-wider">Added</span>

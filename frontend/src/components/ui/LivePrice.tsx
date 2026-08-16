@@ -30,7 +30,7 @@ export default function LivePrice({ value, format }: LivePriceProps) {
       ? "text-[var(--accent)] bg-[var(--accent)]/10 drop-shadow-[0_0_8px_var(--accent)]" 
       : flash === "down" 
       ? "text-red-400 bg-red-500/10 drop-shadow-[0_0_8px_#ef4444]" 
-      : "text-white";
+      : "text-[var(--text-main)]";
 
   return (
     <div className={`${baseClasses} ${flashClasses}`}>

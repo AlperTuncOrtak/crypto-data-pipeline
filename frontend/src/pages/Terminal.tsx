@@ -117,17 +117,17 @@ function CandleChart({ symbol }: { symbol: string }) {
     <div className="flex flex-col h-full">
       {/* Chart Toolbar */}
       <div className="flex items-center gap-1 px-3 py-2 border-b border-[#1c1d20] shrink-0">
-        <button className="px-2 py-1 text-[11px] rounded text-[#848e9c] hover:text-white hover:bg-[#1c1d20] transition-colors">Price chart</button>
-        <button className="px-2 py-1 text-[11px] rounded text-[#848e9c] hover:text-white hover:bg-[#1c1d20] transition-colors">Depth chart</button>
+        <button className="px-2 py-1 text-[11px] rounded text-[#848e9c] hover:text-[var(--text-main)] hover:bg-[#1c1d20] transition-colors">Price chart</button>
+        <button className="px-2 py-1 text-[11px] rounded text-[#848e9c] hover:text-[var(--text-main)] hover:bg-[#1c1d20] transition-colors">Depth chart</button>
         <div className="w-px h-4 bg-[#1c1d20] mx-1" />
         {intervals.map(iv => (
           <button key={iv} onClick={() => setInterval_(iv)}
-            className={`px-2 py-1 text-[11px] rounded transition-colors ${interval === iv ? "bg-[#1c1d20] text-white" : "text-[#848e9c] hover:text-white hover:bg-[#1c1d20]"}`}>
+            className={`px-2 py-1 text-[11px] rounded transition-colors ${interval === iv ? "bg-[#1c1d20] text-[var(--text-main)]" : "text-[#848e9c] hover:text-[var(--text-main)] hover:bg-[#1c1d20]"}`}>
             {iv}
           </button>
         ))}
         <div className="w-px h-4 bg-[#1c1d20] mx-1" />
-        <button className="px-2 py-1 text-[11px] rounded text-[#848e9c] hover:text-white hover:bg-[#1c1d20] transition-colors flex items-center gap-1">
+        <button className="px-2 py-1 text-[11px] rounded text-[#848e9c] hover:text-[var(--text-main)] hover:bg-[#1c1d20] transition-colors flex items-center gap-1">
           <span>Indicators</span>
         </button>
       </div>
@@ -149,7 +149,7 @@ function CandleChart({ symbol }: { symbol: string }) {
       {/* Bottom time controls */}
       <div className="flex items-center justify-between px-3 py-1.5 border-t border-[#1c1d20] shrink-0">
         {["6M","3M","1M","5D","1D","4H","1H"].map(t => (
-          <button key={t} className="px-2 py-0.5 text-[10px] text-[#848e9c] hover:text-white hover:bg-[#1c1d20] rounded transition-colors">{t}</button>
+          <button key={t} className="px-2 py-0.5 text-[10px] text-[#848e9c] hover:text-[var(--text-main)] hover:bg-[#1c1d20] rounded transition-colors">{t}</button>
         ))}
         <div className="flex-1" />
         <span className="text-[10px] text-[#848e9c]">
@@ -197,7 +197,7 @@ function OrderBook({ mid }: { mid: number }) {
               <div className="absolute right-0 top-0 bottom-0 bg-[#ef5350]/10"
                 style={{ width: `${(row.total / maxTotal) * 100}%` }} />
               <span className="text-[#ef5350] z-10">{row.price.toFixed(2)}</span>
-              <span className="text-white text-right z-10">{row.size.toFixed(4)}</span>
+              <span className="text-[var(--text-main)] text-right z-10">{row.size.toFixed(4)}</span>
               <span className="text-[#848e9c] text-right z-10">{row.total.toFixed(4)}</span>
             </div>
           ))}
@@ -205,7 +205,7 @@ function OrderBook({ mid }: { mid: number }) {
 
         {/* Spread */}
         <div className="flex items-center justify-between px-2 py-1 border-y border-[#1c1d20] bg-[#0e0f11]">
-          <span className="text-white font-medium">{mid.toFixed(2)} ↑</span>
+          <span className="text-[var(--text-main)] font-medium">{mid.toFixed(2)} ↑</span>
           <span className="text-[#848e9c] text-[10px]">Spread {(Math.random() * 0.01 + 0.001).toFixed(3)}% (0.50)</span>
         </div>
 
@@ -216,7 +216,7 @@ function OrderBook({ mid }: { mid: number }) {
               <div className="absolute right-0 top-0 bottom-0 bg-[#26a69a]/10"
                 style={{ width: `${(row.total / maxTotal) * 100}%` }} />
               <span className="text-[#26a69a] z-10">{row.price.toFixed(2)}</span>
-              <span className="text-white text-right z-10">{row.size.toFixed(4)}</span>
+              <span className="text-[var(--text-main)] text-right z-10">{row.size.toFixed(4)}</span>
               <span className="text-[#848e9c] text-right z-10">{row.total.toFixed(4)}</span>
             </div>
           ))}
@@ -254,7 +254,7 @@ function RecentTrades({ mid }: { mid: number }) {
         {trades.map((t, i) => (
           <div key={i} className="grid grid-cols-3 px-2 py-[2px] hover:bg-[#1c1d20] cursor-pointer">
             <span className={t.side === "buy" ? "text-[#26a69a]" : "text-[#ef5350]"}>{t.price.toFixed(2)}</span>
-            <span className="text-white text-right">{t.size.toFixed(6)}</span>
+            <span className="text-[var(--text-main)] text-right">{t.size.toFixed(6)}</span>
             <span className="text-[#848e9c] text-right">{t.time}</span>
           </div>
         ))}
@@ -312,11 +312,11 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
       {/* Buy / Sell tabs */}
       <div className="grid grid-cols-2 border-b border-[#1c1d20] shrink-0">
         <button onClick={() => setSide("buy")}
-          className={`py-3 text-[13px] font-semibold transition-colors ${side === "buy" ? "text-[#26a69a] border-b-2 border-[#26a69a]" : "text-[#848e9c] hover:text-white"}`}>
+          className={`py-3 text-[13px] font-semibold transition-colors ${side === "buy" ? "text-[#26a69a] border-b-2 border-[#26a69a]" : "text-[#848e9c] hover:text-[var(--text-main)]"}`}>
           Buy
         </button>
         <button onClick={() => setSide("sell")}
-          className={`py-3 text-[13px] font-semibold transition-colors ${side === "sell" ? "text-[#ef5350] border-b-2 border-[#ef5350]" : "text-[#848e9c] hover:text-white"}`}>
+          className={`py-3 text-[13px] font-semibold transition-colors ${side === "sell" ? "text-[#ef5350] border-b-2 border-[#ef5350]" : "text-[#848e9c] hover:text-[var(--text-main)]"}`}>
           Sell
         </button>
       </div>
@@ -326,7 +326,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
         <div className="flex items-center gap-1 border-b border-[#1c1d20] pb-3">
           {(["Limit","Market","Stop Limit"] as const).map(t => (
             <button key={t} onClick={() => setOrderType(t.toLowerCase().split(" ")[0] as any)}
-              className={`text-[11px] px-2 py-1 rounded transition-colors ${orderType === t.toLowerCase().split(" ")[0] ? "text-white bg-[#1c1d20]" : "text-[#848e9c] hover:text-white"}`}>
+              className={`text-[11px] px-2 py-1 rounded transition-colors ${orderType === t.toLowerCase().split(" ")[0] ? "text-[var(--text-main)] bg-[#1c1d20]" : "text-[#848e9c] hover:text-[var(--text-main)]"}`}>
               {t}
             </button>
           ))}
@@ -345,7 +345,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
         {/* Available */}
         <div className="flex items-center justify-between">
           <span className="text-[11px] text-[#848e9c]">Available ({side === "buy" ? "USDC" : "BTC"})</span>
-          <span className="text-[11px] text-white">{side === "buy" ? balanceUSDC : balanceBTC} ⓘ</span>
+          <span className="text-[11px] text-[var(--text-main)]">{side === "buy" ? balanceUSDC : balanceBTC} ⓘ</span>
         </div>
 
         {/* Limit price */}
@@ -354,7 +354,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
             <label className="text-[11px] text-[#848e9c] mb-1 block">Limit price (USD)</label>
             <div className="flex items-center bg-[#1c1d20] rounded px-2 py-2 border border-[#2c2d30] focus-within:border-[#f0b90b]">
               <input value={price} onChange={e => setPrice(e.target.value)}
-                className="flex-1 bg-transparent text-[12px] text-white outline-none"
+                className="flex-1 bg-transparent text-[12px] text-[var(--text-main)] outline-none"
                 placeholder="0.00" />
               <span className="text-[11px] text-[#848e9c]">MID ED</span>
             </div>
@@ -366,7 +366,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
           <label className="text-[11px] text-[#848e9c] mb-1 block">Amount</label>
           <div className="flex items-center bg-[#1c1d20] rounded px-2 py-2 border border-[#2c2d30] focus-within:border-[#f0b90b]">
             <input value={amount} onChange={e => handleAmountChange(e.target.value)}
-              className="flex-1 bg-transparent text-[12px] text-white outline-none"
+              className="flex-1 bg-transparent text-[12px] text-[var(--text-main)] outline-none"
               placeholder="0.00" />
             <span className="text-[11px] text-[#848e9c]">BTC</span>
           </div>
@@ -376,7 +376,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
         <div className="grid grid-cols-4 gap-1">
           {[25, 50, 75, 100].map(p => (
             <button key={p} onClick={() => handlePct(p / 100)}
-              className="py-1 text-[10px] text-[#848e9c] bg-[#1c1d20] hover:bg-[#2c2d30] hover:text-white rounded transition-colors">
+              className="py-1 text-[10px] text-[#848e9c] bg-[#1c1d20] hover:bg-[#2c2d30] hover:text-[var(--text-main)] rounded transition-colors">
               {p}%
             </button>
           ))}
@@ -392,7 +392,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
           <label className="text-[11px] text-[#848e9c] mb-1 block">Total</label>
           <div className="flex items-center bg-[#1c1d20] rounded px-2 py-2 border border-[#2c2d30] focus-within:border-[#f0b90b]">
             <input value={total} onChange={e => handleTotalChange(e.target.value)}
-              className="flex-1 bg-transparent text-[12px] text-white outline-none"
+              className="flex-1 bg-transparent text-[12px] text-[var(--text-main)] outline-none"
               placeholder="0.00" />
             <span className="text-[11px] text-[#848e9c]">USDC ↕</span>
           </div>
@@ -412,7 +412,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
         <div className="flex items-center justify-between">
           <span className="text-[11px] text-[#848e9c]">Duration</span>
           <div className="flex items-center gap-1">
-            <span className="text-[11px] text-white">GTC</span>
+            <span className="text-[11px] text-[var(--text-main)]">GTC</span>
             <ChevronDown size={10} className="text-[#848e9c]" />
           </div>
         </div>
@@ -421,7 +421,7 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
         {[["Subtotal", "–"],["Fee","–"],["Total","–"]].map(([k,v]) => (
           <div key={k} className="flex items-center justify-between">
             <span className="text-[11px] text-[#848e9c]">{k}</span>
-            <span className="text-[11px] text-white">{v}</span>
+            <span className="text-[11px] text-[var(--text-main)]">{v}</span>
           </div>
         ))}
       </div>
@@ -430,8 +430,8 @@ function OrderForm({ mid, balanceUSDC, balanceBTC, onTrade }: { mid: number, bal
       <div className="p-3 shrink-0">
         <button onClick={handleTrade} className={`w-full py-3 rounded text-[13px] font-semibold transition-all ${
           side === "buy"
-            ? "bg-[#26a69a] hover:bg-[#2bbbad] text-white"
-            : "bg-[#ef5350] hover:bg-[#f44336] text-white"
+            ? "bg-[#26a69a] hover:bg-[#2bbbad] text-[var(--text-main)]"
+            : "bg-[#ef5350] hover:bg-[#f44336] text-[var(--text-main)]"
         }`}>
           {side === "buy" ? "Buy BTC" : "Sell BTC"}
         </button>
@@ -487,15 +487,15 @@ export default function Terminal() {
   const isUp = ticker.changePct24h >= 0;
 
   return (
-    <div className="flex flex-col w-full h-screen bg-[#0a0b0d] text-white font-sans overflow-hidden" style={{ fontFamily: "'IBM Plex Mono', 'Roboto Mono', monospace" }}>
+    <div className="flex flex-col w-full h-screen bg-[var(--bg-base)] text-[var(--text-main)] font-sans overflow-hidden" style={{ fontFamily: "'IBM Plex Mono', 'Roboto Mono', monospace" }}>
 
       {/* ── Top Bar ── */}
       <div className="flex items-center px-3 h-10 border-b border-[#1c1d20] shrink-0 gap-3">
         {/* Coin selector */}
         <div className="flex items-center gap-2 cursor-pointer group">
-          <div className="w-5 h-5 rounded-full bg-[#f7931a] flex items-center justify-center text-[10px] font-bold text-white shrink-0">₿</div>
-          <span className="text-[13px] font-semibold text-white">{ticker.symbol}</span>
-          <ChevronDown size={12} className="text-[#848e9c] group-hover:text-white transition-colors" />
+          <div className="w-5 h-5 rounded-full bg-[#f7931a] flex items-center justify-center text-[10px] font-bold text-[var(--text-main)] shrink-0">₿</div>
+          <span className="text-[13px] font-semibold text-[var(--text-main)]">{ticker.symbol}</span>
+          <ChevronDown size={12} className="text-[#848e9c] group-hover:text-[var(--text-main)] transition-colors" />
         </div>
         <button className="text-[#848e9c] hover:text-[#f0b90b] transition-colors">
           <Star size={14} />
@@ -513,36 +513,36 @@ export default function Terminal() {
           </div>
           <div className="hidden md:block">
             <div className="text-[#848e9c]">24h Volume</div>
-            <div className="text-white">${(ticker.vol24h / 1e6).toFixed(1)}M</div>
+            <div className="text-[var(--text-main)]">${(ticker.vol24h / 1e6).toFixed(1)}M</div>
           </div>
           <div className="hidden md:block">
             <div className="text-[#848e9c]">24H High</div>
-            <div className="text-white">${ticker.high24h.toLocaleString()}</div>
+            <div className="text-[var(--text-main)]">${ticker.high24h.toLocaleString()}</div>
           </div>
           <div className="hidden md:block">
             <div className="text-[#848e9c]">24H Low</div>
-            <div className="text-white">${ticker.low24h.toLocaleString()}</div>
+            <div className="text-[var(--text-main)]">${ticker.low24h.toLocaleString()}</div>
           </div>
         </div>
 
         {/* Right side buttons */}
         <div className="ml-auto flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-[#2c2d30] rounded text-[#848e9c] hover:text-white hover:border-[#848e9c] transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-[#2c2d30] rounded text-[#848e9c] hover:text-[var(--text-main)] hover:border-[#848e9c] transition-colors">
             <ArrowUpDown size={12} /> Advanced
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-[#2c2d30] rounded text-[#848e9c] hover:text-white hover:border-[#848e9c] transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-[#2c2d30] rounded text-[#848e9c] hover:text-[var(--text-main)] hover:border-[#848e9c] transition-colors">
             <Plus size={12} /> Add widget
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] bg-[#26a69a] text-white rounded hover:bg-[#2bbbad] transition-colors font-medium">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] bg-[#26a69a] text-[var(--text-main)] rounded hover:bg-[#2bbbad] transition-colors font-medium">
             Deposit
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-[#2c2d30] rounded text-[#848e9c] hover:text-white hover:border-[#848e9c] transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-[#2c2d30] rounded text-[#848e9c] hover:text-[var(--text-main)] hover:border-[#848e9c] transition-colors">
             Manage funds
           </button>
-          <button className="w-7 h-7 flex items-center justify-center rounded text-[#848e9c] hover:bg-[#1c1d20] hover:text-white transition-colors">
+          <button className="w-7 h-7 flex items-center justify-center rounded text-[#848e9c] hover:bg-[#1c1d20] hover:text-[var(--text-main)] transition-colors">
             <Bell size={14} />
           </button>
-          <div className="w-7 h-7 rounded-full bg-[#26a69a] flex items-center justify-center text-[11px] font-bold text-white">U</div>
+          <div className="w-7 h-7 rounded-full bg-[#26a69a] flex items-center justify-center text-[11px] font-bold text-[var(--text-main)]">U</div>
         </div>
       </div>
 
@@ -557,13 +557,13 @@ export default function Terminal() {
             { icon: "📊", label: "Portfolio" },
             { icon: "≡", label: "Orders" },
           ].map((item, i) => (
-            <button key={i} className={`w-9 flex flex-col items-center py-2 gap-0.5 rounded text-[#848e9c] hover:bg-[#1c1d20] hover:text-white transition-colors ${i === 0 ? "text-white bg-[#1c1d20]" : ""}`}>
+            <button key={i} className={`w-9 flex flex-col items-center py-2 gap-0.5 rounded text-[#848e9c] hover:bg-[#1c1d20] hover:text-[var(--text-main)] transition-colors ${i === 0 ? "text-[var(--text-main)] bg-[#1c1d20]" : ""}`}>
               <span className="text-[14px]">{item.icon}</span>
               <span className="text-[8px]">{item.label}</span>
             </button>
           ))}
           <div className="flex-1" />
-          <button className="w-9 flex flex-col items-center py-2 gap-0.5 rounded text-[#848e9c] hover:bg-[#1c1d20] hover:text-white transition-colors mb-2">
+          <button className="w-9 flex flex-col items-center py-2 gap-0.5 rounded text-[#848e9c] hover:bg-[#1c1d20] hover:text-[var(--text-main)] transition-colors mb-2">
             <span className="text-[14px]">⚙</span>
             <span className="text-[8px]">More</span>
           </button>
@@ -577,20 +577,20 @@ export default function Terminal() {
           <div className="h-48 shrink-0 border-t border-[#1c1d20] flex flex-col">
             <div className="flex items-center gap-3 px-3 py-1.5 border-b border-[#1c1d20] shrink-0">
               {["Open orders","Order history","Positions","Assets","Trade history"].map((tab, i) => (
-                <button key={tab} className={`text-[11px] pb-1 transition-colors ${i === 0 ? "text-white border-b border-white" : "text-[#848e9c] hover:text-white"}`}>
+                <button key={tab} className={`text-[11px] pb-1 transition-colors ${i === 0 ? "text-[var(--text-main)] border-b border-white" : "text-[#848e9c] hover:text-[var(--text-main)]"}`}>
                   {tab}
                   {i === 0 && <span className="ml-1 text-[#f0b90b]">0</span>}
                 </button>
               ))}
               <div className="flex-1" />
-              <Maximize2 size={12} className="text-[#848e9c] cursor-pointer hover:text-white" />
+              <Maximize2 size={12} className="text-[#848e9c] cursor-pointer hover:text-[var(--text-main)]" />
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[#1c1d20] text-[10px] text-[#848e9c] shrink-0">
               {["All markets ×","All instruments ×","All types ×","All sides ×","Group by ×","Current market"].map(f => (
-                <button key={f} className="hover:text-white transition-colors">{f}</button>
+                <button key={f} className="hover:text-[var(--text-main)] transition-colors">{f}</button>
               ))}
               <div className="flex-1" />
-              <button className="hover:text-white transition-colors">Cancel all ×</button>
+              <button className="hover:text-[var(--text-main)] transition-colors">Cancel all ×</button>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center gap-2">
               <div className="text-[#848e9c] text-[11px]">No open orders</div>
@@ -602,11 +602,11 @@ export default function Terminal() {
         <div className="w-56 flex flex-col border-r border-[#1c1d20] shrink-0">
           <div className="flex items-center border-b border-[#1c1d20] shrink-0">
             <button onClick={() => setMidPanel("orderbook")}
-              className={`flex-1 py-2 text-[11px] transition-colors ${midPanel === "orderbook" ? "text-white border-b border-[#f0b90b]" : "text-[#848e9c] hover:text-white"}`}>
+              className={`flex-1 py-2 text-[11px] transition-colors ${midPanel === "orderbook" ? "text-[var(--text-main)] border-b border-[#f0b90b]" : "text-[#848e9c] hover:text-[var(--text-main)]"}`}>
               Order book ×
             </button>
             <button onClick={() => setMidPanel("trades")}
-              className={`flex-1 py-2 text-[11px] transition-colors ${midPanel === "trades" ? "text-white border-b border-[#f0b90b]" : "text-[#848e9c] hover:text-white"}`}>
+              className={`flex-1 py-2 text-[11px] transition-colors ${midPanel === "trades" ? "text-[var(--text-main)] border-b border-[#f0b90b]" : "text-[#848e9c] hover:text-[var(--text-main)]"}`}>
               Recent trades
             </button>
             <button className="px-2">
@@ -621,7 +621,7 @@ export default function Terminal() {
         {/* Order form */}
         <div className="w-56 flex flex-col shrink-0">
           <div className="flex items-center border-b border-[#1c1d20] shrink-0">
-            <span className="flex-1 py-2 px-3 text-[11px] text-white">Order form ×</span>
+            <span className="flex-1 py-2 px-3 text-[11px] text-[var(--text-main)]">Order form ×</span>
             <button className="px-2"><Maximize2 size={11} className="text-[#848e9c]" /></button>
           </div>
           <div className="flex-1 min-h-0 overflow-hidden">
@@ -631,18 +631,18 @@ export default function Terminal() {
           {/* Balance summary */}
           <div className="border-t border-[#1c1d20] shrink-0">
             <div className="flex items-center px-3 py-1.5 border-b border-[#1c1d20]">
-              <span className="flex-1 text-[11px] text-white">Balance summary ×</span>
+              <span className="flex-1 text-[11px] text-[var(--text-main)]">Balance summary ×</span>
               <Info size={11} className="text-[#848e9c] mr-1" />
               <Maximize2 size={11} className="text-[#848e9c]" />
             </div>
             <div className="px-3 py-2 space-y-1.5">
               <div className="flex justify-between text-[11px]">
                 <span className="text-[#848e9c]">USDC</span>
-                <span className="text-white">{balanceUSDC} ⓘ</span>
+                <span className="text-[var(--text-main)]">{balanceUSDC} ⓘ</span>
               </div>
               <div className="flex justify-between text-[11px]">
                 <span className="text-[#848e9c]">BTC</span>
-                <span className="text-white">{balanceBTC} ⓘ</span>
+                <span className="text-[var(--text-main)]">{balanceBTC} ⓘ</span>
               </div>
             </div>
           </div>
@@ -665,8 +665,8 @@ export default function Terminal() {
           );
         })}
         <div className="flex-1" />
-        <button className="text-[10px] text-[#848e9c] hover:text-white transition-colors shrink-0">Share feedback</button>
-        <button className="text-[10px] text-[#848e9c] hover:text-white transition-colors shrink-0">Help</button>
+        <button className="text-[10px] text-[#848e9c] hover:text-[var(--text-main)] transition-colors shrink-0">Share feedback</button>
+        <button className="text-[10px] text-[#848e9c] hover:text-[var(--text-main)] transition-colors shrink-0">Help</button>
       </div>
     </div>
   );

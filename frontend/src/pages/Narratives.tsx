@@ -39,7 +39,7 @@ export default function Narratives() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-10 px-6 lg:px-12 overflow-hidden font-sans">
+    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-10 px-6 lg:px-12 overflow-hidden font-sans">
       
       {/* ── BACKGROUND GLOW ── */}
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
@@ -64,13 +64,13 @@ export default function Narratives() {
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
             Market Narratives
           </h1>
-          <p className="text-gray-400 mt-3 font-medium max-w-xl text-sm md:text-base leading-relaxed">
+          <p className="text-[var(--text-muted)] mt-3 font-medium max-w-xl text-sm md:text-base leading-relaxed">
             Discover where the money flows. Our AI analyzes millions of data points across social media, news, and on-chain activity to map the current market hypes in real-time.
           </p>
         </motion.div>
 
         {/* ORBS CANVAS */}
-        <div className="relative w-full h-[600px] md:h-[700px] rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden">
+        <div className="relative w-full h-[600px] md:h-[700px] rounded-[32px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-2xl overflow-hidden">
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
           <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)", backgroundSize: "30px 30px" }}></div>
@@ -102,7 +102,7 @@ export default function Narratives() {
                   },
                   layout: { type: "spring", stiffness: 300, damping: 30 }
                 }}
-                className={`absolute cursor-pointer flex flex-col items-center justify-center rounded-full border border-white/20 transition-all duration-300 hover:border-white/50 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] ${isSelected ? "z-50" : "z-10"}`}
+                className={`absolute cursor-pointer flex flex-col items-center justify-center rounded-full border border-white/20 transition-all duration-300 hover:border-[var(--border-subtle)]0 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] ${isSelected ? "z-50" : "z-10"}`}
                 style={{
                   width: orb.size,
                   height: orb.size,
@@ -118,7 +118,7 @@ export default function Narratives() {
                 {/* Glossy highlight */}
                 <div className="absolute top-[5%] left-[10%] w-[40%] h-[30%] rounded-[100%] bg-white/20 rotate-[-45deg] blur-[2px] pointer-events-none" />
                 
-                <span className="text-white font-black tracking-tight text-center drop-shadow-md z-10" style={{ fontSize: Math.max(14, orb.size / 8) }}>
+                <span className="text-[var(--text-main)] font-black tracking-tight text-center drop-shadow-md z-10" style={{ fontSize: Math.max(14, orb.size / 8) }}>
                   {orb.name}
                 </span>
                 
@@ -145,7 +145,7 @@ export default function Narratives() {
                 <motion.div
                   layoutId={`orb-${selected.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full max-w-lg rounded-[32px] border border-white/10 bg-[#1a1a1a]/95 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden relative"
+                  className="w-full max-w-lg rounded-[32px] border border-[var(--border-base)] bg-[var(--bg-elevated)]/95 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden relative"
                   style={{
                     boxShadow: `0 0 100px ${selected.color}44`
                   }}
@@ -156,27 +156,27 @@ export default function Narratives() {
                   <div className="relative p-8 pt-10">
                     <button 
                       onClick={() => setSelected(null)}
-                      className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                      className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-[var(--border-base)] hover:bg-[var(--border-base)] transition-colors"
                     >
                       <X size={16} />
                     </button>
 
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-[32px] flex items-center justify-center shadow-lg" style={{ background: `linear-gradient(135deg, ${selected.color}, #111)` }}>
-                        <Activity className="text-white" size={24} />
+                        <Activity className="text-[var(--text-main)]" size={24} />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-black text-white">{selected.name}</h2>
+                        <h2 className="text-2xl font-black text-[var(--text-main)]">{selected.name}</h2>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[11px] font-bold text-white/50 uppercase tracking-widest">Hype Score:</span>
-                          <span className={`text-[12px] font-black px-2 py-0.5 rounded-md ${selected.score > 80 ? 'bg-green-500/20 text-green-400' : selected.score > 50 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
+                          <span className={`text-[12px] font-black px-2 py-0.5 rounded-2xl ${selected.score > 80 ? 'bg-green-500/20 text-green-400' : selected.score > 50 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
                             {selected.score} / 100
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mb-6 p-5 rounded-2xl bg-[#0a0a0d]/60 border border-white/5 text-sm text-gray-300 leading-relaxed font-medium">
+                    <div className="mb-6 p-5 rounded-2xl bg-[#0a0a0d]/60 border border-[var(--border-subtle)] text-sm text-gray-300 leading-relaxed font-medium">
                       <Sparkles size={14} className="inline-block mr-2 text-[var(--accent)] -mt-0.5" />
                       {selected.summary}
                     </div>
@@ -188,10 +188,10 @@ export default function Narratives() {
                           <button
                             key={coin}
                             onClick={() => navigate(`/coin/${coin.toLowerCase()}`)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all shadow-md group"
+                            className="flex items-center gap-2 px-4 py-2 rounded-3xl border border-[var(--border-base)] bg-white/5 hover:bg-[var(--border-base)] transition-all shadow-md group"
                           >
-                            <span className="font-black text-white">{coin}</span>
-                            <ArrowRight size={14} className="text-white/30 group-hover:text-white transition-colors" />
+                            <span className="font-black text-[var(--text-main)]">{coin}</span>
+                            <ArrowRight size={14} className="text-white/30 group-hover:text-[var(--text-main)] transition-colors" />
                           </button>
                         ))}
                       </div>

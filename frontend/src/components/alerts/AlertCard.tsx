@@ -37,7 +37,7 @@ export default function AlertCard({ alert }) {
   const style = SEVERITY_STYLES[alert.severity] || SEVERITY_STYLES.Low
 
   return (
-    <div className={`border ${style.border} ${style.bg} rounded-lg p-4`}>
+    <div className={`border ${style.border} ${style.bg} rounded-2xl p-4`}>
       <div className="flex items-start gap-3">
         {/* ICON */}
         <div className="text-2xl leading-none mt-0.5">{style.icon}</div>
@@ -49,7 +49,7 @@ export default function AlertCard({ alert }) {
             <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${style.badge}`}>
               {alert.type}
             </span>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-[var(--text-muted)]">
               {alert.severity}
             </span>
           </div>

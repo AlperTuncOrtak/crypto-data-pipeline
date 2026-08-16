@@ -32,7 +32,7 @@ export function InfiniteMarquee() {
                 alt={partner.name} 
                 className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/[0.05] p-1 object-contain shadow-2xl grayscale group-hover:grayscale-0 transition-all" 
               />
-              <span className="text-xl md:text-2xl font-black tracking-widest text-white uppercase opacity-70 group-hover:opacity-100">
+              <span className="text-xl md:text-2xl font-black tracking-widest text-[var(--text-main)] uppercase opacity-70 group-hover:opacity-100">
                 {partner.name}
               </span>
             </div>

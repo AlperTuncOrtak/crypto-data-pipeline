@@ -373,12 +373,12 @@ export default function Swap() {
         <div className="w-full max-w-[480px] flex flex-col gap-6 relative z-10">
           
           {/* Main Swap Card */}
-          <div className="w-full rounded-[24px] bg-gradient-to-b from-[#111214] to-[#0a0b0d] border border-[#1e1e1e] p-2 shadow-2xl overflow-hidden relative">
+          <div className="w-full rounded-[24px] bg-gradient-to-b from-[#111214] to-[#0a0b0d] border border-[var(--border-base)] p-2 shadow-2xl overflow-hidden relative">
             
             {/* AI Intent Input */}
             <div className="w-full px-2 pt-2 pb-1 relative z-20">
-               <div className="w-full bg-[#13151a] border border-[#2a2d31] rounded-[16px] flex items-center p-3 relative overflow-hidden group focus-within:border-[var(--accent)] transition-colors">
-                 <Sparkles size={16} className={`shrink-0 ml-1 ${isAiThinking ? "text-[var(--accent)] animate-pulse" : "text-[#6b707a] group-focus-within:text-[var(--accent)]"} transition-colors`} />
+               <div className="w-full bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[16px] flex items-center p-3 relative overflow-hidden group focus-within:border-[var(--accent)] transition-colors">
+                 <Sparkles size={16} className={`shrink-0 ml-1 ${isAiThinking ? "text-[var(--accent)] animate-pulse" : "text-[var(--text-muted)] group-focus-within:text-[var(--accent)]"} transition-colors`} />
                  <input
                    ref={aiInputRef}
                    type="text"
@@ -386,7 +386,7 @@ export default function Swap() {
                    onChange={(e) => setAiCommand(e.target.value)}
                    onKeyDown={(e) => e.key === "Enter" && processAICommand(aiCommand)}
                    placeholder="Ask AI to trade (e.g. Swap half USDC for BTC)"
-                   className="w-full bg-transparent border-none outline-none text-white text-[14px] px-3 placeholder:text-[#4a4d51]"
+                   className="w-full bg-transparent border-none outline-none text-[var(--text-main)] text-[14px] px-3 placeholder:text-[var(--text-muted)]"
                    disabled={isAiThinking}
                  />
                  {aiCommand && !isAiThinking && (
@@ -409,12 +409,12 @@ export default function Swap() {
 
             {/* Header & Chart Toggle */}
             <div className="flex items-center justify-between px-4 py-3 relative z-10">
-              <h2 className="text-white font-semibold text-[16px] tracking-tight flex items-center gap-2">
+              <h2 className="text-[var(--text-main)] font-semibold text-[16px] tracking-tight flex items-center gap-2">
                 Swap
-                <button onClick={() => setShowChart(!showChart)} className={`p-1.5 rounded-[8px] transition-colors ${showChart ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "bg-[#1a1d21] text-[#8b909a] hover:text-white"}`}><LineChart size={14} /></button>
+                <button onClick={() => setShowChart(!showChart)} className={`p-1.5 rounded-[8px] transition-colors ${showChart ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}><LineChart size={14} /></button>
               </h2>
               <div className="flex items-center gap-2">
-                <button onClick={() => setShowSettings(!showSettings)} className={`p-2 rounded-[10px] transition-colors ${showSettings ? "bg-[#1a1d21] text-white" : "hover:bg-[#1a1d21] text-[#8b909a] hover:text-white"}`}><Settings size={18} /></button>
+                <button onClick={() => setShowSettings(!showSettings)} className={`p-2 rounded-[10px] transition-colors ${showSettings ? "bg-[var(--bg-elevated)] text-[var(--text-main)]" : "hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}><Settings size={18} /></button>
               </div>
             </div>
 
@@ -422,9 +422,9 @@ export default function Swap() {
             <AnimatePresence>
               {showChart && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 140, opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-2 relative z-10">
-                  <div className="h-[120px] w-full rounded-[12px] bg-[#0d0e12] border border-[#1a1d21] p-2 flex flex-col">
+                  <div className="h-[120px] w-full rounded-[12px] bg-[#0d0e12] border border-[var(--border-base)] p-2 flex flex-col">
                     <div className="flex justify-between items-center px-1 mb-1">
-                      <span className="text-[11px] text-[#8b909a] font-medium">{fromToken.symbol}/{toToken.symbol} (24H)</span>
+                      <span className="text-[11px] text-[var(--text-muted)] font-medium">{fromToken.symbol}/{toToken.symbol} (24H)</span>
                       <span className="text-[11px] text-[#2ecc71]">+1.24%</span>
                     </div>
                     <div className="flex-1">
@@ -449,23 +449,23 @@ export default function Swap() {
             <AnimatePresence>
               {showSettings && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4 relative z-10 overflow-hidden">
-                  <div className="bg-[#13151a] border border-[#2a2d31] rounded-[12px] p-4 shadow-inner flex flex-col gap-4">
+                  <div className="bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[12px] p-4 shadow-inner flex flex-col gap-4">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[12px] font-medium text-[#8b909a]">Max Slippage</span><span className="text-[12px] text-white font-mono">{slippage}%</span>
+                        <span className="text-[12px] font-medium text-[var(--text-muted)]">Max Slippage</span><span className="text-[12px] text-[var(--text-main)] font-mono">{slippage}%</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {["0.1", "0.5", "1.0"].map((s) => (
-                          <button key={s} onClick={() => setSlippage(s)} className={`flex-1 py-1.5 rounded-[8px] text-[12px] font-medium transition-colors ${slippage === s ? "bg-white text-black" : "bg-[#1a1d21] border border-[#2a2d31] text-[#8b909a] hover:text-white"}`}>{s}%</button>
+                          <button key={s} onClick={() => setSlippage(s)} className={`flex-1 py-1.5 rounded-[8px] text-[12px] font-medium transition-colors ${slippage === s ? "bg-white text-black" : "bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}>{s}%</button>
                         ))}
-                        <input type="text" value={slippage} onChange={(e) => setSlippage(e.target.value)} className="w-[60px] bg-[#1a1d21] border border-[#2a2d31] rounded-[8px] py-1.5 px-2 text-[12px] text-center text-white focus:outline-none" />
+                        <input type="text" value={slippage} onChange={(e) => setSlippage(e.target.value)} className="w-[60px] bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[8px] py-1.5 px-2 text-[12px] text-center text-[var(--text-main)] focus:outline-none" />
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-center justify-between mb-2"><span className="text-[12px] font-medium text-[#8b909a]">Transaction Speed</span></div>
-                      <div className="flex items-center p-1 bg-[#1a1d21] rounded-[8px] border border-[#2a2d31]">
+                      <div className="flex items-center justify-between mb-2"><span className="text-[12px] font-medium text-[var(--text-muted)]">Transaction Speed</span></div>
+                      <div className="flex items-center p-1 bg-[var(--bg-elevated)] rounded-[8px] border border-[var(--border-base)]">
                         {["slow", "normal", "fast"].map((s) => (
-                          <button key={s} onClick={() => setGasSpeed(s as GasSpeed)} className={`flex-1 py-1.5 rounded-[6px] text-[11px] font-medium capitalize transition-colors ${gasSpeed === s ? "bg-[#2a2d31] text-white shadow" : "text-[#8b909a] hover:text-white"}`}>{s}</button>
+                          <button key={s} onClick={() => setGasSpeed(s as GasSpeed)} className={`flex-1 py-1.5 rounded-[6px] text-[11px] font-medium capitalize transition-colors ${gasSpeed === s ? "bg-[var(--bg-elevated)] text-[var(--text-main)] shadow" : "text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}>{s}</button>
                         ))}
                       </div>
                     </div>
@@ -477,64 +477,64 @@ export default function Swap() {
             {/* Main Inputs */}
             <div className="relative z-10 p-2 flex flex-col gap-[4px]">
               {/* FROM INPUT */}
-              <div className="bg-[#13151a] rounded-[20px] p-5 transition-all hover:bg-[#15181e] group relative overflow-hidden">
+              <div className="bg-[var(--bg-elevated)] rounded-[20px] p-5 transition-all hover:bg-[var(--bg-elevated)] group relative overflow-hidden">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-[13px] font-medium text-[#6b707a]">You pay</span>
-                  <span className="text-[12px] font-medium text-[#6b707a] flex items-center gap-1.5">Bal: {displayBalance} {fromToken.symbol}</span>
+                  <span className="text-[13px] font-medium text-[var(--text-muted)]">You pay</span>
+                  <span className="text-[12px] font-medium text-[var(--text-muted)] flex items-center gap-1.5">Bal: {displayBalance} {fromToken.symbol}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <div className="relative w-full flex items-center">
-                    {inputMode === "FIAT" && <span className="text-[36px] font-medium text-white absolute left-0">$</span>}
+                    {inputMode === "FIAT" && <span className="text-[36px] font-medium text-[var(--text-main)] absolute left-0">$</span>}
                     <input
                       type="number" placeholder="0" value={amountIn} min="0"
                       onChange={(e) => { const val = e.target.value; if (Number(val) >= 0) setAmountIn(val); }}
                       onKeyDown={(e) => ["-", "+", "e", "E"].includes(e.key) && e.preventDefault()}
-                      className={`w-full bg-transparent text-[36px] font-medium text-white outline-none placeholder:text-[#3a3d41] p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${inputMode === "FIAT" ? "pl-7" : ""}`}
+                      className={`w-full bg-transparent text-[36px] font-medium text-[var(--text-main)] outline-none placeholder:text-[#3a3d41] p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${inputMode === "FIAT" ? "pl-7" : ""}`}
                     />
                     <div className="flex flex-col gap-1 shrink-0 mr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => setAmountIn(((Number(amountIn) || 0) + 1).toString())} className="p-1 bg-[#1a1d21] rounded-[4px] hover:bg-[#2a2d31] text-[#8b909a] hover:text-white border border-[#2a2d31]"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
-                      <button onClick={() => { const curr = Number(amountIn)||0; setAmountIn(curr>1 ? (curr-1).toString() : "0"); }} className="p-1 bg-[#1a1d21] rounded-[4px] hover:bg-[#2a2d31] text-[#8b909a] hover:text-white border border-[#2a2d31]"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+                      <button onClick={() => setAmountIn(((Number(amountIn) || 0) + 1).toString())} className="p-1 bg-[var(--bg-elevated)] rounded-[4px] hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-base)]"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button onClick={() => { const curr = Number(amountIn)||0; setAmountIn(curr>1 ? (curr-1).toString() : "0"); }} className="p-1 bg-[var(--bg-elevated)] rounded-[4px] hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-base)]"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
                     </div>
                   </div>
-                  <button onClick={() => setShowTokenSelector("from")} className="shrink-0 flex items-center gap-2 bg-[#1a1d21] hover:bg-[#22262b] px-4 py-2 rounded-full transition-colors border border-[#2a2d31] group-hover:border-[#3a3d41]">
+                  <button onClick={() => setShowTokenSelector("from")} className="shrink-0 flex items-center gap-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-4 py-2 rounded-full transition-colors border border-[var(--border-base)] group-hover:border-[var(--border-base)]">
                     <img src={fromToken.icon} alt={fromToken.symbol} className="w-6 h-6 rounded-full" />
-                    <span className="font-semibold text-white text-[16px]">{fromToken.symbol}</span><ChevronDown size={16} className="text-[#8b909a]" />
+                    <span className="font-semibold text-[var(--text-main)] text-[16px]">{fromToken.symbol}</span><ChevronDown size={16} className="text-[var(--text-muted)]" />
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-3 h-[24px]">
                   <div className="flex items-center gap-1.5">
                     {[25, 50, 75, 100].map(pct => (
-                      <button key={pct} onClick={() => setPercentageBalance(pct)} className="text-[10px] font-semibold text-[#8b909a] hover:text-white bg-[#1a1d21] hover:bg-[#2a2d31] px-2 py-0.5 rounded-[4px] transition-colors">{pct === 100 ? "MAX" : `${pct}%`}</button>
+                      <button key={pct} onClick={() => setPercentageBalance(pct)} className="text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-2 py-0.5 rounded-[4px] transition-colors">{pct === 100 ? "MAX" : `${pct}%`}</button>
                     ))}
                   </div>
-                  <button onClick={() => setInputMode(prev => prev === "CRYPTO" ? "FIAT" : "CRYPTO")} className="text-[12px] text-[#6b707a] hover:text-white font-mono flex items-center gap-1 transition-colors bg-transparent"><ArrowDownUp size={10} />{inputMode === "CRYPTO" ? `$${effectiveFiatAmount}` : `${effectiveCryptoAmount} ${fromToken.symbol}`}</button>
+                  <button onClick={() => setInputMode(prev => prev === "CRYPTO" ? "FIAT" : "CRYPTO")} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] font-mono flex items-center gap-1 transition-colors bg-transparent"><ArrowDownUp size={10} />{inputMode === "CRYPTO" ? `$${effectiveFiatAmount}` : `${effectiveCryptoAmount} ${fromToken.symbol}`}</button>
                 </div>
               </div>
 
               {/* SWAP BUTTON (MIDDLE) */}
               <div className="relative h-1 flex justify-center items-center z-20">
-                <button onClick={handleSwitchTokens} className="absolute p-2.5 bg-[#1a1d21] border-[4px] border-[#0a0b0d] rounded-[12px] hover:bg-[#22262b] hover:text-white transition-all text-[#8b909a] z-10 group"><ArrowDownUp size={16} className="group-hover:rotate-180 transition-transform duration-300" /></button>
+                <button onClick={handleSwitchTokens} className="absolute p-2.5 bg-[var(--bg-elevated)] border-[4px] border-[#0a0b0d] rounded-[12px] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-main)] transition-all text-[var(--text-muted)] z-10 group"><ArrowDownUp size={16} className="group-hover:rotate-180 transition-transform duration-300" /></button>
               </div>
 
               {/* TO INPUT */}
-              <div className="bg-[#13151a] rounded-[20px] p-5 transition-all hover:bg-[#15181e] group relative overflow-hidden">
-                <div className="flex justify-between mb-3"><span className="text-[13px] font-medium text-[#6b707a]">You receive</span></div>
+              <div className="bg-[var(--bg-elevated)] rounded-[20px] p-5 transition-all hover:bg-[var(--bg-elevated)] group relative overflow-hidden">
+                <div className="flex justify-between mb-3"><span className="text-[13px] font-medium text-[var(--text-muted)]">You receive</span></div>
                 <div className="flex items-center justify-between gap-4">
                   {isQuoting ? (
-                    <div className="flex-1 h-[54px] flex items-center"><div className="w-32 h-10 bg-[#1a1d21] animate-pulse rounded-[8px]" /></div>
+                    <div className="flex-1 h-[54px] flex items-center"><div className="w-32 h-10 bg-[var(--bg-elevated)] animate-pulse rounded-[8px]" /></div>
                   ) : (
-                    <input type="text" readOnly placeholder="0" value={quote ? (inputMode === "CRYPTO" ? quote.amountOut : (Number(quote.amountOut) * toToken.price).toFixed(2)) : ""} className="w-full bg-transparent text-[36px] font-medium text-white outline-none placeholder:text-[#3a3d41] p-0" />
+                    <input type="text" readOnly placeholder="0" value={quote ? (inputMode === "CRYPTO" ? quote.amountOut : (Number(quote.amountOut) * toToken.price).toFixed(2)) : ""} className="w-full bg-transparent text-[36px] font-medium text-[var(--text-main)] outline-none placeholder:text-[#3a3d41] p-0" />
                   )}
-                  <button onClick={() => setShowTokenSelector("to")} className="shrink-0 flex items-center gap-2 bg-[#1a1d21] hover:bg-[#22262b] px-4 py-2 rounded-full transition-colors border border-[#2a2d31] group-hover:border-[#3a3d41]">
+                  <button onClick={() => setShowTokenSelector("to")} className="shrink-0 flex items-center gap-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-4 py-2 rounded-full transition-colors border border-[var(--border-base)] group-hover:border-[var(--border-base)]">
                     <img src={toToken.icon} alt={toToken.symbol} className="w-6 h-6 rounded-full" />
-                    <span className="font-semibold text-white text-[16px]">{toToken.symbol}</span><ChevronDown size={16} className="text-[#8b909a]" />
+                    <span className="font-semibold text-[var(--text-main)] text-[16px]">{toToken.symbol}</span><ChevronDown size={16} className="text-[var(--text-muted)]" />
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-3 h-[24px]">
                   {isQuoting ? (
-                    <div className="w-20 h-4 bg-[#1a1d21] animate-pulse rounded" />
+                    <div className="w-20 h-4 bg-[var(--bg-elevated)] animate-pulse rounded" />
                   ) : (
-                    <span className="text-[12px] text-[#6b707a] font-mono">{inputMode === "CRYPTO" ? `$${quote ? (Number(quote.amountOut) * toToken.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0.00"}` : `${quote ? quote.amountOut : "0.00"} ${toToken.symbol}`}</span>
+                    <span className="text-[12px] text-[var(--text-muted)] font-mono">{inputMode === "CRYPTO" ? `$${quote ? (Number(quote.amountOut) * toToken.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0.00"}` : `${quote ? quote.amountOut : "0.00"} ${toToken.symbol}`}</span>
                   )}
                   {quote && !isQuoting && (
                     <span className={`font-semibold text-[11px] px-2 py-0.5 rounded-[6px] flex items-center gap-1 ${isHighImpact ? "bg-red-500/10 text-red-500" : "bg-[#2ecc71]/10 text-[#2ecc71]"}`}>
@@ -549,19 +549,19 @@ export default function Swap() {
             <AnimatePresence>
               {quote && !isQuoting && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="px-6 py-3 overflow-hidden flex flex-col gap-2 relative z-10">
-                  <div className="flex items-center justify-between text-[12px] bg-[#1a1d21]/50 p-2 rounded-[8px] mb-1">
-                    <span className="text-[#6b707a] flex items-center gap-1"><Activity size={12} /> Route</span>
-                    <div className="flex items-center gap-1.5 text-white font-mono text-[11px]">
+                  <div className="flex items-center justify-between text-[12px] bg-[var(--bg-elevated)]/50 p-2 rounded-[8px] mb-1">
+                    <span className="text-[var(--text-muted)] flex items-center gap-1"><Activity size={12} /> Route</span>
+                    <div className="flex items-center gap-1.5 text-[var(--text-main)] font-mono text-[11px]">
                       {quote.route.map((node, i) => (
                         <div key={i} className="flex items-center gap-1.5">
-                          <span className={i % 2 === 1 ? "text-[#8b909a]" : "font-semibold"}>{node}</span>{i < quote.route.length - 1 && <span className="text-[#4a4d51]">›</span>}
+                          <span className={i % 2 === 1 ? "text-[var(--text-muted)]" : "font-semibold"}>{node}</span>{i < quote.route.length - 1 && <span className="text-[var(--text-muted)]">›</span>}
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-[12px] text-[#6b707a] px-1"><span>Rate</span><span className="font-mono text-white">1 {fromToken.symbol} = {quote.rate.toFixed(4)} {toToken.symbol}</span></div>
+                  <div className="flex items-center justify-between text-[12px] text-[var(--text-muted)] px-1"><span>Rate</span><span className="font-mono text-[var(--text-main)]">1 {fromToken.symbol} = {quote.rate.toFixed(4)} {toToken.symbol}</span></div>
                   {isHighImpact && <div className="flex items-center justify-between text-[12px] text-red-500 px-1 font-medium"><span>Price Impact</span><span>-{quote.priceImpact.toFixed(2)}%</span></div>}
-                  <div className="flex items-center justify-between text-[12px] text-[#6b707a] px-1"><span className="flex items-center gap-1">Network Cost <Info size={10} className="text-[#4a4d51]"/></span><span className="font-mono text-white"><span className="text-[#8b909a]">~${networkCost}</span></span></div>
+                  <div className="flex items-center justify-between text-[12px] text-[var(--text-muted)] px-1"><span className="flex items-center gap-1">Network Cost <Info size={10} className="text-[var(--text-muted)]"/></span><span className="font-mono text-[var(--text-main)]"><span className="text-[var(--text-muted)]">~${networkCost}</span></span></div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -571,9 +571,9 @@ export default function Swap() {
               <button
                 onClick={handleSwap} disabled={(!amountIn || txState !== "idle" || isApproving || isHighImpact) && isConnected}
                 className={`w-full py-4 rounded-[16px] font-bold text-[16px] flex items-center justify-center gap-2 transition-all ${
-                  txState === "success" ? "bg-white text-black" : txState === "pending" || isApproving || txState === "confirming" ? "bg-[#1a1d21] text-white border border-[#2a2d31]"
+                  txState === "success" ? "bg-white text-black" : txState === "pending" || isApproving || txState === "confirming" ? "bg-[var(--bg-elevated)] text-[var(--text-main)] border border-[var(--border-base)]"
                   : !isConnected ? "bg-white text-black hover:bg-gray-200" : isHighImpact ? "bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed"
-                  : !amountIn ? "bg-[#1a1d21] text-[#6b707a] cursor-not-allowed" : needsApproval ? "bg-white text-black hover:bg-gray-200" : "bg-white text-black hover:bg-gray-200"
+                  : !amountIn ? "bg-[var(--bg-elevated)] text-[var(--text-muted)] cursor-not-allowed" : needsApproval ? "bg-white text-black hover:bg-gray-200" : "bg-white text-black hover:bg-gray-200"
                 }`}
               >
                 {txState === "confirming" && <><Loader size={18} className="animate-spin" /> Confirming in Wallet...</>}
@@ -586,13 +586,13 @@ export default function Swap() {
             {/* TOKEN SELECTOR MODAL */}
             <AnimatePresence>
               {showTokenSelector && (
-                <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="absolute inset-0 z-50 bg-[#0a0b0d] flex flex-col rounded-[24px] overflow-hidden">
-                  <div className="flex items-center justify-between p-6 border-b border-[#1e1e1e]"><h3 className="text-white font-semibold text-[18px]">Select a token</h3><button onClick={() => setShowTokenSelector(null)} className="p-2 hover:bg-[#1a1d21] rounded-[10px] text-[#8b909a] transition-colors"><X size={20} /></button></div>
-                  <div className="p-4 border-b border-[#1e1e1e]"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b707a]" size={18} /><input type="text" placeholder="Search name or paste address" value={tokenSearch} onChange={(e) => setTokenSearch(e.target.value)} className="w-full bg-[#13151a] border border-[#2a2d31] rounded-[12px] pl-10 pr-4 py-3 text-white placeholder:text-[#6b707a] focus:outline-none focus:border-[#4a4d51] transition-colors text-[15px]"/></div></div>
+                <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="absolute inset-0 z-50 bg-[var(--bg-base)] flex flex-col rounded-[24px] overflow-hidden">
+                  <div className="flex items-center justify-between p-6 border-b border-[var(--border-base)]"><h3 className="text-[var(--text-main)] font-semibold text-[18px]">Select a token</h3><button onClick={() => setShowTokenSelector(null)} className="p-2 hover:bg-[var(--bg-elevated)] rounded-[10px] text-[var(--text-muted)] transition-colors"><X size={20} /></button></div>
+                  <div className="p-4 border-b border-[var(--border-base)]"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} /><input type="text" placeholder="Search name or paste address" value={tokenSearch} onChange={(e) => setTokenSearch(e.target.value)} className="w-full bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[12px] pl-10 pr-4 py-3 text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#4a4d51] transition-colors text-[15px]"/></div></div>
                   <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
                     {filteredTokens.map((token) => (
-                      <button key={token.symbol} onClick={() => { if (showTokenSelector === "from") setFromToken(token); else setToToken(token); setShowTokenSelector(null); setTokenSearch(""); }} className="w-full flex items-center justify-between p-4 hover:bg-[#1a1d21] rounded-[12px] transition-colors text-left">
-                        <div className="flex items-center gap-4"><img src={token.icon} alt={token.symbol} className="w-10 h-10 rounded-full" /><div><div className="text-white font-semibold text-[16px]">{token.symbol}</div><div className="text-[#8b909a] text-[13px]">{token.name}</div></div></div>
+                      <button key={token.symbol} onClick={() => { if (showTokenSelector === "from") setFromToken(token); else setToToken(token); setShowTokenSelector(null); setTokenSearch(""); }} className="w-full flex items-center justify-between p-4 hover:bg-[var(--bg-elevated)] rounded-[12px] transition-colors text-left">
+                        <div className="flex items-center gap-4"><img src={token.icon} alt={token.symbol} className="w-10 h-10 rounded-full" /><div><div className="text-[var(--text-main)] font-semibold text-[16px]">{token.symbol}</div><div className="text-[var(--text-muted)] text-[13px]">{token.name}</div></div></div>
                       </button>
                     ))}
                   </div>
@@ -603,22 +603,22 @@ export default function Swap() {
         </div>
 
         {/* AI Trade Insights Widget (Centered below the swap card) */}
-        <div className="w-full max-w-[600px] bg-[#0a0b0d] border border-[#1e1e1e] rounded-[16px] p-5 shadow-lg">
+        <div className="w-full max-w-[600px] bg-[var(--bg-base)] border border-[var(--border-base)] rounded-[16px] p-5 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={16} className="text-[var(--accent)]" />
-            <h3 className="text-white font-semibold text-[14px]">AI Swap Intelligence <span className="text-[10px] ml-2 bg-[#1a1d21] text-[#8b909a] px-2 py-0.5 rounded-[4px]">Live</span></h3>
+            <h3 className="text-[var(--text-main)] font-semibold text-[14px]">AI Swap Intelligence <span className="text-[10px] ml-2 bg-[var(--bg-elevated)] text-[var(--text-muted)] px-2 py-0.5 rounded-[4px]">Live</span></h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {isLoadingTrending ? (
               <>
-                <div className="bg-[#111214] border border-[#2a2d31] rounded-[12px] p-4 h-[90px] animate-pulse"></div>
-                <div className="bg-[#111214] border border-[#2a2d31] rounded-[12px] p-4 h-[90px] animate-pulse"></div>
+                <div className="bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-[12px] p-4 h-[90px] animate-pulse"></div>
+                <div className="bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-[12px] p-4 h-[90px] animate-pulse"></div>
               </>
             ) : trendingCoins && trendingCoins.length > 0 ? (
               trendingCoins.map((coin: any, i: number) => (
                 <div 
                   key={coin.id}
-                  className="bg-[#111214] border border-[#2a2d31] rounded-[12px] p-4 cursor-pointer hover:border-[var(--accent)] transition-colors group" 
+                  className="bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-[12px] p-4 cursor-pointer hover:border-[var(--accent)] transition-colors group" 
                   onClick={() => {
                     setFromToken(TOKENS.find(t => t.symbol === "USDC") || TOKENS[0]);
                     setToToken({
@@ -632,17 +632,17 @@ export default function Swap() {
                   }}
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] font-semibold text-white group-hover:text-[var(--accent)] transition-colors">USDC → {coin.symbol.toUpperCase()}</span>
+                    <span className="text-[13px] font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">USDC → {coin.symbol.toUpperCase()}</span>
                     <span className="text-[10px] font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-1 rounded-[6px]">Trending #{i + 1}</span>
                   </div>
-                  <div className="text-[12px] text-[#6b707a] leading-relaxed flex items-start gap-2">
+                  <div className="text-[12px] text-[var(--text-muted)] leading-relaxed flex items-start gap-2">
                     <img src={coin.thumb} alt={coin.name} className="w-5 h-5 rounded-full shrink-0" />
                     <span>High social volume detected. {coin.name} is currently trending globally.</span>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="bg-[#111214] border border-[#2a2d31] rounded-[12px] p-4 col-span-2 sm:col-span-2 text-center text-[#6b707a] text-[13px]">
+              <div className="bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-[12px] p-4 col-span-2 sm:col-span-2 text-center text-[var(--text-muted)] text-[13px]">
                 Live trending data currently unavailable.
               </div>
             )}

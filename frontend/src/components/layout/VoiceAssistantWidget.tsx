@@ -114,7 +114,7 @@ export default function VoiceAssistantWidget() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="pointer-events-auto bg-[#0a0b0d]/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl max-w-[280px]"
+            className="pointer-events-auto bg-[var(--bg-base)]/90 backdrop-blur-xl border border-[var(--border-base)] p-4 rounded-2xl shadow-2xl max-w-[280px]"
           >
             {aiResponse ? (
               <div className="flex items-start gap-3 text-cyan-400">
@@ -154,7 +154,7 @@ export default function VoiceAssistantWidget() {
         <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 ${
           isListening 
             ? "bg-gradient-to-tr from-cyan-600 to-purple-600 shadow-[0_0_30px_rgba(34,211,238,0.5)]" 
-            : "bg-[#13151a] border border-white/10 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+            : "bg-[var(--bg-elevated)] border border-[var(--border-base)] hover:border-cyan-500/50 hover:shadow-[0_0_20px_var(--accent)]"
         }`}>
           {isListening ? (
             <div className="flex items-center gap-1">

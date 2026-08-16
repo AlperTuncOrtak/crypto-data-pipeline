@@ -17,7 +17,7 @@ interface LayoutProps {
 
 export default function LinearDashboardLayout({ children }: LayoutProps) {
   return (
-    <div className="flex h-screen w-full bg-[#0A0A0A] text-zinc-400 font-sans antialiased overflow-hidden selection:bg-white/[0.1] selection:text-zinc-100">
+    <div className="flex h-screen w-full bg-[var(--bg-base)] text-zinc-400 font-sans antialiased overflow-hidden selection:bg-white/[0.1] selection:text-zinc-100">
       
       {/* ─── LEFT SIDEBAR ─────────────────────────────────────── */}
       <aside className="w-[240px] flex-shrink-0 border-r border-white/[0.08] flex flex-col justify-between">
@@ -38,17 +38,17 @@ export default function LinearDashboardLayout({ children }: LayoutProps) {
           <nav className="p-3 flex flex-col gap-[2px]">
             <p className="px-2 mb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-medium">Platform</p>
             
-            <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] text-zinc-100 bg-white/[0.04]">
+            <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-1.5 rounded-2xl text-[13px] text-zinc-100 bg-white/[0.04]">
               <BarChart2 size={14} className="text-zinc-400" />
               Dashboard
             </Link>
             
-            <Link to="/market" className="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] hover:text-zinc-100 hover:bg-white/[0.04] transition-colors">
+            <Link to="/market" className="flex items-center gap-2.5 px-2 py-1.5 rounded-2xl text-[13px] hover:text-zinc-100 hover:bg-white/[0.04] transition-colors">
               <Activity size={14} />
               Markets
             </Link>
             
-            <Link to="/alerts" className="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] hover:text-zinc-100 hover:bg-white/[0.04] transition-colors">
+            <Link to="/alerts" className="flex items-center gap-2.5 px-2 py-1.5 rounded-2xl text-[13px] hover:text-zinc-100 hover:bg-white/[0.04] transition-colors">
               <Target size={14} />
               Signals
             </Link>
@@ -57,7 +57,7 @@ export default function LinearDashboardLayout({ children }: LayoutProps) {
 
         {/* Bottom Section */}
         <div className="p-3 border-t border-white/[0.08]">
-          <Link to="/settings" className="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] hover:text-zinc-100 hover:bg-white/[0.04] transition-colors">
+          <Link to="/settings" className="flex items-center gap-2.5 px-2 py-1.5 rounded-2xl text-[13px] hover:text-zinc-100 hover:bg-white/[0.04] transition-colors">
             <Settings size={14} />
             Settings
           </Link>
@@ -80,7 +80,7 @@ export default function LinearDashboardLayout({ children }: LayoutProps) {
           {/* Right Actions */}
           <div className="flex items-center gap-4">
             {/* Search */}
-            <button className="flex items-center gap-2 text-[12px] border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 rounded-md hover:border-white/[0.15] hover:text-zinc-100 transition-all">
+            <button className="flex items-center gap-2 text-[12px] border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 rounded-2xl hover:border-white/[0.15] hover:text-zinc-100 transition-all">
               <Search size={12} />
               <span>Search...</span>
               <span className="text-zinc-600 ml-2">⌘K</span>

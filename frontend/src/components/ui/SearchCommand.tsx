@@ -154,12 +154,12 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="w-full max-w-2xl bg-[#0d0d0d] border border-[#242728] rounded-[24px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto"
+              className="w-full max-w-2xl bg-[var(--bg-base)] border border-[var(--border-base)] rounded-[24px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto"
               style={{ fontFamily: "Inter, sans-serif" }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Input Header */}
-              <div className="flex items-center px-4 py-3 border-b border-[#242728] bg-[#101111]">
+              <div className="flex items-center px-4 py-3 border-b border-[var(--border-base)] bg-[var(--bg-base)]">
                 <Search size={18} className="text-zinc-400 mr-3 shrink-0" />
                 <input
                   ref={inputRef}
@@ -170,7 +170,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                 />
                 <button 
                   onClick={onClose}
-                  className="p-1.5 ml-2 rounded-md hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-100 transition-colors shrink-0"
+                  className="p-1.5 ml-2 rounded-2xl hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-100 transition-colors shrink-0"
                 >
                   <X size={16} />
                 </button>
@@ -195,12 +195,12 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                             data-selected={isSelected}
                             onClick={() => handleSelect(item)}
                             onMouseEnter={() => setSelectedIndex(index)}
-                            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-md transition-colors text-left ${
-                              isSelected ? 'bg-[#121212]' : 'hover:bg-[#121212]'
+                            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-2xl transition-colors text-left ${
+                              isSelected ? 'bg-[var(--bg-base)]' : 'hover:bg-[var(--bg-base)]'
                             }`}
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 flex items-center justify-center bg-[#121212] rounded border border-[#242728]">
+                              <div className="w-6 h-6 flex items-center justify-center bg-[var(--bg-base)] rounded border border-[var(--border-base)]">
                                 {item.icon}
                               </div>
                               <span className="text-[14px] font-medium text-zinc-100">{item.name}</span>
@@ -208,7 +208,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                             <div className="flex items-center gap-2">
                               <span className="text-[12px] text-zinc-500 font-mono tracking-wider">{item.symbol}</span>
                               {isSelected && (
-                                <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[#242728] text-[10px] text-zinc-400 font-mono shadow-sm">
+                                <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[10px] text-zinc-400 font-mono shadow-sm">
                                   ↵
                                 </kbd>
                               )}
@@ -226,15 +226,15 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                           data-selected={isSelected}
                           onClick={() => handleSelect(item)}
                           onMouseEnter={() => setSelectedIndex(index)}
-                          className={`flex items-center justify-between w-full px-3 py-2.5 rounded-md transition-colors text-left ${
-                            isSelected ? 'bg-[#121212]' : 'hover:bg-[#121212]'
+                          className={`flex items-center justify-between w-full px-3 py-2.5 rounded-2xl transition-colors text-left ${
+                            isSelected ? 'bg-[var(--bg-base)]' : 'hover:bg-[var(--bg-base)]'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             {item.image_url ? (
-                              <img src={item.image_url} alt={item.name} className="w-6 h-6 rounded-full border border-[#273951]/50" />
+                              <img src={item.image_url} alt={item.name} className="w-6 h-6 rounded-full border border-[var(--border-base)]" />
                             ) : (
-                              <div className="w-6 h-6 rounded-full bg-[#121212] border border-[#242728] flex items-center justify-center text-[10px] text-zinc-400">
+                              <div className="w-6 h-6 rounded-full bg-[var(--bg-base)] border border-[var(--border-base)] flex items-center justify-center text-[10px] text-zinc-400">
                                 {item.symbol?.charAt(0)}
                               </div>
                             )}
@@ -254,7 +254,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                               </div>
                             </div>
                             {isSelected && (
-                               <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[#242728] text-[10px] text-zinc-400 font-mono shadow-sm">
+                               <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[10px] text-zinc-400 font-mono shadow-sm">
                                  ↵
                                </kbd>
                             )}
@@ -271,23 +271,23 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between px-4 py-2 border-t border-[#242728] bg-[#0d0d0d] text-[12px] text-[#9c9c9d]">
+              <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--border-base)] bg-[var(--bg-base)] text-[12px] text-[#9c9c9d]">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1.5">
                     <div className="flex items-center gap-0.5">
-                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[#242728] text-[#cdcdcd] font-sans shadow-sm">↑</kbd>
-                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[#242728] text-[#cdcdcd] font-sans shadow-sm">↓</kbd>
+                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm">↑</kbd>
+                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm">↓</kbd>
                     </div>
                     <span>Navigate</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[#242728] text-[#cdcdcd] font-sans shadow-sm">↵</kbd>
+                    <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm">↵</kbd>
                     <span>Open</span>
                   </span>
                 </div>
                 <span className="flex items-center gap-1.5">
                   <span>Close</span>
-                  <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[#242728] text-[#cdcdcd] font-sans shadow-sm text-[10px]">ESC</kbd>
+                  <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm text-[10px]">ESC</kbd>
                 </span>
               </div>
 

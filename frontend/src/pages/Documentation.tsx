@@ -8,12 +8,12 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
          backgroundColor: 'var(--border-soft)', 
          border: '1px solid var(--border)',
        }}>
-    <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
+    <div className="mb-5 w-12 h-12 rounded-3xl flex items-center justify-center transition-colors duration-300"
          style={{ backgroundColor: 'var(--accent-soft)', color: 'var(--accent)' }}>
       <Icon size={24} />
     </div>
     <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">{title}</h3>
-    <p className="text-base text-gray-400 leading-relaxed">{description}</p>
+    <p className="text-base text-[var(--text-muted)] leading-relaxed">{description}</p>
   </div>
 );
 
@@ -51,11 +51,11 @@ export default function Documentation() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
       {/* Header */}
-      <div className="mb-16 pb-8 border-b border-[#273951]/50">
+      <div className="mb-16 pb-8 border-b border-[var(--border-base)]">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] mb-6">
           Documentation
         </h1>
-        <p className="text-xl text-gray-400 max-w-3xl leading-relaxed">
+        <p className="text-xl text-[var(--text-muted)] max-w-3xl leading-relaxed">
           Everything you need to know about CryptoNeko. Learn how to track your portfolio, generate AI insights, and analyze the market like a pro.
         </p>
       </div>
@@ -65,17 +65,17 @@ export default function Documentation() {
         <div className="lg:w-72 shrink-0">
           <div className="sticky top-28 flex flex-col gap-2">
             <div className="mb-8 px-3">
-              <div className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-xl border border-[#273951]/50 text-gray-400 text-sm">
+              <div className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-3xl border border-[var(--border-base)] text-[var(--text-muted)] text-sm">
                 <Search size={18} />
                 <span className="flex-1">Search docs...</span>
                 <div className="flex gap-1.5">
-                  <kbd className="bg-black/50 border border-[#273951]/50 rounded px-2 py-1 text-xs">Cmd</kbd>
-                  <kbd className="bg-black/50 border border-[#273951]/50 rounded px-2 py-1 text-xs">K</kbd>
+                  <kbd className="bg-black/50 border border-[var(--border-base)] rounded px-2 py-1 text-xs">Cmd</kbd>
+                  <kbd className="bg-black/50 border border-[var(--border-base)] rounded px-2 py-1 text-xs">K</kbd>
                 </div>
               </div>
             </div>
             
-            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 px-3">Overview</h4>
+            <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 px-3">Overview</h4>
             {tabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -83,7 +83,7 @@ export default function Documentation() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className="flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-left relative group mb-1"
+                  className="flex items-center gap-4 px-4 py-3.5 rounded-3xl transition-all text-left relative group mb-1"
                   style={{
                     color: isActive ? 'var(--accent)' : '#9ca3af',
                     backgroundColor: isActive ? 'var(--accent-soft)' : 'transparent',
@@ -116,7 +116,7 @@ export default function Documentation() {
                   CryptoNeko is designed to bridge the gap between complex institutional trading terminals and everyday investors. We combine real-time data with cutting-edge AI to give you actionable insights without the noise.
                 </p>
 
-                <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-16 mb-8 pb-4 border-b border-[#273951]/50 tracking-tight">Core Capabilities</h3>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-16 mb-8 pb-4 border-b border-[var(--border-base)] tracking-tight">Core Capabilities</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
                   <FeatureCard 
                     icon={Activity} 
@@ -153,18 +153,18 @@ export default function Documentation() {
                   Your personalized command center. The dashboard provides a high-level view of the market pulse, trending assets, and your portfolio's performance at a glance.
                 </p>
 
-                <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-16 mb-8 pb-4 border-b border-[#273951]/50 tracking-tight">Managing Your Assets</h3>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-16 mb-8 pb-4 border-b border-[var(--border-base)] tracking-tight">Managing Your Assets</h3>
                 <div className="text-gray-300 mb-14 space-y-8">
                   <p className="text-lg leading-loose">
                     Keeping an accurate record of your trades allows CryptoNeko to calculate your total equity and historical performance.
                   </p>
                   
-                  <div className="bg-white/5 rounded-[32px] p-8 border border-[#273951]/50 mt-8 mb-16">
+                  <div className="bg-white/5 rounded-[32px] p-8 border border-[var(--border-base)] mt-8 mb-16">
                     <h4 className="text-[var(--text-primary)] text-xl font-bold mb-6 flex items-center gap-4">
                       <div className="w-8 h-8 rounded-full bg-[var(--accent)] text-black flex items-center justify-center text-base font-extrabold">1</div>
                       Adding a Transaction
                     </h4>
-                    <p className="text-base leading-relaxed mb-6 text-gray-400">Navigate to the <strong className="text-[var(--text-primary)] font-semibold">Portfolio</strong> tab and click the "Add Transaction" button. You will need to provide:</p>
+                    <p className="text-base leading-relaxed mb-6 text-[var(--text-muted)]">Navigate to the <strong className="text-[var(--text-primary)] font-semibold">Portfolio</strong> tab and click the "Add Transaction" button. You will need to provide:</p>
                     <ul className="space-y-5 text-base text-gray-300">
                       <li className="flex items-start gap-4">
                         <ArrowRight size={20} className="text-[var(--accent)] shrink-0 mt-1" />
@@ -201,21 +201,21 @@ export default function Documentation() {
                   Technical analysis can be overwhelming. We utilize advanced Large Language Models (LLMs) to ingest raw chart data and translate it into clear, actionable summaries.
                 </p>
 
-                <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-16 mb-8 pb-4 border-b border-[#273951]/50 tracking-tight">Behind the Scenes</h3>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-16 mb-8 pb-4 border-b border-[var(--border-base)] tracking-tight">Behind the Scenes</h3>
                 <p className="text-gray-300 text-lg leading-loose mb-8">When you request an AI analysis for an asset, our backend pipeline executes the following steps in milliseconds:</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-                  <div className="bg-black/40 p-8 rounded-[32px] border border-[#273951]/50">
+                  <div className="bg-black/40 p-8 rounded-[32px] border border-[var(--border-base)]">
                     <div className="text-[var(--accent)] font-mono text-base font-bold mb-4">01. Data Ingestion</div>
-                    <p className="text-base text-gray-400 leading-relaxed">Fetches the last 100 periods of OHLCV (Open, High, Low, Close, Volume) data from the exchange.</p>
+                    <p className="text-base text-[var(--text-muted)] leading-relaxed">Fetches the last 100 periods of OHLCV (Open, High, Low, Close, Volume) data from the exchange.</p>
                   </div>
-                  <div className="bg-black/40 p-8 rounded-[32px] border border-[#273951]/50">
+                  <div className="bg-black/40 p-8 rounded-[32px] border border-[var(--border-base)]">
                     <div className="text-[var(--accent)] font-mono text-base font-bold mb-4">02. Indicator Math</div>
-                    <p className="text-base text-gray-400 leading-relaxed">Calculates RSI, MACD, Bollinger Bands, and Moving Averages using pandas-ta.</p>
+                    <p className="text-base text-[var(--text-muted)] leading-relaxed">Calculates RSI, MACD, Bollinger Bands, and Moving Averages using pandas-ta.</p>
                   </div>
-                  <div className="bg-black/40 p-8 rounded-[32px] border border-[#273951]/50">
+                  <div className="bg-black/40 p-8 rounded-[32px] border border-[var(--border-base)]">
                     <div className="text-[var(--accent)] font-mono text-base font-bold mb-4">03. AI Synthesis</div>
-                    <p className="text-base text-gray-400 leading-relaxed">Passes the calculated matrix to the AI model with a strict system prompt to generate the report.</p>
+                    <p className="text-base text-[var(--text-muted)] leading-relaxed">Passes the calculated matrix to the AI model with a strict system prompt to generate the report.</p>
                   </div>
                 </div>
 
@@ -244,12 +244,12 @@ export default function Documentation() {
                     <p className="text-gray-300 text-lg leading-loose mb-6">
                       When comparing coins with vastly different prices (e.g., BTC at $60,000 vs XRP at $0.50), standard charts are useless. Our Compare tool <strong className="text-[var(--text-primary)]">normalizes</strong> all selected assets to start at 0% for the selected timeframe.
                     </p>
-                    <div className="bg-white/5 border border-[#273951]/50 rounded-[32px] p-6 text-base text-gray-400 leading-relaxed mt-6">
+                    <div className="bg-white/5 border border-[var(--border-base)] rounded-[32px] p-6 text-base text-[var(--text-muted)] leading-relaxed mt-6">
                       <strong className="text-[var(--text-primary)] font-semibold">Example:</strong> If you select 7 Days, the chart sets the price of all assets 7 days ago to 0. You can instantly see that Asset A is +15% and Asset B is -5% relative to their starting point.
                     </div>
                   </div>
 
-                  <div className="pt-8 border-t border-[#273951]/50">
+                  <div className="pt-8 border-t border-[var(--border-base)]">
                     <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
                       <Network className="text-[var(--accent)]" size={28} /> Correlation Matrix (Heatmap)
                     </h3>
@@ -261,8 +261,8 @@ export default function Documentation() {
                         <div className="text-green-400 font-extrabold text-xl w-16 text-center">+1.0</div>
                         <div className="text-base text-gray-300 leading-relaxed"><strong className="text-[var(--text-primary)]">Perfect Positive Correlation:</strong> The assets move in the exact same direction. Holding both does not diversify your risk.</div>
                       </li>
-                      <li className="flex gap-6 p-6 rounded-[32px] bg-white/5 border border-[#273951]/50 items-center">
-                        <div className="text-gray-400 font-extrabold text-xl w-16 text-center">0.0</div>
+                      <li className="flex gap-6 p-6 rounded-[32px] bg-white/5 border border-[var(--border-base)] items-center">
+                        <div className="text-[var(--text-muted)] font-extrabold text-xl w-16 text-center">0.0</div>
                         <div className="text-base text-gray-300 leading-relaxed"><strong className="text-[var(--text-primary)]">No Correlation:</strong> The assets move completely independently of one another.</div>
                       </li>
                       <li className="flex gap-6 p-6 rounded-[32px] bg-red-500/10 border border-red-500/20 items-center">

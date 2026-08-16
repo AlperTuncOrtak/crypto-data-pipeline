@@ -37,7 +37,7 @@ export default function SwapInterface() {
       >
         
         {/* SWAP CARD - Li.Fi Widget */}
-        <div className="relative w-full max-w-[420px] rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/5">
+        <div className="relative w-full max-w-[420px] rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-[var(--border-subtle)]">
           <LiFiWidget integrator="crypto-data-pipeline" config={widgetConfig} />
         </div>
 

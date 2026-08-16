@@ -46,7 +46,7 @@ export function ChartSkeleton() {
           />
         ))}
       </div>
-      <div className="flex justify-between mt-4 border-t border-white/5 pt-4">
+      <div className="flex justify-between mt-4 border-t border-[var(--border-subtle)] pt-4">
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-4 w-16" />

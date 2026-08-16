@@ -62,7 +62,7 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
           {/* Backdrop */}
           <div
             onClick={onClose}
-            className="absolute inset-0 bg-[#0a0b0d]/60 backdrop-blur-md"
+            className="absolute inset-0 bg-[var(--bg-base)]/60 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -71,7 +71,7 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-            className="relative w-full max-w-2xl bg-[#27272a]/90 backdrop-blur-xl border border-white/5 rounded-[24px] shadow-[0_0_40px_rgba(59,130,246,0.15)] overflow-hidden p-6"
+            className="relative w-full max-w-2xl bg-[var(--bg-elevated)]/90 backdrop-blur-xl border border-[var(--border-subtle)] rounded-[24px] shadow-[0_0_40px_rgba(59,130,246,0.15)] overflow-hidden p-6"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -80,13 +80,13 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
                   <Activity size={20} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-medium text-white tracking-tight">Market Sentiment History</h2>
+                  <h2 className="text-xl font-medium text-[var(--text-main)] tracking-tight">Market Sentiment History</h2>
                   <p className="text-sm text-[#a1a1aa]">Last 30 Days Fear & Greed Index</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-white/5 text-[#a1a1aa] hover:text-white transition-colors"
+                className="p-2 rounded-full hover:bg-[var(--border-subtle)] text-[#a1a1aa] hover:text-[var(--text-main)] transition-colors"
               >
                 <X size={20} />
               </button>
@@ -130,7 +130,7 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
                       const data = payload[0].payload;
                       const color = data.value <= 25 ? "#cf202f" : data.value <= 45 ? "#f4b000" : data.value <= 55 ? "#a8acb3" : "#05b169";
                       return (
-                        <div className="bg-[#19191c]/90 border border-white/10 rounded-xl p-3 shadow-xl backdrop-blur-xl">
+                        <div className="bg-[var(--bg-elevated)]/90 border border-[var(--border-base)] rounded-3xl p-3 shadow-xl backdrop-blur-xl">
                           <div className="text-xs text-[#a1a1aa] mb-1">{data.date}</div>
                           <div className="text-lg font-bold font-mono" style={{ color }}>
                             {data.value} <span className="text-sm font-medium opacity-80 uppercase tracking-wider ml-1">{data.classification}</span>

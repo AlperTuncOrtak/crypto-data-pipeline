@@ -22,11 +22,11 @@ export function CTA() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none"></div>
         
-        <h2 className="relative z-10 text-4xl md:text-5xl font-black tracking-tight text-white mb-6">
+        <h2 className="relative z-10 text-4xl md:text-5xl font-black tracking-tight text-[var(--text-main)] mb-6">
           Ready to trade smarter?
         </h2>
         
-        <p className="relative z-10 text-slate-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+        <p className="relative z-10 text-[var(--text-muted)] text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
           Join elite traders who rely on CryptoNeko's intelligence layer to navigate the markets with precision and speed.
         </p>
         

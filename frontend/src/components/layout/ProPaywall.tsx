@@ -33,7 +33,7 @@ export default function ProPaywall({ children, featureName = "This feature", inl
       </div>
 
       {/* Lock Overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-10 bg-[#020817]/40">
+      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-10 bg-[var(--bg-base)]/40">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -45,12 +45,12 @@ export default function ProPaywall({ children, featureName = "This feature", inl
             <Lock className="text-[#020817]" size={24} />
           </div>
           
-          <h3 className="text-xl font-black text-white tracking-tight mb-3">
+          <h3 className="text-xl font-black text-[var(--text-main)] tracking-tight mb-3">
             PRO Required
           </h3>
           
-          <p className="text-sm text-slate-400 leading-relaxed mb-8">
-            {featureName} is an advanced feature reserved for <strong className="text-white">CryptoNeko PRO</strong> subscribers. Upgrade your terminal to unlock it.
+          <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-8">
+            {featureName} is an advanced feature reserved for <strong className="text-[var(--text-main)]">CryptoNeko PRO</strong> subscribers. Upgrade your terminal to unlock it.
           </p>
           
           <button

@@ -52,7 +52,7 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
   const isHealthy = data.onChainActivityScore >= data.socialHypeScore;
 
   return (
-    <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-2xl p-6 flex flex-col gap-6 w-full relative overflow-hidden group">
+    <div className="bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-2xl rounded-2xl p-6 flex flex-col gap-6 w-full relative overflow-hidden group">
       
       {/* Background ambient glow based on health */}
       <div 
@@ -63,7 +63,7 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
 
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <Activity size={18} className="text-gray-400" />
+          <Activity size={18} className="text-[var(--text-muted)]" />
           <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wider">
             Hype vs. Reality
           </h3>
@@ -72,7 +72,7 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-1.5 text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider"
+            className="flex items-center gap-1.5 text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-2xl text-[11px] font-bold uppercase tracking-wider"
           >
             <AlertCircle size={14} />
             <span>Bubble Risk</span>
@@ -83,35 +83,35 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
       <div className="flex flex-col gap-5 relative z-10">
         {/* Social Hype Bar */}
         <div>
-          <div className="flex justify-between text-[13px] mb-2 text-gray-400 font-medium">
+          <div className="flex justify-between text-[13px] mb-2 text-[var(--text-muted)] font-medium">
             <div className="flex items-center gap-2">
               <MessageCircle size={15} /> <span>Social Hype</span>
             </div>
-            <span className="font-bold text-white font-mono text-[14px]">
+            <span className="font-bold text-[var(--text-main)] font-mono text-[14px]">
               {data.socialHypeScore}<span className="text-gray-600 text-[11px]">/100</span>
             </span>
           </div>
-          <div className="w-full h-2 bg-[#1a1d21] border border-white/5 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-full overflow-hidden">
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${data.socialHypeScore}%` }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className={`h-full rounded-full ${isWarning ? 'bg-red-500' : 'bg-[#0052ff]'}`} 
+              className={`h-full rounded-full ${isWarning ? 'bg-red-500' : 'bg-[var(--accent)]'}`} 
             />
           </div>
         </div>
 
         {/* On-Chain Reality Bar */}
         <div>
-          <div className="flex justify-between text-[13px] mb-2 text-gray-400 font-medium">
+          <div className="flex justify-between text-[13px] mb-2 text-[var(--text-muted)] font-medium">
             <div className="flex items-center gap-2">
               <Activity size={15} /> <span>On-Chain Reality</span>
             </div>
-            <span className="font-bold text-white font-mono text-[14px]">
+            <span className="font-bold text-[var(--text-main)] font-mono text-[14px]">
               {data.onChainActivityScore}<span className="text-gray-600 text-[11px]">/100</span>
             </span>
           </div>
-          <div className="w-full h-2 bg-[#1a1d21] border border-white/5 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-full overflow-hidden">
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${data.onChainActivityScore}%` }}
@@ -127,16 +127,16 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
-        className={`bg-[#16181c] rounded-xl p-4 mt-1 border-l-4 relative z-10 ${
-          isWarning ? 'border-red-500' : isHealthy ? 'border-[#14F195]' : 'border-[#0052ff]'
+        className={`bg-[var(--bg-subtle)] rounded-3xl p-4 mt-1 border-l-4 relative z-10 ${
+          isWarning ? 'border-red-500' : isHealthy ? 'border-[#14F195]' : 'border-[var(--accent)]'
         }`}
       >
-        <p className="text-[13px] text-gray-400 leading-relaxed m-0 flex gap-3 items-start">
+        <p className="text-[13px] text-[var(--text-muted)] leading-relaxed m-0 flex gap-3 items-start">
           <Info size={18} className={`shrink-0 mt-0.5 ${
-            isWarning ? 'text-red-400' : isHealthy ? 'text-[#14F195]' : 'text-[#0052ff]'
+            isWarning ? 'text-red-400' : isHealthy ? 'text-[#14F195]' : 'text-[var(--accent)]'
           }`} />
           <span>
-            <strong className="text-white font-semibold">AI Verdict: </strong> 
+            <strong className="text-[var(--text-main)] font-semibold">AI Verdict: </strong> 
             {data.aiVerdict}
           </span>
         </p>

@@ -162,7 +162,7 @@ function AppInner() {
           className={location.pathname === "/" || location.pathname === "/onboarding" ? "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 flex flex-col" : "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 main-content flex flex-col"}
         >
           <div className="flex-1 shrink-0 flex flex-col w-full">
-            <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[#0a0b0d]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
+            <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[var(--bg-base)]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
               <Routes>
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />

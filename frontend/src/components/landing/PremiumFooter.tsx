@@ -29,21 +29,21 @@ export function PremiumFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative z-10 border-t border-white/[0.05] bg-[#000000] pt-20 pb-10">
+    <footer className="relative z-10 border-t border-white/[0.05] bg-[var(--bg-base)] pt-20 pb-10">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
           
           {/* Brand & Newsletter */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-3 group mb-6 inline-flex">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-[#000000] font-black text-lg shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-transform group-hover:scale-110">
+              <div className="w-8 h-8 rounded-3xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-[#000000] font-black text-lg shadow-[0_0_20px_var(--accent)] transition-transform group-hover:scale-110">
                 C
               </div>
-              <span className="text-xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">
+              <span className="text-xl font-bold tracking-tight text-white/90 group-hover:text-[var(--text-main)] transition-colors">
                 CryptoNeko
               </span>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-8">
+            <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-sm mb-8">
               The ultimate AI-powered trading terminal. Institutional-grade analytics, real-time whale tracking, and algorithmic insights in one beautiful interface.
             </p>
             
@@ -51,11 +51,11 @@ export function PremiumFooter() {
               <input 
                 type="email" 
                 placeholder="Enter your email" 
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all"
+                className="w-full bg-white/[0.03] border border-[var(--border-base)] rounded-2xl px-4 py-2.5 text-sm text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all"
               />
               <button 
                 type="submit" 
-                className="px-4 py-2.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold text-sm rounded-lg hover:bg-cyan-500/20 transition-colors whitespace-nowrap"
+                className="px-4 py-2.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold text-sm rounded-2xl hover:bg-cyan-500/20 transition-colors whitespace-nowrap"
               >
                 Subscribe
               </button>
@@ -64,36 +64,36 @@ export function PremiumFooter() {
 
           {/* Links - Product */}
           <div>
-            <h3 className="text-white font-bold mb-6">Product</h3>
+            <h3 className="text-[var(--text-main)] font-bold mb-6">Product</h3>
             <ul className="space-y-4">
-              <li><Link to="/pro" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Features</Link></li>
-              <li><Link to="/pricing" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Pricing</Link></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Changelog</a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Documentation</a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">API Reference</a></li>
+              <li><Link to="/pro" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Features</Link></li>
+              <li><Link to="/pricing" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Pricing</Link></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Changelog</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Documentation</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">API Reference</a></li>
             </ul>
           </div>
 
           {/* Links - Company */}
           <div>
-            <h3 className="text-white font-bold mb-6">Company</h3>
+            <h3 className="text-[var(--text-main)] font-bold mb-6">Company</h3>
             <ul className="space-y-4">
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">About Us</a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Blog</a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Careers <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">Hiring</span></a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Contact</a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Partners</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">About Us</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Blog</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Careers <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">Hiring</span></a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Contact</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Partners</a></li>
             </ul>
           </div>
 
           {/* Links - Legal */}
           <div>
-            <h3 className="text-white font-bold mb-6">Legal</h3>
+            <h3 className="text-[var(--text-main)] font-bold mb-6">Legal</h3>
             <ul className="space-y-4">
-              <li><Link to="/privacy" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Terms of Service</Link></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Cookie Policy</a></li>
-              <li><a href="#" className="text-slate-400 text-sm hover:text-cyan-400 transition-colors">Disclaimer</a></li>
+              <li><Link to="/privacy" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Terms of Service</Link></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Cookie Policy</a></li>
+              <li><a href="#" className="text-[var(--text-muted)] text-sm hover:text-cyan-400 transition-colors">Disclaimer</a></li>
             </ul>
           </div>
 
@@ -105,22 +105,22 @@ export function PremiumFooter() {
              {/* Status Indicator */}
              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] transition-colors cursor-pointer">
                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
-               <span className="text-xs text-slate-400 font-medium">All systems operational</span>
+               <span className="text-xs text-[var(--text-muted)] font-medium">All systems operational</span>
              </div>
           </div>
           
-          <div className="text-slate-500 text-sm">
+          <div className="text-[var(--text-muted)] text-sm">
             © {currentYear} CryptoNeko. All rights reserved.
           </div>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="text-slate-500 hover:text-white transition-colors">
+            <a href="#" className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
               <IconX size={18} />
             </a>
-            <a href="#" className="text-slate-500 hover:text-white transition-colors">
+            <a href="#" className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
               <IconGithub size={18} />
             </a>
-            <a href="#" className="text-slate-500 hover:text-white transition-colors">
+            <a href="#" className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
               <IconDiscord size={18} />
             </a>
           </div>

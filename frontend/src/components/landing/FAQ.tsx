@@ -27,7 +27,7 @@ export function FAQ() {
   return (
     <section className="relative z-10 px-6 lg:px-12 max-w-4xl mx-auto mb-32">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
+        <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-[var(--text-main)] mb-4">
           Frequently asked questions
         </h2>
       </div>
@@ -42,9 +42,9 @@ export function FAQ() {
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
               className="w-full flex items-center justify-between p-6 text-left"
             >
-              <span className="text-base font-bold text-white">{faq.question}</span>
+              <span className="text-base font-bold text-[var(--text-main)]">{faq.question}</span>
               <ChevronDown 
-                className={`text-slate-400 transition-transform duration-300 ${openIndex === index ? "rotate-180" : ""}`}
+                className={`text-[var(--text-muted)] transition-transform duration-300 ${openIndex === index ? "rotate-180" : ""}`}
                 size={20} 
               />
             </button>
@@ -56,7 +56,7 @@ export function FAQ() {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  <div className="px-6 pb-6 text-slate-400 text-sm leading-relaxed border-t border-white/[0.02] pt-4">
+                  <div className="px-6 pb-6 text-[var(--text-muted)] text-sm leading-relaxed border-t border-white/[0.02] pt-4">
                     {faq.answer}
                   </div>
                 </motion.div>

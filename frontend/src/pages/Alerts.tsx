@@ -43,9 +43,9 @@ const TYPE_CONFIG = {
 
 function SidebarCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#273951]/50">
-        <span className="text-[13px] font-bold text-white tracking-wide">{title}</span>
+    <div className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] overflow-hidden">
+      <div className="px-5 py-4 border-b border-[var(--border-base)]">
+        <span className="text-[13px] font-bold text-[var(--text-main)] tracking-wide">{title}</span>
       </div>
       <div className="py-2">{children}</div>
     </div>
@@ -58,7 +58,7 @@ function FilterBtn({ active, onClick, children }: { active: boolean; onClick: ()
       onClick={onClick}
       className={`w-full text-left flex items-center justify-between px-5 py-2.5 transition-all duration-200 border-l-2 ${
         active 
-          ? 'bg-white/5 text-white border-white/40' 
+          ? 'bg-white/5 text-[var(--text-main)] border-white/40' 
           : 'bg-transparent text-white/50 border-transparent hover:bg-white/[0.03] hover:text-white/80'
       }`}
     >
@@ -144,7 +144,7 @@ export default function Alerts() {
   const glowColor = TYPE_CONFIG[dominantAlert as keyof typeof TYPE_CONFIG]?.color || '#8b5cf6'
 
   return (
-    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
+    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       <div className="max-w-[1280px] mx-auto relative z-20">
@@ -162,8 +162,8 @@ export default function Alerts() {
           </div>
           <button
             onClick={() => refetch()}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-200 text-xs font-bold ${
-              isFetching ? 'bg-white/10 border-white/20 text-[#22c55e]' : 'bg-[#16181c]/80 backdrop-blur-md border-[#273951]/50 text-white/60 hover:text-white hover:border-white/30'
+            className={`flex items-center gap-2 px-4 py-2 rounded-3xl border transition-all duration-200 text-xs font-bold ${
+              isFetching ? 'bg-white/10 border-white/20 text-[#22c55e]' : 'bg-[var(--bg-subtle)]/80 backdrop-blur-md border-[var(--border-base)] text-white/60 hover:text-[var(--text-main)] hover:border-white/30'
             }`}
           >
             <RefreshCw size={14} style={{ animation: isFetching ? 'spin 1s linear infinite' : 'none' }} />
@@ -184,7 +184,7 @@ export default function Alerts() {
                   { label: 'Strong Pumps',   count: summary.pump,  color: '#22c55e', Icon: TrendingUp },
                   { label: 'Rapid Moves',    count: summary.rapid, color: '#8b5cf6', Icon: Zap },
                 ].map(({ label, count, color, Icon }) => (
-                  <div key={label} className="flex items-center justify-between py-2.5 border-b border-[#273951]/50">
+                  <div key={label} className="flex items-center justify-between py-2.5 border-b border-[var(--border-base)]">
                     <div className="flex items-center gap-2.5">
                       <Icon size={14} color={color} />
                       <span className="text-[13px] text-white/60 font-medium">{label}</span>
@@ -194,7 +194,7 @@ export default function Alerts() {
                 ))}
                 <div className="flex justify-between items-center pt-3">
                   <span className="text-[13px] text-white/50 font-semibold">Total</span>
-                  <span className="font-mono text-[15px] font-black text-white">{summary.total}</span>
+                  <span className="font-mono text-[15px] font-black text-[var(--text-main)]">{summary.total}</span>
                 </div>
               </div>
             </SidebarCard>
@@ -209,8 +209,8 @@ export default function Alerts() {
               ].map(f => (
                 <FilterBtn key={f.key} active={filter === f.key} onClick={() => setFilter(f.key)}>
                   <span>{f.label}</span>
-                  <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded-md ${
-                    filter === f.key ? 'bg-white/20 text-white' : 'bg-white/5 text-white/40'
+                  <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded-2xl ${
+                    filter === f.key ? 'bg-white/20 text-[var(--text-main)]' : 'bg-white/5 text-white/40'
                   }`}>
                     {f.count}
                   </span>
@@ -237,7 +237,7 @@ export default function Alerts() {
             {isLoading && (
               <div className="flex flex-col gap-2">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="h-16 rounded-[1rem] bg-[#16181c]/80 backdrop-blur-md border border-[#273951]/50" style={{ opacity: 1 - i * 0.1 }} />
+                  <div key={i} className="h-16 rounded-[1rem] bg-[var(--bg-subtle)]/80 backdrop-blur-md border border-[var(--border-base)]" style={{ opacity: 1 - i * 0.1 }} />
                 ))}
               </div>
             )}
@@ -251,18 +251,18 @@ export default function Alerts() {
 
             {/* Empty state */}
             {data && filtered.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-24 text-center bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-[32px] shadow-2xl">
+              <div className="flex flex-col items-center justify-center py-24 text-center bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-[32px] shadow-2xl">
                 <Bell size={36} className="text-white/20 mb-4" />
-                <div className="text-lg font-bold text-white mb-1">No alerts here</div>
+                <div className="text-lg font-bold text-[var(--text-main)] mb-1">No alerts here</div>
                 <div className="text-sm text-white/50">No signals matched this filter</div>
               </div>
             )}
 
             {/* Alert table */}
             {filtered.length > 0 && (
-              <div className="bg-[#16181c]/80 backdrop-blur-xl border border-[#273951]/50 rounded-[32px] overflow-hidden shadow-2xl">
+              <div className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-[32px] overflow-hidden shadow-2xl">
                 {/* Table header */}
-                <div className="grid grid-cols-[48px_1fr_110px_110px_80px] px-5 py-3 gap-2 border-b border-[#273951]/50 bg-white/[0.02]">
+                <div className="grid grid-cols-[48px_1fr_110px_110px_80px] px-5 py-3 gap-2 border-b border-[var(--border-base)] bg-white/[0.02]">
                   {['', 'Coin', 'Price', '% Change', 'Type'].map((h, i) => (
                     <div key={i} className={`text-[11px] font-bold uppercase tracking-wider text-white/40 ${i >= 2 ? 'text-right' : 'text-left'}`}>
                       {h}
@@ -291,7 +291,7 @@ export default function Alerts() {
                         variants={itemVariants}
                         key={`${alert.symbol}-${alert.type}-${idx}`}
                         onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-[#273951]/50 transition-all duration-300 hover:bg-white/[0.04] hover:scale-[0.99] cursor-pointer"
+                        className="grid grid-cols-[48px_1fr_110px_110px_80px] items-center gap-2 px-5 py-3.5 border-b border-[var(--border-base)] transition-all duration-300 hover:bg-white/[0.04] hover:scale-[0.99] cursor-pointer"
                         style={{
                           borderLeft: `3px solid ${config.dot}`,
                           cursor: coin.slug ? 'pointer' : 'default',
@@ -300,7 +300,7 @@ export default function Alerts() {
                         {/* Logo */}
                         <div>
                           {coin.image_url
-                            ? <img src={coin.image_url} alt={alert.symbol} className="w-8 h-8 rounded-full border border-[#273951]/50" />
+                            ? <img src={coin.image_url} alt={alert.symbol} className="w-8 h-8 rounded-full border border-[var(--border-base)]" />
                             : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold font-mono" style={{ background: config.bg, border: `1px solid ${config.border}`, color: config.color }}>
                                 {alert.symbol?.slice(0, 2)}
                               </div>
@@ -309,7 +309,7 @@ export default function Alerts() {
 
                         {/* Coin name + message */}
                         <div className="min-w-0 pr-4">
-                          <div className="font-mono text-[14px] font-bold text-white">
+                          <div className="font-mono text-[14px] font-bold text-[var(--text-main)]">
                             {alert.symbol?.toUpperCase()}
                           </div>
                           <div className="text-[12px] text-white/50 mt-0.5 truncate">
@@ -330,7 +330,7 @@ export default function Alerts() {
 
                         {/* Badge */}
                         <div className="text-right">
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md tracking-wider uppercase" style={{
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-2xl tracking-wider uppercase" style={{
                             background: config.bg, color: config.color, border: `1px solid ${config.border}`
                           }}>
                             <Icon size={10} />

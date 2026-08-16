@@ -23,7 +23,7 @@ export default function Success() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white pt-32 pb-24 flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-32 pb-24 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
 
@@ -38,18 +38,18 @@ export default function Success() {
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
         >
-          <CheckCircle size={80} className="text-emerald-400 mb-6 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]" />
+          <CheckCircle size={80} className="text-emerald-400 mb-6 drop-shadow-[0_0_20px_var(--accent)]" />
         </motion.div>
 
-        <h1 className="text-4xl font-black tracking-tight mb-4 text-white">Welcome to PRO</h1>
+        <h1 className="text-4xl font-black tracking-tight mb-4 text-[var(--text-main)]">Welcome to PRO</h1>
         
         {verifying ? (
-          <p className="text-slate-400 text-lg mb-8 animate-pulse">
+          <p className="text-[var(--text-muted)] text-lg mb-8 animate-pulse">
             Verifying your subscription...
           </p>
         ) : (
           <>
-            <p className="text-slate-400 text-lg mb-8">
+            <p className="text-[var(--text-muted)] text-lg mb-8">
               Your payment was successful and your account has been upgraded. You now have full access to all institutional tools.
             </p>
             <button 

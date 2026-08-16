@@ -44,7 +44,7 @@ export default function WalletConnectButton() {
                     whileTap={{ scale: 0.95 }}
                     onClick={openConnectModal}
                     type="button"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--accent)] to-purple-500 rounded-full text-white font-bold text-sm shadow-[0_0_20px_rgba(83,58,253,0.3)] hover:shadow-[0_0_30px_rgba(83,58,253,0.5)] transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--accent)] to-purple-500 rounded-full text-[var(--text-main)] font-bold text-sm shadow-[0_0_20px_var(--accent)] hover:shadow-[0_0_30px_rgba(83,58,253,0.5)] transition-all"
                   >
                     <Wallet size={16} />
                     Connect Wallet
@@ -74,7 +74,7 @@ export default function WalletConnectButton() {
                     whileTap={{ scale: 0.95 }}
                     onClick={openChainModal}
                     type="button"
-                    className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#16181c] border border-[#273951]/50 shadow-[inset_0_0_10px_rgba(39,57,81,0.2)] rounded-full text-white font-bold text-sm hover:bg-white/5 transition-colors"
+                    className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-subtle)] border border-[var(--border-base)] shadow-[inset_0_0_10px_rgba(39,57,81,0.2)] rounded-full text-[var(--text-main)] font-bold text-sm hover:bg-[var(--border-subtle)] transition-colors"
                   >
                     {chain.hasIcon && (
                       <div className="w-4 h-4 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
@@ -90,13 +90,13 @@ export default function WalletConnectButton() {
                     {chain.name}
                   </motion.button>
 
-                  <div className="flex items-center bg-[#16181c] border border-[var(--accent)]/30 shadow-[inset_0_0_15px_rgba(83,58,253,0.1)] rounded-full p-0.5">
+                  <div className="flex items-center bg-[var(--bg-subtle)] border border-[var(--accent)]/30 shadow-[inset_0_0_15px_rgba(83,58,253,0.1)] rounded-full p-0.5">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={openAccountModal}
                       type="button"
-                      className="flex items-center gap-2 px-3 py-1 text-white font-bold text-sm hover:bg-[var(--accent)]/10 rounded-full transition-colors"
+                      className="flex items-center gap-2 px-3 py-1 text-[var(--text-main)] font-bold text-sm hover:bg-[var(--accent)]/10 rounded-full transition-colors"
                     >
                       {account.displayBalance ? (
                         <span className="text-gray-300 font-medium hidden md:inline-block">
@@ -113,7 +113,7 @@ export default function WalletConnectButton() {
                       whileTap={{ scale: 0.9 }}
                       onClick={() => disconnect()}
                       type="button"
-                      className="flex items-center justify-center w-7 h-7 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors ml-1"
+                      className="flex items-center justify-center w-7 h-7 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-[var(--text-main)] rounded-full transition-colors ml-1"
                       title="Disconnect Wallet"
                     >
                       <LogOut size={14} />

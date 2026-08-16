@@ -21,10 +21,10 @@ export function Stats() {
               transition={{ duration: 0.6, delay: idx * 0.1 }}
               className="flex flex-col items-center justify-center text-center group"
             >
-              <dt className="text-sm font-semibold leading-6 text-slate-400 uppercase tracking-widest group-hover:text-cyan-400 transition-colors duration-300">
+              <dt className="text-sm font-semibold leading-6 text-[var(--text-muted)] uppercase tracking-widest group-hover:text-cyan-400 transition-colors duration-300">
                 {stat.name}
               </dt>
-              <dd className="order-first text-4xl md:text-5xl font-black tracking-tighter text-white mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+              <dd className="order-first text-4xl md:text-5xl font-black tracking-tighter text-[var(--text-main)] mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                 {stat.value}
               </dd>
             </motion.div>

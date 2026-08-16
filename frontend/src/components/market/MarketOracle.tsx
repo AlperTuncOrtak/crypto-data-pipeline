@@ -198,7 +198,7 @@ export default function MarketOracle() {
 
         <button
           onClick={handleRefresh}
-          className="flex items-center justify-center w-6 h-6 rounded-lg transition-colors"
+          className="flex items-center justify-center w-6 h-6 rounded-2xl transition-colors"
           style={{
             backgroundColor: "var(--bg-elevated)",
             border:          "1px solid var(--border)",

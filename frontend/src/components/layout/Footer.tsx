@@ -61,18 +61,18 @@ export default function Footer() {
 
         {/* Links */}
         <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          <a href="/docs" className="hover:text-white transition-colors">Documentation</a>
-          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">API</a>
-          <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
-          <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+          <a href="/docs" className="hover:text-[var(--text-main)] transition-colors">Documentation</a>
+          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-main)] transition-colors">API</a>
+          <a href="/terms" className="hover:text-[var(--text-main)] transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-[var(--text-main)] transition-colors">Privacy Policy</a>
         </div>
 
         {/* Socials & Copyright */}
         <div className="flex flex-col items-center md:items-end gap-3">
           <div className="flex items-center gap-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            <a href="#" title="X (Twitter)" className="hover:text-white transition-colors"><IconX size={18} /></a>
-            <a href="#" title="Discord" className="hover:text-white transition-colors"><IconDiscord size={18} /></a>
-            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-white transition-colors"><IconGithub size={18} /></a>
+            <a href="#" title="X (Twitter)" className="hover:text-[var(--text-main)] transition-colors"><IconX size={18} /></a>
+            <a href="#" title="Discord" className="hover:text-[var(--text-main)] transition-colors"><IconDiscord size={18} /></a>
+            <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-[var(--text-main)] transition-colors"><IconGithub size={18} /></a>
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
             © {new Date().getFullYear()} CryptoNeko. All rights reserved.

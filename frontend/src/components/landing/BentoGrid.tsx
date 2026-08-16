@@ -51,7 +51,7 @@ export function BentoGrid() {
         <FadeIn delay={0.1} className="md:col-span-2 relative group overflow-hidden rounded-[32px] bg-white/[0.02] border border-white/[0.08] p-8 md:p-10 min-h-[350px] flex flex-col justify-between backdrop-blur-2xl shadow-[inset_0_0_80px_rgba(255,255,255,0.02)]">
           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-cyan-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
           
-          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[#020817]/60 overflow-hidden p-6 shadow-2xl flex items-center justify-center">
+          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[var(--bg-base)]/60 overflow-hidden p-6 shadow-2xl flex items-center justify-center">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/20 rounded-full blur-[60px] pointer-events-none"></div>
             <div className="flex items-center gap-8 w-full max-w-sm">
               <div className="relative w-32 h-32 shrink-0">
@@ -60,7 +60,7 @@ export function BentoGrid() {
                   <circle cx="50" cy="50" r="40" fill="none" stroke="#22d3ee" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * fearGreed / 100)} strokeLinecap="round" className="transition-all duration-1000 ease-out" />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black text-white">{fearGreed}</span>
+                  <span className="text-2xl font-black text-[var(--text-main)]">{fearGreed}</span>
                   <span className="text-[10px] text-cyan-400 font-bold tracking-widest uppercase">{fearGreed > 75 ? "Extr. Greed" : fearGreed > 55 ? "Greed" : fearGreed > 45 ? "Neutral" : "Fear"}</span>
                 </div>
               </div>
@@ -73,11 +73,11 @@ export function BentoGrid() {
           </div>
           
           <div className="relative z-10 mt-auto">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 shadow-[inset_0_0_20px_rgba(34,211,238,0.1)]">
+            <div className="w-12 h-12 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 shadow-[inset_0_0_20px_rgba(34,211,238,0.1)]">
               <Brain className="text-cyan-400" size={24} />
             </div>
-            <h3 className="text-2xl font-bold mb-3 tracking-tight text-white">AI Market Analysis</h3>
-            <p className="text-slate-400 max-w-md text-sm leading-relaxed">
+            <h3 className="text-2xl font-bold mb-3 tracking-tight text-[var(--text-main)]">AI Market Analysis</h3>
+            <p className="text-[var(--text-muted)] max-w-md text-sm leading-relaxed">
               Our proprietary AI analyzes sentiment across millions of data points, giving you an edge with real-time Fear & Greed indices and predictive modeling.
             </p>
           </div>
@@ -87,9 +87,9 @@ export function BentoGrid() {
         <FadeIn delay={0.2} className="relative group overflow-hidden rounded-[32px] bg-white/[0.02] border border-white/[0.08] p-8 md:p-10 min-h-[350px] flex flex-col justify-between backdrop-blur-2xl shadow-[inset_0_0_80px_rgba(255,255,255,0.02)]">
           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
           
-          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[#020817]/60 overflow-hidden p-5 shadow-2xl flex flex-col justify-end gap-3">
+          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[var(--bg-base)]/60 overflow-hidden p-5 shadow-2xl flex flex-col justify-end gap-3">
             {orderbook.map((o, i) => (
-              <div key={i} className={`flex justify-between items-center px-3 py-2 rounded-lg bg-${o.color}-500/10 border border-${o.color}-500/20 transition-all duration-300`}>
+              <div key={i} className={`flex justify-between items-center px-3 py-2 rounded-2xl bg-${o.color}-500/10 border border-${o.color}-500/20 transition-all duration-300`}>
                 <span className={`text-[11px] font-mono font-semibold text-${o.color}-400`}>{o.pair}</span>
                 <span className={`text-xs font-bold text-${o.color}-400`}>{o.pnl}%</span>
               </div>
@@ -97,11 +97,11 @@ export function BentoGrid() {
           </div>
 
           <div className="relative z-10 mt-auto">
-            <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-6">
+            <div className="w-12 h-12 rounded-3xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-6">
               <Activity className="text-slate-300" size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3 tracking-tight text-white">Real-Time Data</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <h3 className="text-xl font-bold mb-3 tracking-tight text-[var(--text-main)]">Real-Time Data</h3>
+            <p className="text-[var(--text-muted)] text-sm leading-relaxed">
               Millisecond-precision websocket feeds straight to your dashboard. No delays.
             </p>
           </div>
@@ -111,22 +111,22 @@ export function BentoGrid() {
         <FadeIn delay={0.3} className="relative group overflow-hidden rounded-[32px] bg-white/[0.02] border border-white/[0.08] p-8 md:p-10 min-h-[350px] flex flex-col justify-between backdrop-blur-2xl shadow-[inset_0_0_80px_rgba(255,255,255,0.02)]">
           <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
           
-          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[#020817]/60 overflow-hidden p-5 shadow-2xl flex flex-col items-center justify-center relative">
+          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[var(--bg-base)]/60 overflow-hidden p-5 shadow-2xl flex flex-col items-center justify-center relative">
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15]"></div>
              <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ type: "spring", delay: 0.4 }} className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-4 z-10 relative">
                <Wallet className="text-cyan-400" size={24} />
                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-[3px] border-[#020817]"></div>
              </motion.div>
-             <div className="text-xl font-black text-white z-10 font-mono tracking-tight">${balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-             <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="text-[10px] font-bold text-slate-500 z-10 mt-1.5 uppercase tracking-widest">Total Balance</motion.div>
+             <div className="text-xl font-black text-[var(--text-main)] z-10 font-mono tracking-tight">${balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+             <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="text-[10px] font-bold text-[var(--text-muted)] z-10 mt-1.5 uppercase tracking-widest">Total Balance</motion.div>
           </div>
 
           <div className="relative z-10 mt-auto">
-            <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-6">
+            <div className="w-12 h-12 rounded-3xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-6">
               <Wallet className="text-slate-300" size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3 tracking-tight text-white">Portfolio Sync</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <h3 className="text-xl font-bold mb-3 tracking-tight text-[var(--text-main)]">Portfolio Sync</h3>
+            <p className="text-[var(--text-muted)] text-sm leading-relaxed">
               Automatically import trades via CSV or connect on-chain wallets for tracking.
             </p>
           </div>
@@ -136,25 +136,25 @@ export function BentoGrid() {
         <FadeIn delay={0.4} className="md:col-span-2 relative group overflow-hidden rounded-[32px] bg-white/[0.02] border border-white/[0.08] p-8 md:p-10 min-h-[350px] flex flex-col justify-between backdrop-blur-2xl shadow-[inset_0_0_80px_rgba(255,255,255,0.02)]">
            <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-cyan-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
           
-          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[#020817]/60 overflow-hidden p-8 shadow-2xl flex flex-col justify-center font-mono text-xs md:text-sm text-slate-500 relative">
+          <div className="relative z-10 flex-1 mb-10 w-full rounded-2xl border border-white/[0.05] bg-[var(--bg-base)]/60 overflow-hidden p-8 shadow-2xl flex flex-col justify-center font-mono text-xs md:text-sm text-[var(--text-muted)] relative">
              <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none"></div>
-             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-purple-400">import <span className="text-white">{' { MarketMaker } '}</span> from <span className="text-emerald-400">'@crypto/algo'</span>;</motion.div>
+             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-purple-400">import <span className="text-[var(--text-main)]">{' { MarketMaker } '}</span> from <span className="text-emerald-400">'@crypto/algo'</span>;</motion.div>
              <br/>
-             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.8 }}><span className="text-blue-400">const</span> <span className="text-white">strategy</span> = <span className="text-blue-400">new</span> <span className="text-yellow-200">MarketMaker</span>({'{'}</motion.div>
+             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.8 }}><span className="text-blue-400">const</span> <span className="text-[var(--text-main)]">strategy</span> = <span className="text-blue-400">new</span> <span className="text-yellow-200">MarketMaker</span>({'{'}</motion.div>
              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.2 }} className="pl-6">pair: <span className="text-emerald-400">'BTC/USDT'</span>,</motion.div>
              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.6 }} className="pl-6">riskFactor: <span className="text-orange-400">0.05</span>,</motion.div>
              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.0 }} className="pl-6">leverage: <span className="text-orange-400">10</span>,</motion.div>
              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.4 }}>{'}'});</motion.div>
              <br/>
-             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.8 }}><span className="text-white">strategy</span>.<span className="text-yellow-200">execute</span>(); <span className="text-emerald-400 font-bold ml-3 animate-pulse">// Running...</span></motion.div>
+             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.8 }}><span className="text-[var(--text-main)]">strategy</span>.<span className="text-yellow-200">execute</span>(); <span className="text-emerald-400 font-bold ml-3 animate-pulse">// Running...</span></motion.div>
           </div>
 
           <div className="relative z-10 mt-auto">
-            <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-6">
+            <div className="w-12 h-12 rounded-3xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-6">
               <Cpu className="text-slate-300" size={24} />
             </div>
-            <h3 className="text-2xl font-bold mb-3 tracking-tight text-white">Algorithmic Edge</h3>
-            <p className="text-slate-400 max-w-md text-sm leading-relaxed">
+            <h3 className="text-2xl font-bold mb-3 tracking-tight text-[var(--text-main)]">Algorithmic Edge</h3>
+            <p className="text-[var(--text-muted)] max-w-md text-sm leading-relaxed">
               Utilize advanced quantitative metrics typically reserved for institutional trading desks, simplified into an elegant UI.
             </p>
           </div>

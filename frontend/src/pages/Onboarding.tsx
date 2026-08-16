@@ -55,7 +55,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0a0b0d] text-white overflow-hidden flex items-center justify-center font-sans">
+    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] overflow-hidden flex items-center justify-center font-sans">
       {/* Background Mesh */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-40">
         <div className="absolute top-[-10%] left-[20%] w-[800px] h-[500px] bg-[#533afd] blur-[180px] rounded-full opacity-30 animate-pulse" style={{ animationDuration: '8s' }} />
@@ -81,10 +81,10 @@ export default function Onboarding() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="bg-[#16181c]/80 backdrop-blur-2xl border border-[#273951]/50 rounded-[32px] p-8 md:p-12 shadow-2xl text-center"
+              className="bg-[var(--bg-subtle)]/80 backdrop-blur-2xl border border-[var(--border-base)] rounded-[32px] p-8 md:p-12 shadow-2xl text-center"
             >
               <h1 className="text-4xl font-black tracking-tight mb-2">Welcome to CryptoNeko</h1>
-              <p className="text-gray-400 mb-10 text-lg">Pick an avatar to represent you on your journey.</p>
+              <p className="text-[var(--text-muted)] mb-10 text-lg">Pick an avatar to represent you on your journey.</p>
               
               <div className="flex justify-center gap-6 mb-12">
                 {AVATARS.map((av) => (
@@ -123,10 +123,10 @@ export default function Onboarding() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="bg-[#16181c]/80 backdrop-blur-2xl border border-[#273951]/50 rounded-[32px] p-8 md:p-12 shadow-2xl"
+              className="bg-[var(--bg-subtle)]/80 backdrop-blur-2xl border border-[var(--border-base)] rounded-[32px] p-8 md:p-12 shadow-2xl"
             >
               <h1 className="text-3xl font-black tracking-tight mb-2 text-center">What's your experience level?</h1>
-              <p className="text-gray-400 mb-10 text-center text-lg">We'll tailor your dashboard to your expertise.</p>
+              <p className="text-[var(--text-muted)] mb-10 text-center text-lg">We'll tailor your dashboard to your expertise.</p>
               
               <div className="flex flex-col gap-4 mb-10">
                 {EXPERIENCES.map((exp) => {
@@ -138,16 +138,16 @@ export default function Onboarding() {
                       whileHover={{ scale: 1.01, backgroundColor: isSelected ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)' }}
                       whileTap={{ scale: 0.99 }}
                       onClick={() => setExperience(exp.id)}
-                      className={`flex items-center gap-5 p-5 rounded-2xl border text-left transition-colors ${isSelected ? 'bg-white/10 border-white/30' : 'bg-transparent border-white/5'}`}
+                      className={`flex items-center gap-5 p-5 rounded-2xl border text-left transition-colors ${isSelected ? 'bg-white/10 border-white/30' : 'bg-transparent border-[var(--border-subtle)]'}`}
                     >
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isSelected ? 'bg-white text-black' : 'bg-white/10 text-white'}`}>
+                      <div className={`w-12 h-12 rounded-3xl flex items-center justify-center ${isSelected ? 'bg-white text-black' : 'bg-white/10 text-[var(--text-main)]'}`}>
                         <Icon size={24} />
                       </div>
                       <div>
                         <div className="font-bold text-lg">{exp.title}</div>
-                        <div className="text-sm text-gray-400">{exp.desc}</div>
+                        <div className="text-sm text-[var(--text-muted)]">{exp.desc}</div>
                       </div>
-                      {isSelected && <Check className="ml-auto text-white" size={24} />}
+                      {isSelected && <Check className="ml-auto text-[var(--text-main)]" size={24} />}
                     </motion.button>
                   );
                 })}
@@ -171,10 +171,10 @@ export default function Onboarding() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="bg-[#16181c]/80 backdrop-blur-2xl border border-[#273951]/50 rounded-[32px] p-8 md:p-12 shadow-2xl"
+              className="bg-[var(--bg-subtle)]/80 backdrop-blur-2xl border border-[var(--border-base)] rounded-[32px] p-8 md:p-12 shadow-2xl"
             >
               <h1 className="text-3xl font-black tracking-tight mb-2 text-center">Select your favorite assets</h1>
-              <p className="text-gray-400 mb-10 text-center text-lg">Pick a few coins to jumpstart your Watchlist.</p>
+              <p className="text-[var(--text-muted)] mb-10 text-center text-lg">Pick a few coins to jumpstart your Watchlist.</p>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-12">
                 {COINS.map((coin) => {
@@ -185,13 +185,13 @@ export default function Onboarding() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => toggleFavorite(coin.id)}
-                      className={`relative flex flex-col items-center p-4 rounded-[24px] border transition-colors ${isSelected ? 'bg-white/10 border-white/30' : 'bg-[#0a0b0d]/50 border-[#273951]/50 hover:bg-white/5'}`}
+                      className={`relative flex flex-col items-center p-4 rounded-[24px] border transition-colors ${isSelected ? 'bg-white/10 border-white/30' : 'bg-[var(--bg-base)]/50 border-[var(--border-base)] hover:bg-[var(--border-subtle)]'}`}
                     >
                       <div className="w-12 h-12 rounded-full mb-3 shadow-lg flex items-center justify-center text-lg font-black" style={{ background: `linear-gradient(135deg, ${coin.color}50, ${coin.color})` }}>
                         {coin.symbol[0]}
                       </div>
                       <div className="font-bold text-sm">{coin.symbol}</div>
-                      <div className="text-xs text-gray-500">{coin.name}</div>
+                      <div className="text-xs text-[var(--text-muted)]">{coin.name}</div>
                       {isSelected && (
                         <div className="absolute top-3 right-3 bg-white text-black p-0.5 rounded-full shadow-lg">
                           <Check size={12} strokeWidth={4} />
@@ -207,7 +207,7 @@ export default function Onboarding() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleNext}
                 disabled={favorites.length === 0}
-                className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${favorites.length > 0 ? 'bg-white text-black hover:bg-gray-100 shadow-[0_0_40px_rgba(255,255,255,0.1)]' : 'bg-white/10 text-gray-500 cursor-not-allowed'}`}
+                className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${favorites.length > 0 ? 'bg-white text-black hover:bg-gray-100 shadow-[0_0_40px_rgba(255,255,255,0.1)]' : 'bg-white/10 text-[var(--text-muted)] cursor-not-allowed'}`}
               >
                 {favorites.length > 0 ? "Complete Setup" : "Select at least 1 coin"} <ChevronRight size={20} />
               </motion.button>

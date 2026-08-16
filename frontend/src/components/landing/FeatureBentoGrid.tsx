@@ -56,12 +56,12 @@ function WhaleXRayDemo() {
   };
 
   return (
-    <div className="relative w-full h-full rounded-[24px] bg-[#080b10] border border-white/[0.06] overflow-hidden p-5 flex flex-col gap-3 min-h-[320px]">
+    <div className="relative w-full h-full rounded-[24px] bg-[var(--bg-base)] border border-white/[0.06] overflow-hidden p-5 flex flex-col gap-3 min-h-[320px]">
       {/* Header bar */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Live Whale Feed</span>
+          <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Live Whale Feed</span>
         </div>
         <span className="text-[10px] font-mono text-slate-600">All DEXs</span>
       </div>
@@ -74,17 +74,17 @@ function WhaleXRayDemo() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className={`flex items-center justify-between px-4 py-3 rounded-xl border ${colorMap[w.color]}`}
+            className={`flex items-center justify-between px-4 py-3 rounded-3xl border ${colorMap[w.color]}`}
           >
             <div className="flex items-center gap-2.5">
-              <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest ${badgeMap[w.color]}`}>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-2xl uppercase tracking-widest ${badgeMap[w.color]}`}>
                 {w.type}
               </span>
-              <span className="font-bold text-white text-sm">{w.token}</span>
+              <span className="font-bold text-[var(--text-main)] text-sm">{w.token}</span>
             </div>
             <div className="text-right">
-              <div className="text-base font-black text-white font-mono">{w.amount}</div>
-              <div className="text-[10px] text-slate-500">{w.time}</div>
+              <div className="text-base font-black text-[var(--text-main)] font-mono">{w.amount}</div>
+              <div className="text-[10px] text-[var(--text-muted)]">{w.time}</div>
             </div>
           </motion.div>
         ))}
@@ -137,9 +137,9 @@ function BacktestingDemo() {
   };
 
   return (
-    <div className="relative w-full h-full rounded-[24px] bg-[#080b10] border border-white/[0.06] overflow-hidden p-5 flex flex-col gap-4 min-h-[320px]">
+    <div className="relative w-full h-full rounded-[24px] bg-[var(--bg-base)] border border-white/[0.06] overflow-hidden p-5 flex flex-col gap-4 min-h-[320px]">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">SOL/USDT · 2022–2023</span>
+        <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">SOL/USDT · 2022–2023</span>
         {done && (
           <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-emerald-400 font-black text-lg font-mono">
             +4,250%
@@ -166,7 +166,7 @@ function BacktestingDemo() {
 
       {/* Progress bar */}
       <div className="space-y-2">
-        <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+        <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono">
           <span>Simulating {Math.min(100, Math.round(progress))}%</span>
           <span>Strategy: RSI + EMA Cross</span>
         </div>
@@ -186,7 +186,7 @@ function BacktestingDemo() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-start gap-2 p-3 rounded-xl bg-cyan-500/5 border border-cyan-500/20"
+            className="flex items-start gap-2 p-3 rounded-3xl bg-cyan-500/5 border border-cyan-500/20"
           >
             <span className="text-cyan-400 text-xs font-black shrink-0">AI</span>
             <p className="text-[11px] text-slate-300 leading-relaxed">{aiMsg}</p>
@@ -196,12 +196,12 @@ function BacktestingDemo() {
 
       <button
         onClick={run}
-        className={`mt-auto py-2.5 rounded-xl text-sm font-bold transition-all ${
+        className={`mt-auto py-2.5 rounded-3xl text-sm font-bold transition-all ${
           running
-            ? "bg-white/5 text-slate-500 cursor-not-allowed"
+            ? "bg-white/5 text-[var(--text-muted)] cursor-not-allowed"
             : done
-              ? "bg-white/[0.04] border border-white/10 text-slate-400 hover:bg-white/10"
-              : "bg-gradient-to-r from-purple-600 to-cyan-500 text-white hover:opacity-90 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+              ? "bg-white/[0.04] border border-[var(--border-base)] text-[var(--text-muted)] hover:bg-[var(--border-base)]"
+              : "bg-gradient-to-r from-purple-600 to-cyan-500 text-[var(--text-main)] hover:opacity-90 shadow-[0_0_20px_var(--accent)]"
         }`}
       >
         {running ? "Simulating..." : done ? "↩ Reset & Run Again" : "▶  Run Time-Machine"}
@@ -219,16 +219,16 @@ function CandlestickVisionDemo() {
   const [aiOn, setAiOn] = useState(false);
 
   return (
-    <div className="relative w-full h-full rounded-[24px] bg-[#080b10] border border-white/[0.06] overflow-hidden p-5 flex flex-col gap-4 min-h-[320px]">
+    <div className="relative w-full h-full rounded-[24px] bg-[var(--bg-base)] border border-white/[0.06] overflow-hidden p-5 flex flex-col gap-4 min-h-[320px]">
       {/* Toolbar */}
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">BTC/USDT · 1H</span>
+        <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">BTC/USDT · 1H</span>
         <button
           onClick={() => setAiOn(v => !v)}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-3xl text-xs font-bold transition-all border ${
             aiOn
               ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.2)]"
-              : "bg-white/[0.04] border-white/10 text-slate-400 hover:border-white/20"
+              : "bg-white/[0.04] border-[var(--border-base)] text-[var(--text-muted)] hover:border-white/20"
           }`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${aiOn ? "bg-cyan-400 animate-pulse" : "bg-slate-600"}`} />
@@ -250,7 +250,7 @@ function CandlestickVisionDemo() {
                 className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-400/60 origin-left"
                 style={{ bottom: "28%" }}
               >
-                <span className="absolute right-0 -top-4 text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-md">Support</span>
+                <span className="absolute right-0 -top-4 text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-2xl">Support</span>
               </motion.div>
               <motion.div
                 initial={{ scaleX: 0, opacity: 0 }}
@@ -260,7 +260,7 @@ function CandlestickVisionDemo() {
                 className="absolute left-0 right-0 border-t-2 border-dashed border-rose-400/60 origin-left"
                 style={{ bottom: "72%" }}
               >
-                <span className="absolute right-0 -top-4 text-[9px] text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded-md">Resistance</span>
+                <span className="absolute right-0 -top-4 text-[9px] text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded-2xl">Resistance</span>
               </motion.div>
             </>
           )}
@@ -302,7 +302,7 @@ function CandlestickVisionDemo() {
             ].map(tag => (
               <div
                 key={tag.label}
-                className={`text-center text-[9px] font-bold py-1.5 rounded-lg uppercase tracking-wider ${
+                className={`text-center text-[9px] font-bold py-1.5 rounded-2xl uppercase tracking-wider ${
                   tag.color === "purple" ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" :
                   tag.color === "amber" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" :
                   "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
@@ -375,17 +375,17 @@ export function FeatureBentoGrid() {
 
       {/* Section Header */}
       <FadeIn className="text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-slate-400 text-xs font-semibold mb-6 uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--border-base)] bg-white/[0.03] text-[var(--text-muted)] text-xs font-semibold mb-6 uppercase tracking-widest">
           <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
           Exclusive Features
         </div>
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight leading-[1.1]">
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-[var(--text-main)] mb-4 tracking-tight leading-[1.1]">
           Tools that give you an{" "}
           <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
             unfair advantage
           </span>
         </h2>
-        <p className="text-slate-400 max-w-xl mx-auto text-lg leading-relaxed">
+        <p className="text-[var(--text-muted)] max-w-xl mx-auto text-lg leading-relaxed">
           Features that institutional desks pay six figures for — now in your browser.
         </p>
       </FadeIn>
@@ -401,8 +401,8 @@ export function FeatureBentoGrid() {
               <span className={`w-1.5 h-1.5 rounded-full bg-current`} />
               {f.tag}
             </span>
-            <h3 className="text-3xl md:text-4xl font-black text-white mb-5 tracking-tight leading-tight">{f.title}</h3>
-            <p className="text-slate-400 text-base leading-relaxed mb-8">{f.description}</p>
+            <h3 className="text-3xl md:text-4xl font-black text-[var(--text-main)] mb-5 tracking-tight leading-tight">{f.title}</h3>
+            <p className="text-[var(--text-muted)] text-base leading-relaxed mb-8">{f.description}</p>
             <ul className="space-y-3">
               {f.bullets.map(b => (
                 <li key={b} className="flex items-center gap-3 text-slate-300 text-sm">

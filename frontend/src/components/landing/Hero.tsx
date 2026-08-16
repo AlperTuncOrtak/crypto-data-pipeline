@@ -68,7 +68,7 @@ export function Hero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
           initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="px-4 py-2 rounded-full border border-white/20 bg-white/5 text-xs md:text-sm font-semibold text-white mb-8 backdrop-blur-md flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+          className="px-4 py-2 rounded-full border border-white/20 bg-white/5 text-xs md:text-sm font-semibold text-[var(--text-main)] mb-8 backdrop-blur-md flex items-center gap-2 shadow-[0_0_20px_var(--accent)]"
         >
           <span className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_10px_#ffffff]"></span>
           Intelligence powered by Deep Learning
@@ -85,7 +85,7 @@ export function Hero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
         {/* Subtitle */}
         <motion.p 
           custom={1} initial="hidden" animate="visible" variants={fadeUp}
-          className="text-lg md:text-xl text-slate-400 font-medium max-w-2xl leading-relaxed mb-12"
+          className="text-lg md:text-xl text-[var(--text-muted)] font-medium max-w-2xl leading-relaxed mb-12"
         >
           Advanced portfolio tracking, real-time AI sentiment analysis, and professional-grade algorithmic indicators in one sleek, unified terminal.
         </motion.p>
@@ -106,7 +106,7 @@ export function Hero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
           </button>
           <button 
             onClick={() => navigate("/pricing")}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/[0.03] border border-white/10 text-white font-bold text-base hover:bg-white/[0.08] backdrop-blur-md transition-colors"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/[0.03] border border-[var(--border-base)] text-[var(--text-main)] font-bold text-base hover:bg-white/[0.08] backdrop-blur-md transition-colors"
           >
             View Pricing
           </button>

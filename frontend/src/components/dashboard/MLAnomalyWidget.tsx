@@ -38,30 +38,30 @@ export function MLAnomalyWidget() {
   }, []);
 
   return (
-    <div className="w-full h-full flex flex-col rounded-2xl border border-white/[0.05] bg-[#19191c]/80 backdrop-blur-xl overflow-hidden p-5 shadow-2xl">
+    <div className="w-full h-full flex flex-col rounded-2xl border border-white/[0.05] bg-[var(--bg-elevated)]/80 backdrop-blur-xl overflow-hidden p-5 shadow-2xl">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Brain size={18} className="text-[#0052ff]" />
-          <h2 className="text-sm font-bold text-white uppercase tracking-widest">AI Anomaly Detection</h2>
+          <Brain size={18} className="text-[var(--accent)]" />
+          <h2 className="text-sm font-bold text-[var(--text-main)] uppercase tracking-widest">AI Anomaly Detection</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400 font-mono">Isolation Forest</span>
+          <span className="text-[10px] text-[var(--text-muted)] font-mono">Isolation Forest</span>
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0052ff] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0052ff]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]"></span>
           </span>
         </div>
       </div>
 
       <div className="flex-1 w-full flex items-center overflow-x-auto pb-2 space-x-3 custom-scrollbar">
         {loading ? (
-          <div className="flex items-center justify-center w-full text-sm text-slate-500 animate-pulse">
+          <div className="flex items-center justify-center w-full text-sm text-[var(--text-muted)] animate-pulse">
             Analyzing live data...
           </div>
         ) : anomalies.length === 0 ? (
           <div className="flex items-center gap-3 justify-center w-full text-center">
-            <Brain className="text-slate-500" size={16} />
-            <p className="text-sm text-slate-400 font-medium">No Anomalies Detected. Market is acting normally.</p>
+            <Brain className="text-[var(--text-muted)]" size={16} />
+            <p className="text-sm text-[var(--text-muted)] font-medium">No Anomalies Detected. Market is acting normally.</p>
           </div>
         ) : (
           <AnimatePresence>
@@ -71,22 +71,22 @@ export function MLAnomalyWidget() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex-shrink-0 flex items-center justify-between min-w-[280px] p-3 rounded-xl bg-white/[0.03] border border-white/[0.02] hover:bg-white/[0.05] transition-colors"
+                className="flex-shrink-0 flex items-center justify-between min-w-[280px] p-3 rounded-3xl bg-white/[0.03] border border-white/[0.02] hover:bg-white/[0.05] transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${a.severity === "CRITICAL" ? "bg-rose-500/20 text-rose-400" : "bg-orange-500/20 text-orange-400"}`}>
+                  <div className={`p-2 rounded-2xl ${a.severity === "CRITICAL" ? "bg-rose-500/20 text-rose-400" : "bg-orange-500/20 text-orange-400"}`}>
                     <AlertTriangle size={16} />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-sm">{a.symbol}</div>
-                    <div className="text-[10px] text-slate-400">Vol: {(a.volume).toLocaleString(undefined, {maximumFractionDigits:0})}</div>
+                    <div className="font-bold text-[var(--text-main)] text-sm">{a.symbol}</div>
+                    <div className="text-[10px] text-[var(--text-muted)]">Vol: {(a.volume).toLocaleString(undefined, {maximumFractionDigits:0})}</div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className={`text-xs font-black font-mono ${a.severity === "CRITICAL" ? "text-rose-400" : "text-orange-400"}`}>
                     Score: {a.score.toFixed(2)}
                   </div>
-                  <div className="text-[10px] text-slate-500 mt-1">
+                  <div className="text-[10px] text-[var(--text-muted)] mt-1">
                     {new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>

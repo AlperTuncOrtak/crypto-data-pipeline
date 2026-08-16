@@ -96,11 +96,11 @@ function TH({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1 text-[13px] font-semibold tracking-wide ${align === "right" ? "ml-auto" : ""} ${active ? "text-white" : "text-gray-400 hover:text-white"} transition-colors`}
+      className={`flex items-center gap-1 text-[13px] font-semibold tracking-wide ${align === "right" ? "ml-auto" : ""} ${active ? "text-[var(--text-main)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)]"} transition-colors`}
     >
       {label}
       {active && (
-        <span className="opacity-70 text-[#0052ff]">
+        <span className="opacity-70 text-[var(--accent)]">
           {direction === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </span>
       )}
@@ -194,17 +194,17 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="bg-transparent text-white selection:bg-[#0052ff] selection:text-white font-sans overflow-x-hidden pt-8 pb-20 px-6 lg:px-12 w-full">
+    <div className="bg-transparent text-[var(--text-main)] selection:bg-[var(--accent)] selection:text-[var(--text-main)] font-sans overflow-x-hidden pt-8 pb-20 px-6 lg:px-12 w-full">
       <div className="max-w-[1400px] mx-auto w-full">
         
         {/* HEADER */}
         <FadeIn delay={0.1} className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
           <div>
-            <h1 className="text-4xl md:text-5xl font-normal tracking-[-1px] text-white mb-2">Market Overview</h1>
-            <p className="text-gray-400 text-base">Real-time algorithmic data and sentiment.</p>
+            <h1 className="text-4xl md:text-5xl font-normal tracking-[-1px] text-[var(--text-main)] mb-2">Market Overview</h1>
+            <p className="text-[var(--text-muted)] text-base">Real-time algorithmic data and sentiment.</p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-[var(--border-subtle)]">
               <span className="w-2 h-2 rounded-full bg-[#05b169] animate-pulse"></span>
               <span className="text-xs font-semibold tracking-wide text-[#05b169] uppercase">Live</span>
             </div>
@@ -220,7 +220,7 @@ export default function Dashboard() {
               whileHover={{ scale: 1.02 }} 
               whileTap={{ scale: 0.98 }} 
               onClick={() => navigate("/analysis/ai")} 
-              className="px-5 py-2.5 rounded-full bg-[#0052ff] hover:bg-[#003ecc] text-white transition-colors flex items-center gap-2 text-[16px] font-semibold"
+              className="px-5 py-2.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--text-main)] transition-colors flex items-center gap-2 text-[16px] font-semibold"
             >
               <Brain size={18} /> AI Signals
             </motion.button>
@@ -236,54 +236,54 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn onClick={() => setStatsModalType("mcap")} delay={0.2} className="h-full cursor-pointer rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-white/10 transition-all">
+            <FadeIn onClick={() => setStatsModalType("mcap")} delay={0.2} className="h-full cursor-pointer rounded-[24px] bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-[var(--border-base)] transition-all">
                <div>
                  <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">Global Market Cap</div>
-                 <div className="text-3xl md:text-4xl font-medium font-mono text-white tracking-tight">
+                 <div className="text-3xl md:text-4xl font-medium font-mono text-[var(--text-main)] tracking-tight">
                    <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
                  </div>
-                 <div className="text-[14px] text-gray-500 mt-2">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
+                 <div className="text-[14px] text-[var(--text-muted)] mt-2">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
                </div>
             </FadeIn>
           </motion.div>
 
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn onClick={() => setStatsModalType("volume")} delay={0.3} className="h-full cursor-pointer rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-white/10 transition-all">
+            <FadeIn onClick={() => setStatsModalType("volume")} delay={0.3} className="h-full cursor-pointer rounded-[24px] bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-[var(--border-base)] transition-all">
                <div>
                  <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">24h Volume</div>
-                 <div className="text-3xl md:text-4xl font-medium font-mono text-white tracking-tight">
+                 <div className="text-3xl md:text-4xl font-medium font-mono text-[var(--text-main)] tracking-tight">
                    <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
                  </div>
-                 <div className="text-[14px] text-gray-500 mt-2">Global trading activity</div>
+                 <div className="text-[14px] text-[var(--text-muted)] mt-2">Global trading activity</div>
                </div>
             </FadeIn>
           </motion.div>
 
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn onClick={() => setStatsModalType("dominance")} delay={0.4} className="h-full cursor-pointer rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-white/10 transition-all">
+            <FadeIn onClick={() => setStatsModalType("dominance")} delay={0.4} className="h-full cursor-pointer rounded-[24px] bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:border-[var(--border-base)] transition-all">
                <div>
                  <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">Dominance</div>
                  <div className="flex items-end gap-2">
                    <div className="text-3xl md:text-4xl font-medium font-mono text-[#f4b000] tracking-tight">{btcDom}%</div>
-                   <div className="text-[14px] font-semibold text-gray-400 mb-1">BTC</div>
+                   <div className="text-[14px] font-semibold text-[var(--text-muted)] mb-1">BTC</div>
                  </div>
-                 <div className="text-[14px] text-gray-500 mt-2">ETH: <span className="text-white font-mono font-medium">{ethDom}%</span></div>
+                 <div className="text-[14px] text-[var(--text-muted)] mt-2">ETH: <span className="text-[var(--text-main)] font-mono font-medium">{ethDom}%</span></div>
                </div>
             </FadeIn>
           </motion.div>
 
           <motion.div whileHover={{ y: -4 }} className="md:col-span-1">
-            <FadeIn delay={0.5} className="h-full rounded-[24px] bg-[#27272a]/80 backdrop-blur-md border border-white/5 p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] hover:border-[#3b82f6]/30 transition-all cursor-pointer group" onClick={() => setIsFngModalOpen(true)}>
+            <FadeIn delay={0.5} className="h-full rounded-[24px] bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] p-8 flex flex-col justify-between shadow-none hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] hover:border-[#3b82f6]/30 transition-all cursor-pointer group" onClick={() => setIsFngModalOpen(true)}>
                <div>
                  <div className="flex items-center justify-between mb-4">
                    <div className="text-[13px] font-semibold text-[#a1a1aa] uppercase tracking-wider group-hover:text-[#3b82f6] transition-colors">Fear & Greed</div>
-                   <div className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-gray-400 group-hover:text-white transition-colors">History</div>
+                   <div className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">History</div>
                  </div>
                  {fngValue !== null ? (
                    <div className="flex items-center gap-4">
                      <div className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.1) ${fngValue}% 100%)` }}>
-                       <div className="absolute inset-[4px] rounded-full bg-[#19191c] flex items-center justify-center">
-                         <span className="text-[16px] font-medium font-mono text-white">{fngValue}</span>
+                       <div className="absolute inset-[4px] rounded-full bg-[var(--bg-elevated)] flex items-center justify-center">
+                         <span className="text-[16px] font-medium font-mono text-[var(--text-main)]">{fngValue}</span>
                        </div>
                      </div>
                      <div>
@@ -304,16 +304,16 @@ export default function Dashboard() {
           
           {/* LEFT: TABLE (8 cols) */}
           <div className="xl:col-span-8">
-            <FadeIn delay={0.6} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm flex flex-col h-full">
+            <FadeIn delay={0.6} className="bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] rounded-[24px] overflow-hidden shadow-sm flex flex-col h-full">
               {/* Toolbar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/10 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-[var(--border-base)] gap-4">
                 <div className="relative w-full max-w-[280px]">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                  <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search assets..." className="w-full bg-white/5 border-none rounded-full py-3 pl-11 pr-4 text-[16px] text-white placeholder-[#7c828a] focus:outline-none focus:ring-2 focus:ring-[#0052ff] transition-shadow" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
+                  <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search assets..." className="w-full bg-white/5 border-none rounded-full py-3 pl-11 pr-4 text-[16px] text-[var(--text-main)] placeholder-[#7c828a] focus:outline-none focus:ring-2 focus:ring-[#0052ff] transition-shadow" />
                 </div>
-                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
+                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-[var(--border-subtle)]">
                   {([ { key: "all", label: "All" }, { key: "gainers", label: "Gainers" }, { key: "losers", label: "Losers" }, { key: "trending", label: "Trending" } ] as const).map(tab => (
-                    <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`px-5 py-2 rounded-full text-[14px] font-semibold transition-colors ${activeTab === tab.key ? "bg-[#0052ff] text-white shadow-sm" : "text-gray-400 hover:text-white"}`}>
+                    <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`px-5 py-2 rounded-full text-[14px] font-semibold transition-colors ${activeTab === tab.key ? "bg-[var(--accent)] text-[var(--text-main)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}>
                       {tab.label}
                     </button>
                   ))}
@@ -324,20 +324,20 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <div className="min-w-max w-full">
                   {/* Header */}
-                  <div className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/10 bg-white/5">
+                  <div className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-[var(--border-base)] bg-white/5">
                     <TH label="#" active={sortKey === "rank"} direction={sortDir} onClick={() => toggleSort("rank")} />
                     <TH label="Asset" active={sortKey === "rank"} direction={sortDir} onClick={() => toggleSort("rank")} />
                     <TH label="Price" align="right" active={sortKey === "price"} direction={sortDir} onClick={() => toggleSort("price")} />
                     <TH label="24h %" align="right" active={sortKey === "change"} direction={sortDir} onClick={() => toggleSort("change")} />
                     <TH label="Volume" align="right" active={sortKey === "volume"} direction={sortDir} onClick={() => toggleSort("volume")} />
                     <TH label="Mkt Cap" align="right" active={sortKey === "mcap"} direction={sortDir} onClick={() => toggleSort("mcap")} />
-                    <div className="text-[13px] font-semibold text-gray-400 text-right pr-2">7d Trend</div>
+                    <div className="text-[13px] font-semibold text-[var(--text-muted)] text-right pr-2">7d Trend</div>
                   </div>
 
                   {/* Body */}
                   <div className="flex flex-col bg-transparent">
                     {filtered.length === 0 ? (
-                      <div className="p-16 text-center text-gray-500 font-medium text-[16px]">No assets found.</div>
+                      <div className="p-16 text-center text-[var(--text-muted)] font-medium text-[16px]">No assets found.</div>
                     ) : (
                       filtered.slice(0, 15).map((coin: any, i: number) => {
                         const change = Number(coin.price_change_percentage_24h) || 0;
@@ -346,20 +346,20 @@ export default function Dashboard() {
                           <div
                             key={coin.symbol + i}
                             onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                            className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/5 last:border-0 items-center cursor-pointer hover:bg-white/5 transition-colors group"
+                            className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 items-center cursor-pointer hover:bg-[var(--border-subtle)] transition-colors group"
                           >
                             <div className="text-gray-600 font-mono text-[14px]">{coin.market_cap_rank || i + 1}</div>
                             <div className="flex items-center gap-3">
-                              {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[12px] font-semibold text-gray-400">{coin.symbol?.[0]}</div>}
+                              {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[12px] font-semibold text-[var(--text-muted)]">{coin.symbol?.[0]}</div>}
                               <div>
-                                <div className="font-semibold text-white group-hover:text-[#0052ff] transition-colors text-[16px]">{coin.name}</div>
-                                <div className="text-[14px] text-gray-400 font-mono">{coin.symbol?.toUpperCase()}</div>
+                                <div className="font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors text-[16px]">{coin.name}</div>
+                                <div className="text-[14px] text-[var(--text-muted)] font-mono">{coin.symbol?.toUpperCase()}</div>
                               </div>
                             </div>
-                            <div className="text-right text-white font-mono font-medium text-[16px]"><PriceCell price={coin.current_price} /></div>
+                            <div className="text-right text-[var(--text-main)] font-mono font-medium text-[16px]"><PriceCell price={coin.current_price} /></div>
                             <div className="text-right flex justify-end"><ChangeBadge value={change} /></div>
-                            <div className="text-right font-mono text-gray-400 text-[15px]">{fmt(coin.total_volume)}</div>
-                            <div className="text-right font-mono text-gray-400 text-[15px]">{fmt(coin.market_cap)}</div>
+                            <div className="text-right font-mono text-[var(--text-muted)] text-[15px]">{fmt(coin.total_volume)}</div>
+                            <div className="text-right font-mono text-[var(--text-muted)] text-[15px]">{fmt(coin.market_cap)}</div>
                             <div className="pr-2"><MiniSparkline data={sparklineData?.[coin.symbol?.toUpperCase()]} up={isUp} /></div>
                           </div>
                         );
@@ -375,23 +375,23 @@ export default function Dashboard() {
           <div className="xl:col-span-4 flex flex-col gap-8">
             
             {/* Trending Box */}
-            <FadeIn delay={0.7} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="flex items-center justify-between p-6 border-b border-white/10">
+            <FadeIn delay={0.7} className="bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] rounded-[24px] overflow-hidden shadow-sm">
+              <div className="flex items-center justify-between p-6 border-b border-[var(--border-base)]">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#f4b000]/10 flex items-center justify-center">
                     <Flame size={20} className="text-[#f4b000]" />
                   </div>
-                  <span className="text-[18px] font-semibold text-white">Trending</span>
+                  <span className="text-[18px] font-semibold text-[var(--text-main)]">Trending</span>
                 </div>
-                <button onClick={() => navigate("/market")} className="text-[14px] font-semibold text-[#0052ff] hover:text-[#003ecc] transition-colors">View all</button>
+                <button onClick={() => navigate("/market")} className="text-[14px] font-semibold text-[var(--accent)] hover:text-[#003ecc] transition-colors">View all</button>
               </div>
               <div className="flex flex-col p-3">
                 {(safeTrending).slice(0, 5).map((coin: any, i: number) => (
-                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors">
+                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-3xl cursor-pointer hover:bg-[var(--border-subtle)] transition-colors">
                     <div className="flex items-center gap-3">
                       <span className="text-[13px] font-semibold text-gray-600 font-mono w-4">{i + 1}</span>
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/5" />}
-                      <div className="font-semibold text-[16px] text-white">{coin.symbol?.toUpperCase()}</div>
+                      <div className="font-semibold text-[16px] text-[var(--text-main)]">{coin.symbol?.toUpperCase()}</div>
                     </div>
                     {coin.price_change_percentage_24h != null && <ChangeBadge value={Number(coin.price_change_percentage_24h)} />}
                   </div>
@@ -400,21 +400,21 @@ export default function Dashboard() {
             </FadeIn>
 
             {/* Gainers Box */}
-            <FadeIn delay={0.8} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="flex items-center p-6 border-b border-white/10 gap-3">
+            <FadeIn delay={0.8} className="bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] rounded-[24px] overflow-hidden shadow-sm">
+              <div className="flex items-center p-6 border-b border-[var(--border-base)] gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#05b169]/10 flex items-center justify-center">
                   <TrendingUp size={20} className="text-[#05b169]" />
                 </div>
-                <span className="text-[18px] font-semibold text-white">Top Gainers</span>
+                <span className="text-[18px] font-semibold text-[var(--text-main)]">Top Gainers</span>
               </div>
               <div className="flex flex-col p-3">
                 {(safeGainers).slice(0, 5).map((coin: any, i: number) => (
-                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors">
+                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-3xl cursor-pointer hover:bg-[var(--border-subtle)] transition-colors">
                     <div className="flex items-center gap-3">
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/5" />}
                       <div>
-                        <div className="font-semibold text-[16px] text-white">{coin.name}</div>
-                        <div className="text-[14px] font-mono text-gray-400">{fmt(coin.current_price)}</div>
+                        <div className="font-semibold text-[16px] text-[var(--text-main)]">{coin.name}</div>
+                        <div className="text-[14px] font-mono text-[var(--text-muted)]">{fmt(coin.current_price)}</div>
                       </div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />
@@ -424,21 +424,21 @@ export default function Dashboard() {
             </FadeIn>
 
             {/* Losers Box */}
-            <FadeIn delay={0.9} className="bg-[#27272a]/80 backdrop-blur-md border border-white/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="flex items-center p-6 border-b border-white/10 gap-3">
+            <FadeIn delay={0.9} className="bg-[var(--bg-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] rounded-[24px] overflow-hidden shadow-sm">
+              <div className="flex items-center p-6 border-b border-[var(--border-base)] gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#cf202f]/10 flex items-center justify-center">
                   <TrendingDown size={20} className="text-[#cf202f]" />
                 </div>
-                <span className="text-[18px] font-semibold text-white">Top Losers</span>
+                <span className="text-[18px] font-semibold text-[var(--text-main)]">Top Losers</span>
               </div>
               <div className="flex flex-col p-3">
                 {(safeLosers).slice(0, 5).map((coin: any, i: number) => (
-                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors">
+                  <div key={i} onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)} className="flex items-center justify-between p-3 rounded-3xl cursor-pointer hover:bg-[var(--border-subtle)] transition-colors">
                     <div className="flex items-center gap-3">
                       {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full bg-white/5" /> : <div className="w-8 h-8 rounded-full bg-white/5" />}
                       <div>
-                        <div className="font-semibold text-[16px] text-white">{coin.name}</div>
-                        <div className="text-[14px] font-mono text-gray-400">{fmt(coin.current_price)}</div>
+                        <div className="font-semibold text-[16px] text-[var(--text-main)]">{coin.name}</div>
+                        <div className="text-[14px] font-mono text-[var(--text-muted)]">{fmt(coin.current_price)}</div>
                       </div>
                     </div>
                     <ChangeBadge value={Number(coin.price_change_percentage_24h)} />

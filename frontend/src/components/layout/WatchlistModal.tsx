@@ -582,7 +582,7 @@ export default function WatchlistModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-[#0a0b0d]/80 backdrop-blur-sm"
+          className="absolute inset-0 bg-[var(--bg-base)]/80 backdrop-blur-sm"
         />
 
         {/* Modal Body */}
@@ -591,25 +591,25 @@ export default function WatchlistModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="relative w-full max-w-[500px] h-[85vh] max-h-[800px] flex flex-col bg-[#16181c] border border-[#273951]/80 rounded-[32px] p-2 shadow-2xl overflow-hidden"
+          className="relative w-full max-w-[500px] h-[85vh] max-h-[800px] flex flex-col bg-[var(--bg-subtle)] border border-[var(--border-base)]/80 rounded-[32px] p-2 shadow-2xl overflow-hidden"
         >
           {/* Subtle Glow Background */}
           <div className="absolute -top-32 -left-32 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
           <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]" />
 
           {/* Header - Zen Browser Style Tabs */}
-          <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-3 border-b border-white/5">
+          <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-3 border-b border-[var(--border-subtle)]">
             <div className="flex gap-2">
               <button
                 onClick={() => onPanelChange("watchlist")}
-                className={"flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all " + (activePanel === "watchlist" ? "bg-white/10 text-white shadow-sm" : "text-gray-500 hover:text-gray-300 hover:bg-white/5")}
+                className={"flex items-center gap-2 px-4 py-2 rounded-3xl text-sm font-bold transition-all " + (activePanel === "watchlist" ? "bg-white/10 text-[var(--text-main)] shadow-sm" : "text-[var(--text-muted)] hover:text-gray-300 hover:bg-[var(--border-subtle)]")}
               >
                 <Star size={16} fill={activePanel === "watchlist" ? "currentColor" : "none"} />
                 Watchlist
               </button>
               <button
                 onClick={() => onPanelChange("alerts")}
-                className={"flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all " + (activePanel === "alerts" ? "bg-white/10 text-white shadow-sm" : "text-gray-500 hover:text-gray-300 hover:bg-white/5")}
+                className={"flex items-center gap-2 px-4 py-2 rounded-3xl text-sm font-bold transition-all " + (activePanel === "alerts" ? "bg-white/10 text-[var(--text-main)] shadow-sm" : "text-[var(--text-muted)] hover:text-gray-300 hover:bg-[var(--border-subtle)]")}
               >
                 <Bell size={16} fill={activePanel === "alerts" ? "currentColor" : "none"} />
                 Alerts
@@ -618,7 +618,7 @@ export default function WatchlistModal({
             
             <button 
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              className="p-2 rounded-full hover:bg-[var(--border-base)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
             >
               <X size={20} />
             </button>

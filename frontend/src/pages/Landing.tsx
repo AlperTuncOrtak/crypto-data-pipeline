@@ -17,7 +17,7 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
   const headerBg = useTransform(scrollYProgress, [0, 0.1], ["rgba(0,0,0,0)", "rgba(0,0,0,0.6)"]);
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white selection:bg-white/20 selection:text-white font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] selection:bg-white/20 selection:text-[var(--text-main)] font-sans overflow-x-hidden relative">
       
       {/* 🔴 BACKGROUND NOISE & GRAIN 🔴 */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay"></div>
@@ -34,17 +34,17 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
           >
             C
           </motion.div>
-          <span className="text-lg font-semibold tracking-tight text-white/90 group-hover:text-white transition-colors">
+          <span className="text-lg font-semibold tracking-tight text-white/90 group-hover:text-[var(--text-main)] transition-colors">
             CryptoNeko
           </span>
         </Link>
         <div className="flex items-center gap-6">
-          <Link to="/pro" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Features</Link>
-          <Link to="/pricing" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Pricing</Link>
+          <Link to="/pro" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Features</Link>
+          <Link to="/pricing" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Pricing</Link>
           {loading ? null : user ? (
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-4 py-2 rounded-md bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 transition-colors backdrop-blur-md"
+              className="px-4 py-2 rounded-2xl bg-white/5 border border-[var(--border-base)] text-[var(--text-main)] font-medium text-sm hover:bg-[var(--border-base)] transition-colors backdrop-blur-md"
             >
               Dashboard
             </button>
@@ -53,7 +53,7 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
               onClick={() => {
                 if (onAuthOpen) onAuthOpen("login");
               }}
-              className="px-4 py-2 rounded-md bg-white text-[#000000] font-medium text-sm hover:bg-white/90 transition-colors"
+              className="px-4 py-2 rounded-2xl bg-white text-[#000000] font-medium text-sm hover:bg-white/90 transition-colors"
             >
               Sign In
             </button>

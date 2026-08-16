@@ -625,20 +625,20 @@ export default function MotoGame({ ohlcData, symbol, coinId }: MotoGameProps) {
 
               {!submitted ? (
                 <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
-                  <input type="text" placeholder="Enter nickname..." value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={15} className="bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-[var(--text-primary)] outline-none focus:border-accent transition-colors" />
+                  <input type="text" placeholder="Enter nickname..." value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={15} className="bg-slate-900/50 border border-slate-700 rounded-2xl px-4 py-2 text-[var(--text-primary)] outline-none focus:border-accent transition-colors" />
                   <button onClick={handleSubmit} disabled={submitting} className="motogame-start-btn">{submitting ? "Submitting..." : "Submit Score"}</button>
                 </div>
               ) : (<p className="text-green-400 font-semibold mt-4">Score Submitted!</p>)}
 
               <div className="mt-6 w-full max-w-xs">
-                <h3 className="text-sm text-slate-400 mb-2 font-semibold">LEADERBOARD ({symbol})</h3>
-                <div className="bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col overflow-hidden max-h-48 overflow-y-auto">
+                <h3 className="text-sm text-[var(--text-muted)] mb-2 font-semibold">LEADERBOARD ({symbol})</h3>
+                <div className="bg-slate-900/50 rounded-2xl border border-slate-800 flex flex-col overflow-hidden max-h-48 overflow-y-auto">
                   {leaderboard.map((entry, idx) => (
                     <div key={entry.id} className={`flex justify-between px-3 py-2 text-xs border-b border-slate-800 last:border-0 ${entry.id === myScoreId ? "bg-accent/20 text-accent font-bold" : "text-slate-300"}`}>
                       <span>{idx + 1}. {entry.player_name}</span><span>{entry.distance_meters}m</span>
                     </div>
                   ))}
-                  {leaderboard.length === 0 && <div className="px-3 py-4 text-xs text-slate-500 text-center">No scores yet. Be the first!</div>}
+                  {leaderboard.length === 0 && <div className="px-3 py-4 text-xs text-[var(--text-muted)] text-center">No scores yet. Be the first!</div>}
                 </div>
               </div>
 

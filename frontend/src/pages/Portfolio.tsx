@@ -159,7 +159,7 @@ export default function Portfolio() {
   }, [holdings]);
 
   return (
-    <div className="min-h-screen bg-[#0a0b0d] pt-24 pb-32 overflow-x-hidden selection:bg-[#14F195]/30 relative font-sans">
+    <div className="min-h-screen bg-[var(--bg-base)] pt-24 pb-32 overflow-x-hidden selection:bg-[#14F195]/30 relative font-sans">
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#14F195]/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -167,32 +167,32 @@ export default function Portfolio() {
       <div className="max-w-[1400px] mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3 flex items-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-3 flex items-center gap-3">
               Portfolio
               {totalValue > 100000 && <span className="text-2xl">🐳</span>}
             </h1>
-            <p className="text-gray-400 text-[15px] font-medium max-w-xl">
+            <p className="text-[var(--text-muted)] text-[15px] font-medium max-w-xl">
               Track your crypto wealth across exchanges and wallets in real-time.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             {importMsg && (
-              <div className={`px-4 py-2 rounded-xl text-[12px] font-bold animate-fade-in ${importMsg.ok ? "bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}>
+              <div className={`px-4 py-2 rounded-3xl text-[12px] font-bold animate-fade-in ${importMsg.ok ? "bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}>
                 {importMsg.text}
               </div>
             )}
             
             <button
               onClick={() => setIsRebalanceOpen(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600/20 to-purple-800/20 hover:from-purple-600/40 hover:to-purple-800/40 text-purple-400 border border-purple-500/30 font-bold py-2.5 px-5 rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] group"
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600/20 to-purple-800/20 hover:from-purple-600/40 hover:to-purple-800/40 text-purple-400 border border-purple-500/30 font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-[0_0_20px_var(--accent)] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] group"
             >
               <Brain size={16} className="group-hover:scale-110 transition-transform" />
               AI Rebalance
             </button>
             <button
               onClick={() => setShowAddSource(true)}
-              className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[#11d885] text-[#0a0b0d] font-black py-2.5 px-5 rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(20,241,149,0.2)] hover:shadow-[0_0_30px_rgba(20,241,149,0.4)] hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[#11d885] text-[#0a0b0d] font-black py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-[0_0_20px_var(--accent)] hover:shadow-[0_0_30px_rgba(20,241,149,0.4)] hover:-translate-y-0.5"
             >
               <Plus size={16} strokeWidth={3} />
               Add Source
@@ -200,12 +200,12 @@ export default function Portfolio() {
           </div>
         </div>
 
-        <div className="flex overflow-x-auto custom-scrollbar gap-2 mb-8 p-1 bg-[#121212]/50 border border-white/5 rounded-2xl w-fit backdrop-blur-md">
+        <div className="flex overflow-x-auto custom-scrollbar gap-2 mb-8 p-1 bg-[var(--bg-base)]/50 border border-[var(--border-subtle)] rounded-2xl w-fit backdrop-blur-md">
           {["overview", "swap", "history", "analytics", "taxes"].map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
-              className={`px-6 py-2.5 rounded-xl text-[13px] font-bold capitalize transition-all duration-300 ${activeTab === tab ? "bg-white/10 text-white shadow-lg border border-white/5" : "text-gray-500 hover:text-white hover:bg-white/5"}`}
+              className={`px-6 py-2.5 rounded-3xl text-[13px] font-bold capitalize transition-all duration-300 ${activeTab === tab ? "bg-white/10 text-[var(--text-main)] shadow-lg border border-[var(--border-subtle)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--border-subtle)]"}`}
             >
               {tab}
             </button>
@@ -233,14 +233,14 @@ export default function Portfolio() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-6"
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-white/5">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
                 <div>
-                  <h2 className="text-xl font-bold text-white mb-1">Overview</h2>
-                  <p className="text-[13px] text-gray-400">High level real-time data from your portfolio</p>
+                  <h2 className="text-xl font-bold text-[var(--text-main)] mb-1">Overview</h2>
+                  <p className="text-[13px] text-[var(--text-muted)]">High level real-time data from your portfolio</p>
                 </div>
-                <div className="flex bg-[#1a1d21] rounded-lg p-1 border border-white/5 mt-4 md:mt-0">
+                <div className="flex bg-[var(--bg-elevated)] rounded-2xl p-1 border border-[var(--border-subtle)] mt-4 md:mt-0">
                   {['1D', '1W', '1M', '6M', 'YTD', '1Y', 'All'].map(t => (
-                    <button key={t} className={`px-4 py-1.5 rounded-md text-[11px] font-bold transition-all ${t === 'All' ? 'bg-[#2a2d31] text-white shadow' : 'text-gray-500 hover:text-white'}`}>
+                    <button key={t} className={`px-4 py-1.5 rounded-2xl text-[11px] font-bold transition-all ${t === 'All' ? 'bg-[var(--bg-elevated)] text-[var(--text-main)] shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}>
                       {t}
                     </button>
                   ))}

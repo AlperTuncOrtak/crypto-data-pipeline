@@ -27,18 +27,18 @@ export default function ReloadPrompt() {
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
-          className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 p-4 rounded-2xl bg-[#16181c]/90 backdrop-blur-xl border border-cyan-500/30 shadow-[0_10px_40px_rgba(0,0,0,0.8),0_0_20px_rgba(34,211,238,0.15)] max-w-sm"
+          className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 p-4 rounded-2xl bg-[var(--bg-subtle)]/90 backdrop-blur-xl border border-cyan-500/30 shadow-[0_10px_40px_rgba(0,0,0,0.8),0_0_20px_rgba(34,211,238,0.15)] max-w-sm"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-white font-bold text-sm mb-1">New Version Available</h3>
-              <p className="text-gray-400 text-xs">
+              <h3 className="text-[var(--text-main)] font-bold text-sm mb-1">New Version Available</h3>
+              <p className="text-[var(--text-muted)] text-xs">
                 A new version of CryptoNeko is available. Refresh to apply the latest updates and bug fixes.
               </p>
             </div>
             <button
               onClick={close}
-              className="text-gray-500 hover:text-white transition-colors"
+              className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
             >
               <X size={16} />
             </button>
@@ -46,7 +46,7 @@ export default function ReloadPrompt() {
           
           <button
             onClick={() => updateServiceWorker(true)}
-            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 font-bold text-sm hover:bg-cyan-500 hover:text-[#020817] hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-3xl bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 font-bold text-sm hover:bg-cyan-500 hover:text-[#020817] hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             <RefreshCw size={14} />
             Update & Refresh

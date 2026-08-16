@@ -45,12 +45,12 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
   const renderCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-[#1a1d21] border border-white/10 p-3 rounded-xl shadow-xl">
-          <p className="text-white font-bold text-[13px] mb-1">{payload[0].name}</p>
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border-base)] p-3 rounded-3xl shadow-xl">
+          <p className="text-[var(--text-main)] font-bold text-[13px] mb-1">{payload[0].name}</p>
           <p className="text-[#14F195] font-black text-[15px]">
             ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
-          <p className="text-gray-400 font-medium text-[11px] mt-1">
+          <p className="text-[var(--text-muted)] font-medium text-[11px] mt-1">
             {((payload[0].value / totalValue) * 100).toFixed(2)}% of Portfolio
           </p>
         </div>
@@ -61,19 +61,19 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-white/5">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
         <div>
-          <h2 className="text-xl font-bold text-white mb-1">Portfolio Analytics</h2>
-          <p className="text-[13px] text-gray-400">Deep dive into your asset allocation and performance</p>
+          <h2 className="text-xl font-bold text-[var(--text-main)] mb-1">Portfolio Analytics</h2>
+          <p className="text-[13px] text-[var(--text-muted)]">Deep dive into your asset allocation and performance</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Asset Allocation Pie */}
-        <div className="p-6 rounded-[20px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-xl flex flex-col">
+        <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col">
           <div className="flex items-center gap-2 mb-6">
             <PieChartIcon size={18} className="text-[#14F195]" />
-            <h3 className="text-[15px] font-bold text-white">Asset Allocation</h3>
+            <h3 className="text-[15px] font-bold text-[var(--text-main)]">Asset Allocation</h3>
           </div>
           <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-8">
             <div className="w-[200px] h-[200px]">
@@ -104,7 +104,7 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }} />
                     <span className="text-[12px] font-bold text-gray-300">{asset.name}</span>
                   </div>
-                  <span className="text-[13px] font-black text-white">
+                  <span className="text-[13px] font-black text-[var(--text-main)]">
                     {((asset.value / totalValue) * 100).toFixed(1)}%
                   </span>
                 </div>
@@ -114,10 +114,10 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
         </div>
 
         {/* Category Allocation Pie */}
-        <div className="p-6 rounded-[20px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-xl flex flex-col">
+        <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col">
           <div className="flex items-center gap-2 mb-6">
             <Activity size={18} className="text-blue-400" />
-            <h3 className="text-[15px] font-bold text-white">Category Exposure</h3>
+            <h3 className="text-[15px] font-bold text-[var(--text-main)]">Category Exposure</h3>
           </div>
           <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-8">
             <div className="w-[200px] h-[200px]">
@@ -152,7 +152,7 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
                     <span className="text-[12px] font-bold text-gray-300">{cat.name}</span>
                   </div>
-                  <span className="text-[13px] font-black text-white">
+                  <span className="text-[13px] font-black text-[var(--text-main)]">
                     {cat.pct.toFixed(1)}%
                   </span>
                 </div>
@@ -169,14 +169,14 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
             <TrendingUp size={24} className="text-[#14F195]" />
           </div>
           <div>
-            <p className="text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-1">Top Performer</p>
+            <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Top Performer</p>
             {bestPerformer ? (
               <>
-                <h4 className="text-2xl font-black text-white">{bestPerformer.symbol.toUpperCase()}</h4>
+                <h4 className="text-2xl font-black text-[var(--text-main)]">{bestPerformer.symbol.toUpperCase()}</h4>
                 <p className="text-[14px] font-bold text-[#14F195]">+{ (bestPerformer.roi * 100).toFixed(2) }% ROI</p>
               </>
             ) : (
-              <p className="text-[14px] text-gray-500 font-medium">No data available</p>
+              <p className="text-[14px] text-[var(--text-muted)] font-medium">No data available</p>
             )}
           </div>
         </div>
@@ -186,14 +186,14 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
             <TrendingDown size={24} className="text-red-400" />
           </div>
           <div>
-            <p className="text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-1">Worst Performer</p>
+            <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Worst Performer</p>
             {worstPerformer ? (
               <>
-                <h4 className="text-2xl font-black text-white">{worstPerformer.symbol.toUpperCase()}</h4>
+                <h4 className="text-2xl font-black text-[var(--text-main)]">{worstPerformer.symbol.toUpperCase()}</h4>
                 <p className="text-[14px] font-bold text-red-400">{ (worstPerformer.roi * 100).toFixed(2) }% ROI</p>
               </>
             ) : (
-              <p className="text-[14px] text-gray-500 font-medium">No data available</p>
+              <p className="text-[14px] text-[var(--text-muted)] font-medium">No data available</p>
             )}
           </div>
         </div>

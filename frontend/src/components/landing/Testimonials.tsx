@@ -34,10 +34,10 @@ export function Testimonials() {
   return (
     <section className="relative z-10 px-6 lg:px-12 max-w-[1400px] mx-auto mb-32">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
+        <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-[var(--text-main)] mb-4">
           Trusted by the elite.
         </h2>
-        <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+        <p className="text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
           See what professional traders and quantitative analysts are saying about the platform.
         </p>
       </div>
@@ -57,13 +57,13 @@ export function Testimonials() {
             </p>
             <div className="flex items-center gap-4 mt-auto">
               <img
-                className="h-12 w-12 rounded-full bg-white/[0.05] p-0.5 border border-white/10"
+                className="h-12 w-12 rounded-full bg-white/[0.05] p-0.5 border border-[var(--border-base)]"
                 src={testimonial.author.imageUrl}
                 alt=""
               />
               <div>
-                <div className="text-white font-bold text-sm">{testimonial.author.name}</div>
-                <div className="text-slate-500 text-xs">{testimonial.author.role}</div>
+                <div className="text-[var(--text-main)] font-bold text-sm">{testimonial.author.name}</div>
+                <div className="text-[var(--text-muted)] text-xs">{testimonial.author.role}</div>
               </div>
             </div>
           </motion.div>

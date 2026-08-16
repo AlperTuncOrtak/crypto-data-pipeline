@@ -143,10 +143,10 @@ function Tooltip({ coin, pos }) {
         borderColor: `${colors.border}80`,
         boxShadow: `0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px ${colors.border}44`,
       }}
-      className="bg-[#1a1a1a]/95 backdrop-blur-2xl border rounded-2xl p-4"
+      className="bg-[var(--bg-elevated)]/95 backdrop-blur-2xl border rounded-2xl p-4"
     >
       {/* Header: logo + isim */}
-      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-white/10">
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[var(--border-base)]">
         {coin.image_url ? (
           <img src={coin.image_url} alt={coin.symbol} className="w-7 h-7 rounded-full shrink-0" />
         ) : (
@@ -158,12 +158,12 @@ function Tooltip({ coin, pos }) {
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="text-[13px] font-bold text-white leading-tight truncate">{coin.name}</div>
-          <div className="text-[11px] text-gray-400 mt-0.5">{coin.symbol?.toUpperCase()}</div>
+          <div className="text-[13px] font-bold text-[var(--text-main)] leading-tight truncate">{coin.name}</div>
+          <div className="text-[11px] text-[var(--text-muted)] mt-0.5">{coin.symbol?.toUpperCase()}</div>
         </div>
         {/* 24h badge */}
         <div
-          className="shrink-0 px-2 py-0.5 rounded-md text-[11px] font-bold border"
+          className="shrink-0 px-2 py-0.5 rounded-2xl text-[11px] font-bold border"
           style={{
             background: isUp ? "rgba(20,241,149,0.15)" : "rgba(239,68,68,0.15)",
             borderColor: isUp ? "rgba(20,241,149,0.3)" : "rgba(239,68,68,0.3)",
@@ -182,7 +182,7 @@ function Tooltip({ coin, pos }) {
           { label: t("heatmap.volume_24h"), value: fmtCap(coin.total_volume) },
         ].map(({ label, value }) => (
           <div key={label} className="flex justify-between items-center">
-            <span className="text-[11px] text-gray-400">{label}</span>
+            <span className="text-[11px] text-[var(--text-muted)]">{label}</span>
             <span className="text-[12px] text-gray-200 font-mono font-medium">{value}</span>
           </div>
         ))}
@@ -341,7 +341,7 @@ export default function Heatmap() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-[#0a0b0d] text-white pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
+    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
       {/* BACKGROUND GLOWS */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
         <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
@@ -356,19 +356,19 @@ export default function Heatmap() {
             <LayoutGrid size={28} className="text-[var(--accent)]" />
             {t("heatmap.title")}
           </h1>
-          <p className="text-sm mt-1 text-gray-400 font-medium">
+          <p className="text-sm mt-1 text-[var(--text-muted)] font-medium">
             {t("heatmap.subtitle")}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Coin sayısı seçici */}
-          <div className="flex gap-1 bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-xl p-1 shadow-lg">
+          <div className="flex gap-1 bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] rounded-3xl p-1 shadow-lg">
             {LIMITS.map((l) => (
               <button
                 key={l}
                 onClick={() => setLimit(l)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${limit === l ? "bg-[var(--accent)] text-[#111] shadow-[0_0_15px_var(--accent-soft)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition-all ${limit === l ? "bg-[var(--accent)] text-[#111] shadow-[0_0_15px_var(--accent-soft)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--border-subtle)]"}`}
               >
                 {t("heatmap.top", { count: l })}
               </button>
@@ -378,7 +378,7 @@ export default function Heatmap() {
           {/* Refresh */}
           <button
             onClick={() => market.refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-xl text-xs font-bold text-gray-400 hover:text-white hover:bg-white/10 transition-all shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] rounded-3xl text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--border-base)] transition-all shadow-lg"
           >
             <RefreshCw
               size={14}
@@ -394,17 +394,17 @@ export default function Heatmap() {
       </div>
 
       {/* LEGEND */}
-      <div className="flex gap-3 mb-4 flex-wrap bg-[#121212]/80 backdrop-blur-xl border border-white/5 rounded-xl p-3 shadow-lg max-w-fit">
+      <div className="flex gap-3 mb-4 flex-wrap bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] rounded-3xl p-3 shadow-lg max-w-fit">
         {legend.map((l) => (
           <div key={l.label} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-[3px] border" style={{ background: l.color, borderColor: `${l.text}55` }} />
-            <span className="text-[11px] font-medium text-gray-400">{l.label}</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{l.label}</span>
           </div>
         ))}
       </div>
 
       {/* TREEMAP */}
-      <div className="relative w-full rounded-[32px] bg-[#121212]/80 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden p-1" style={{ paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%` }}>
+      <div className="relative w-full rounded-[32px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-2xl overflow-hidden p-1" style={{ paddingBottom: `${(CONTAINER_H / CONTAINER_W) * 100}%` }}>
         <div
           style={{
             position: "absolute",

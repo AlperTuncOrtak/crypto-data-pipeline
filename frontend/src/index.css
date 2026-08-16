@@ -2,54 +2,62 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Colors */
-  --color-cb-blue: #0052FF;
-  --color-cb-blue-hover: #0045D8;
-  --color-cb-blue-pressed: #003ECC;
-  --color-cb-blue-light: #E5EEFF;
-
-  --color-bg-base: #0a0b0d;
-  --color-bg-subtle: #111214;
-  --color-bg-elevated: #16181c;
-
-  --color-ink-base: #FFFFFF;
-  --color-ink-subtle: #A8ACB3;
-  --color-ink-muted: #7C828A;
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-bg-base: var(--bg-base);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-subtle: var(--bg-subtle);
   
-  --color-border-subtle: rgba(255, 255, 255, 0.05);
-  --color-border-base: rgba(255, 255, 255, 0.1);
-  --color-border-hover: #CBD2DA;
-  --color-border-focus: #0052FF;
+  --color-ink-base: var(--text-main);
+  --color-ink-subtle: var(--text-muted);
+  --color-ink-muted: var(--text-muted);
+  
+  --color-border-subtle: var(--border-subtle);
+  --color-border-base: var(--border-base);
+  --color-border-focus: var(--accent);
 
   --color-positive: #05B169;
-  --color-positive-bg: #E5F7EF;
   --color-negative: #CF202F;
-  --color-negative-bg: #FBEAEA;
   --color-warning: #F4B000;
-  --color-warning-bg: #FEF7E5;
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  --font-display: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-
-  /* Shadows */
-  --shadow-level-1: 0 4px 12px rgba(10, 11, 13, 0.05);
-  --shadow-level-2: 0 8px 24px rgba(10, 11, 13, 0.08);
-  --shadow-level-3: 0 16px 32px rgba(10, 11, 13, 0.12);
-  
-  /* Radii */
-  --radius-xs: 4px;
-  --radius-s: 8px;
-  --radius-m: 12px;
-  --radius-l: 16px;
-  --radius-xl: 24px;
-  --radius-pill: 9999px;
-  --radius-circle: 50%;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
 }
 
-:root {
+/* Default / Dark Theme (Midnight) */
+:root, [data-theme="midnight"], [data-theme="dark"] {
+  color-scheme: dark;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  
+  --bg-base: #0a0b0d;
+  --bg-subtle: #111214;
+  --bg-elevated: #16181c;
+  
+  --text-main: #f3f4f6;
+  --text-muted: #8b909a;
+  
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-base: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Theme */
+[data-theme="light"] {
   color-scheme: light;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  
+  --bg-base: #f9fafb;
+  --bg-subtle: #f3f4f6;
+  --bg-elevated: #ffffff;
+  
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-base: rgba(0, 0, 0, 0.1);
 }
 
 html { 

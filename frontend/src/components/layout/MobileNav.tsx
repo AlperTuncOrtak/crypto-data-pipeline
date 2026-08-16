@@ -29,7 +29,7 @@ export default function MobileNav() {
       className="md:hidden fixed bottom-0 left-0 right-0 z-[100]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="absolute inset-0 bg-[#0a0b0d]/90 backdrop-blur-2xl border-t border-white/10 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[var(--bg-base)]/90 backdrop-blur-2xl border-t border-[var(--border-base)] pointer-events-none"></div>
       
       <div className="relative z-10 flex items-center justify-between px-6 py-4">
         {navItems.map((item) => {
@@ -43,17 +43,17 @@ export default function MobileNav() {
               onClick={handleHaptic}
               className="relative flex flex-col items-center justify-center gap-1 min-w-[50px]"
             >
-              <div className={`relative flex items-center justify-center p-2 rounded-xl transition-colors ${isActive ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+              <div className={`relative flex items-center justify-center p-2 rounded-3xl transition-colors ${isActive ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)] hover:text-gray-300'}`}>
                 {isActive && (
                   <motion.div 
                     layoutId="mobileNavIndicator"
-                    className="absolute inset-0 bg-white/10 rounded-xl"
+                    className="absolute inset-0 bg-white/10 rounded-3xl"
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   />
                 )}
                 <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className="relative z-10" />
               </div>
-              <span className={`text-[10px] font-bold tracking-wide ${isActive ? 'text-white' : 'text-gray-500'}`}>
+              <span className={`text-[10px] font-bold tracking-wide ${isActive ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
                 {item.label}
               </span>
             </Link>
