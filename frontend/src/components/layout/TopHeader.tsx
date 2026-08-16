@@ -2,6 +2,8 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bell, Settings, Calendar, ChevronDown, Menu } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?: () => void }) {
   const location = useLocation();
   
@@ -33,18 +35,18 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
       {/* Right: Actions */}
       <div className="flex items-center gap-4">
         {/* Date Selector Placeholder */}
-        <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 text-sm text-gray-300 hover:bg-white/10 transition-colors">
+        <button onClick={() => toast.info('Date selector feature is coming soon!')} className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 text-sm text-gray-300 hover:bg-white/10 transition-colors">
           <Calendar size={14} />
           <span>Last week</span>
           <ChevronDown size={14} className="text-gray-500" />
         </button>
 
         <div className="flex items-center gap-2 border-l border-white/5 pl-4 ml-2">
-          <button className="p-2 text-gray-400 hover:text-white transition-colors relative">
+          <button onClick={() => toast.info('No new notifications')} className="p-2 text-gray-400 hover:text-white transition-colors relative">
             <Bell size={18} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#111214]"></span>
           </button>
-          <button className="p-2 text-gray-400 hover:text-white transition-colors">
+          <button onClick={() => toast.info('Settings panel is under construction')} className="p-2 text-gray-400 hover:text-white transition-colors">
             <Settings size={18} />
           </button>
         </div>
