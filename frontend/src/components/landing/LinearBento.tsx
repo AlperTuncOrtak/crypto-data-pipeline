@@ -329,7 +329,6 @@ export function LinearBento() {
                className="absolute left-0 right-0 h-[2px] bg-emerald-400 shadow-[0_0_20px_#34d399] opacity-90 z-20"
              />
           </div>
-          </div>
         </BentoCard>
 
         {/* Card 3: Square */}
