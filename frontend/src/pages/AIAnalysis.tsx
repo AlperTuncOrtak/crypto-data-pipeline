@@ -35,18 +35,18 @@ function formatPrice(n) {
 
 const SIGNAL_CONFIG = {
   bullish: {
-    color: "#2ecc71",
-    bg: "rgba(46,204,113,0.08)",
-    border: "rgba(46,204,113,0.25)",
-    glow: "rgba(46,204,113,0.12)",
+    color: "var(--positive)",
+    bg: "var(--positive-muted)",
+    border: "var(--positive-muted)",
+    glow: "var(--positive-muted)",
     icon: TrendingUp,
     label: "BULLISH",
   },
   bearish: {
-    color: "#e74c3c",
-    bg: "rgba(231,76,60,0.08)",
-    border: "rgba(231,76,60,0.25)",
-    glow: "rgba(231,76,60,0.12)",
+    color: "var(--negative)",
+    bg: "var(--negative-muted)",
+    border: "var(--negative-muted)",
+    glow: "var(--negative-muted)",
     icon: TrendingDown,
     label: "BEARISH",
   },
@@ -60,18 +60,18 @@ const SIGNAL_CONFIG = {
   },
   // legacy fallback
   buy: {
-    color: "#2ecc71",
-    bg: "rgba(46,204,113,0.08)",
-    border: "rgba(46,204,113,0.25)",
-    glow: "rgba(46,204,113,0.12)",
+    color: "var(--positive)",
+    bg: "var(--positive-muted)",
+    border: "var(--positive-muted)",
+    glow: "var(--positive-muted)",
     icon: TrendingUp,
     label: "BULLISH",
   },
   sell: {
-    color: "#e74c3c",
-    bg: "rgba(231,76,60,0.08)",
-    border: "rgba(231,76,60,0.25)",
-    glow: "rgba(231,76,60,0.12)",
+    color: "var(--negative)",
+    bg: "var(--negative-muted)",
+    border: "var(--negative-muted)",
+    glow: "var(--negative-muted)",
     icon: TrendingDown,
     label: "BEARISH",
   },
@@ -92,43 +92,43 @@ const TIMEFRAME_LABELS = {
 };
 
 const SENTIMENT_COLOR = {
-  bullish: "#2ecc71",
-  bearish: "#e74c3c",
+  bullish: "var(--positive)",
+  bearish: "var(--negative)",
   neutral: "var(--accent)",
 };
-const RISK_COLOR = { low: "#2ecc71", medium: "var(--accent)", high: "#e74c3c" };
+const RISK_COLOR = { low: "var(--positive)", medium: "var(--accent)", high: "var(--negative)" };
 
 const TREND_CONFIG = {
-  strong_uptrend: { color: "#2ecc71", icon: "↑↑", label: "Strong Uptrend" },
-  uptrend: { color: "#2ecc71", icon: "↑", label: "Uptrend" },
+  strong_uptrend: { color: "var(--positive)", icon: "↑↑", label: "Strong Uptrend" },
+  uptrend: { color: "var(--positive)", icon: "↑", label: "Uptrend" },
   sideways: { color: "var(--accent)", icon: "→", label: "Sideways" },
-  downtrend: { color: "#e74c3c", icon: "↓", label: "Downtrend" },
-  strong_downtrend: { color: "#e74c3c", icon: "↓↓", label: "Strong Downtrend" },
+  downtrend: { color: "var(--negative)", icon: "↓", label: "Downtrend" },
+  strong_downtrend: { color: "var(--negative)", icon: "↓↓", label: "Strong Downtrend" },
   unknown: { color: "var(--text-muted)", icon: "?", label: "Unknown" },
 };
 
 const FG_CONFIG = (val) => {
   if (!val && val !== 0)
     return { color: "var(--text-muted)", label: "Unknown", bar: 0 };
-  if (val < 25) return { color: "#e74c3c", label: "Extreme Fear", bar: val };
-  if (val < 45) return { color: "#8B5CF6", label: "Fear", bar: val };
+  if (val < 25) return { color: "var(--negative)", label: "Extreme Fear", bar: val };
+  if (val < 45) return { color: "var(--warning)", label: "Fear", bar: val };
   if (val < 55) return { color: "var(--accent)", label: "Neutral", bar: val };
-  if (val < 75) return { color: "#a8d08d", label: "Greed", bar: val };
-  return { color: "#2ecc71", label: "Extreme Greed", bar: val };
+  if (val < 75) return { color: "var(--positive-muted)", label: "Greed", bar: val };
+  return { color: "var(--positive)", label: "Extreme Greed", bar: val };
 };
 
 function getSubColor(sub) {
   if (!sub) return "var(--text-muted)";
   const s = String(sub).toLowerCase();
-  if (["bullish", "oversold", "near_lower"].includes(s)) return "#2ecc71";
-  if (["bearish", "overbought", "near_upper"].includes(s)) return "#e74c3c";
+  if (["bullish", "oversold", "near_lower"].includes(s)) return "var(--positive)";
+  if (["bearish", "overbought", "near_upper"].includes(s)) return "var(--negative)";
   return "var(--accent)";
 }
 
 function RSIGauge({ value }) {
   if (!value) return null;
   const pct = Math.min(Math.max(value, 0), 100);
-  const color = value > 70 ? "#e74c3c" : value < 30 ? "#2ecc71" : "var(--accent)";
+  const color = value > 70 ? "var(--negative)" : value < 30 ? "var(--positive)" : "var(--accent)";
   return (
     <div style={{ marginTop: 4 }}>
       <div
@@ -180,11 +180,11 @@ function RSIGauge({ value }) {
         />
       </div>
       <div className="flex justify-between mt-1">
-        <span style={{ fontSize: 9, color: "#2ecc71" }}>30</span>
+        <span style={{ fontSize: 9, color: "var(--positive)" }}>30</span>
         <span style={{ fontSize: 10, fontWeight: 700, color }}>
           RSI: {value}
         </span>
-        <span style={{ fontSize: 9, color: "#e74c3c" }}>70</span>
+        <span style={{ fontSize: 9, color: "var(--negative)" }}>70</span>
       </div>
     </div>
   );
@@ -196,7 +196,7 @@ function BBBar({ position }) {
   const clamped = Math.min(Math.max(raw, 0), 100); // bar pozisyonu için clamp
   const isAbove = raw > 100;
   const isBelow = raw < 0;
-  const color = raw > 80 ? "#e74c3c" : raw < 20 ? "#2ecc71" : "var(--accent)";
+  const color = raw > 80 ? "var(--negative)" : raw < 20 ? "var(--positive)" : "var(--accent)";
   const label = isAbove
     ? `BB: ${raw.toFixed(0)}% ↑`
     : isBelow
@@ -247,15 +247,15 @@ function BBBar({ position }) {
         />
       </div>
       <div className="flex justify-between mt-1">
-        <span style={{ fontSize: 9, color: "#2ecc71" }}>Lower</span>
+        <span style={{ fontSize: 9, color: "var(--positive)" }}>Lower</span>
         <span style={{ fontSize: 10, fontWeight: 700, color }}>{label}</span>
-        <span style={{ fontSize: 9, color: "#e74c3c" }}>Upper</span>
+        <span style={{ fontSize: 9, color: "var(--negative)" }}>Upper</span>
       </div>
       {isAbove && (
         <div
           style={{
             fontSize: 9,
-            color: "#e74c3c",
+            color: "var(--negative)",
             marginTop: 2,
             textAlign: "center",
           }}
@@ -267,7 +267,7 @@ function BBBar({ position }) {
         <div
           style={{
             fontSize: 9,
-            color: "#2ecc71",
+            color: "var(--positive)",
             marginTop: 2,
             textAlign: "center",
           }}
@@ -282,7 +282,7 @@ function BBBar({ position }) {
 function MACDIndicator({ trend }) {
   if (!trend) return null;
   const isBull = trend === "bullish";
-  const color = isBull ? "#2ecc71" : "#e74c3c";
+  const color = isBull ? "var(--positive)" : "var(--negative)";
   const Icon = isBull ? TrendingUp : TrendingDown;
   return (
     <div style={{ marginTop: 4 }}>
@@ -322,7 +322,7 @@ function EMAIndicator({ trend }) {
       </span>
     );
   const isBull = trend === "bullish";
-  const color = isBull ? "#2ecc71" : "#e74c3c";
+  const color = isBull ? "var(--positive)" : "var(--negative)";
   return (
     <div style={{ marginTop: 4 }}>
       <div
@@ -398,7 +398,7 @@ function MarketContextCard({ marketContext }) {
                 height: 6,
                 borderRadius: 3,
                 background:
-                  "linear-gradient(to right, #e74c3c, var(--accent), #2ecc71)",
+                  "linear-gradient(to right, var(--negative), var(--accent), var(--positive))",
                 overflow: "visible",
                 marginBottom: 4,
               }}
@@ -420,13 +420,13 @@ function MarketContextCard({ marketContext }) {
               />
             </div>
             <div className="flex justify-between">
-              <span style={{ fontSize: 9, color: "#e74c3c" }}>{t("ai_analysis.fear")}</span>
+              <span style={{ fontSize: 9, color: "var(--negative)" }}>{t("ai_analysis.fear")}</span>
               <span
                 style={{ fontSize: 11, fontWeight: 900, color: fgCfg.color }}
               >
                 {fg.value}
               </span>
-              <span style={{ fontSize: 9, color: "#2ecc71" }}>{t("ai_analysis.greed")}</span>
+              <span style={{ fontSize: 9, color: "var(--positive)" }}>{t("ai_analysis.greed")}</span>
             </div>
           </>
         )}
@@ -505,10 +505,10 @@ function MarketContextCard({ marketContext }) {
             style={{
               color:
                 volume.level === "extreme" || volume.level === "low"
-                  ? "#e74c3c"
+                  ? "var(--negative)"
                   : volume.level === "high"
                     ? "var(--accent)"
-                    : "#2ecc71",
+                    : "var(--positive)",
             }}
           >
             {(volume.level || "—").toUpperCase()}
@@ -534,8 +534,8 @@ function MarketContextCard({ marketContext }) {
               width: "fit-content",
             }}
           >
-            <AlertTriangle size={10} style={{ color: "#e74c3c" }} />
-            <span style={{ fontSize: 10, color: "#e74c3c", fontWeight: 600 }}>
+            <AlertTriangle size={10} style={{ color: "var(--negative)" }} />
+            <span style={{ fontSize: 10, color: "var(--negative)", fontWeight: 600 }}>
               {t("ai_analysis.volume_anomaly")}
             </span>
           </div>
@@ -557,9 +557,9 @@ function MarketContextCard({ marketContext }) {
               style={{
                 color:
                   news.sentiment?.sentiment === "positive"
-                    ? "#2ecc71"
+                    ? "var(--positive)"
                     : news.sentiment?.sentiment === "negative"
-                      ? "#e74c3c"
+                      ? "var(--negative)"
                       : "var(--accent)",
               }}
             >
@@ -619,14 +619,14 @@ function BullishnessGauge({ score }) {
   const s = Math.min(Math.max(score, 0), 100);
   const color =
     s >= 75
-      ? "#2ecc71"
+      ? "var(--positive)"
       : s >= 60
-        ? "#a8d08d"
+        ? "var(--positive-muted)"
         : s >= 41
           ? "var(--accent)"
           : s >= 21
-            ? "#8B5CF6"
-            : "#e74c3c";
+            ? "var(--warning)"
+            : "var(--negative)";
   const label =
     s >= 75
       ? "Strongly Bullish"
@@ -712,7 +712,7 @@ function BullishnessGauge({ score }) {
               x={cx - radius + 2}
               y={cy + 22}
               textAnchor="middle"
-              fill="#e74c3c"
+              fill="var(--negative)"
               style={{ fontSize: 8, fontWeight: 700 }}
             >
               {t("ai_analysis.bear")}
@@ -721,7 +721,7 @@ function BullishnessGauge({ score }) {
               x={cx + radius - 2}
               y={cy + 22}
               textAnchor="middle"
-              fill="#2ecc71"
+              fill="var(--positive)"
               style={{ fontSize: 8, fontWeight: 700 }}
             >
               {t("ai_analysis.bull")}
@@ -779,8 +779,8 @@ function BullishnessGauge({ score }) {
 
 // ── Action Tags ──────────────────────────────────────────────
 const ACTION_TAG_CONFIG = {
-  STRONG_BUY: { color: "#2ecc71", bg: "rgba(46,204,113,0.12)", icon: "🚀" },
-  BUY_THE_DIP: { color: "#2ecc71", bg: "rgba(46,204,113,0.10)", icon: "📉➕" },
+  STRONG_BUY: { color: "var(--positive)", bg: "var(--positive-muted)", icon: "🚀" },
+  BUY_THE_DIP: { color: "var(--positive)", bg: "var(--positive-muted)", icon: "📉➕" },
   WAIT_FOR_BREAKOUT: {
     color: "var(--accent)",
     bg: "var(--accent-soft)",
@@ -793,34 +793,34 @@ const ACTION_TAG_CONFIG = {
     icon: "👁️",
   },
   TIGHTEN_STOP_LOSS: {
-    color: "#8B5CF6",
+    color: "var(--warning)",
     bg: "rgba(232,148,26,0.12)",
     icon: "🛡️",
   },
   TAKE_PARTIAL_PROFIT: {
-    color: "#a8d08d",
+    color: "var(--positive-muted)",
     bg: "rgba(168,208,141,0.12)",
     icon: "💰",
   },
   TAKE_FULL_PROFIT: {
-    color: "#2ecc71",
+    color: "var(--positive)",
     bg: "rgba(46,204,113,0.15)",
     icon: "✅",
   },
   REDUCE_POSITION: {
-    color: "#8B5CF6",
+    color: "var(--warning)",
     bg: "rgba(232,148,26,0.12)",
     icon: "📊",
   },
-  AVOID_ENTRY: { color: "#e74c3c", bg: "rgba(231,76,60,0.12)", icon: "🚫" },
+  AVOID_ENTRY: { color: "var(--negative)", bg: "var(--negative-muted)", icon: "🚫" },
   WATCH_SUPPORT: { color: "var(--accent)", bg: "var(--accent-soft)", icon: "📍" },
   WATCH_RESISTANCE: {
-    color: "#e74c3c",
-    bg: "rgba(231,76,60,0.08)",
+    color: "var(--negative)",
+    bg: "var(--negative-muted)",
     icon: "📍",
   },
   HIGH_RISK_WARNING: {
-    color: "#e74c3c",
+    color: "var(--negative)",
     bg: "rgba(231,76,60,0.15)",
     icon: "⚠️",
   },
@@ -912,9 +912,9 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
   const conf = confluence || {};
   const confColor =
     conf.dominant === "bullish"
-      ? "#2ecc71"
+      ? "var(--positive)"
       : conf.dominant === "bearish"
-        ? "#e74c3c"
+        ? "var(--negative)"
         : "var(--accent)";
 
   return (
@@ -960,7 +960,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
           const isBull = /bullish|uptrend|oversold|above|rising/i.test(text);
           const isBear =
             /bearish|downtrend|overbought|below|falling|declining/i.test(text);
-          const dotColor = isBull ? "#2ecc71" : isBear ? "#e74c3c" : "var(--accent)";
+          const dotColor = isBull ? "var(--positive)" : isBear ? "var(--negative)" : "var(--accent)";
           return (
             <div
               key={key}
@@ -1091,7 +1091,7 @@ export default function AIAnalysis() {
           className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.25] mix-blend-screen transition-colors duration-1000"
           style={{ background: `radial-gradient(ellipse at top, ${signalConfig?.color || 'var(--accent)'}, transparent 70%)` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--bg-base)]/90 to-[var(--bg-base)] z-10" />
       </div>
 
       <div className="max-w-[1200px] mx-auto relative z-20">
@@ -1291,13 +1291,13 @@ export default function AIAnalysis() {
                       {
                         key: "long",
                         label: t("ai_analysis.long"),
-                        color: "#2ecc71",
+                        color: "var(--positive)",
                         icon: TrendingUp,
                       },
                       {
                         key: "short",
                         label: t("ai_analysis.short"),
-                        color: "#e74c3c",
+                        color: "var(--negative)",
                         icon: TrendingDown,
                       },
                       {
@@ -1493,7 +1493,7 @@ export default function AIAnalysis() {
                     style={{
                       flex: 1,
                       padding: "11px",
-                      background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
+                      background: "linear-gradient(135deg, var(--accent), var(--accent))",
                       color: "#111",
                       border: "none",
                       borderRadius: 12,
@@ -1593,12 +1593,12 @@ export default function AIAnalysis() {
             <div
               className="flex items-center gap-2 px-3 py-2 rounded-2xl text-xs"
               style={{
-                backgroundColor: "rgba(231,76,60,0.08)",
+                backgroundColor: "var(--negative-muted)",
                 border: "1px solid rgba(231,76,60,0.2)",
-                color: "#e74c3c",
+                color: "var(--negative)",
               }}
             >
-              <AlertTriangle size={12} style={{ color: "#e74c3c" }} />
+              <AlertTriangle size={12} style={{ color: "var(--negative)" }} />
               <span style={{ fontWeight: 700 }}>{t("ai_analysis.not_financial_advice")}</span>
               <span style={{ opacity: 0.8 }}>{t("ai_analysis.technical_only")}</span>
             </div>
@@ -1701,8 +1701,8 @@ export default function AIAnalysis() {
                       marginLeft: 6,
                       color:
                         Number(selected.price_change_percentage_24h) >= 0
-                          ? "#2ecc71"
-                          : "#e74c3c",
+                          ? "var(--positive)"
+                          : "var(--negative)",
                     }}
                   >
                     {Number(selected.price_change_percentage_24h) >= 0
@@ -1792,7 +1792,7 @@ export default function AIAnalysis() {
               flexShrink: 0,
               background:
                 selected && !loading
-                  ? "linear-gradient(135deg, var(--accent), #8B5CF6)"
+                  ? "linear-gradient(135deg, var(--accent), var(--accent))"
                   : "var(--border-soft)",
               color: selected && !loading ? "#111" : "var(--text-muted)",
               border: "none",
@@ -1936,8 +1936,8 @@ export default function AIAnalysis() {
                         fontFamily: "monospace",
                         color:
                           Number(coin.price_change_percentage_24h) >= 0
-                            ? "#2ecc71"
-                            : "#e74c3c",
+                            ? "var(--positive)"
+                            : "var(--negative)",
                       }}
                     >
                       {Number(coin.price_change_percentage_24h) >= 0 ? "+" : ""}
@@ -2091,7 +2091,7 @@ export default function AIAnalysis() {
                         fontFamily: "monospace",
                         fontWeight: 700,
                         color:
-                          result.coin?.change_24h >= 0 ? "#2ecc71" : "#e74c3c",
+                          result.coin?.change_24h >= 0 ? "var(--positive)" : "var(--negative)",
                       }}
                     >
                       {result.coin?.change_24h >= 0 ? "+" : ""}
@@ -2248,7 +2248,7 @@ export default function AIAnalysis() {
                       </div>
                       <div
                         className="text-sm font-bold font-mono"
-                        style={{ color: "#e74c3c" }}
+                        style={{ color: "var(--negative)" }}
                       >
                         <NumberFlow value={Number(result.stop_loss) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                       </div>
@@ -2264,7 +2264,7 @@ export default function AIAnalysis() {
                       </div>
                       <div
                         className="text-sm font-bold font-mono"
-                        style={{ color: "#2ecc71" }}
+                        style={{ color: "var(--positive)" }}
                       >
                         <NumberFlow value={Number(result.take_profit) || 0} format={{ style: "currency", currency: "USD", maximumFractionDigits: 6 }} />
                       </div>
@@ -2514,7 +2514,7 @@ export default function AIAnalysis() {
                     {
                       label: t("ai_analysis.resistance"),
                       value: result.resistance_level,
-                      color: "#e74c3c",
+                      color: "var(--negative)",
                     },
                     {
                       label: t("ai_analysis.current"),
@@ -2525,7 +2525,7 @@ export default function AIAnalysis() {
                     {
                       label: t("ai_analysis.support"),
                       value: result.support_level,
-                      color: "#2ecc71",
+                      color: "var(--positive)",
                     },
                   ].map(({ label, value, color, bold }) => (
                     <div key={label}>
