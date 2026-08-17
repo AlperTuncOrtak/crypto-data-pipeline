@@ -265,8 +265,8 @@ export default function Documentation() {
                         <div className="text-[var(--text-muted)] font-extrabold text-xl w-16 text-center">0.0</div>
                         <div className="text-base text-gray-300 leading-relaxed"><strong className="text-[var(--text-primary)]">No Correlation:</strong> The assets move completely independently of one another.</div>
                       </li>
-                      <li className="flex gap-6 p-6 rounded-[32px] bg-red-500/10 border border-red-500/20 items-center">
-                        <div className="text-red-400 font-extrabold text-xl w-16 text-center">-1.0</div>
+                      <li className="flex gap-6 p-6 rounded-[32px] bg-[var(--negative)]/10 border border-[var(--negative)]/20 items-center">
+                        <div className="text-[var(--negative)] font-extrabold text-xl w-16 text-center">-1.0</div>
                         <div className="text-base text-gray-300 leading-relaxed"><strong className="text-[var(--text-primary)]">Perfect Negative Correlation:</strong> The assets move in exact opposite directions. Useful for hedging.</div>
                       </li>
                     </ul>

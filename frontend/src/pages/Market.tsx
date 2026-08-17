@@ -298,7 +298,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
           {/* Error */}
           {isError && (
-            <div className="m-5 p-4 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">
+            <div className="m-5 p-4 rounded-3xl bg-[var(--negative)]/10 border border-[var(--negative)]/20 text-red-500 text-sm font-medium">
               {t("market.error_loading", { error: (error as any)?.message })}
             </div>
           )}
@@ -375,7 +375,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
                       {/* 24h Change */}
                       <div className="text-right">
-                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-2xl ${isUp ? "bg-green-500/10 text-[var(--accent)]" : "bg-red-500/10 text-red-400"}`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-2xl ${isUp ? "bg-green-500/10 text-[var(--accent)]" : "bg-[var(--negative)]/10 text-[var(--negative)]"}`}>
                           {isUp ? "▲" : "▼"} 
                           <NumberFlow value={Number.isNaN(Number(change)) ? 0 : Math.abs(Number(change))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                         </span>

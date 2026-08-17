@@ -145,7 +145,7 @@ export default function Alerts() {
 
   return (
     <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
-      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[var(--accent-hover)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       <div className="max-w-[1280px] mx-auto relative z-20">
         <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
@@ -163,7 +163,7 @@ export default function Alerts() {
           <button
             onClick={() => refetch()}
             className={`flex items-center gap-2 px-4 py-2 rounded-3xl border transition-all duration-200 text-xs font-bold ${
-              isFetching ? 'bg-white/10 border-white/20 text-[#22c55e]' : 'bg-[var(--bg-subtle)]/80 backdrop-blur-md border-[var(--border-base)] text-white/60 hover:text-[var(--text-main)] hover:border-white/30'
+              isFetching ? 'bg-white/10 border-white/20 text-[var(--positive)]' : 'bg-[var(--bg-subtle)]/80 backdrop-blur-md border-[var(--border-base)] text-white/60 hover:text-[var(--text-main)] hover:border-white/30'
             }`}
           >
             <RefreshCw size={14} style={{ animation: isFetching ? 'spin 1s linear infinite' : 'none' }} />
@@ -244,7 +244,7 @@ export default function Alerts() {
 
             {/* Error */}
             {isError && (
-              <div className="px-5 py-4 rounded-[1rem] bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">
+              <div className="px-5 py-4 rounded-[1rem] bg-[var(--negative)]/10 border border-[var(--negative)]/20 text-red-500 text-sm font-medium">
                 Failed to load alerts. Please try refreshing.
               </div>
             )}

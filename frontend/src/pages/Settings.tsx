@@ -146,7 +146,7 @@ export default function Settings() {
       <div className="max-w-[600px] mx-auto mt-20 text-center text-white/50">
         <Lock size={32} className="mx-auto mb-3 opacity-30" />
         <div className="text-base font-bold mb-2 text-[var(--text-main)]">{t("settings.signin_required")}</div>
-        <button onClick={() => navigate("/")} className="px-5 py-2 rounded-3xl bg-[var(--accent)] text-[#111] font-bold text-[13px]">
+        <button onClick={() => navigate("/")} className="px-5 py-2 rounded-3xl bg-[var(--accent)] text-white font-bold text-[13px]">
           {t("settings.go_to_dashboard")}
         </button>
       </div>
@@ -371,7 +371,7 @@ export default function Settings() {
                 <button
                   onClick={handleCancelSubscription}
                   disabled={cancelLoading}
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-500 text-[13px] font-bold hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-3xl bg-[var(--negative)]/10 border border-[var(--negative)]/20 text-red-500 text-[13px] font-bold hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {cancelLoading && <Loader size={14} className="animate-spin" />}
                   {t("settings.cancel_subscription")}
@@ -463,7 +463,7 @@ export default function Settings() {
                   <CheckCircle size={14} className="text-green-500" />
                   <span className="text-xs font-bold text-green-500">{t("settings.phone_verified")} {user.phone}</span>
                 </div>
-                <button onClick={handlePhoneRemove} disabled={phoneLoading} className="text-[11px] font-bold text-red-500 hover:text-red-400 bg-transparent border-none cursor-pointer">
+                <button onClick={handlePhoneRemove} disabled={phoneLoading} className="text-[11px] font-bold text-red-500 hover:text-[var(--negative)] bg-transparent border-none cursor-pointer">
                   {t("settings.remove")}
                 </button>
               </div>

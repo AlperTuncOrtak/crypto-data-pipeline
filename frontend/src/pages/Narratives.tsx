@@ -124,7 +124,7 @@ export default function Narratives() {
                 
                 {orb.size > 150 && !isSelected && (
                   <span className="mt-2 flex items-center gap-1 text-white/80 font-bold text-[11px] uppercase tracking-widest bg-black/30 px-2.5 py-1 rounded-full backdrop-blur-md">
-                    {orb.trend === "up" ? <TrendingUp size={12} className="text-green-400" /> : <TrendingDown size={12} className="text-red-400" />}
+                    {orb.trend === "up" ? <TrendingUp size={12} className="text-green-400" /> : <TrendingDown size={12} className="text-[var(--negative)]" />}
                     {orb.score} Score
                   </span>
                 )}
@@ -169,14 +169,14 @@ export default function Narratives() {
                         <h2 className="text-2xl font-black text-[var(--text-main)]">{selected.name}</h2>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[11px] font-bold text-white/50 uppercase tracking-widest">Hype Score:</span>
-                          <span className={`text-[12px] font-black px-2 py-0.5 rounded-2xl ${selected.score > 80 ? 'bg-green-500/20 text-green-400' : selected.score > 50 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
+                          <span className={`text-[12px] font-black px-2 py-0.5 rounded-2xl ${selected.score > 80 ? 'bg-green-500/20 text-green-400' : selected.score > 50 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-[var(--negative)]'}`}>
                             {selected.score} / 100
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mb-6 p-5 rounded-2xl bg-[#0a0a0d]/60 border border-[var(--border-subtle)] text-sm text-gray-300 leading-relaxed font-medium">
+                    <div className="mb-6 p-5 rounded-2xl bg-[var(--bg-base)]/60 border border-[var(--border-subtle)] text-sm text-gray-300 leading-relaxed font-medium">
                       <Sparkles size={14} className="inline-block mr-2 text-[var(--accent)] -mt-0.5" />
                       {selected.summary}
                     </div>

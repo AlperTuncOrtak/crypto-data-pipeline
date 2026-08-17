@@ -178,7 +178,7 @@ export default function Portfolio() {
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             {importMsg && (
-              <div className={`px-4 py-2 rounded-3xl text-[12px] font-bold animate-fade-in ${importMsg.ok ? "bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}>
+              <div className={`px-4 py-2 rounded-3xl text-[12px] font-bold animate-fade-in ${importMsg.ok ? "bg-[var(--positive)]/10 text-[var(--positive)] border border-[var(--positive)]/20" : "bg-[var(--negative)]/10 text-[var(--negative)] border border-[var(--negative)]/20"}`}>
                 {importMsg.text}
               </div>
             )}

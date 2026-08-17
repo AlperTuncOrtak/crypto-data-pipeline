@@ -72,7 +72,7 @@ function CustomTooltip({ active, payload, label }) {
             <span className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: entry.stroke }} />
             <span className="text-xs font-bold font-mono text-gray-200">{entry.dataKey}</span>
           </div>
-          <span className={`text-xs font-bold font-mono ${Number(entry.value) >= 0 ? 'text-[#14F195]' : 'text-red-400'}`}>
+          <span className={`text-xs font-bold font-mono ${Number(entry.value) >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}>
             {Number(entry.value) >= 0 ? '+' : ''}{Number(entry.value).toFixed(2)}%
           </span>
         </div>

@@ -8,7 +8,7 @@ export default function Cancel() {
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-32 pb-24 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--negative)]/10 blur-[120px] rounded-full pointer-events-none" />
 
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
@@ -21,7 +21,7 @@ export default function Cancel() {
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
         >
-          <XCircle size={80} className="text-red-400 mb-6 drop-shadow-[0_0_20px_var(--accent)]" />
+          <XCircle size={80} className="text-[var(--negative)] mb-6 drop-shadow-[0_0_20px_var(--accent)]" />
         </motion.div>
 
         <h1 className="text-4xl font-black tracking-tight mb-4 text-[var(--text-main)]">Payment Cancelled</h1>

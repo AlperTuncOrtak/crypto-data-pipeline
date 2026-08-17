@@ -531,7 +531,7 @@ export default function Swap() {
 
               {/* SWAP BUTTON (MIDDLE) */}
               <div className="relative h-1 flex justify-center items-center z-20">
-                <button onClick={handleSwitchTokens} className="absolute p-2.5 bg-[var(--bg-elevated)] border-[4px] border-[#0a0b0d] rounded-[12px] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-main)] transition-all text-[var(--text-muted)] z-10 group"><ArrowDownUp size={16} className="group-hover:rotate-180 transition-transform duration-300" /></button>
+                <button onClick={handleSwitchTokens} className="absolute p-2.5 bg-[var(--bg-elevated)] border-[4px] border-[var(--bg-base)] rounded-[12px] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-main)] transition-all text-[var(--text-muted)] z-10 group"><ArrowDownUp size={16} className="group-hover:rotate-180 transition-transform duration-300" /></button>
               </div>
 
               {/* TO INPUT */}
@@ -606,7 +606,7 @@ export default function Swap() {
               {showTokenSelector && (
                 <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="absolute inset-0 z-50 bg-[var(--bg-base)] flex flex-col rounded-[24px] overflow-hidden">
                   <div className="flex items-center justify-between p-6 border-b border-[var(--border-base)]"><h3 className="text-[var(--text-main)] font-semibold text-[18px]">Select a token</h3><button onClick={() => setShowTokenSelector(null)} className="p-2 hover:bg-[var(--bg-elevated)] rounded-[10px] text-[var(--text-muted)] transition-colors"><X size={20} /></button></div>
-                  <div className="p-4 border-b border-[var(--border-base)]"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} /><input type="text" placeholder="Search name or paste address" value={tokenSearch} onChange={(e) => setTokenSearch(e.target.value)} className="w-full bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[12px] pl-10 pr-4 py-3 text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#4a4d51] transition-colors text-[15px]"/></div></div>
+                  <div className="p-4 border-b border-[var(--border-base)]"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} /><input type="text" placeholder="Search name or paste address" value={tokenSearch} onChange={(e) => setTokenSearch(e.target.value)} className="w-full bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[12px] pl-10 pr-4 py-3 text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors text-[15px]"/></div></div>
                   <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
                     {filteredTokens.map((token) => (
                       <button key={token.symbol} onClick={() => { if (showTokenSelector === "from") setFromToken(token); else setToToken(token); setShowTokenSelector(null); setTokenSearch(""); }} className="w-full flex items-center justify-between p-4 hover:bg-[var(--bg-elevated)] rounded-[12px] transition-colors text-left">

@@ -231,7 +231,7 @@ export default function WidgetBuilder() {
                       <div className="text-xs text-[var(--text-muted)]">Default Size: {w.w}x{w.h}</div>
                     </div>
                     {activeWidgets.includes(w.id) ? (
-                      <span className="text-xs font-bold text-[#14F195] uppercase tracking-wider">Added</span>
+                      <span className="text-xs font-bold text-[var(--positive)] uppercase tracking-wider">Added</span>
                     ) : (
                       <Plus className="text-purple-400" size={20} />
                     )}

@@ -241,7 +241,7 @@ export default function TimeMachine() {
                   </div>
                   
                   <div className="flex items-center gap-4">
-                    <div className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl font-bold text-lg border ${simulation.pnl >= 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                    <div className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl font-bold text-lg border ${simulation.pnl >= 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-[var(--negative)]/10 text-[var(--negative)] border-[var(--negative)]/20'}`}>
                       {simulation.pnl >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
                       {simulation.pnl > 0 ? '+' : ''}<NumberFlow value={simulation.pnl} format={{ maximumFractionDigits: 2 }} />%
                     </div>

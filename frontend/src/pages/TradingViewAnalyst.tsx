@@ -206,7 +206,7 @@ export default function TradingViewAnalyst() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-[var(--text-muted)]">Risk Amount</span>
-                    <span className="text-sm font-mono font-bold text-red-400">${(accountNum * (riskNum / 100)).toFixed(2)}</span>
+                    <span className="text-sm font-mono font-bold text-[var(--negative)]">${(accountNum * (riskNum / 100)).toFixed(2)}</span>
                   </div>
                   {targetNum > 0 && (
                     <div className="flex justify-between items-center pt-2 border-t border-white/5 mt-1">
@@ -260,7 +260,7 @@ export default function TradingViewAnalyst() {
                         <span className="text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase">Step 1: Structure</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${result.structure.trend === 'bullish' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : result.structure.trend === 'bearish' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-[var(--text-main)] border-white/10'}`}>
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${result.structure.trend === 'bullish' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : result.structure.trend === 'bearish' ? 'bg-[var(--negative)]/10 text-[var(--negative)] border-[var(--negative)]/20' : 'bg-white/5 text-[var(--text-main)] border-white/10'}`}>
                           {result.structure.trend}
                         </div>
                       </div>
@@ -274,11 +274,11 @@ export default function TradingViewAnalyst() {
                       <div className="relative z-10">
                         <div className="flex items-center justify-between mb-4">
                           <span className="text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase">Step 2: Setup Match</span>
-                          <span className={`text-xl font-mono font-bold ${isSetupValid ? 'text-emerald-400' : 'text-red-400'}`}>
+                          <span className={`text-xl font-mono font-bold ${isSetupValid ? 'text-emerald-400' : 'text-[var(--negative)]'}`}>
                             {result.setupMatch.score}/10
                           </span>
                         </div>
-                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded border mb-3 ${isSetupValid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded border mb-3 ${isSetupValid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-[var(--negative)]/10 border-[var(--negative)]/20 text-[var(--negative)]'}`}>
                           <span className="text-[10px] font-bold uppercase tracking-widest">
                             {isSetupValid ? 'Valid Setup' : 'Invalid Setup'}
                           </span>
@@ -296,7 +296,7 @@ export default function TradingViewAnalyst() {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div>
-                        <h4 className="text-xs font-bold text-red-400 uppercase tracking-wider mb-4 border-b border-red-500/10 pb-2">Resistance</h4>
+                        <h4 className="text-xs font-bold text-[var(--negative)] uppercase tracking-wider mb-4 border-b border-red-500/10 pb-2">Resistance</h4>
                         <div className="flex flex-col gap-3">
                           {result.levels.resistance.map((lvl, idx) => (
                             <div key={idx} className="flex justify-between items-center">

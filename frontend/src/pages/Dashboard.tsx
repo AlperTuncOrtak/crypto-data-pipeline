@@ -87,7 +87,7 @@ function MiniSparkline({ data, up }: { data?: any[], up: boolean }) {
 function ChangeBadge({ value }: { value: number }) {
   const isUp = value >= 0;
   return (
-    <span className={`inline-flex items-center gap-0.5 text-[14px] font-medium ${isUp ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+    <span className={`inline-flex items-center gap-0.5 text-[14px] font-medium ${isUp ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}>
       {isUp ? <ArrowUpRight size={16} strokeWidth={2.5} /> : <ArrowDownRight size={16} strokeWidth={2.5} />}
       {Math.abs(value).toFixed(2)}%
     </span>

@@ -174,7 +174,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
   return (
     <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] overflow-x-hidden pt-24 pb-32" ref={pricingRef}>
       
-      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[var(--accent-hover)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       {/* Background & Particles */}
       <TimelineContent
@@ -284,7 +284,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
                     className={cn(
                       "w-full py-4 rounded-[32px] font-black text-xs tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 mb-10",
                       currentPlan === plan.id ? "bg-white/5 text-[var(--text-muted)] cursor-not-allowed border border-[var(--border-base)]" :
-                      isPrimary ? "bg-[var(--accent)] hover:bg-[#6f42c1] text-[var(--text-main)] shadow-[0_0_30px_-10px_var(--accent)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-[1.02]" :
+                      isPrimary ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--text-main)] shadow-[0_0_30px_-10px_var(--accent)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-[1.02]" :
                       "bg-white text-black hover:bg-gray-200 hover:scale-[1.02] shadow-[0_0_20px_var(--accent)]"
                     )}
                   >
