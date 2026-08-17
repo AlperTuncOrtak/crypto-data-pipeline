@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell, Settings, Calendar, ChevronDown, Menu, Check, Moon, Sun } from 'lucide-react';
+import { Bell, Settings, Menu, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -10,7 +10,6 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
   const { theme, toggleTheme } = useTheme();
   
   const [activePopover, setActivePopover] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState('Last week');
   const [hasNotif, setHasNotif] = useState(true);
   const wrapperRef = useRef<HTMLDivElement>(null);
   
@@ -51,34 +50,7 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
 
       {/* Right: Actions */}
       <div ref={wrapperRef} className="flex items-center gap-4 relative">
-        {/* Date Selector */}
-        <div className="relative">
-          <button 
-            onClick={() => setActivePopover(activePopover === 'date' ? null : 'date')} 
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl border border-[var(--border-subtle)] bg-white/5 text-sm text-gray-300 hover:bg-[var(--border-base)] transition-colors"
-          >
-            <Calendar size={14} />
-            <span>{dateRange}</span>
-            <ChevronDown size={14} className="text-[var(--text-muted)]" />
-          </button>
-          
-          {activePopover === 'date' && (
-            <div className="absolute top-full right-0 mt-2 w-44 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-3xl shadow-2xl overflow-hidden py-1 z-50">
-               {['Last 24 hours', 'Last week', 'Last month', 'Year to date'].map(range => (
-                 <button 
-                   key={range} 
-                   onClick={() => { setDateRange(range); setActivePopover(null); }} 
-                   className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-[var(--border-subtle)] hover:text-[var(--text-main)] flex items-center justify-between"
-                 >
-                   {range}
-                   {dateRange === range && <Check size={14} className="text-blue-500" />}
-                 </button>
-               ))}
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 border-l border-[var(--border-subtle)] pl-2 sm:pl-4 ml-1 sm:ml-2">
+        <div className="flex items-center gap-2 pl-2 sm:pl-4 ml-1 sm:ml-2">
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
