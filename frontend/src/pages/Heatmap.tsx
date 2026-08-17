@@ -346,7 +346,7 @@ export default function Heatmap() {
       {/* BACKGROUND GLOWS */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
         <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
-        <div className="w-[600px] h-[250px] bg-[#059669] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
       </div>
 
       <div className="max-w-[1100px] mx-auto relative z-20">
@@ -369,7 +369,7 @@ export default function Heatmap() {
               <button
                 key={l}
                 onClick={() => setLimit(l)}
-                className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition-all ${limit === l ? "bg-[var(--accent)] text-[#111] shadow-[0_0_15px_var(--accent-soft)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--border-subtle)]"}`}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition-all ${limit === l ? "bg-[var(--accent)] text-white shadow-[0_0_15px_var(--accent-soft)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--border-subtle)]"}`}
               >
                 {t("heatmap.top", { count: l })}
               </button>
