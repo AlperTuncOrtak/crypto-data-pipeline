@@ -307,31 +307,15 @@ function AppInner() {
                 <Route 
                   path="/settings" 
                   element={
-                    <ErrorBoundary 
-                      fallback={<div className="p-8 text-red-500">Failed to load Settings</div>}
-                      featureName="Settings"
-                    >
-                      <Suspense fallback={<PageLoader />}>
-                        <Settings onAuthOpen={() => {
-                          setAuthMode("login");
-                          setAuthOpen(true);
-                        }} />
-                      </Suspense>
-                    </ErrorBoundary>
+                    <Settings onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }} />
                   } 
                 />
                 <Route 
                   path="/support" 
-                  element={
-                    <ErrorBoundary 
-                      fallback={<div className="p-8 text-red-500">Failed to load Support</div>}
-                      featureName="Support"
-                    >
-                      <Suspense fallback={<PageLoader />}>
-                        <Support />
-                      </Suspense>
-                    </ErrorBoundary>
-                  } 
+                  element={<Support />} 
                 />
             </Routes>
             </Suspense>
