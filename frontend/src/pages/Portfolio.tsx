@@ -94,7 +94,32 @@ export default function Portfolio() {
   const sparklines = useSparklines(holdings.slice(0, 10).map((h) => h.symbol));
 
   const [chartData, setChartData] = useState([]);
-  const [marketNews, setMarketNews] = useState([]);
+  const [marketNews, setMarketNews] = useState([
+    {
+      id: "1",
+      title: "Bitcoin Surges Past Key Resistance Level",
+      source: "CoinTelegraph",
+      published_on: Math.floor(Date.now() / 1000) - 3600,
+      imageurl: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=024",
+      url: "#"
+    },
+    {
+      id: "2",
+      title: "Ethereum Spot ETFs See Record Inflows",
+      source: "CoinDesk",
+      published_on: Math.floor(Date.now() / 1000) - 7200,
+      imageurl: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
+      url: "#"
+    },
+    {
+      id: "3",
+      title: "Regulatory Clarity Brings Institutional Investors",
+      source: "Bloomberg Crypto",
+      published_on: Math.floor(Date.now() / 1000) - 14400,
+      imageurl: "https://cryptologos.cc/logos/solana-sol-logo.svg?v=024",
+      url: "#"
+    }
+  ]);
   const [chartTimeframe, setChartTimeframe] = useState('24h');
 
   // Fetch historical portfolio balance

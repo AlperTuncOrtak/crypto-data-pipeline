@@ -66,7 +66,7 @@ function AppInner() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(
-    () => !!localStorage.getItem("cryptoneko_disclaimer_accepted_v1"),
+    () => !!localStorage.getItem("cryptoneko_disclaimer_accepted_v2"),
   );
 
 
@@ -192,7 +192,6 @@ function AppInner() {
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
               <Route path="/heatmap" element={<Heatmap />} />
-              <Route path="/narratives" element={<Narratives />} />
               <Route path="/whale" element={<WhaleXRay />} />
               <Route path="/timemachine" element={<TimeMachine />} />
               <Route path="/analysis" element={<Analysis />} />

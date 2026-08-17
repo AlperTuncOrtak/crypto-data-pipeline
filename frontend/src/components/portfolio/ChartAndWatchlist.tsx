@@ -50,7 +50,7 @@ export default function ChartAndWatchlist({
               </div>
             </div>
           </div>
-          <div className="h-[260px] w-full">
+          <div className="h-[260px] w-full" style={{ touchAction: 'pan-y' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
@@ -76,10 +76,10 @@ export default function ChartAndWatchlist({
 
         {/* Watchlist Grid */}
         <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col">
-          <div className="flex gap-4 mb-6 border-b border-[var(--border-subtle)] pb-3">
-            <button className="text-[12px] font-bold text-[var(--text-main)] border-b-2 border-white pb-3 -mb-[13px]">Watchlist</button>
-            <button className="text-[12px] font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors pb-3 -mb-[13px]">Trending</button>
-            <button className="text-[12px] font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors pb-3 -mb-[13px]">Top Gainers</button>
+          <div className="relative z-10 flex gap-4 mb-6 border-b border-[var(--border-subtle)] pb-3">
+            <button className="relative z-20 text-[12px] font-bold text-[var(--text-main)] border-b-2 border-white pb-3 -mb-[13px] cursor-pointer">Watchlist</button>
+            <button className="relative z-20 text-[12px] font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors pb-3 -mb-[13px] cursor-pointer">Trending</button>
+            <button className="relative z-20 text-[12px] font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors pb-3 -mb-[13px] cursor-pointer">Top Gainers</button>
           </div>
 
           <div className="grid grid-cols-2 gap-4 flex-1">
@@ -96,7 +96,7 @@ export default function ChartAndWatchlist({
                   </div>
                 </div>
                 {/* Sparkline */}
-                <div className="h-10 mt-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                <div className="h-10 mt-2 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={sparklines?.[asset.symbol.toUpperCase()] || [{ price: 0 }, { price: 0 }]}>
                       <Line type="monotone" dataKey="price" stroke={(asset.change_24h ?? 0) >= 0 ? "var(--positive)" : "var(--negative)"} strokeWidth={1.5} dot={false} isAnimationActive={false} />

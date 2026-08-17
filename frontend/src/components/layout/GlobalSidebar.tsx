@@ -52,7 +52,6 @@ const mainNavSections = [
       { name: 'TV Analyst', path: '/tv-analyst', icon: Activity },
       { name: 'Whale X-Ray', path: '/whale', icon: Activity },
       { name: 'Heatmap', path: '/heatmap', icon: MapIcon },
-      { name: 'Narratives', path: '/narratives', icon: TrendingUp },
       { name: 'Time Machine', path: '/timemachine', icon: Clock },
     ]
   }

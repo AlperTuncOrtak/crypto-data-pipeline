@@ -94,7 +94,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
 
           <motion.button
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/docs")}
             className="group flex items-center gap-3 h-12 px-6 rounded-[12px] border border-[var(--border-subtle)] bg-transparent text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-subtle)] font-medium text-[14px] transition-all duration-200 w-full sm:w-auto"
           >
             <Terminal size={14} className="text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors" />

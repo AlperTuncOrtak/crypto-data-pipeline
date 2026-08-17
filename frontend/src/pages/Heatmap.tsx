@@ -6,17 +6,17 @@ import { useMarket } from "../hooks/useMarket";
 import { LayoutGrid, RefreshCw } from "lucide-react";
 
 // ─── Renk sistemi ────────────────────────────────────────────
-// Değişim yüzdesine göre 7 kademeli renk skalası
+// Değişim yüzdesine göre 7 kademeli renk skalası (Soft Matte Web3)
 function changeColor(pct) {
   const p = Number(pct) || 0;
-  if (p >= 10) return { bg: "#0d4d29", text: "#6efaaa", border: "#14F195" };
-  if (p >= 5) return { bg: "#0a3d21", text: "#7dfdb5", border: "#10c97c" };
-  if (p >= 2) return { bg: "#08331b", text: "#86f5b0", border: "#0d9e61" };
-  if (p >= 0) return { bg: "#052212", text: "#5ddc8a", border: "#096940" };
-  if (p >= -2) return { bg: "#330808", text: "#f47878", border: "#7a1313" };
-  if (p >= -5) return { bg: "#4a0b0b", text: "#f96060", border: "#a31818" };
-  if (p >= -10) return { bg: "#610e0e", text: "#ff5252", border: "#d41c1c" };
-  return { bg: "#7a1111", text: "#ff3838", border: "#f01f1f" };
+  if (p >= 10) return { bg: "rgba(16, 185, 129, 0.4)", text: "#ffffff", border: "rgba(16, 185, 129, 0.6)" };
+  if (p >= 5) return { bg: "rgba(16, 185, 129, 0.3)", text: "#ffffff", border: "rgba(16, 185, 129, 0.5)" };
+  if (p >= 2) return { bg: "rgba(16, 185, 129, 0.2)", text: "#ffffff", border: "rgba(16, 185, 129, 0.4)" };
+  if (p >= 0) return { bg: "rgba(16, 185, 129, 0.1)", text: "#f4f4f5", border: "rgba(16, 185, 129, 0.2)" };
+  if (p >= -2) return { bg: "rgba(239, 68, 68, 0.1)", text: "#f4f4f5", border: "rgba(239, 68, 68, 0.2)" };
+  if (p >= -5) return { bg: "rgba(239, 68, 68, 0.2)", text: "#ffffff", border: "rgba(239, 68, 68, 0.4)" };
+  if (p >= -10) return { bg: "rgba(239, 68, 68, 0.3)", text: "#ffffff", border: "rgba(239, 68, 68, 0.5)" };
+  return { bg: "rgba(239, 68, 68, 0.4)", text: "#ffffff", border: "rgba(239, 68, 68, 0.6)" };
 }
 
 // ─── Fiyat formatlama ─────────────────────────────────────────

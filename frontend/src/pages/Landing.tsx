@@ -30,10 +30,6 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
       >
         <AnimatedLogo />
         <div className="flex items-center gap-6">
-          <Link to="/dashboard" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Terminal</Link>
-          <Link to="/analysis/ai" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">AI Radar</Link>
-          <Link to="/pro" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Backtesting</Link>
-          
           {loading ? null : user ? (
             <motion.button
               whileTap={{ scale: 0.97 }}

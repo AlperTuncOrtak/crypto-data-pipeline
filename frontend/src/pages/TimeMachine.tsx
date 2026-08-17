@@ -220,7 +220,16 @@ export default function TimeMachine() {
             </div>
 
             <AnimatePresence mode="wait">
-              {isSimulating ? (
+              {error ? (
+                <motion.div 
+                  key="error"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center flex-1 text-center"
+                >
+                  <div className="text-[var(--negative)] font-bold mb-2">Simulation Failed</div>
+                  <div className="text-sm text-[var(--text-muted)] max-w-xs">{error}</div>
+                </motion.div>
+              ) : isSimulating ? (
                 <motion.div 
                   key="loading"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -267,7 +276,9 @@ export default function TimeMachine() {
             </div>
             
             <div className="relative z-10 flex-1 flex flex-col justify-center">
-              {isSimulating || !simulation ? (
+              {error ? (
+                <div className="text-[var(--negative)] font-medium text-sm text-center">Unable to generate insights due to API error.</div>
+              ) : isSimulating || !simulation ? (
                  <div className="space-y-3 animate-pulse">
                    <div className="h-4 bg-white/5 rounded w-3/4"></div>
                    <div className="h-4 bg-white/5 rounded w-full"></div>

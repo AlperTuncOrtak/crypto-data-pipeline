@@ -1604,7 +1604,7 @@ export default function AIAnalysis() {
             </div>
             <button
               onClick={() => {
-                localStorage.removeItem("cryptoneko_disclaimer_accepted_v1");
+                localStorage.removeItem("cryptoneko_disclaimer_accepted_v2");
                 window.location.reload();
               }}
               style={{
@@ -1847,7 +1847,7 @@ export default function AIAnalysis() {
               boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
               overflowY: "auto",
               maxHeight: "300px",
-              zIndex: 50,
+              zIndex: 9999,
             }}
           >
             <div style={{ padding: "6px" }}>

@@ -247,10 +247,10 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
               {/* Segmented Tabs */}
               <div className="flex items-center p-1 bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl hidden md:flex">
                 {[
-                  { id: "all", label: "🔥 All Assets" },
-                  { id: "trending", label: "💎 Trending" },
-                  { id: "gainers", label: "🚀 Top Gainers" },
-                  { id: "losers", label: "🩸 Top Losers" }
+                  { id: "all", label: "All Assets" },
+                  { id: "trending", label: "Trending" },
+                  { id: "gainers", label: "Top Gainers" },
+                  { id: "losers", label: "Top Losers" }
                 ].map(tab => (
                   <button
                     key={tab.id}
