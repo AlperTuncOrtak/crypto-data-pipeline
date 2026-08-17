@@ -422,10 +422,10 @@ export default function Swap() {
             <AnimatePresence>
               {showChart && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 140, opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-2 relative z-10">
-                  <div className="h-[120px] w-full rounded-[12px] bg-[#0d0e12] border border-[var(--border-base)] p-2 flex flex-col">
+                  <div className="h-[120px] w-full rounded-[12px] bg-[var(--bg-subtle)] border border-[var(--border-base)] p-2 flex flex-col">
                     <div className="flex justify-between items-center px-1 mb-1">
                       <span className="text-[11px] text-[var(--text-muted)] font-medium">{fromToken.symbol}/{toToken.symbol} (24H)</span>
-                      <span className="text-[11px] text-[#2ecc71]">+1.24%</span>
+                      <span className="text-[11px] text-[var(--positive)]">+1.24%</span>
                     </div>
                     <div className="flex-1">
                       <ResponsiveContainer width="100%" height="100%">
@@ -456,7 +456,7 @@ export default function Swap() {
                       </div>
                       <div className="flex items-center gap-2">
                         {["0.1", "0.5", "1.0"].map((s) => (
-                          <button key={s} onClick={() => setSlippage(s)} className={`flex-1 py-1.5 rounded-[8px] text-[12px] font-medium transition-colors ${slippage === s ? "bg-white text-black" : "bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}>{s}%</button>
+                          <button key={s} onClick={() => setSlippage(s)} className={`flex-1 py-1.5 rounded-[8px] text-[12px] font-medium transition-colors ${slippage === s ? "bg-[var(--text-main)] text-[var(--bg-base)]" : "bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-muted)] hover:text-[var(--text-main)]"}`}>{s}%</button>
                         ))}
                         <input type="text" value={slippage} onChange={(e) => setSlippage(e.target.value)} className="w-[60px] bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-[8px] py-1.5 px-2 text-[12px] text-center text-[var(--text-main)] focus:outline-none" />
                       </div>
@@ -489,7 +489,7 @@ export default function Swap() {
                       type="number" placeholder="0" value={amountIn} min="0"
                       onChange={(e) => { const val = e.target.value; if (Number(val) >= 0) setAmountIn(val); }}
                       onKeyDown={(e) => ["-", "+", "e", "E"].includes(e.key) && e.preventDefault()}
-                      className={`w-full bg-transparent text-[36px] font-medium text-[var(--text-main)] outline-none placeholder:text-[#3a3d41] p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${inputMode === "FIAT" ? "pl-7" : ""}`}
+                      className={`w-full bg-transparent text-[36px] font-medium text-[var(--text-main)] outline-none placeholder:text-[var(--text-faint)] p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${inputMode === "FIAT" ? "pl-7" : ""}`}
                     />
                     <div className="flex flex-col gap-1 shrink-0 mr-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={() => setAmountIn(((Number(amountIn) || 0) + 1).toString())} className="p-1 bg-[var(--bg-elevated)] rounded-[4px] hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-base)]"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
@@ -523,7 +523,7 @@ export default function Swap() {
                   {isQuoting ? (
                     <div className="flex-1 h-[54px] flex items-center"><div className="w-32 h-10 bg-[var(--bg-elevated)] animate-pulse rounded-[8px]" /></div>
                   ) : (
-                    <input type="text" readOnly placeholder="0" value={quote ? (inputMode === "CRYPTO" ? quote.amountOut : (Number(quote.amountOut) * toToken.price).toFixed(2)) : ""} className="w-full bg-transparent text-[36px] font-medium text-[var(--text-main)] outline-none placeholder:text-[#3a3d41] p-0" />
+                    <input type="text" readOnly placeholder="0" value={quote ? (inputMode === "CRYPTO" ? quote.amountOut : (Number(quote.amountOut) * toToken.price).toFixed(2)) : ""} className="w-full bg-transparent text-[36px] font-medium text-[var(--text-main)] outline-none placeholder:text-[var(--text-faint)] p-0" />
                   )}
                   <button onClick={() => setShowTokenSelector("to")} className="shrink-0 flex items-center gap-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-4 py-2 rounded-full transition-colors border border-[var(--border-base)] group-hover:border-[var(--border-base)]">
                     <img src={toToken.icon} alt={toToken.symbol} className="w-6 h-6 rounded-full" />
@@ -537,7 +537,7 @@ export default function Swap() {
                     <span className="text-[12px] text-[var(--text-muted)] font-mono">{inputMode === "CRYPTO" ? `$${quote ? (Number(quote.amountOut) * toToken.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0.00"}` : `${quote ? quote.amountOut : "0.00"} ${toToken.symbol}`}</span>
                   )}
                   {quote && !isQuoting && (
-                    <span className={`font-semibold text-[11px] px-2 py-0.5 rounded-[6px] flex items-center gap-1 ${isHighImpact ? "bg-red-500/10 text-red-500" : "bg-[#2ecc71]/10 text-[#2ecc71]"}`}>
+                    <span className={`font-semibold text-[11px] px-2 py-0.5 rounded-[6px] flex items-center gap-1 ${isHighImpact ? "bg-[var(--negative-muted)] text-[var(--negative)]" : "bg-[var(--positive-muted)] text-[var(--positive)]"}`}>
                       {isHighImpact ? <Zap size={12} /> : <Sparkles size={12} />} {isHighImpact ? `-${quote.priceImpact.toFixed(2)}% Impact` : "Best Price"}
                     </span>
                   )}
@@ -560,7 +560,7 @@ export default function Swap() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-[12px] text-[var(--text-muted)] px-1"><span>Rate</span><span className="font-mono text-[var(--text-main)]">1 {fromToken.symbol} = {quote.rate.toFixed(4)} {toToken.symbol}</span></div>
-                  {isHighImpact && <div className="flex items-center justify-between text-[12px] text-red-500 px-1 font-medium"><span>Price Impact</span><span>-{quote.priceImpact.toFixed(2)}%</span></div>}
+                  {isHighImpact && <div className="flex items-center justify-between text-[12px] text-[var(--negative)] px-1 font-medium"><span>Price Impact</span><span>-{quote.priceImpact.toFixed(2)}%</span></div>}
                   <div className="flex items-center justify-between text-[12px] text-[var(--text-muted)] px-1"><span className="flex items-center gap-1">Network Cost <Info size={10} className="text-[var(--text-muted)]"/></span><span className="font-mono text-[var(--text-main)]"><span className="text-[var(--text-muted)]">~${networkCost}</span></span></div>
                 </motion.div>
               )}
@@ -571,9 +571,9 @@ export default function Swap() {
               <button
                 onClick={handleSwap} disabled={(!amountIn || txState !== "idle" || isApproving || isHighImpact) && isConnected}
                 className={`w-full py-4 rounded-[16px] font-bold text-[16px] flex items-center justify-center gap-2 transition-all ${
-                  txState === "success" ? "bg-white text-black" : txState === "pending" || isApproving || txState === "confirming" ? "bg-[var(--bg-elevated)] text-[var(--text-main)] border border-[var(--border-base)]"
-                  : !isConnected ? "bg-white text-black hover:bg-gray-200" : isHighImpact ? "bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed"
-                  : !amountIn ? "bg-[var(--bg-elevated)] text-[var(--text-muted)] cursor-not-allowed" : needsApproval ? "bg-white text-black hover:bg-gray-200" : "bg-white text-black hover:bg-gray-200"
+                  txState === "success" ? "bg-[var(--text-main)] text-[var(--bg-base)]" : txState === "pending" || isApproving || txState === "confirming" ? "bg-[var(--bg-elevated)] text-[var(--text-main)] border border-[var(--border-base)]"
+                  : !isConnected ? "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]" : isHighImpact ? "bg-[var(--negative-muted)] text-[var(--negative)] border border-[var(--negative-muted)] cursor-not-allowed"
+                  : !amountIn ? "bg-[var(--bg-elevated)] text-[var(--text-muted)] cursor-not-allowed" : needsApproval ? "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]" : "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
                 }`}
               >
                 {txState === "confirming" && <><Loader size={18} className="animate-spin" /> Confirming in Wallet...</>}
