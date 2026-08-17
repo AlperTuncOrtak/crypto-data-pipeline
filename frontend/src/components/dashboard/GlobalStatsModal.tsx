@@ -61,7 +61,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
           {/* Backdrop */}
           <div
             onClick={onClose}
-            className="absolute inset-0 bg-[#09090b]/80 backdrop-blur-md"
+            className="absolute inset-0 bg-[var(--bg-base)]/80 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -70,10 +70,10 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative w-full max-w-2xl bg-[#18181b] rounded-[24px] border border-white/[0.06] shadow-2xl overflow-hidden p-8"
+            className="relative w-full max-w-2xl bg-[var(--bg-elevated)] rounded-[24px] border border-[var(--border-subtle)] shadow-2xl overflow-hidden p-8"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-8 border-b border-white/[0.06] pb-6">
+            <div className="flex items-center justify-between mb-8 border-b border-[var(--border-subtle)] pb-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl" style={{ backgroundColor: `${activeConfig.color}20`, color: activeConfig.color }}>
                   {activeConfig.icon}
@@ -132,7 +132,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
                           return (
-                            <div className="bg-[#09090b] border border-white/[0.06] rounded-xl p-4 shadow-xl">
+                            <div className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-xl p-4 shadow-xl">
                               <div className="text-[11px] font-medium text-zinc-500 mb-1">{data.displayDate}</div>
                               <div className="text-2xl font-semibold" style={{ color: activeConfig.color }}>
                                 {activeConfig.formatter(data[activeConfig.dataKey])}

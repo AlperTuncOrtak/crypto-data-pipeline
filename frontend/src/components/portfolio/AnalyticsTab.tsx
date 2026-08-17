@@ -47,7 +47,7 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
       return (
         <div className="bg-[var(--bg-elevated)] border border-[var(--border-base)] p-3 rounded-3xl shadow-xl">
           <p className="text-[var(--text-main)] font-bold text-[13px] mb-1">{payload[0].name}</p>
-          <p className="text-[#14F195] font-black text-[15px]">
+          <p className="text-[var(--positive)] font-black text-[15px]">
             ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <p className="text-[var(--text-muted)] font-medium text-[11px] mt-1">
@@ -72,7 +72,7 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
         {/* Asset Allocation Pie */}
         <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col">
           <div className="flex items-center gap-2 mb-6">
-            <PieChartIcon size={18} className="text-[#14F195]" />
+            <PieChartIcon size={18} className="text-[var(--positive)]" />
             <h3 className="text-[15px] font-bold text-[var(--text-main)]">Asset Allocation</h3>
           </div>
           <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-8">
@@ -164,16 +164,16 @@ export default function AnalyticsTab({ holdings }: AnalyticsTabProps) {
 
       {/* Best & Worst Performers */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="p-6 rounded-[20px] bg-gradient-to-br from-[#14F195]/10 to-transparent border border-[#14F195]/20 flex items-center gap-6">
-          <div className="w-14 h-14 rounded-full bg-[#14F195]/20 flex items-center justify-center shrink-0">
-            <TrendingUp size={24} className="text-[#14F195]" />
+        <div className="p-6 rounded-[20px] bg-gradient-to-br from-[var(--positive)]/10 to-transparent border border-[var(--positive)]/20 flex items-center gap-6">
+          <div className="w-14 h-14 rounded-full bg-[var(--positive)]/20 flex items-center justify-center shrink-0">
+            <TrendingUp size={24} className="text-[var(--positive)]" />
           </div>
           <div>
             <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Top Performer</p>
             {bestPerformer ? (
               <>
                 <h4 className="text-2xl font-black text-[var(--text-main)]">{bestPerformer.symbol.toUpperCase()}</h4>
-                <p className="text-[14px] font-bold text-[#14F195]">+{ (bestPerformer.roi * 100).toFixed(2) }% ROI</p>
+                <p className="text-[14px] font-bold text-[var(--positive)]">+{ (bestPerformer.roi * 100).toFixed(2) }% ROI</p>
               </>
             ) : (
               <p className="text-[14px] text-[var(--text-muted)] font-medium">No data available</p>

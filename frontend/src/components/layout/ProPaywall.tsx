@@ -37,11 +37,11 @@ export default function ProPaywall({ children, featureName = "This feature", inl
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative max-w-sm w-full text-center p-8 rounded-[24px] border border-cyan-500/20 bg-white/[0.03] backdrop-blur-2xl shadow-[0_0_80px_rgba(34,211,238,0.1),inset_0_0_40px_rgba(34,211,238,0.05)]"
+          className="relative max-w-sm w-full text-center p-8 rounded-[24px] border border-[var(--accent)]/20 bg-white/[0.03] backdrop-blur-2xl shadow-[0_0_80px_rgba(99,102,241,0.1),inset_0_0_40px_rgba(99,102,241,0.05)]"
         >
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 bg-cyan-500/20 blur-2xl rounded-full pointer-events-none" />
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 bg-[var(--accent)]/20 blur-2xl rounded-full pointer-events-none" />
           
-          <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4)]">
+          <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.4)]">
             <Lock className="text-[#020817]" size={24} />
           </div>
           
@@ -55,7 +55,7 @@ export default function ProPaywall({ children, featureName = "This feature", inl
           
           <button
             onClick={() => navigate('/pricing')}
-            className="group/btn flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-cyan-400 text-[#020817] font-bold text-[0.95rem] hover:bg-cyan-300 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(34,211,238,0.3)] cursor-pointer"
+            className="group/btn flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-[var(--accent)] text-[#020817] font-bold text-[0.95rem] hover:bg-[var(--accent-hover)] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)] cursor-pointer"
           >
             <Crown size={18} className="group-hover/btn:-rotate-12 transition-transform" />
             Upgrade to PRO

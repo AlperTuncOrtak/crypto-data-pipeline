@@ -41,7 +41,7 @@ export function ChartSkeleton() {
         {Array.from({ length: 12 }).map((_, i) => (
           <Skeleton 
             key={i} 
-            className="w-full bg-cyan-500/10 rounded-t-sm" 
+            className="w-full bg-[var(--accent)]/10 rounded-t-sm" 
             style={{ height: `${Math.random() * 60 + 20}%` }} 
           />
         ))}

@@ -84,7 +84,7 @@ export default function AddSourceModal({
                             else if (openConnectModal) openConnectModal();
                           }}
                           className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-[12px] border transition-all duration-300 group ${
-                            connected ? "bg-purple-500/10 border-purple-500/30" : "bg-[var(--bg-elevated)] border-[var(--border-base)] hover:bg-[#222529]"
+                            connected ? "bg-purple-500/10 border-purple-500/30" : "bg-[var(--bg-elevated)] border-[var(--border-base)] hover:bg-[var(--bg-overlay)]"
                           }`}
                         >
                           <span className="text-2xl">🦊</span>
@@ -109,11 +109,11 @@ export default function AddSourceModal({
                           }
                         }}
                         className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-[12px] border transition-all duration-300 group ${
-                          isConnected ? "bg-[#14F195]/5 border-[#14F195]/20" : "bg-[var(--bg-elevated)] border-[var(--border-base)] hover:bg-[#222529]"
+                          isConnected ? "bg-[var(--positive)]/5 border-[var(--positive)]/20" : "bg-[var(--bg-elevated)] border-[var(--border-base)] hover:bg-[var(--bg-overlay)]"
                         }`}
                       >
                         <img src={ex.logo} alt={ex.name} className="w-8 h-8 rounded-full object-contain" />
-                        <span className={`text-[11px] font-semibold ${isConnected ? "text-[#14F195]" : "text-[var(--text-muted)] group-hover:text-[var(--text-main)]"}`}>
+                        <span className={`text-[11px] font-semibold ${isConnected ? "text-[var(--positive)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-main)]"}`}>
                           {isConnected ? "Synced" : ex.name}
                         </span>
                       </button>
@@ -129,7 +129,7 @@ export default function AddSourceModal({
                         value={walletInput} 
                         onChange={e => setWalletInput(e.target.value)} 
                         placeholder="0x..."
-                        className="w-full bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-3xl px-4 py-3 text-[13px] text-[var(--text-main)] focus:outline-none focus:border-[#14F195]/50 transition-all" 
+                        className="w-full bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-3xl px-4 py-3 text-[13px] text-[var(--text-main)] focus:outline-none focus:border-[var(--positive)]/50 transition-all" 
                       />
                       <button 
                         onClick={() => { 
@@ -149,7 +149,7 @@ export default function AddSourceModal({
                     <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); onClose(); }} />
                     <button 
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[var(--border-base)] rounded-3xl p-4 hover:border-[#14F195]/50 hover:bg-[#14F195]/5 transition-all text-[var(--text-muted)] hover:text-[var(--text-main)] cursor-pointer"
+                      className="w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[var(--border-base)] rounded-3xl p-4 hover:border-[var(--positive)]/50 hover:bg-[var(--positive)]/5 transition-all text-[var(--text-muted)] hover:text-[var(--text-main)] cursor-pointer"
                     >
                       <Upload size={20} />
                       <span className="text-[12px] font-semibold">Upload CSV</span>

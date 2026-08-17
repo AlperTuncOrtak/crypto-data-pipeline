@@ -76,7 +76,7 @@ function WhaleRadar() {
   }, []);
 
   return (
-    <div className="relative flex-1 w-full overflow-hidden mt-5 rounded-[14px] border border-[var(--border-subtle)] bg-[#050505]/40 backdrop-blur-md p-4 flex flex-col shadow-inner">
+    <div className="relative flex-1 w-full overflow-hidden mt-5 rounded-[14px] border border-[var(--border-subtle)] bg-[var(--bg-base)]/40 backdrop-blur-md p-4 flex flex-col shadow-inner">
       <div className="flex items-center gap-2 mb-3 px-1">
         <span className="relative flex h-1.5 w-1.5">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--positive)] opacity-70" />
@@ -136,7 +136,7 @@ function EquityCurve() {
   const [pnl] = useState({ value: "+34.7%", usd: "+$12,490", period: "90d" });
 
   return (
-    <div className="flex-1 mt-5 rounded-[14px] bg-[#050505]/40 backdrop-blur-md border border-[var(--border-subtle)] relative p-4 flex flex-col justify-between overflow-hidden shadow-inner">
+    <div className="flex-1 mt-5 rounded-[14px] bg-[var(--bg-base)]/40 backdrop-blur-md border border-[var(--border-subtle)] relative p-4 flex flex-col justify-between overflow-hidden shadow-inner">
       <div className="flex items-center justify-between mb-2 relative z-10">
         <div>
           <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-widest font-semibold">{pnl.period} Return</div>
@@ -215,7 +215,7 @@ function SentimentGauge() {
   }
 
   return (
-    <div className="flex-1 mt-5 rounded-[14px] bg-[#050505]/40 backdrop-blur-md border border-[var(--border-subtle)] flex flex-col items-center justify-center p-4 relative overflow-hidden shadow-inner">
+    <div className="flex-1 mt-5 rounded-[14px] bg-[var(--bg-base)]/40 backdrop-blur-md border border-[var(--border-subtle)] flex flex-col items-center justify-center p-4 relative overflow-hidden shadow-inner">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.08)_0%,transparent_60%)]" />
       <svg viewBox="0 0 160 90" className="w-full max-w-[200px] relative z-10">
         <path d={arcPath(-178, -145)} stroke="rgba(239,68,68,0.4)" strokeWidth="6" fill="none" strokeLinecap="round" />
@@ -347,7 +347,7 @@ export function LinearBento() {
               <h3 className="text-lg font-bold text-[var(--text-main)] tracking-tight">Market Pulse</h3>
             </div>
             <p className="text-sm text-[var(--text-muted)] mb-1">Live global metrics updated every second.</p>
-            <div className="flex-1 mt-5 rounded-[14px] bg-[#050505]/40 backdrop-blur-md border border-[var(--border-subtle)] p-5 shadow-inner">
+            <div className="flex-1 mt-5 rounded-[14px] bg-[var(--bg-base)]/40 backdrop-blur-md border border-[var(--border-subtle)] p-5 shadow-inner">
               <div className="flex flex-col gap-5 h-full justify-center">
                 {STATS.map((s, i) => (
                   <motion.div

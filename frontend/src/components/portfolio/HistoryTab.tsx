@@ -27,7 +27,7 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
               placeholder="Search assets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-3xl pl-10 pr-4 py-2 text-[13px] text-[var(--text-main)] focus:outline-none focus:border-[#14F195]/50 transition-all"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-3xl pl-10 pr-4 py-2 text-[13px] text-[var(--text-main)] focus:outline-none focus:border-[var(--positive)]/50 transition-all"
             />
           </div>
           <button className="flex items-center justify-center w-10 h-10 rounded-3xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">

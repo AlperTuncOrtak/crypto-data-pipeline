@@ -62,7 +62,7 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
           {/* Backdrop */}
           <div
             onClick={onClose}
-            className="absolute inset-0 bg-[#09090b]/80 backdrop-blur-md"
+            className="absolute inset-0 bg-[var(--bg-base)]/80 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -71,12 +71,12 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative w-full max-w-2xl bg-[#18181b] rounded-[24px] border border-white/[0.06] shadow-2xl overflow-hidden p-8"
+            className="relative w-full max-w-2xl bg-[var(--bg-elevated)] rounded-[24px] border border-[var(--border-subtle)] shadow-2xl overflow-hidden p-8"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-8 border-b border-white/[0.06] pb-6">
+            <div className="flex items-center justify-between mb-8 border-b border-[var(--border-subtle)] pb-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-[#10B981]/10 text-[#10B981]">
+                <div className="p-3 rounded-xl bg-[var(--positive)]/10 text-[var(--positive)]">
                   <Activity size={24} strokeWidth={2.5} />
                 </div>
                 <div>
@@ -130,7 +130,7 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
                       const data = payload[0].payload;
                       const color = data.value <= 25 ? "#EF4444" : data.value <= 45 ? "#F59E0B" : data.value <= 55 ? "#A1A1AA" : "#10B981";
                       return (
-                        <div className="bg-[#09090b] border border-white/[0.06] rounded-xl p-4 shadow-xl">
+                        <div className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-xl p-4 shadow-xl">
                           <div className="text-[11px] font-medium text-zinc-500 mb-1">{data.date}</div>
                           <div className="text-2xl font-semibold" style={{ color }}>
                             {data.value} <span className="text-[13px] text-zinc-400 font-medium ml-1">{data.classification}</span>

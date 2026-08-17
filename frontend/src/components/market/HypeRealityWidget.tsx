@@ -116,7 +116,7 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
               initial={{ width: 0 }}
               animate={{ width: `${data.onChainActivityScore}%` }}
               transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-              className={`h-full rounded-full ${isWarning ? 'bg-gray-600' : 'bg-[#14F195]'}`} 
+              className={`h-full rounded-full ${isWarning ? 'bg-gray-600' : 'bg-[var(--positive)]'}`} 
             />
           </div>
         </div>
@@ -128,12 +128,12 @@ export default function HypeRealityWidget({ symbol = "BTC" }: HypeRealityWidgetP
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
         className={`bg-[var(--bg-subtle)] rounded-3xl p-4 mt-1 border-l-4 relative z-10 ${
-          isWarning ? 'border-red-500' : isHealthy ? 'border-[#14F195]' : 'border-[var(--accent)]'
+          isWarning ? 'border-red-500' : isHealthy ? 'border-[var(--positive)]' : 'border-[var(--accent)]'
         }`}
       >
         <p className="text-[13px] text-[var(--text-muted)] leading-relaxed m-0 flex gap-3 items-start">
           <Info size={18} className={`shrink-0 mt-0.5 ${
-            isWarning ? 'text-red-400' : isHealthy ? 'text-[#14F195]' : 'text-[var(--accent)]'
+            isWarning ? 'text-red-400' : isHealthy ? 'text-[var(--positive)]' : 'text-[var(--accent)]'
           }`} />
           <span>
             <strong className="text-[var(--text-main)] font-semibold">AI Verdict: </strong> 

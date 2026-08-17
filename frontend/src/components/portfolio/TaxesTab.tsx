@@ -37,7 +37,7 @@ export default function TaxesTab({ taxData }: TaxesTabProps) {
             <h3 className="text-[14px] font-bold text-gray-300">Total Realized Gain</h3>
           </div>
           <div className="flex items-end gap-3">
-            <span className={`text-3xl font-black ${taxData.net >= 0 ? "text-[#14F195]" : "text-red-400"}`}>
+            <span className={`text-3xl font-black ${taxData.net >= 0 ? "text-[var(--positive)]" : "text-red-400"}`}>
               ${Math.abs(taxData.net).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <span className="text-[14px] font-bold text-[var(--text-muted)] mb-1">{taxData.net >= 0 ? "Profit" : "Loss"}</span>
@@ -54,7 +54,7 @@ export default function TaxesTab({ taxData }: TaxesTabProps) {
             <h3 className="text-[14px] font-bold text-gray-300">Short-Term Gains</h3>
           </div>
           <div className="flex items-end gap-3">
-            <span className={`text-3xl font-black ${taxData.shortGain >= 0 ? "text-[#14F195]" : "text-red-400"}`}>
+            <span className={`text-3xl font-black ${taxData.shortGain >= 0 ? "text-[var(--positive)]" : "text-red-400"}`}>
               ${Math.abs(taxData.shortGain).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
@@ -70,7 +70,7 @@ export default function TaxesTab({ taxData }: TaxesTabProps) {
             <h3 className="text-[14px] font-bold text-gray-300">Long-Term Gains</h3>
           </div>
           <div className="flex items-end gap-3">
-            <span className={`text-3xl font-black ${taxData.longGain >= 0 ? "text-[#14F195]" : "text-red-400"}`}>
+            <span className={`text-3xl font-black ${taxData.longGain >= 0 ? "text-[var(--positive)]" : "text-red-400"}`}>
               ${Math.abs(taxData.longGain).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
@@ -123,7 +123,7 @@ export default function TaxesTab({ taxData }: TaxesTabProps) {
                       <td className="px-6 py-4">{Number(event.qty).toLocaleString(undefined, { maximumFractionDigits: 4 })}</td>
                       <td className="px-6 py-4">${Number(event.buy_price).toLocaleString(undefined, { maximumFractionDigits: 4 })}</td>
                       <td className="px-6 py-4">${Number(event.sell_price).toLocaleString(undefined, { maximumFractionDigits: 4 })}</td>
-                      <td className={`px-6 py-4 text-right font-bold ${event.gain >= 0 ? "text-[#14F195]" : "text-red-400"}`}>
+                      <td className={`px-6 py-4 text-right font-bold ${event.gain >= 0 ? "text-[var(--positive)]" : "text-red-400"}`}>
                         {event.gain >= 0 ? "+" : ""}${Number(event.gain).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                     </tr>

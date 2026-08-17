@@ -29,7 +29,7 @@ function MatteInput({ icon: Icon, type, rightEl, ...props }: any) {
       <input
         type={type}
         {...props}
-        className="w-full bg-[#09090b] border border-white/[0.06] focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]/50 rounded-[12px] text-[14px] text-zinc-100 outline-none transition-all placeholder:text-zinc-600 font-sans"
+        className="w-full bg-[var(--bg-base)] border border-[var(--border-subtle)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[#6366f1]/50 rounded-[12px] text-[14px] text-zinc-100 outline-none transition-all placeholder:text-zinc-600 font-sans"
         style={{ padding: `12px ${rightEl ? '44px' : '16px'} 12px ${Icon ? '44px' : '16px'}` }}
       />
       {rightEl}
@@ -150,12 +150,12 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
       {/* Soft Glass Backdrop */}
       <div 
         onClick={onClose} 
-        className="fixed inset-0 z-[999] bg-[#09090b]/80 backdrop-blur-md transition-opacity duration-300"
+        className="fixed inset-0 z-[999] bg-[var(--bg-base)]/80 backdrop-blur-md transition-opacity duration-300"
       />
 
       {/* Premium Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] w-full max-w-[400px] px-4 animate-in fade-in zoom-in-95 duration-200">
-        <div className="bg-[#18181b] border border-white/[0.06] p-8 rounded-[24px] shadow-[0_32px_64px_rgba(0,0,0,0.5)] relative">
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border-subtle)] p-8 rounded-[24px] shadow-[0_32px_64px_rgba(0,0,0,0.5)] relative">
           
           {/* Close Button */}
           <button
@@ -167,7 +167,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
 
           {/* Header */}
           <div className="mb-8 text-center mt-2">
-            <div className="w-12 h-12 rounded-xl bg-[#6366f1]/10 text-[#6366f1] flex items-center justify-center text-xl font-bold mx-auto mb-4 border border-[#6366f1]/20">
+            <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center text-xl font-bold mx-auto mb-4 border border-[var(--accent)]/20">
               N
             </div>
             <h2 className="text-[20px] font-semibold text-white tracking-tight mb-1">
@@ -182,7 +182,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
           <button
             type="button"
             onClick={handleGoogle}
-            className="w-full h-12 flex items-center justify-center gap-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] rounded-[12px] text-[14px] font-medium text-white transition-all mb-6 cursor-pointer"
+            className="w-full h-12 flex items-center justify-center gap-3 bg-white/[0.03] hover:bg-white/[0.06] border border-[var(--border-subtle)] rounded-[12px] text-[14px] font-medium text-white transition-all mb-6 cursor-pointer"
           >
             <GoogleIcon /> Continue with Google
           </button>
@@ -237,13 +237,13 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
               )}
             </div>
 
-            {error && <div className="text-[#EF4444] text-[13px] px-1 py-1 mt-1 text-center">{error}</div>}
-            {success && <div className="text-[#10B981] text-[13px] px-1 py-1 mt-1 text-center flex items-center justify-center gap-1"><CheckCircle size={14}/> {success}</div>}
+            {error && <div className="text-[var(--negative)] text-[13px] px-1 py-1 mt-1 text-center">{error}</div>}
+            {success && <div className="text-[var(--positive)] text-[13px] px-1 py-1 mt-1 text-center flex items-center justify-center gap-1"><CheckCircle size={14}/> {success}</div>}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex items-center justify-center gap-2 bg-[#6366f1] hover:bg-[#4f46e5] text-white rounded-[12px] text-[14px] font-semibold transition-all disabled:opacity-50 mt-2 cursor-pointer shadow-md shadow-[#6366f1]/20"
+              className="w-full h-12 flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[#4f46e5] text-white rounded-[12px] text-[14px] font-semibold transition-all disabled:opacity-50 mt-2 cursor-pointer shadow-md shadow-[var(--accent)]/20"
             >
               {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
             </button>

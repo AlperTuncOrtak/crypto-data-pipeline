@@ -117,7 +117,7 @@ export default function VoiceAssistantWidget() {
             className="pointer-events-auto bg-[var(--bg-base)]/90 backdrop-blur-xl border border-[var(--border-base)] p-4 rounded-2xl shadow-2xl max-w-[280px]"
           >
             {aiResponse ? (
-              <div className="flex items-start gap-3 text-cyan-400">
+              <div className="flex items-start gap-3 text-[var(--accent)]">
                 <Volume2 size={16} className="shrink-0 mt-1 animate-pulse" />
                 <p className="text-sm font-medium leading-relaxed">{aiResponse}</p>
               </div>
@@ -147,14 +147,14 @@ export default function VoiceAssistantWidget() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0 bg-cyan-500 rounded-full blur-xl"
+          className="absolute inset-0 bg-[var(--accent)] rounded-full blur-xl"
         />
         
         {/* Main Button */}
         <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 ${
           isListening 
-            ? "bg-gradient-to-tr from-cyan-600 to-purple-600 shadow-[0_0_30px_rgba(34,211,238,0.5)]" 
-            : "bg-[var(--bg-elevated)] border border-[var(--border-base)] hover:border-cyan-500/50 hover:shadow-[0_0_20px_var(--accent)]"
+            ? "bg-gradient-to-tr from-cyan-600 to-purple-600 shadow-[0_0_30px_rgba(99,102,241,0.5)]" 
+            : "bg-[var(--bg-elevated)] border border-[var(--border-base)] hover:border-[var(--accent)]/50 hover:shadow-[0_0_20px_var(--accent)]"
         }`}>
           {isListening ? (
             <div className="flex items-center gap-1">
@@ -163,7 +163,7 @@ export default function VoiceAssistantWidget() {
               <motion.div animate={{ height: [8, 15, 8] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.2 }} className="w-1 bg-white rounded-full" />
             </div>
           ) : (
-            <Mic className="text-cyan-400 group-hover:scale-110 transition-transform" size={24} />
+            <Mic className="text-[var(--accent)] group-hover:scale-110 transition-transform" size={24} />
           )}
         </div>
       </button>
