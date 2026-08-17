@@ -43,6 +43,7 @@ const CreateAlert = lazy(() => import("./pages/CreateAlert"));
 import SearchCommand from "./components/ui/SearchCommand";
 import DisclaimerModal from "./components/DisclaimerModal";
 const Settings = lazy(() => import("./pages/Settings"));
+const Support = lazy(() => import("./pages/Support"));
 const Landing = lazy(() => import("./pages/Landing"));
 const Success = lazy(() => import("./pages/Success"));
 const Cancel = lazy(() => import("./pages/Cancel"));
@@ -146,13 +147,7 @@ function AppInner() {
 
       <div className="flex-1 flex flex-col min-w-0 h-screen relative z-10">
         {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
-          <TopHeader 
-            onMobileMenuToggle={() => setSidebarOpen(true)} 
-            onAuthOpen={(mode = "login") => {
-              setAuthMode(mode);
-              setAuthOpen(true);
-            }}
-          />
+          <TopHeader onMobileMenuToggle={() => setSidebarOpen(true)} />
         )}
 
         {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <CoinTicker />}
@@ -309,20 +304,35 @@ function AppInner() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/settings"
-                element={
-                  <ProtectedRoute
-                    featureName="Settings"
-                    onAuthOpen={() => {
-                      setAuthMode("login");
-                      setAuthOpen(true);
-                    }}
-                  >
-                    <Settings />
-                  </ProtectedRoute>
-                }
-              />
+                <Route 
+                  path="/settings" 
+                  element={
+                    <ErrorBoundary 
+                      fallback={<div className="p-8 text-red-500">Failed to load Settings</div>}
+                      featureName="Settings"
+                    >
+                      <Suspense fallback={<PageLoader />}>
+                        <Settings onAuthOpen={() => {
+                          setAuthMode("login");
+                          setAuthOpen(true);
+                        }} />
+                      </Suspense>
+                    </ErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/support" 
+                  element={
+                    <ErrorBoundary 
+                      fallback={<div className="p-8 text-red-500">Failed to load Support</div>}
+                      featureName="Support"
+                    >
+                      <Suspense fallback={<PageLoader />}>
+                        <Support />
+                      </Suspense>
+                    </ErrorBoundary>
+                  } 
+                />
             </Routes>
             </Suspense>
           </div>

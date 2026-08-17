@@ -104,7 +104,7 @@ function SaveButton({ loading, onClick, label = "Save Changes" }: any) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────
-export default function Settings() {
+export default function Settings({ onAuthOpen }: { onAuthOpen?: () => void }) {
   const { user, displayName, email, avatar, plan, isPro, isEnterprise } = useAuth();
   const { theme, setTheme, accent, setAccent } = useTheme();
   const navigate = useNavigate();
@@ -612,6 +612,43 @@ export default function Settings() {
 
                 </div>
               </div>
+            </div>
+          </Section>
+
+          {/* ── ACCOUNT MANAGEMENT ── */}
+          <Section title="Account Management" icon={User}>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border-subtle)]">
+                <div className="flex items-center gap-3">
+                  {avatar ? (
+                    <img src={avatar} alt="Avatar" className="w-10 h-10 rounded-full border border-[var(--border-base)] object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-[var(--bg-base)] font-bold text-sm tracking-tight shadow-sm">
+                      {displayName ? displayName.slice(0, 1).toUpperCase() : "U"}
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-[14px] font-bold text-[var(--text-main)] leading-tight">{displayName || "Current User"}</div>
+                    <div className="text-[12px] text-[var(--text-muted)] mt-1">{email || "Pro Member"} (Active)</div>
+                  </div>
+                </div>
+                <div className="px-3 py-1 rounded-full bg-[var(--positive)]/10 text-[var(--positive)] text-[10px] font-bold uppercase tracking-wider">
+                  Active
+                </div>
+              </div>
+              
+              <button 
+                onClick={onAuthOpen}
+                className="flex items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-all font-bold text-sm group"
+              >
+                <div className="w-8 h-8 rounded-full bg-[var(--bg-base)] border border-[var(--border-subtle)] group-hover:border-[var(--accent)] flex items-center justify-center transition-colors">
+                  <User size={14} />
+                </div>
+                Add New Account
+              </button>
+              <p className="text-[11px] text-[var(--text-muted)] text-center mt-2">
+                Add another account to switch between them seamlessly without logging out.
+              </p>
             </div>
           </Section>
 

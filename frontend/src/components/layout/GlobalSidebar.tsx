@@ -27,7 +27,7 @@ import {
   Sun
 } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
-import SettingsModal from '../ui/SettingsModal';
+import SearchCommand from '../ui/SearchCommand';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -63,7 +63,7 @@ const supportSection = {
   items: [
     { name: 'Alerts', path: '/alerts', icon: Bell },
     { name: 'Leaderboard', path: '/leaderboard', icon: Users },
-    { name: 'Help & Support', path: '/docs', icon: HelpCircle },
+    { name: 'Help & Support', path: '/support', icon: HelpCircle },
     { name: 'Settings', path: '/settings', icon: Settings },
     { name: 'Contact Me', path: 'mailto:support@cryptoneko.com', icon: MessageCircle },
   ]
@@ -74,7 +74,6 @@ export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOp
   const { isLoggedIn, displayName, email, avatar, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [expanded, setExpanded] = useState<string[]>(['Market Data']); // Default expand 'Market Data'
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return localStorage.getItem('cryptoneko_sidebar_collapsed') === 'true';
   });
@@ -105,9 +104,6 @@ export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOp
           to={item.subItems ? '#' : item.path}
           onClick={(e) => {
             if (item.subItems) {
-              toggleExpand(item.name, e);
-            }
-          }}
               toggleExpand(item.name, e);
             }
           }}
@@ -282,11 +278,6 @@ export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOp
           )}
         </div>
       </div>
-
-      <SettingsModal 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
-      />
     </div>
   );
 }
