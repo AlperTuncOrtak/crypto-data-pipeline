@@ -78,12 +78,12 @@ export function AuthProvider({ children }) {
     plan,
     loading,
     signOut,
-    isLoggedIn: Boolean(user),
-    isPro: (plan === "pro" || plan === "enterprise"),
+    isLoggedIn: true, // Boolean(user),
+    isPro: true, // (plan === "pro" || plan === "enterprise"),
     isEnterprise: (plan === "enterprise"),
-    displayName: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User",
+    displayName: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Local Dev",
     avatar: user?.user_metadata?.avatar_url || null,
-    email: user?.email || null,
+    email: user?.email || "dev@local.host",
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -30,9 +30,9 @@ export default function ChartAndWatchlist({
             <div className="flex gap-6">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-[#14F195] rounded-full"></div> Portfolio
+                  <div className="w-2 h-2 bg-[var(--positive)] rounded-full"></div> Portfolio
                 </span>
-                <span className={`text-[13px] font-black ${totalPnl >= 0 ? "text-[#14F195]" : "text-[#FF494A]"}`}>
+                <span className={`text-[13px] font-black ${totalPnl >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {totalCost > 0 ? `${totalPnl >= 0 ? "+" : ""}${((totalPnl / totalCost) * 100).toFixed(2)}%` : "0.00%"}
                 </span>
               </div>
@@ -40,13 +40,13 @@ export default function ChartAndWatchlist({
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div> BTC
                 </span>
-                <span className="text-[13px] font-black text-red-400">-0.33%</span>
+                <span className="text-[13px] font-black text-[var(--negative)]">-0.33%</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div> ETH
                 </span>
-                <span className="text-[13px] font-black text-red-400">-4.27%</span>
+                <span className="text-[13px] font-black text-[var(--negative)]">-4.27%</span>
               </div>
             </div>
           </div>
@@ -55,8 +55,8 @@ export default function ChartAndWatchlist({
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#14F195" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#14F195" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--positive)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--positive)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2d31" vertical={false} />
@@ -68,7 +68,7 @@ export default function ChartAndWatchlist({
                   formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'Portfolio Value']}
                   labelFormatter={(label) => `Time: ${label}`}
                 />
-                <Area type="monotone" dataKey="value" stroke="#14F195" strokeWidth={3} fill="url(#colorValue)" />
+                <Area type="monotone" dataKey="value" stroke="var(--positive)" strokeWidth={3} fill="url(#colorValue)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -91,7 +91,7 @@ export default function ChartAndWatchlist({
                     <span className="text-[11px] font-bold text-[var(--text-main)] truncate">{asset.symbol}</span>
                   </div>
                   <div className="text-[15px] font-black text-[var(--text-main)]">${(asset.current_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className={`text-[10px] font-bold ${(asset.change_24h ?? 0) >= 0 ? 'text-[#14F195]' : 'text-red-400'}`}>
+                  <div className={`text-[10px] font-bold ${(asset.change_24h ?? 0) >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}>
                     {(asset.change_24h ?? 0) >= 0 ? '+' : ''}{(asset.change_24h ?? 0).toFixed(2)}%
                   </div>
                 </div>
@@ -99,7 +99,7 @@ export default function ChartAndWatchlist({
                 <div className="h-10 mt-2 opacity-50 group-hover:opacity-100 transition-opacity">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={sparklines?.[asset.symbol.toUpperCase()] || [{ price: 0 }, { price: 0 }]}>
-                      <Line type="monotone" dataKey="price" stroke={(asset.change_24h ?? 0) >= 0 ? "#14F195" : "#f87171"} strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="price" stroke={(asset.change_24h ?? 0) >= 0 ? "var(--positive)" : "var(--negative)"} strokeWidth={1.5} dot={false} isAnimationActive={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -161,15 +161,15 @@ export default function ChartAndWatchlist({
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">{newsItem.source}</span>
-                      <span className="text-[9px] text-[#14F195] opacity-80">{new Date(newsItem.published_on * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="text-[9px] text-[var(--positive)] opacity-80">{new Date(newsItem.published_on * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                   </div>
                 </a>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center h-full opacity-50 space-y-3 pt-6">
-                <div className="animate-spin w-6 h-6 border-2 border-[#14F195] border-t-transparent rounded-full" />
-                <div className="text-xs font-semibold text-[#14F195] uppercase tracking-widest">Fetching Live Intel</div>
+                <Activity className="text-[var(--positive)] animate-pulse" size={14} />
+                <div className="text-xs font-semibold text-[var(--positive)] uppercase tracking-widest">Fetching Live Intel</div>
               </div>
             )}
           </div>

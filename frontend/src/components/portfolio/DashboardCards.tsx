@@ -24,7 +24,7 @@ export default function DashboardCards({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Card 1: Total Equity */}
-      <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col justify-between">
+      <div className="p-6 rounded-[20px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between">
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="text-[12px] font-bold text-[var(--text-muted)] mb-1">Total equity</div>
@@ -39,7 +39,7 @@ export default function DashboardCards({
                 <Line
                   type="monotone"
                   dataKey="v"
-                  stroke="#14F195"
+                  stroke="var(--positive)"
                   strokeWidth={2}
                   dot={false}
                   isAnimationActive={false}
@@ -51,20 +51,20 @@ export default function DashboardCards({
         <div className="flex items-center justify-between text-[11px] font-bold border-t border-[var(--border-subtle)] pt-4">
           <div>
             <div className="text-[var(--text-muted)] mb-1">P&L</div>
-            <div className={totalPnl >= 0 ? "text-[#14F195]" : "text-red-400"}>
+            <div className={totalPnl >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
               {totalPnl >= 0 ? "+" : "-"}$
               {Math.abs(totalPnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
           <div>
             <div className="text-[var(--text-muted)] mb-1">Gain</div>
-            <div className={totalPnl >= 0 ? "text-[#14F195]" : "text-red-400"}>
+            <div className={totalPnl >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
               {totalCost > 0 ? `${totalPnl >= 0 ? "+" : ""}${((totalPnl / totalCost) * 100).toFixed(2)}%` : "—"}
             </div>
           </div>
           <div>
             <div className="text-[var(--text-muted)] mb-1">Realized</div>
-            <div className={taxData.net >= 0 ? "text-[#14F195]" : "text-red-400"}>
+            <div className={taxData.net >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
               {taxData.net >= 0 ? "+" : "-"}$
               {Math.abs(taxData.net).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
@@ -73,7 +73,7 @@ export default function DashboardCards({
       </div>
 
       {/* Card 2: Allocation */}
-      <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col justify-between">
+      <div className="p-6 rounded-[20px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between">
         <div className="text-[12px] font-bold text-[var(--text-muted)] mb-6">Allocation</div>
         <div className="flex h-3 rounded-full overflow-hidden mb-6">
           {allocation.map((item, i) => (
@@ -94,8 +94,8 @@ export default function DashboardCards({
       </div>
 
       {/* Card 3: Buying Power */}
-      <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-blue-600 text-[9px] font-black px-3 py-1 rounded-bl-lg text-[var(--text-main)]">
+      <div className="p-6 rounded-[20px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div className="absolute top-0 right-0 bg-[var(--accent-muted)] border-b border-l border-[var(--border-subtle)] text-[9px] font-black px-3 py-1 rounded-bl-lg text-[var(--text-main)]">
           Stablecoins
         </div>
         <div>

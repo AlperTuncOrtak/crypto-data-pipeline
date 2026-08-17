@@ -1,33 +1,50 @@
 import { motion } from "framer-motion";
 import { LiFiWidget, WidgetConfig } from '@lifi/widget';
 import AITradeInsights from "../../components/market/AITradeInsights";
+import { useTheme } from "../../hooks/useTheme";
 
-const widgetConfig: WidgetConfig = {
-  integrator: 'crypto-data-pipeline',
-  theme: {
-    palette: {
-      mode: 'dark',
-      primary: { main: '#14F195' },
-      background: {
-        paper: 'rgba(255, 255, 255, 0.04)', // match our GLASS_BG
-        default: '#0a0b0d'
-      },
-    },
-    shape: {
-      borderRadius: 24,
-      borderRadiusSecondary: 16
-    },
-    typography: {
-      fontFamily: 'inherit'
-    }
-  },
-  appearance: 'dark',
-  hiddenUI: ['appearance', 'language', 'poweredBy'],
-  variant: 'default' as any,
-  subvariant: 'default' as any,
-};
-
+// Move config inside component so it can react to theme
 export default function SwapInterface() {
+  const { theme, accent } = useTheme();
+  const isLight = theme === 'light';
+
+  // Define accent colors
+  const accentColors: Record<string, string> = {
+    purple: '#6366f1',
+    emerald: '#10b981',
+    rose: '#f43f5e',
+    amber: '#f59e0b',
+    blue: '#3b82f6',
+    slate: '#64748b'
+  };
+  
+  const currentAccent = accentColors[accent] || '#6366f1';
+
+  const widgetConfig: WidgetConfig = {
+    integrator: 'crypto-data-pipeline',
+    theme: {
+      palette: {
+        mode: isLight ? 'light' : 'dark',
+        primary: { main: currentAccent },
+        background: {
+          paper: isLight ? '#ffffff' : '#18181b', // Match var(--bg-elevated)
+          default: isLight ? '#fafaf9' : '#09090b'
+        },
+      },
+      shape: {
+        borderRadius: 24,
+        borderRadiusSecondary: 16
+      },
+      typography: {
+        fontFamily: 'inherit'
+      }
+    },
+    appearance: isLight ? 'light' : 'dark',
+    hiddenUI: ['appearance', 'language', 'poweredBy'],
+    variant: 'default' as any,
+    subvariant: 'default' as any,
+  };
+
   return (
     <div className="w-full">
       <motion.div 

@@ -49,8 +49,8 @@ export default function Sparkline({ prices, width = 120, height = 40, trendOverr
     isUp = values[values.length - 1] >= values[0]
   }
 
-  const stroke = isUp ? '#34d399' : '#f87171'   // emerald-400 / red-400
-  const fill = isUp ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)'
+  const stroke = isUp ? 'var(--positive)' : 'var(--negative)'
+  const fill = isUp ? 'var(--positive-muted)' : 'var(--negative-muted)'
 
 
   // Her noktayi SVG koordinatina cevir

@@ -27,9 +27,9 @@ export default function LivePrice({ value, format }: LivePriceProps) {
   const baseClasses = "transition-all duration-300 rounded px-1 -mx-1";
   const flashClasses = 
     flash === "up" 
-      ? "text-[var(--accent)] bg-[var(--accent)]/10 drop-shadow-[0_0_8px_var(--accent)]" 
+      ? "text-[var(--positive)] bg-[var(--positive)]/10 drop-shadow-[0_0_8px_var(--positive)]" 
       : flash === "down" 
-      ? "text-red-400 bg-red-500/10 drop-shadow-[0_0_8px_#ef4444]" 
+      ? "text-[var(--negative)] bg-[var(--negative)]/10 drop-shadow-[0_0_8px_var(--negative)]" 
       : "text-[var(--text-main)]";
 
   return (

@@ -147,8 +147,8 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
             onClick={() => setPage(Number(p))}
             className={`w-8 h-8 rounded-2xl border text-xs font-bold transition-all ${
               p === page 
-                ? "bg-[var(--accent)] text-black border-[var(--accent)]" 
-                : "bg-white/5 text-[var(--text-muted)] border-[var(--border-base)] hover:bg-[var(--border-base)] hover:text-[var(--text-main)]"
+                ? "bg-[var(--accent)] text-white border-[var(--accent)] shadow-md" 
+                : "bg-[var(--bg-subtle)] text-[var(--text-muted)] border-[var(--border-base)] hover:bg-[var(--bg-overlay)] hover:text-[var(--text-main)]"
             }`}
           >
             {p}
@@ -159,7 +159,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
       <button
         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
         disabled={page === totalPages}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-2xl border border-[var(--border-base)] bg-white/5 text-xs font-bold transition-all disabled:opacity-50 hover:bg-[var(--border-base)] text-[var(--text-main)]"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-2xl border border-[var(--border-base)] bg-[var(--bg-subtle)] text-xs font-bold transition-all disabled:opacity-50 hover:bg-[var(--bg-overlay)] text-[var(--text-main)]"
       >
         Next <ChevronRight size={13} />
       </button>
@@ -171,7 +171,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
       {/* BACKGROUND GLOWS (Stripe inspired mesh at the top) */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
         <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
-        <div className="w-[600px] h-[250px] bg-[#059669] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[var(--positive)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
       </div>
 
       <div className="max-w-[1320px] mx-auto relative z-20">
@@ -185,9 +185,9 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-green-500/10 border border-green-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse" />
-              <span className="text-[11px] font-black tracking-widest text-green-500">LIVE</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--positive-muted)] border border-[var(--border-subtle)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--positive)] shadow-[0_0_8px_var(--positive)] animate-pulse" />
+              <span className="text-[11px] font-black tracking-widest text-[var(--positive)]">LIVE</span>
             </div>
           </div>
         </div>
@@ -212,14 +212,14 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
               {topGainers.map((coin: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 text-sm font-bold">
                   <span className="text-[var(--text-main)]">{coin.symbol.toUpperCase()}</span>
-                  <span className="text-[var(--accent)]">+{Number(coin.price_change_percentage_24h).toFixed(2)}%</span>
+                  <span className="text-[var(--positive)]">+{Number(coin.price_change_percentage_24h).toFixed(2)}%</span>
                 </div>
               ))}
               {/* Duplicate for seamless loop */}
               {topGainers.map((coin: any, i: number) => (
                 <div key={`dup-${i}`} className="flex items-center gap-2 text-sm font-bold">
                   <span className="text-[var(--text-main)]">{coin.symbol.toUpperCase()}</span>
-                  <span className="text-[var(--accent)]">+{Number(coin.price_change_percentage_24h).toFixed(2)}%</span>
+                  <span className="text-[var(--positive)]">+{Number(coin.price_change_percentage_24h).toFixed(2)}%</span>
                 </div>
               ))}
             </div>
@@ -232,7 +232,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
         <div className="bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-2xl rounded-[32px] overflow-hidden">
           
           {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-[var(--border-subtle)] bg-white/[0.02]">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]">
             <div className="flex flex-wrap items-center gap-4">
               <div className="relative w-[300px]">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
@@ -240,12 +240,12 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(1); }}
                   placeholder={t("market.search_placeholder")}
-                  className="w-full bg-[#111113] border border-[var(--border-base)] rounded-3xl py-2 pl-9 pr-4 text-[13px] font-medium text-[var(--text-main)] placeholder-white/30 outline-none focus:border-[var(--accent)] transition-all"
+                  className="w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl py-2 pl-9 pr-4 text-[13px] font-medium text-[var(--text-main)] placeholder-[var(--text-faint)] outline-none focus:border-[var(--accent)] transition-all"
                 />
               </div>
 
               {/* Segmented Tabs */}
-              <div className="flex items-center p-1 bg-[#111113] border border-[var(--border-base)] rounded-3xl hidden md:flex">
+              <div className="flex items-center p-1 bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl hidden md:flex">
                 {[
                   { id: "all", label: "🔥 All Assets" },
                   { id: "trending", label: "💎 Trending" },
@@ -262,7 +262,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                       else if (tab.id === "trending") setSort({ key: "total_volume", direction: "desc" });
                       else setSort({ key: "market_cap", direction: "desc" });
                     }}
-                    className={`px-4 py-1.5 rounded-2xl text-xs font-bold transition-all ${activeTab === tab.id ? "bg-white/10 text-[var(--text-main)] shadow-sm" : "text-[var(--text-muted)] hover:text-gray-300 hover:bg-[var(--border-subtle)]"}`}
+                    className={`px-4 py-1.5 rounded-2xl text-xs font-bold transition-all ${activeTab === tab.id ? "bg-[var(--bg-elevated)] text-[var(--text-main)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-overlay)]"}`}
                   >
                     {tab.label}
                   </button>
@@ -275,7 +275,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
           <div className="w-full overflow-x-auto">
             <div className="min-w-[950px]">
               {/* Column Headers */}
-              <div className="grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-base)]/95 backdrop-blur-xl items-center gap-2 sticky top-0 z-10 shadow-md">
+              <div className="grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)] items-center gap-2 sticky top-0 z-10 shadow-sm">
                 <div />
                 <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">#</div>
                 <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{t("market.table.name")}</div>
@@ -311,7 +311,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
           )}
 
               {/* Rows */}
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-[var(--border-subtle)]">
                 {paginated.map((coin: any, idx: number) => {
                   const change = Number(coin.price_change_percentage_24h);
                   const isUp = change >= 0;
@@ -333,7 +333,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: idx * 0.01 }}
                       onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                      className={`grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 items-center gap-2 group transition-colors ${coin.slug ? "cursor-pointer hover:bg-white/[0.03]" : ""}`}
+                      className={`grid grid-cols-[36px_44px_2.2fr_130px_110px_140px_130px_90px_70px] px-5 py-3 items-center gap-2 group transition-colors ${coin.slug ? "cursor-pointer hover:bg-[var(--bg-overlay)]" : ""}`}
                     >
                       {/* Star */}
                       <div onClick={e => e.stopPropagation()}>

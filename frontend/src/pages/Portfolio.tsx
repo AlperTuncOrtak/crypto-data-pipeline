@@ -160,10 +160,9 @@ export default function Portfolio() {
   }, [holdings]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] pt-24 pb-32 overflow-x-hidden selection:bg-[#14F195]/30 relative font-sans">
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#14F195]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-[var(--bg-base)] pt-24 pb-32 overflow-x-hidden selection:bg-[var(--accent)]/30 relative font-sans">
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[var(--accent)]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[var(--accent)]/5 rounded-full blur-[120px] pointer-events-none" />
       
       <div className="max-w-[1400px] mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
@@ -186,14 +185,14 @@ export default function Portfolio() {
             
             <button
               onClick={() => setIsRebalanceOpen(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600/20 to-purple-800/20 hover:from-purple-600/40 hover:to-purple-800/40 text-purple-400 border border-purple-500/30 font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-[0_0_20px_var(--accent)] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] group"
+              className="flex items-center gap-2 bg-[var(--bg-subtle)] hover:bg-[var(--bg-elevated)] text-[var(--text-main)] border border-[var(--border-subtle)] hover:border-[var(--border-base)] font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm group"
             >
-              <Brain size={16} className="group-hover:scale-110 transition-transform" />
+              <Brain size={16} className="group-hover:scale-110 transition-transform text-[var(--accent)]" />
               AI Rebalance
             </button>
             <button
               onClick={() => setShowAddSource(true)}
-              className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[#11d885] text-[#0a0b0d] font-black py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-[0_0_20px_var(--accent)] hover:shadow-[0_0_30px_rgba(20,241,149,0.4)] hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-md shadow-[var(--accent)]/20 hover:-translate-y-0.5"
             >
               <Plus size={16} strokeWidth={3} />
               Add Source
@@ -206,7 +205,7 @@ export default function Portfolio() {
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
-              className={`px-6 py-2.5 rounded-3xl text-[13px] font-bold capitalize transition-all duration-300 ${activeTab === tab ? "bg-white/10 text-[var(--text-main)] shadow-lg border border-[var(--border-subtle)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--border-subtle)]"}`}
+              className={`px-6 py-2.5 rounded-3xl text-[13px] font-bold capitalize transition-all duration-300 ${activeTab === tab ? "bg-[var(--bg-elevated)] text-[var(--text-main)] shadow-sm border border-[var(--border-base)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] border border-transparent"}`}
             >
               {tab}
             </button>

@@ -41,7 +41,7 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider bg-white/[0.02]">
+                <tr className="border-b border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider bg-[var(--bg-subtle)]">
                   <th className="px-6 py-4">Asset</th>
                   <th className="px-6 py-4">Type</th>
                   <th className="px-6 py-4">Price</th>
@@ -53,11 +53,11 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
               </thead>
               <tbody className="text-[13px] text-gray-300 divide-y divide-white/5">
                 {filteredTrades.map((trade, idx) => (
-                  <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={idx} className="hover:bg-[var(--bg-overlay)] transition-colors">
                     <td className="px-6 py-4 font-bold text-[var(--text-main)] flex items-center gap-3">
                       <img
                         src={`https://assets.coincap.io/assets/icons/${trade.symbol.toLowerCase()}@2x.png`}
-                        className="w-6 h-6 rounded-full bg-white/10"
+                        className="w-6 h-6 rounded-full bg-[var(--bg-subtle)]"
                         alt={trade.symbol}
                         onError={(e: any) => {
                           e.target.src = "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=024";
@@ -68,7 +68,7 @@ export default function HistoryTab({ trades }: HistoryTabProps) {
                     <td className="px-6 py-4">
                       <div
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-2xl text-[11px] font-bold ${
-                          trade.side === "buy" ? "bg-[#14F195]/10 text-[#14F195]" : "bg-red-500/10 text-red-400"
+                          trade.side === "buy" ? "bg-[var(--positive-muted)] text-[var(--positive)]" : "bg-[var(--negative-muted)] text-[var(--negative)]"
                         }`}
                       >
                         {trade.side === "buy" ? <ArrowDownRight size={14} /> : <ArrowUpRight size={14} />}
