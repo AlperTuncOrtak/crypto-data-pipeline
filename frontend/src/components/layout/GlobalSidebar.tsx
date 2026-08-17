@@ -63,9 +63,9 @@ const supportSection = {
   items: [
     { name: 'Alerts', path: '/alerts', icon: Bell },
     { name: 'Leaderboard', path: '/leaderboard', icon: Users },
-    { name: 'Help & Support', path: '/support', icon: HelpCircle },
-    { name: 'Settings', path: '#', icon: Settings },
-    { name: 'Contact Me', path: '/contact', icon: MessageCircle },
+    { name: 'Help & Support', path: '/docs', icon: HelpCircle },
+    { name: 'Settings', path: '/settings', icon: Settings },
+    { name: 'Contact Me', path: 'mailto:support@cryptoneko.com', icon: MessageCircle },
   ]
 };
 
@@ -104,12 +104,10 @@ export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOp
         <NavLink
           to={item.subItems ? '#' : item.path}
           onClick={(e) => {
-            if (item.name === 'Settings') {
-              e.preventDefault();
-              setIsSettingsOpen(true);
-              return;
-            }
             if (item.subItems) {
+              toggleExpand(item.name, e);
+            }
+          }}
               toggleExpand(item.name, e);
             }
           }}

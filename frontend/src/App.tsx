@@ -146,7 +146,13 @@ function AppInner() {
 
       <div className="flex-1 flex flex-col min-w-0 h-screen relative z-10">
         {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
-          <TopHeader onMobileMenuToggle={() => setSidebarOpen(true)} />
+          <TopHeader 
+            onMobileMenuToggle={() => setSidebarOpen(true)} 
+            onAuthOpen={(mode = "login") => {
+              setAuthMode(mode);
+              setAuthOpen(true);
+            }}
+          />
         )}
 
         {location.pathname !== "/onboarding" && location.pathname !== "/terminal" && <CoinTicker />}

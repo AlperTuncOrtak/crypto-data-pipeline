@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
-export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?: () => void }) {
+export default function TopHeader({ onMobileMenuToggle, onAuthOpen }: { onMobileMenuToggle?: () => void, onAuthOpen?: (mode?: string) => void }) {
   const location = useLocation();
   const { signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -212,13 +212,21 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
                      <div className="absolute right-[2px] top-[2px] w-3 h-3 bg-white rounded-full shadow-sm"></div>
                    </div>
                  </button>
-                 <button className="w-full px-4 py-2.5 text-sm text-gray-300 hover:bg-[var(--border-subtle)] flex justify-between items-center transition-colors">
+                 <button className="w-full px-4 py-2.5 text-sm text-[var(--text-main)] hover:bg-[var(--border-subtle)] flex justify-between items-center transition-colors">
                    Language <span className="text-xs text-[var(--text-muted)] bg-white/5 px-2 py-1 rounded">English</span>
                  </button>
                  <div className="my-2 border-t border-[var(--border-subtle)]"></div>
+                 {onAuthOpen && (
+                   <button 
+                     onClick={() => { setActivePopover(null); onAuthOpen("register"); }}
+                     className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-main)] hover:bg-[var(--border-subtle)] transition-colors flex items-center gap-2"
+                   >
+                     Add Account
+                   </button>
+                 )}
                  <button 
                    onClick={() => { setActivePopover(null); signOut(); }}
-                   className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                   className="w-full text-left px-4 py-2.5 text-sm text-[var(--negative)] hover:bg-[var(--negative)]/10 transition-colors flex items-center gap-2"
                  >
                    Sign Out
                  </button>
