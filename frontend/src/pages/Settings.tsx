@@ -18,7 +18,7 @@ function Toast({ message, type }: { message: string; type: string }) {
   const Icon = isSuccess ? CheckCircle : AlertTriangle;
   return (
     <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border text-[14px] mb-6 font-medium ${
-      isSuccess ? "bg-[#05b169]/10 border-[#05b169]/20 text-[#05b169]" : "bg-[#ef4444]/10 border-[#ef4444]/20 text-[#ef4444]"
+      isSuccess ? "bg-[var(--positive)]/10 border-[var(--positive)]/20 text-[var(--positive)]" : "bg-[var(--negative)]/10 border-[var(--negative)]/20 text-[var(--negative)]"
     }`}>
       <Icon size={16} className="shrink-0" />
       {message}
@@ -70,7 +70,7 @@ function Input({ value, onChange, placeholder, type = "text", disabled, readOnly
         className={`w-full px-5 py-3.5 rounded-2xl border text-[14px] outline-none transition-all ${
           readOnly || disabled 
             ? "bg-white/5 border-transparent text-[var(--text-muted)] cursor-not-allowed" 
-            : "bg-[var(--bg-base)] border-[var(--border-subtle)] text-[var(--text-main)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[#0052ff]"
+            : "bg-[var(--bg-base)] border-[var(--border-subtle)] text-[var(--text-main)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]"
         }`}
         style={{ paddingRight: isPassword || suffix ? 44 : 20 }}
       />
@@ -291,7 +291,7 @@ export default function Settings() {
   // ── Render ───────────────────────────────────────────────────
   return (
     <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden">
-      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[#533afd] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[#f96bee] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[var(--accent-hover)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       <div className="max-w-[720px] mx-auto relative z-20">
         {/* Header */}
@@ -314,8 +314,8 @@ export default function Settings() {
             <div className="flex items-center gap-5 mb-6">
               <div className="relative">
                 {avatar
-                  ? <img src={avatar} className="w-[80px] h-[80px] rounded-full object-cover border-4 border-[#0a0b0d] shadow-xl" />
-                  : <div className="w-[80px] h-[80px] rounded-full bg-gradient-to-br from-[#0052ff] to-[#003ecc] flex items-center justify-center text-3xl font-black text-[var(--text-main)] shadow-xl">
+                  ? <img src={avatar} className="w-[80px] h-[80px] rounded-full object-cover border-4 border-[var(--bg-base)] shadow-xl" />
+                  : <div className="w-[80px] h-[80px] rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-hover)] flex items-center justify-center text-3xl font-black text-[var(--text-main)] shadow-xl">
                       {displayName?.slice(0,1).toUpperCase()}
                     </div>
                 }
@@ -402,7 +402,7 @@ export default function Settings() {
               </div>
             </Field>
 
-            <div className="p-5 rounded-2xl bg-[#1a1b1e] border border-[var(--border-subtle)] flex items-center justify-between mt-4">
+            <div className="p-5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] flex items-center justify-between mt-4">
               <div>
                 <div className="text-[14px] font-bold text-[var(--text-main)] mb-1.5">{t("settings.2fa")}</div>
                 <div className="text-[12px] font-medium text-[var(--text-muted)]">{t("settings.2fa_desc")}</div>
@@ -490,7 +490,7 @@ export default function Settings() {
                   <button
                     onClick={() => toggleNotif(key)}
                     className={`relative w-12 h-6 rounded-full transition-colors shrink-0 outline-none border ${
-                      notif[key] !== false ? "bg-[var(--accent)] border-[var(--accent)]" : "bg-[#1a1b1e] border-[var(--border-base)]"
+                      notif[key] !== false ? "bg-[var(--accent)] border-[var(--accent)]" : "bg-[var(--bg-elevated)] border-[var(--border-base)]"
                     }`}
                   >
                     <div className={`absolute top-[2px] w-[18px] h-[18px] rounded-full transition-all duration-300 shadow-md ${
@@ -557,7 +557,7 @@ export default function Settings() {
                     </div>
                     <div className="rounded-3xl overflow-hidden border border-[var(--border-subtle)] shadow-inner">
                       <div className="bg-[var(--bg-base)] h-3 border-b border-[var(--border-subtle)]" />
-                      <div className="bg-[#0C0C0E] h-10 flex items-center gap-2 px-3">
+                      <div className="bg-[var(--bg-base)] h-10 flex items-center gap-2 px-3">
                         <div className="h-2 rounded-full bg-[var(--accent)] w-4" />
                         <div className="h-2 rounded-full bg-white/10 w-6" />
                       </div>
@@ -579,7 +579,7 @@ export default function Settings() {
                       {theme === 'dark' && <CheckCircle size={16} className="text-[var(--accent)]" />}
                     </div>
                     <div className="rounded-3xl overflow-hidden border border-[var(--border-subtle)] shadow-inner">
-                      <div className="bg-[#111113] h-3 border-b border-[var(--border-subtle)]" />
+                      <div className="bg-[var(--bg-subtle)] h-3 border-b border-[var(--border-subtle)]" />
                       <div className="bg-[var(--bg-subtle)] h-10 flex items-center gap-2 px-3">
                         <div className="h-2 rounded-full bg-[var(--accent)] w-4" />
                         <div className="h-2 rounded-full bg-white/10 w-6" />
@@ -602,8 +602,8 @@ export default function Settings() {
                       {theme === 'light' && <CheckCircle size={16} className="text-[var(--accent)]" />}
                     </div>
                     <div className="rounded-3xl overflow-hidden border border-black/10 shadow-inner">
-                      <div className="bg-[#f7f7f9] h-3 border-b border-black/5" />
-                      <div className="bg-[#ffffff] h-10 flex items-center gap-2 px-3">
+                      <div className="bg-[var(--bg-subtle)] h-3 border-b border-black/5" />
+                      <div className="bg-[var(--bg-base)] h-10 flex items-center gap-2 px-3">
                         <div className="h-2 rounded-full bg-[var(--accent)] w-4" />
                         <div className="h-2 rounded-full bg-black/10 w-6" />
                       </div>
@@ -617,14 +617,14 @@ export default function Settings() {
 
           {/* ── DANGER ZONE ── */}
           <Section title={t("settings.danger_zone")} icon={Shield}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-2xl bg-[#ef4444]/5 border border-[#ef4444]/20 mt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-2xl bg-[var(--negative)]/5 border border-[var(--negative)]/20 mt-2">
               <div className="mb-4 sm:mb-0">
                 <div className="text-[15px] font-bold text-[var(--text-main)] mb-1.5">{t("settings.delete_account")}</div>
                 <div className="text-[13px] font-medium text-[var(--text-muted)]">{t("settings.delete_account_desc")}</div>
               </div>
               <button
                 onClick={() => { if (window.confirm(t("settings.delete_confirm"))) { alert(t("settings.delete_support")); } }}
-                className="px-6 py-3 rounded-3xl bg-[#ef4444]/10 border border-[#ef4444]/20 text-[#ef4444] hover:bg-[#ef4444]/20 text-[13px] font-bold transition-all whitespace-nowrap shrink-0"
+                className="px-6 py-3 rounded-3xl bg-[var(--negative)]/10 border border-[var(--negative)]/20 text-[var(--negative)] hover:bg-[var(--negative)]/20 text-[13px] font-bold transition-all whitespace-nowrap shrink-0"
               >
                 {t("settings.delete_account")}
               </button>

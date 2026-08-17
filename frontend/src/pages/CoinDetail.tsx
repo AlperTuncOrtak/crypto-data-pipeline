@@ -188,7 +188,7 @@ export default function CoinDetail() {
     ? Number(chartData.at(-1)?.price) >= Number(chartData[0]?.price)
     : isPositive;
 
-  const chartColor = chartTrend ? "#22c55e" : "#ef4444";
+  const chartColor = chartTrend ? "var(--positive)" : "var(--negative)";
   const brandColor = getCoinColor(coin.symbol);
   const athPct = coin.ath && coin.current_price
     ? (((Number(coin.current_price) - Number(coin.ath)) / Number(coin.ath)) * 100).toFixed(1)
@@ -265,7 +265,7 @@ export default function CoinDetail() {
 
           {/* Right: price + change */}
           <div className="flex flex-col md:items-end text-left md:text-right pt-2">
-            <div className={`font-mono text-6xl md:text-[5rem] font-black tracking-tighter leading-none flex items-center md:justify-end gap-1 transition-colors duration-500 drop-shadow-xl ${priceFlash === 'up' ? 'text-green-400' : priceFlash === 'down' ? 'text-red-400' : 'text-[var(--text-main)]'}`}>
+            <div className={`font-mono text-6xl md:text-[5rem] font-black tracking-tighter leading-none flex items-center md:justify-end gap-1 transition-colors duration-500 drop-shadow-xl ${priceFlash === 'up' ? 'text-[var(--positive)]' : priceFlash === 'down' ? 'text-[var(--negative)]' : 'text-[var(--text-main)]'}`}>
               <span className="opacity-40 font-sans text-5xl md:text-6xl mr-1">$</span>
               <NumberFlow 
                 value={Number(coin.current_price) || 0}
@@ -282,7 +282,7 @@ export default function CoinDetail() {
             </div>
             
             {athPct !== null && (
-              <div className={`font-mono text-sm font-bold mt-3 opacity-80 ${Number(athPct) < 0 ? "text-red-400" : "text-green-400"}`}>
+              <div className={`font-mono text-sm font-bold mt-3 opacity-80 ${Number(athPct) < 0 ? "text-[var(--negative)]" : "text-[var(--positive)]"}`}>
                 {athPct}% {Number(athPct) < 0 ? "from ATH" : "above ATH"}
               </div>
             )}
@@ -377,7 +377,7 @@ export default function CoinDetail() {
                       />
                       <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1, strokeDasharray: '4 4' }} />
                       <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={3} fill="url(#cg)" dot={false}
-                        activeDot={{ r: 6, fill: chartColor, stroke: "#19191c", strokeWidth: 4 }}
+                        activeDot={{ r: 6, fill: chartColor, stroke: "var(--bg-base)", strokeWidth: 4 }}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
