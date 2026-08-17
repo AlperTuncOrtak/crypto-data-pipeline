@@ -29,9 +29,9 @@ export default function MobileNav() {
       className="md:hidden fixed bottom-0 left-0 right-0 z-[100]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="absolute inset-0 bg-[var(--bg-base)]/90 backdrop-blur-2xl border-t border-[var(--border-base)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[var(--bg-elevated)]/90 backdrop-blur-2xl border-t border-[var(--border-subtle)] pointer-events-none"></div>
       
-      <div className="relative z-10 flex items-center justify-between px-6 py-4">
+      <div className="relative z-10 flex items-center justify-between px-2 sm:px-6 py-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -41,19 +41,19 @@ export default function MobileNav() {
               key={item.path} 
               to={item.path}
               onClick={handleHaptic}
-              className="relative flex flex-col items-center justify-center gap-1 min-w-[50px]"
+              className="relative flex flex-col items-center justify-center gap-[2px] flex-1"
             >
-              <div className={`relative flex items-center justify-center p-2 rounded-3xl transition-colors ${isActive ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)] hover:text-gray-300'}`}>
+              <div className={`relative flex items-center justify-center p-1.5 rounded-2xl transition-colors ${isActive ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}>
                 {isActive && (
                   <motion.div 
                     layoutId="mobileNavIndicator"
-                    className="absolute inset-0 bg-white/10 rounded-3xl"
+                    className="absolute inset-0 bg-[var(--bg-overlay)] border border-[var(--border-subtle)] rounded-2xl"
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   />
                 )}
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className="relative z-10" />
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className="relative z-10" />
               </div>
-              <span className={`text-[10px] font-bold tracking-wide ${isActive ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
+              <span className={`text-[9px] font-bold tracking-wide ${isActive ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
                 {item.label}
               </span>
             </Link>

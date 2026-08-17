@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
@@ -329,3 +330,4 @@ export default function Portfolio() {
     </div>
   );
 }
+

@@ -22,7 +22,7 @@ const ToastContext = createContext(null);
 // ── Ses üret (Web Audio API — harici dosya gerektirmez) ──────
 function playAlertSound(type = "neutral") {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
 
     function beep(freq, startTime, duration) {
       const osc = ctx.createOscillator();
@@ -224,7 +224,7 @@ export function useAlertMonitor(marketData, isPro = false) {
       
       const lastCheck = Number(localStorage.getItem("last_spike_check") || 0);
       const now = Date.now();
-      localStorage.setItem("last_spike_check", now);
+      localStorage.setItem("last_spike_check", now.toString());
 
       for (const spike of spikes) {
         if (!spike.timestamp) continue;
@@ -252,6 +252,7 @@ export function useAlertMonitor(marketData, isPro = false) {
           sendBrowserNotification(
             `${emoji} ${spike.symbol} Volume Spike Detected`,
             `${spike.multiplier}x above normal — unusual activity detected`,
+            undefined
           );
       }
     } catch (e) {

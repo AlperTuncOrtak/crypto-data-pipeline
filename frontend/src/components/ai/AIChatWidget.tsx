@@ -88,7 +88,7 @@ function AudioVisualizer({ isSpeaking, isListening }: { isSpeaking: boolean, isL
 
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<any[]>([
     { role: 'assistant', content: 'CryptoNeko AI online. I analyze live market data and on-chain metrics. How can I assist you today?' }
   ]);
   const [inputValue, setInputValue] = useState('');

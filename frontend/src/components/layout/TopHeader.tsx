@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell, Settings, Calendar, ChevronDown, Menu, Check } from 'lucide-react';
+import { Bell, Settings, Calendar, ChevronDown, Menu, Check, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?: () => void }) {
   const location = useLocation();
   const { signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('Last week');
@@ -31,19 +33,19 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
   if (location.pathname === '/') pageName = 'Overview';
 
   return (
-    <div className="h-16 flex items-center justify-between px-6 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/80 backdrop-blur-md sticky top-0 z-40">
+    <div className="h-16 flex items-center justify-between px-3 sm:px-6 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/80 backdrop-blur-md sticky top-0 z-40">
       
       {/* Left: Breadcrumbs & Mobile Toggle */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {onMobileMenuToggle && (
-          <button onClick={onMobileMenuToggle} className="md:hidden p-2 text-[var(--text-muted)] hover:text-[var(--text-main)]">
+          <button onClick={onMobileMenuToggle} className="md:hidden p-1.5 sm:p-2 text-[var(--text-muted)] hover:text-[var(--text-main)]">
             <Menu size={20} />
           </button>
         )}
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-[var(--text-muted)]">Overview</span>
-          <span className="text-gray-600">/</span>
-          <span className="text-[var(--text-main)] font-medium">{pageName}</span>
+          <span className="hidden sm:inline text-[var(--text-muted)]">Overview</span>
+          <span className="hidden sm:inline text-gray-600">/</span>
+          <span className="text-[var(--text-main)] font-medium truncate max-w-[120px] sm:max-w-none">{pageName}</span>
         </div>
       </div>
 
@@ -76,7 +78,15 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
           )}
         </div>
 
-        <div className="flex items-center gap-2 border-l border-[var(--border-subtle)] pl-4 ml-2">
+        <div className="flex items-center gap-2 border-l border-[var(--border-subtle)] pl-2 sm:pl-4 ml-1 sm:ml-2">
+          {/* Theme Toggle */}
+          <button 
+            onClick={toggleTheme}
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
+          >
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+
           {/* Notifications */}
           <div className="relative">
             <button 

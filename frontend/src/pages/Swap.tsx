@@ -248,7 +248,7 @@ export default function Swap() {
         abi: ERC20_ABI,
         functionName: "approve",
         args: [UNISWAP_V2_ROUTER, parsedAmountIn],
-      });
+      } as any);
       toast.loading("Approving token...", { id: "approve" });
       setTimeout(() => {
         toast.success("Approved successfully!", { id: "approve" });
@@ -283,17 +283,17 @@ export default function Swap() {
           hash = await writeContractAsync({
             address: UNISWAP_V2_ROUTER, abi: UNISWAP_ROUTER_ABI, functionName: "swapExactETHForTokens",
             args: [amountOutMin, path, address as `0x${string}`, deadline], value: parsedAmountIn,
-          });
+          } as any);
         } else if (toToken.address === "ETH") {
           hash = await writeContractAsync({
             address: UNISWAP_V2_ROUTER, abi: UNISWAP_ROUTER_ABI, functionName: "swapExactTokensForETH",
             args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-          });
+          } as any);
         } else {
           hash = await writeContractAsync({
             address: UNISWAP_V2_ROUTER, abi: UNISWAP_ROUTER_ABI, functionName: "swapExactTokensForTokens",
             args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-          });
+          } as any);
         }
       }
 

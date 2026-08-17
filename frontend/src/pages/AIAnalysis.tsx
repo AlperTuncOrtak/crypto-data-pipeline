@@ -955,7 +955,7 @@ function IndicatorBreakdownCard({ breakdown, confluence, technicalData }) {
 
       <div className="flex flex-col gap-3">
         {items.map(({ key, label }) => {
-          const text = breakdown?.[key] || fallback;
+          const text = breakdown?.[key] || "";
           if (!text) return null;
           const isBull = /bullish|uptrend|oversold|above|rising/i.test(text);
           const isBear =
@@ -1603,10 +1603,10 @@ export default function AIAnalysis() {
               <span style={{ opacity: 0.8 }}>{t("ai_analysis.technical_only")}</span>
             </div>
             <button
-              onClick={() =>
-                localStorage.removeItem("cryptoneko_disclaimer_accepted_v1") ||
-                window.location.reload()
-              }
+              onClick={() => {
+                localStorage.removeItem("cryptoneko_disclaimer_accepted_v1");
+                window.location.reload();
+              }}
               style={{
                 background: "none",
                 border: "none",
@@ -1624,7 +1624,7 @@ export default function AIAnalysis() {
       </div>
 
       {/* COİN SEÇİCİ */}
-      <div className="reveal" style={{ marginBottom: 24, position: "relative", zIndex: 100, '--reveal-delay': '80ms' }}>
+      <div className="reveal" style={{ marginBottom: 24, position: "relative", zIndex: 100, '--reveal-delay': '80ms' } as React.CSSProperties}>
         <div
           style={{
             display: "flex",
@@ -2495,8 +2495,7 @@ export default function AIAnalysis() {
               </div>
 
               <div
-                className="flex-1"
-                className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
+                className="flex-1 bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] shadow-[inset_0_0_80px_rgba(39,57,81,0.2)] shadow-2xl rounded-[32px] p-6"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Target size={14} style={{ color: "var(--accent)" }} />

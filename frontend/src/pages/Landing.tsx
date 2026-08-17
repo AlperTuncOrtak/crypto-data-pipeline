@@ -7,6 +7,7 @@ import { LinearHero } from "../components/landing/LinearHero";
 import { LinearBento } from "../components/landing/LinearBento";
 import { LinearSpeed } from "../components/landing/LinearSpeed";
 import { LinearFooter } from "../components/landing/LinearFooter";
+import AnimatedLogo from "../components/layout/AnimatedLogo";
 
 export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
   const { user, loading } = useAuth();
@@ -24,39 +25,33 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
       
       {/* 🔴 HEADER 🔴 */}
       <motion.header 
-        style={{ opacity: headerOpacity, backdropFilter: `blur(20px)`, borderBottomColor: headerBorder, backgroundColor: headerBg }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex items-center justify-between border-b transition-all duration-300"
+        style={{ opacity: headerOpacity, backdropFilter: `blur(20px)`, borderBottom: "1px solid", borderBottomColor: headerBorder, backgroundColor: headerBg }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex items-center justify-between transition-all duration-300"
       >
-        <Link to="/" className="flex items-center gap-3 group">
-          <motion.div 
-            whileHover={{ opacity: 0.8 }} 
-            className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center text-[#000000] font-black text-sm shadow-sm transition-opacity"
-          >
-            C
-          </motion.div>
-          <span className="text-lg font-semibold tracking-tight text-white/90 group-hover:text-[var(--text-main)] transition-colors">
-            CryptoNeko
-          </span>
-        </Link>
+        <AnimatedLogo />
         <div className="flex items-center gap-6">
-          <Link to="/pro" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Features</Link>
-          <Link to="/pricing" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Pricing</Link>
+          <Link to="/dashboard" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Terminal</Link>
+          <Link to="/analysis/ai" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">AI Radar</Link>
+          <Link to="/pro" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">Backtesting</Link>
+          
           {loading ? null : user ? (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/dashboard")}
-              className="px-4 py-2 rounded-2xl bg-white/5 border border-[var(--border-base)] text-[var(--text-main)] font-medium text-sm hover:bg-[var(--border-base)] transition-colors backdrop-blur-md"
+              className="px-5 py-2.5 rounded-[12px] bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-main)] font-medium text-sm hover:bg-white/[0.06] hover:border-[var(--border-base)] transition-colors"
             >
-              Dashboard
-            </button>
+              Enter App
+            </motion.button>
           ) : (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               onClick={() => {
                 if (onAuthOpen) onAuthOpen("login");
               }}
-              className="px-4 py-2 rounded-2xl bg-white text-[#000000] font-medium text-sm hover:bg-white/90 transition-colors"
+              className="px-5 py-2.5 rounded-[12px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-colors shadow-lg shadow-[var(--accent-border)]"
             >
               Sign In
-            </button>
+            </motion.button>
           )}
         </div>
       </motion.header>

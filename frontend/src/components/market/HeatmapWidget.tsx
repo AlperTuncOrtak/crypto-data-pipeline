@@ -121,14 +121,14 @@ export default function HeatmapWidget({ limit = 50 }) {
         e.currentTarget.style.transform = "scale(1.01)";
         e.currentTarget.style.borderColor = "var(--accent-border)";
         e.currentTarget.style.backgroundColor = "var(--bg-elevated)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        const glow = e.currentTarget.querySelector('.feat-bg-glow') as HTMLElement;
         if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "scale(1)";
         e.currentTarget.style.borderColor = "var(--border)";
         e.currentTarget.style.backgroundColor = "var(--bg-card)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        const glow = e.currentTarget.querySelector('.feat-bg-glow') as HTMLElement;
         if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0"; }
       }}
     >
@@ -154,8 +154,8 @@ export default function HeatmapWidget({ limit = 50 }) {
           <span
             onClick={() => navigate("/heatmap")}
             style={{ fontSize: 11, color: "var(--accent)", cursor: "pointer", fontWeight: 600, opacity: 0.7, transition: "opacity 0.15s" }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.7)}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
           >
             Full map →
           </span>

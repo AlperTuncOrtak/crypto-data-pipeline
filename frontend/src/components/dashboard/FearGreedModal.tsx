@@ -27,9 +27,9 @@ function interpolateColor(color1: string, color2: string, factor: number) {
 function getColorForValue(v: number) {
   const clamp = Math.max(0, Math.min(100, v));
   if (clamp >= 50) {
-    return interpolateColor('#f4b000', '#05b169', (clamp - 50) / 50);
+    return interpolateColor('#F59E0B', '#10B981', (clamp - 50) / 50);
   } else {
-    return interpolateColor('#cf202f', '#f4b000', clamp / 50);
+    return interpolateColor('#EF4444', '#F59E0B', clamp / 50);
   }
 }
 
@@ -62,7 +62,7 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
           {/* Backdrop */}
           <div
             onClick={onClose}
-            className="absolute inset-0 bg-[var(--bg-base)]/60 backdrop-blur-md"
+            className="absolute inset-0 bg-[#09090b]/80 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -70,25 +70,25 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-            className="relative w-full max-w-2xl bg-[var(--bg-elevated)]/90 backdrop-blur-xl border border-[var(--border-subtle)] rounded-[24px] shadow-[0_0_40px_rgba(59,130,246,0.15)] overflow-hidden p-6"
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="relative w-full max-w-2xl bg-[#18181b] rounded-[24px] border border-white/[0.06] shadow-2xl overflow-hidden p-8"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-full bg-white/5 text-[#3b82f6]">
-                  <Activity size={20} />
+            <div className="flex items-center justify-between mb-8 border-b border-white/[0.06] pb-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-[#10B981]/10 text-[#10B981]">
+                  <Activity size={24} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-medium text-[var(--text-main)] tracking-tight">Market Sentiment History</h2>
-                  <p className="text-sm text-[#a1a1aa]">Last 30 Days Fear & Greed Index</p>
+                  <h2 className="text-[20px] font-semibold text-white tracking-tight">Market Sentiment</h2>
+                  <p className="text-[13px] font-medium text-zinc-400 mt-1">Last 30 Days Fear & Greed Index</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-[var(--border-subtle)] text-[#a1a1aa] hover:text-[var(--text-main)] transition-colors"
+                className="p-2 rounded-xl bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
               >
-                <X size={20} />
+                <X size={20} strokeWidth={2.5} />
               </button>
             </div>
 
@@ -97,43 +97,43 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                   <defs>
-                  <linearGradient id="strokeGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="strokeGradientFng" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={topColor} />
-                    {hasYellowStop && <stop offset={yellowOffset} stopColor="#f4b000" />}
-                    <stop offset="100%" stopColor="#cf202f" />
+                    {hasYellowStop && <stop offset={yellowOffset} stopColor="#F59E0B" />}
+                    <stop offset="100%" stopColor="#EF4444" />
                   </linearGradient>
-                  <linearGradient id="fillGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={topColor} stopOpacity={0.4} />
-                    {hasYellowStop && <stop offset={yellowOffset} stopColor="#f4b000" stopOpacity={0.2} />}
-                    <stop offset="100%" stopColor="#cf202f" stopOpacity={0} />
+                  <linearGradient id="fillGradientFng" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={topColor} stopOpacity={0.2} />
+                    {hasYellowStop && <stop offset={yellowOffset} stopColor="#F59E0B" stopOpacity={0.1} />}
+                    <stop offset="100%" stopColor="#EF4444" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis 
                   dataKey="date" 
-                  stroke="rgba(255,255,255,0.1)" 
-                  tick={{ fill: '#a1a1aa', fontSize: 12, fontFamily: 'Inter, sans-serif' }} 
+                  stroke="rgba(255,255,255,0.06)" 
+                  tick={{ fill: '#71717A', fontSize: 11, fontWeight: '500' }} 
                   tickLine={false}
                   axisLine={false}
                   minTickGap={30}
                 />
                 <YAxis 
-                  stroke="rgba(255,255,255,0.1)" 
-                  tick={{ fill: '#a1a1aa', fontSize: 12, fontFamily: 'Inter, sans-serif' }} 
+                  stroke="rgba(255,255,255,0.06)" 
+                  tick={{ fill: '#71717A', fontSize: 11, fontWeight: '500' }} 
                   tickLine={false}
                   axisLine={false}
                   domain={[0, 100]}
                 />
                 <Tooltip 
-                  cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2, strokeDasharray: '4 4' }}
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
-                      const color = data.value <= 25 ? "#cf202f" : data.value <= 45 ? "#f4b000" : data.value <= 55 ? "#a8acb3" : "#05b169";
+                      const color = data.value <= 25 ? "#EF4444" : data.value <= 45 ? "#F59E0B" : data.value <= 55 ? "#A1A1AA" : "#10B981";
                       return (
-                        <div className="bg-[var(--bg-elevated)]/90 border border-[var(--border-base)] rounded-3xl p-3 shadow-xl backdrop-blur-xl">
-                          <div className="text-xs text-[#a1a1aa] mb-1">{data.date}</div>
-                          <div className="text-lg font-bold font-mono" style={{ color }}>
-                            {data.value} <span className="text-sm font-medium opacity-80 uppercase tracking-wider ml-1">{data.classification}</span>
+                        <div className="bg-[#09090b] border border-white/[0.06] rounded-xl p-4 shadow-xl">
+                          <div className="text-[11px] font-medium text-zinc-500 mb-1">{data.date}</div>
+                          <div className="text-2xl font-semibold" style={{ color }}>
+                            {data.value} <span className="text-[13px] text-zinc-400 font-medium ml-1">{data.classification}</span>
                           </div>
                         </div>
                       );
@@ -144,10 +144,10 @@ export function FearGreedModal({ isOpen, onClose, history }: FearGreedModalProps
                 <Area 
                   type="monotone" 
                   dataKey="value" 
-                  stroke="url(#strokeGradient)" 
+                  stroke="url(#strokeGradientFng)" 
                   strokeWidth={3}
                   fillOpacity={1} 
-                  fill="url(#fillGradient)" 
+                  fill="url(#fillGradientFng)" 
                 />
                 </AreaChart>
               </ResponsiveContainer>

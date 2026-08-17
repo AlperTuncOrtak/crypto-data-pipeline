@@ -1,13 +1,13 @@
 // Animasyonlu loading placeholder. 
 // Kullanim: <Skeleton className="h-4 w-32" />
-export function Skeleton({ className = '' }) {
+export function Skeleton({ className = '', style }: { className?: string, style?: React.CSSProperties }) {
   return (
-    <div className={`animate-pulse bg-white/[0.05] rounded ${className}`} />
+    <div className={`animate-pulse bg-white/[0.05] rounded ${className}`} style={style} />
   )
 }
 
 // Tablo satiri skeleton'i - kac kolon oldugunu prop olarak alir
-export function TableRowSkeleton({ cols = 5 }) {
+export function TableRowSkeleton({ cols = 5 }: { cols?: number }) {
   return (
     <tr className="border-t border-white/[0.05]">
       {Array.from({ length: cols }).map((_, i) => (

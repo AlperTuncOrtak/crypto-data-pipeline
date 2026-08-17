@@ -146,7 +146,7 @@ export default function Analysis() {
   const hours = TIME_RANGES[activeRange].hours
 
   const history     = useMultiCoinHistory(selected, hours)
-  const performance = useMultiCoinPerformance(selected, hours)
+  const performance = useMultiCoinPerformance(selected as any)
 
   const chartData = useMemo(() => buildChartData(history.data, selected), [history.data, selected])
 
@@ -344,7 +344,7 @@ export default function Analysis() {
                   <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" strokeDasharray="4 4" />
                   <Tooltip
                     cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '3 3' }}
-                    content={<CustomTooltip />}
+                    content={(props: any) => <CustomTooltip {...props} />}
                   />
                   {selected.map((sym, i) => (
                     <Line

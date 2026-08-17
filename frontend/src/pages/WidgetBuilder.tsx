@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ResponsiveGridLayout, useContainerWidth, Layout } from "react-grid-layout";
+import ReactGridLayout, { Layout } from "react-grid-layout";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +14,8 @@ import AIAnalysisBox from "../components/market/AIAnalysisBox";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
+const ResponsiveGridLayout = (ReactGridLayout as any).WidthProvider((ReactGridLayout as any).Responsive);
+
 const WIDGET_LIBRARY = [
   { id: "hype", label: "Hype vs Reality", w: 3, h: 3 },
   { id: "tokenomics", label: "Tokenomics", w: 3, h: 3 },
@@ -23,10 +25,9 @@ const WIDGET_LIBRARY = [
 export default function WidgetBuilder() {
   const { user, isPro, isEnterprise } = useAuth();
   const navigate = useNavigate();
-  const [width, widthRef] = useContainerWidth();
   
   const [mounted, setMounted] = useState(false);
-  const [layouts, setLayouts] = useState<{ [key: string]: Layout[] }>({
+  const [layouts, setLayouts] = useState<any>({
     lg: [
       { i: "hype", x: 0, y: 0, w: 3, h: 3 },
       { i: "tokenomics", x: 3, y: 0, w: 3, h: 3 },
@@ -45,7 +46,7 @@ export default function WidgetBuilder() {
     if (savedActive) setActiveWidgets(JSON.parse(savedActive));
   }, []);
 
-  const handleLayoutChange = (currentLayout: Layout[], allLayouts: { [key: string]: Layout[] }) => {
+  const handleLayoutChange = (currentLayout: any, allLayouts: any) => {
     setLayouts(allLayouts);
   };
 
@@ -154,7 +155,7 @@ export default function WidgetBuilder() {
         </div>
 
         {/* Dashboard Grid */}
-        <div ref={widthRef} className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-3xl min-h-[600px] p-4 relative">
+        <div className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-3xl min-h-[600px] p-4 relative">
           
           {activeWidgets.length === 0 && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--text-muted)]">
@@ -166,10 +167,9 @@ export default function WidgetBuilder() {
           {mounted && (
             <ResponsiveGridLayout
               className="layout"
-              width={width}
               layouts={layouts}
               breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-              cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+              cols={{ lg: 12, md: 10, sm: 6, xs: 1, xxs: 1 }}
               rowHeight={100}
               onLayoutChange={handleLayoutChange}
               draggableHandle=".drag-handle"

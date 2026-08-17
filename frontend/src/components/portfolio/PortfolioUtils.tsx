@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Copy, CheckCircle } from "lucide-react";
+import { X, Copy, CheckCircle, Info } from "lucide-react";
 
 
 // ── Formatters ────────────────────────────────────────────────
@@ -209,7 +209,7 @@ export function getCol(row, ...keys) {
 export function safeDate(str) {
   if (!str) return new Date().toISOString();
   const d = new Date(String(str).replace(/\//g, "-").replace(" ", "T"));
-  return isNaN(d) ? new Date().toISOString() : d.toISOString();
+  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
 }
 
 export function safeNum(str) {
@@ -386,7 +386,7 @@ export function calcHoldings(trades, marketData, walletHoldings = []) {
     };
   });
 
-  const bySymbol = {};
+  const bySymbol: Record<string, any> = {};
   for (const t of trades) {
     const sym = t.symbol.toUpperCase();
     if (!bySymbol[sym]) bySymbol[sym] = { buys: [], sells: [], walletQty: 0, binanceQty: 0 };
@@ -455,7 +455,7 @@ export function calcHoldings(trades, marketData, walletHoldings = []) {
 export function calcTax(trades) {
   const bySymbol = {};
   for (const t of [...trades].sort(
-    (a, b) => new Date(a.traded_at) - new Date(b.traded_at),
+    (a: any, b: any) => new Date(a.traded_at).getTime() - new Date(b.traded_at).getTime(),
   )) {
     const sym = t.symbol.toUpperCase();
     if (!bySymbol[sym]) bySymbol[sym] = { lots: [], realized: [] };
@@ -472,7 +472,7 @@ export function calcTax(trades) {
         const used = Math.min(lot.qty, remaining);
         const gain = used * (t.price - lot.price);
         const holdDays =
-          (new Date(t.traded_at) - new Date(lot.date)) / (1000 * 60 * 60 * 24);
+          (new Date(t.traded_at).getTime() - new Date(lot.date).getTime()) / (1000 * 60 * 60 * 24);
         const isLongTerm = holdDays >= 365;
         bySymbol[sym].realized.push({
           symbol: sym,
@@ -493,16 +493,16 @@ export function calcTax(trades) {
     }
   }
 
-  const allRealized = Object.values(bySymbol).flatMap((x) => x.realized);
-  const shortTerm = allRealized.filter((r) => !r.isLongTerm);
-  const longTerm = allRealized.filter((r) => r.isLongTerm);
+  const allRealized = Object.values(bySymbol).flatMap((x: any) => x.realized);
+  const shortTerm = allRealized.filter((r: any) => !r.isLongTerm);
+  const longTerm = allRealized.filter((r: any) => r.isLongTerm);
 
-  const totalGain = allRealized.reduce((s, r) => s + r.gain, 0);
+  const totalGain = allRealized.reduce((s: any, r: any) => s + r.gain, 0);
   const totalLoss = allRealized
-    .filter((r) => r.gain < 0)
-    .reduce((s, r) => s + r.gain, 0);
-  const shortGain = shortTerm.reduce((s, r) => s + r.gain, 0);
-  const longGain = longTerm.reduce((s, r) => s + r.gain, 0);
+    .filter((r: any) => r.gain < 0)
+    .reduce((s: any, r: any) => s + r.gain, 0);
+  const shortGain = shortTerm.reduce((s: any, r: any) => s + r.gain, 0);
+  const longGain = longTerm.reduce((s: any, r: any) => s + r.gain, 0);
 
   // Yıl bazında gruplama
   const byYear = {};
@@ -685,14 +685,14 @@ export function exportTaxCSV(taxData) {
       "",
     ],
     ...Object.entries(taxData.byCoin)
-      .sort((a, b) => Math.abs(b[1].gain) - Math.abs(a[1].gain))
-      .map(([sym, d]) => {
+      .sort((a: any, b: any) => Math.abs(b[1].gain) - Math.abs(a[1].gain))
+      .map(([sym, d]: [string, any]) => {
         const shortGain = taxData.allRealized
-          .filter((r) => r.symbol === sym && !r.isLongTerm)
-          .reduce((s, r) => s + r.gain, 0);
+          .filter((r: any) => r.symbol === sym && !r.isLongTerm)
+          .reduce((s: any, r: any) => s + r.gain, 0);
         const longGain = taxData.allRealized
-          .filter((r) => r.symbol === sym && r.isLongTerm)
-          .reduce((s, r) => s + r.gain, 0);
+          .filter((r: any) => r.symbol === sym && r.isLongTerm)
+          .reduce((s: any, r: any) => s + r.gain, 0);
         return [
           sym,
           `$${d.gain.toFixed(2)}`,
@@ -724,7 +724,7 @@ export function exportTaxCSV(taxData) {
       "Sell Price (USD)",
       "Gain/Loss (USD)",
     ],
-    ...taxData.allRealized.map((r) => [
+    ...taxData.allRealized.map((r: any) => [
       r.year,
       r.symbol,
       r.isLongTerm ? "Long-Term" : "Short-Term",

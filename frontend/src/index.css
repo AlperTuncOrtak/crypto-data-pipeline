@@ -1,134 +1,312 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* ══════════════════════════════════════════════════════════════
+   CRYPTONEKO — DESIGN SYSTEM v2.0
+   Soft-Matte Web3 / Fintech Dark — Production Ready
+   ui-ux-pro-max approved: Executive Dashboard + Soft-Matte Dark
+══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────
+   TAILWIND TOKEN BRIDGE
+   Maps CSS vars → Tailwind color utilities
+───────────────────────────────────────────────────────────── */
 @theme inline {
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-bg-base: var(--bg-base);
-  --color-bg-elevated: var(--bg-elevated);
-  --color-bg-subtle: var(--bg-subtle);
-  
-  --color-ink-base: var(--text-main);
-  --color-ink-subtle: var(--text-muted);
-  --color-ink-muted: var(--text-muted);
-  
-  --color-border-subtle: var(--border-subtle);
-  --color-border-base: var(--border-base);
-  --color-border-focus: var(--accent);
+  /* Surfaces */
+  --color-bg-base:      var(--bg-base);
+  --color-bg-subtle:    var(--bg-subtle);
+  --color-bg-elevated:  var(--bg-elevated);
+  --color-bg-overlay:   var(--bg-overlay);
 
-  --color-positive: #05B169;
-  --color-negative: #CF202F;
-  --color-warning: #F4B000;
+  /* Accent */
+  --color-accent:       var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+
+  /* Text */
+  --color-ink-base:     var(--text-main);
+  --color-ink-subtle:   var(--text-muted);
+  --color-ink-faint:    var(--text-faint);
+
+  /* Borders */
+  --color-border-subtle: var(--border-subtle);
+  --color-border-base:   var(--border-base);
+  --color-border-focus:  var(--accent);
+
+  /* Semantic Financial Colors — STRICT: gains/losses ONLY */
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-warning:  var(--warning);
 
   /* Typography */
-  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans:    'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
   --font-display: 'Geist', system-ui, sans-serif;
 }
 
-/* Default / Dark Theme (Midnight) */
-:root, [data-theme="midnight"], [data-theme="dark"] {
+/* ─────────────────────────────────────────────────────────────
+   DARK THEME — Default / Primary
+   Background: Deep Zinc (#09090b) — NEVER pure #000
+   Accent: Electric Indigo (#6366f1)
+   Financial: Emerald (#10B981) / Rose (#EF4444)
+───────────────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"],
+[data-theme="midnight"] {
   color-scheme: dark;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  
-  --bg-base: #0a0b0d;
-  --bg-subtle: #111214;
-  --bg-elevated: #16181c;
-  
-  --text-main: #f3f4f6;
-  --text-muted: #8b909a;
-  
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-base: rgba(255, 255, 255, 0.1);
 
-  /* Legacy Fallbacks for Charts */
-  --text-primary: var(--text-main);
+  /* Surfaces */
+  --bg-base:     #09090b;   /* Page backdrop */
+  --bg-subtle:   #111113;   /* Card / panel */
+  --bg-elevated: #18181b;   /* Elevated modals, popovers */
+  --bg-overlay:  #1c1c1f;   /* Hover states, dropdowns */
+
+  /* Accent — Electric Indigo. Use ONLY for primary actions */
+  --accent:       #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-muted: rgba(99, 102, 241, 0.12);
+  --accent-border: rgba(99, 102, 241, 0.22);
+
+  /* Text hierarchy */
+  --text-main:  #f4f4f5;   /* Primary body / headings */
+  --text-muted: #a1a1aa;   /* Secondary labels */
+  --text-faint: #52525b;   /* Placeholders / disabled */
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-base:   rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Financial semantic colors — RESERVED for price/delta only */
+  --positive:         #10B981;
+  --positive-muted:   rgba(16, 185, 129, 0.12);
+  --negative:         #EF4444;
+  --negative-muted:   rgba(239, 68, 68, 0.12);
+  --warning:          #F59E0B;
+  --warning-muted:    rgba(245, 158, 11, 0.12);
+
+  /* Legacy aliases — for charts & older components */
+  --text-primary:   var(--text-main);
   --text-secondary: var(--text-muted);
-  --bg-surface: var(--bg-subtle);
-  --bg-card: var(--bg-elevated);
-  --border: var(--border-base);
-  --border-soft: var(--border-subtle);
-  --accent-soft: rgba(79, 70, 229, 0.15);
-  --accent-border: rgba(79, 70, 229, 0.3);
+  --bg-surface:     var(--bg-subtle);
+  --bg-card:        var(--bg-elevated);
+  --border:         var(--border-base);
+  --border-soft:    var(--border-subtle);
+  --accent-soft:    var(--accent-muted);
 }
 
-/* Light Theme */
+/* ─────────────────────────────────────────────────────────────
+   LIGHT THEME — Soft Off-White / Cream
+   Background: Warm stone (#fafaf9) — NOT pure white
+───────────────────────────────────────────────────────────── */
 [data-theme="light"] {
   color-scheme: light;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  
-  --bg-base: #f9fafb;
-  --bg-subtle: #f3f4f6;
-  --bg-elevated: #ffffff;
-  
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  
-  --border-subtle: rgba(0, 0, 0, 0.05);
-  --border-base: rgba(0, 0, 0, 0.1);
 
-  /* Legacy Fallbacks for Charts */
-  --text-primary: var(--text-main);
+  --bg-base:     #fafaf9;
+  --bg-subtle:   #f5f5f4;
+  --bg-elevated: #ffffff;
+  --bg-overlay:  #f0f0ef;
+
+  --accent:       #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-muted: rgba(79, 70, 229, 0.10);
+  --accent-border: rgba(79, 70, 229, 0.20);
+
+  --text-main:  #18181b;
+  --text-muted: #71717a;
+  --text-faint: #a1a1aa;
+
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-base:   rgba(0, 0, 0, 0.10);
+  --border-strong: rgba(0, 0, 0, 0.18);
+
+  --positive:       #059669;
+  --positive-muted: rgba(5, 150, 105, 0.10);
+  --negative:       #DC2626;
+  --negative-muted: rgba(220, 38, 38, 0.10);
+  --warning:        #D97706;
+  --warning-muted:  rgba(217, 119, 6, 0.10);
+
+  --text-primary:   var(--text-main);
   --text-secondary: var(--text-muted);
-  --bg-surface: var(--bg-subtle);
-  --bg-card: var(--bg-elevated);
-  --border: var(--border-base);
-  --border-soft: var(--border-subtle);
-  --accent-soft: rgba(79, 70, 229, 0.1);
-  --accent-border: rgba(79, 70, 229, 0.2);
+  --bg-surface:     var(--bg-subtle);
+  --bg-card:        var(--bg-elevated);
+  --border:         var(--border-base);
+  --border-soft:    var(--border-subtle);
+  --accent-soft:    var(--accent-muted);
 }
 
-html { 
-  overflow-x: hidden; 
+/* ─────────────────────────────────────────────────────────────
+   BASE RESETS
+───────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--color-bg-base);
-  color: var(--color-ink-base);
+  background-color: var(--bg-base);
+  color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  
-  /* Mobile Safe Areas & Native App Feel */
   padding-bottom: env(safe-area-inset-bottom);
-  overscroll-behavior-y: none; /* Disable browser pull-to-refresh */
+  overscroll-behavior-y: none;
 }
 
-/* ── Headings — tight tracking, editorial feel ── */
+/* ─────────────────────────────────────────────────────────────
+   TYPOGRAPHY SCALE
+   8px spacing grid — tight tracking for editorial feel
+───────────────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6, .display-font {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
   font-weight: 700;
   line-height: 1.15;
-}
-h1 { font-weight: 800; letter-spacing: -0.04em; }
-h2 { font-weight: 700; letter-spacing: -0.03em; }
-h3 { font-weight: 600; letter-spacing: -0.02em; }
-
-/* ── Tabular Monospace — for fintech metrics, prices, and tickers ── */
-.font-mono {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
-/* ── Scrollbar ── */
+h1 { font-weight: 900; letter-spacing: -0.04em; line-height: 1.05; }
+h2 { font-weight: 800; letter-spacing: -0.035em; }
+h3 { font-weight: 700; letter-spacing: -0.025em; }
+h4 { font-weight: 600; letter-spacing: -0.015em; }
+
+/* Tabular monospace — for all financial figures, prices, tickers */
+.font-mono,
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum", "ss01";
+  letter-spacing: -0.01em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCROLLBAR — Minimal, theme-aware
+───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar         { width: 4px; height: 4px; }
-::-webkit-scrollbar-track   { background: var(--color-bg-base); }
-::-webkit-scrollbar-thumb   { background: var(--color-border-base); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-cb-blue); }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   { background: var(--border-base); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
 
-::selection { background: var(--color-cb-blue-light); color: var(--color-cb-blue); }
+.custom-scrollbar::-webkit-scrollbar { width: 3px; height: 3px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 99px; }
 
-/* ═══════════════════════════════════════════════════════════
+/* Selection */
+::selection {
+  background: var(--accent-muted);
+  color: var(--text-main);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DESIGN SYSTEM UTILITY CLASSES
+   Component-level building blocks
+───────────────────────────────────────────────────────────── */
+
+/* MatteCard — the primary surface atom */
+.matte-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.matte-card:hover {
+  border-color: var(--border-base);
+}
+
+.matte-card--interactive {
+  cursor: pointer;
+}
+
+.matte-card--interactive:hover {
+  border-color: var(--border-base);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+}
+
+/* Semantic financial color utilities */
+.token-positive { color: var(--positive); }
+.token-negative { color: var(--negative); }
+.token-warning  { color: var(--warning); }
+.token-accent   { color: var(--accent); }
+.token-muted    { color: var(--text-muted); }
+
+.bg-positive-muted { background: var(--positive-muted); }
+.bg-negative-muted { background: var(--negative-muted); }
+.bg-warning-muted  { background: var(--warning-muted); }
+.bg-accent-muted   { background: var(--accent-muted); }
+
+/* Glass surface — for modals and popovers */
+.glass-surface {
+  background: var(--bg-elevated);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+}
+
+/* Accent button */
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background 200ms ease, transform 100ms ease, box-shadow 200ms ease;
+  box-shadow: 0 0 0 0 var(--accent-border);
+}
+
+.btn-accent:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 16px var(--accent-border);
+}
+
+.btn-accent:active {
+  transform: scale(0.97);
+}
+
+/* Ghost button */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-overlay);
+  color: var(--text-main);
+  border-color: var(--border-base);
+}
+
+/* ─────────────────────────────────────────────────────────────
    SCROLL-REVEAL ANIMATION SYSTEM
-═══════════════════════════════════════════════════════════ */
-
+───────────────────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -150,22 +328,83 @@ h3 { font-weight: 600; letter-spacing: -0.02em; }
     transform: none;
     transition: none;
   }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
+/* ─────────────────────────────────────────────────────────────
+   UTILITY LAYER
+───────────────────────────────────────────────────────────── */
 @layer utilities {
+  /* Safe areas */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
   .pt-safe { padding-top: env(safe-area-inset-top); }
-  
+
+  /* Marquee for price tickers */
   .animate-marquee {
-    animation: marquee 25s linear infinite;
+    animation: marquee 30s linear infinite;
+  }
+  .animate-marquee-slow {
+    animation: marquee 60s linear infinite;
   }
 
+  /* Spring easing */
   .ease-spring {
     transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
   }
+  .ease-out-expo {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Subtle pulse for live indicators */
+  .animate-live-pulse {
+    animation: live-pulse 2s ease-in-out infinite;
+  }
+
+  /* Gradient text — use sparingly, only on marketing copy */
+  .text-gradient-indigo {
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
+/* ─────────────────────────────────────────────────────────────
+   KEYFRAMES
+───────────────────────────────────────────────────────────── */
 @keyframes marquee {
-  0% { transform: translateX(0); }
+  0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes float-up {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Skeleton loading shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 25%,
+    var(--bg-overlay) 50%,
+    var(--bg-subtle) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
 }

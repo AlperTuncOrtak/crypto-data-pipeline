@@ -16,7 +16,6 @@ import ReloadPrompt from "./components/layout/ReloadPrompt";
 import Footer from "./components/layout/Footer";
 import MobileNav from "./components/layout/MobileNav";
 import { Navigate } from "react-router-dom";
-import { CommandPalette } from "./components/layout/CommandPalette";
 
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
@@ -160,7 +159,7 @@ function AppInner() {
         )}
 
         <main
-          className={location.pathname === "/" || location.pathname === "/onboarding" ? "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 flex flex-col" : "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-20 md:pb-0 main-content flex flex-col"}
+          className={location.pathname === "/" || location.pathname === "/onboarding" ? "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-24 md:pb-0 flex flex-col" : "flex-1 overflow-y-auto overflow-x-hidden relative z-20 pb-24 md:pb-0 main-content flex flex-col"}
         >
           <div className="flex-1 shrink-0 flex flex-col w-full">
             <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[var(--bg-base)]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
@@ -181,16 +180,13 @@ function AppInner() {
               <Route
                 path="/dashboard"
                 element={
-                  <Dashboard
-                    isWatched={isWatched}
-                    toggleWatchlist={toggleWatchlist}
-                  />
+                  <Dashboard />
                 }
               />
               <Route
                 path="/market"
                 element={
-                  <Market isWatched={isWatched} toggleWatchlist={toggleWatchlist} />
+                  <Market />
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
@@ -338,7 +334,6 @@ function AppInner() {
 
 
       <SearchCommand isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-      <CommandPalette />
 
       <RightSidebar
         isOpen={sidebarOpen}

@@ -34,7 +34,7 @@ export default function LivePrice({ value, format }: LivePriceProps) {
 
   return (
     <div className={`${baseClasses} ${flashClasses}`}>
-      <NumberFlow value={value} format={format} />
+      <NumberFlow value={value} format={format as any} />
     </div>
   );
 }

@@ -23,8 +23,8 @@ const widgetConfig: WidgetConfig = {
   },
   appearance: 'dark',
   hiddenUI: ['appearance', 'language', 'poweredBy'],
-  variant: 'default',
-  subvariant: 'default',
+  variant: 'default' as any,
+  subvariant: 'default' as any,
 };
 
 export default function SwapInterface() {

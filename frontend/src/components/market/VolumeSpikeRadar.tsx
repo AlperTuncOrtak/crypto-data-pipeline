@@ -78,14 +78,14 @@ export default function VolumeSpikeRadar() {
         e.currentTarget.style.transform = "scale(1.01)";
         e.currentTarget.style.borderColor = "var(--accent-border)";
         e.currentTarget.style.backgroundColor = "var(--bg-elevated)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        const glow = e.currentTarget.querySelector('.feat-bg-glow') as HTMLElement;
         if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "scale(1)";
         e.currentTarget.style.borderColor = "var(--border)";
         e.currentTarget.style.backgroundColor = "var(--bg-card)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        const glow = e.currentTarget.querySelector('.feat-bg-glow') as HTMLElement;
         if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0"; }
       }}
     >

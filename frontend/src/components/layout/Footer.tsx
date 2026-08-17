@@ -26,41 +26,21 @@ const IconDiscord = ({ size = 18 }) => (
 
 export default function Footer() {
   return (
-    <footer style={{ 
-      borderTop: '1px solid rgba(255,255,255,0.05)', 
-      padding: '40px 24px',
-      backgroundColor: 'var(--bg-base, #0a0b0d)',
-      position: 'relative',
-      zIndex: 10
-    }}>
+    <footer className="relative z-10 border-t border-[var(--border-subtle)] bg-[var(--bg-base)] px-6 py-10">
       <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+        
         {/* Brand */}
-        <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
-           <div
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 6,
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 12,
-              fontWeight: 900,
-              color: "#000",
-            }}
-          >
+        <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer select-none">
+          <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center text-[12px] font-black text-black">
             N
           </div>
-          <span
-            style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}
-          >
-            Crypto<span style={{ color: "rgba(255,255,255,0.6)" }}>Neko</span>
+          <span className="text-[14px] font-extrabold tracking-tight text-white">
+            Crypto<span className="text-white/60">Neko</span>
           </span>
         </div>
 
         {/* Links */}
-        <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-[var(--text-muted)]">
           <a href="/docs" className="hover:text-[var(--text-main)] transition-colors">Documentation</a>
           <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-main)] transition-colors">API</a>
           <a href="/terms" className="hover:text-[var(--text-main)] transition-colors">Terms of Service</a>
@@ -69,17 +49,17 @@ export default function Footer() {
 
         {/* Socials & Copyright */}
         <div className="flex flex-col items-center md:items-end gap-3">
-          <div className="flex items-center gap-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <div className="flex items-center gap-5 text-[var(--text-muted)]">
             <a href="#" title="X (Twitter)" className="hover:text-[var(--text-main)] transition-colors"><IconX size={18} /></a>
             <a href="#" title="Discord" className="hover:text-[var(--text-main)] transition-colors"><IconDiscord size={18} /></a>
             <a href="https://github.com/AlperTuncOrtak" target="_blank" rel="noopener noreferrer" title="GitHub" className="hover:text-[var(--text-main)] transition-colors"><IconGithub size={18} /></a>
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+          <div className="text-[11px] text-[var(--text-muted)] opacity-60">
             © {new Date().getFullYear()} CryptoNeko. All rights reserved.
           </div>
         </div>
+        
       </div>
     </footer>
   );
 }
-

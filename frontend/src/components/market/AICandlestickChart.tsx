@@ -110,7 +110,7 @@ export default function AICandlestickChart({ symbol, data }: AICandlestickChartP
         top: 0.8, // highest point of the series will be at 80% from the top
         bottom: 0,
       },
-    });
+    } as any);
     
     volumeSeries.setData(volumeData);
     volumeSeriesRef.current = volumeSeries;

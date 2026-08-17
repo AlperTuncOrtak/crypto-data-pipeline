@@ -24,24 +24,24 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
     mcap: {
       title: "Global Market Cap",
       subtitle: "Total Crypto Market Capitalization (30 Days)",
-      icon: <Activity size={20} />,
-      color: "#8b5cf6", // Purple
+      icon: <Activity size={24} strokeWidth={2.5} />,
+      color: "#6366f1", // Electric Indigo
       dataKey: "total_market_cap",
       formatter: (val: number) => `$${(val / 1e12).toFixed(2)}T`,
     },
     volume: {
       title: "24h Trading Volume",
       subtitle: "Global Daily Volume (30 Days)",
-      icon: <BarChart2 size={20} />,
-      color: "#0ea5e9", // Sky Blue
+      icon: <BarChart2 size={24} strokeWidth={2.5} />,
+      color: "#0EA5E9", // Sky Blue
       dataKey: "total_volume",
       formatter: (val: number) => `$${(val / 1e9).toFixed(2)}B`,
     },
     dominance: {
       title: "Bitcoin Dominance",
       subtitle: "BTC Market Share % (30 Days)",
-      icon: <PieChart size={20} />,
-      color: "#f59e0b", // Amber/Orange
+      icon: <PieChart size={24} strokeWidth={2.5} />,
+      color: "#F59E0B", // Amber
       dataKey: "btc_dominance",
       formatter: (val: number) => `${val.toFixed(2)}%`,
     }
@@ -61,7 +61,7 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
           {/* Backdrop */}
           <div
             onClick={onClose}
-            className="absolute inset-0 bg-[var(--bg-base)]/60 backdrop-blur-md"
+            className="absolute inset-0 bg-[#09090b]/80 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -69,32 +69,32 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-            className="relative w-full max-w-2xl bg-[var(--bg-elevated)]/90 backdrop-blur-xl border border-[var(--border-subtle)] rounded-[24px] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden p-6"
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="relative w-full max-w-2xl bg-[#18181b] rounded-[24px] border border-white/[0.06] shadow-2xl overflow-hidden p-8"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-full bg-white/5" style={{ color: activeConfig.color }}>
+            <div className="flex items-center justify-between mb-8 border-b border-white/[0.06] pb-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl" style={{ backgroundColor: `${activeConfig.color}20`, color: activeConfig.color }}>
                   {activeConfig.icon}
                 </div>
                 <div>
-                  <h2 className="text-xl font-medium text-[var(--text-main)] tracking-tight">{activeConfig.title}</h2>
-                  <p className="text-sm text-[#a1a1aa]">{activeConfig.subtitle}</p>
+                  <h2 className="text-[20px] font-semibold text-white tracking-tight">{activeConfig.title}</h2>
+                  <p className="text-[13px] font-medium text-zinc-400 mt-1">{activeConfig.subtitle}</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-[var(--border-subtle)] text-[#a1a1aa] hover:text-[var(--text-main)] transition-colors"
+                className="p-2 rounded-xl bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
               >
-                <X size={20} />
+                <X size={20} strokeWidth={2.5} />
               </button>
             </div>
 
             {/* Chart */}
             <div className="h-[300px] w-full mt-4">
               {chartData.length === 0 ? (
-                <div className="w-full h-full flex items-center justify-center text-[var(--text-muted)]">
+                <div className="w-full h-full flex items-center justify-center text-zinc-500 font-medium text-[14px]">
                   Loading data...
                 </div>
               ) : (
@@ -102,21 +102,21 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
                   <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id={`gradient-${type}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={activeConfig.color} stopOpacity={0.4} />
+                        <stop offset="5%" stopColor={activeConfig.color} stopOpacity={0.2} />
                         <stop offset="95%" stopColor={activeConfig.color} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <XAxis 
                       dataKey="displayDate" 
-                      stroke="rgba(255,255,255,0.1)" 
-                      tick={{ fill: '#a1a1aa', fontSize: 12, fontFamily: 'Inter, sans-serif' }} 
+                      stroke="rgba(255,255,255,0.06)" 
+                      tick={{ fill: '#71717A', fontSize: 11, fontWeight: '500' }} 
                       tickLine={false}
                       axisLine={false}
                       minTickGap={30}
                     />
                     <YAxis 
-                      stroke="rgba(255,255,255,0.1)" 
-                      tick={{ fill: '#a1a1aa', fontSize: 12, fontFamily: 'Inter, sans-serif' }} 
+                      stroke="rgba(255,255,255,0.06)" 
+                      tick={{ fill: '#71717A', fontSize: 11, fontWeight: '500' }} 
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={(val) => {
@@ -127,14 +127,14 @@ export function GlobalStatsModal({ isOpen, onClose, data, type }: GlobalStatsMod
                       domain={['auto', 'auto']}
                     />
                     <Tooltip 
-                      cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                      cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2, strokeDasharray: '4 4' }}
                       content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
                           return (
-                            <div className="bg-[var(--bg-elevated)]/90 border border-[var(--border-base)] rounded-3xl p-3 shadow-xl backdrop-blur-xl">
-                              <div className="text-xs text-[#a1a1aa] mb-1">{data.displayDate}</div>
-                              <div className="text-lg font-bold font-mono" style={{ color: activeConfig.color }}>
+                            <div className="bg-[#09090b] border border-white/[0.06] rounded-xl p-4 shadow-xl">
+                              <div className="text-[11px] font-medium text-zinc-500 mb-1">{data.displayDate}</div>
+                              <div className="text-2xl font-semibold" style={{ color: activeConfig.color }}>
                                 {activeConfig.formatter(data[activeConfig.dataKey])}
                               </div>
                             </div>

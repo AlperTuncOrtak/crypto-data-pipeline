@@ -36,14 +36,14 @@ export default function CoinListCard({
         e.currentTarget.style.transform = "scale(1.01)";
         e.currentTarget.style.borderColor = "var(--accent-border)";
         e.currentTarget.style.backgroundColor = "var(--bg-elevated)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        const glow = e.currentTarget.querySelector('.feat-bg-glow') as HTMLElement;
         if (glow) { glow.style.transform = "scale(1.5) translate(-10px, 10px)"; glow.style.opacity = "1"; }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "scale(1)";
         e.currentTarget.style.borderColor = "var(--border)";
         e.currentTarget.style.backgroundColor = "var(--bg-card)";
-        const glow = e.currentTarget.querySelector('.feat-bg-glow');
+        const glow = e.currentTarget.querySelector('.feat-bg-glow') as HTMLElement;
         if (glow) { glow.style.transform = "scale(1)"; glow.style.opacity = "0"; }
       }}
     >
@@ -106,7 +106,8 @@ export default function CoinListCard({
                     src={coin.image_url}
                     alt={coin.symbol}
                     className="w-6 h-6 rounded-full shrink-0"
-                    onError={(e) => { e.target.style.display = 'none' }}
+                    onError={(e) => { (e.target as HTMLElement).style.display = 'none' }}
+                    onMouseLeave={(e) => { (e.target as HTMLElement).style.color = "var(--text-muted)"; }}
                   />
                 ) : (
                   <div
