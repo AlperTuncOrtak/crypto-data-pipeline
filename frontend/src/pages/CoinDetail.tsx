@@ -236,8 +236,11 @@ export default function CoinDetail() {
           initial={{ opacity: 0, y: -20, filter: "blur(10px)" }} 
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} 
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-12"
+          className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-12 bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden group"
         >
+          <div className="absolute inset-0 opacity-10 pointer-events-none transition-opacity duration-1000 group-hover:opacity-20" style={{ background: `linear-gradient(135deg, ${brandColor}40 0%, transparent 100%)` }}></div>
+          
+          <div className="relative z-10 w-full flex flex-col md:flex-row md:items-start justify-between gap-8">
           {/* Left: name + symbol */}
           <div className="flex items-center gap-6">
             <div className="relative">
@@ -286,6 +289,7 @@ export default function CoinDetail() {
                 {athPct}% {Number(athPct) < 0 ? "from ATH" : "above ATH"}
               </div>
             )}
+          </div>
           </div>
         </motion.div>
 
@@ -419,18 +423,15 @@ export default function CoinDetail() {
               </div>
             </motion.div>
 
-            {/* TOKENOMICS & NEWS GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                  <div className="p-5 border-b border-[var(--border-base)] bg-[var(--bg-overlay)]"><span className="text-lg font-black text-[var(--text-main)]">Tokenomics</span></div>
-                  <div className="p-6 flex-1"><TokenomicsWidget coin={coin} /></div>
-               </motion.div>
-
-               <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                  <div className="p-5 border-b border-[var(--border-base)] bg-[var(--bg-overlay)]"><span className="text-lg font-black text-[var(--text-main)]">Latest News</span></div>
-                  <div className="p-6 flex-1"><CryptoNews symbol={coin.symbol} /></div>
-               </motion.div>
-            </div>
+            {/* NEWS GRID */}
+            <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl flex flex-col mb-6">
+              <div className="p-5 border-b border-[var(--border-base)] bg-[var(--bg-overlay)]">
+                <span className="text-lg font-black text-[var(--text-main)] tracking-tight">Latest News</span>
+              </div>
+              <div className="p-6 flex-1">
+                <CryptoNews symbol={coin.symbol} />
+              </div>
+            </motion.div>
             
           </div>
 
@@ -511,12 +512,18 @@ export default function CoinDetail() {
               </div>
             </motion.div>
 
+            {/* Tokenomics */}
+            <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+              <div className="p-5 border-b border-[var(--border-base)] bg-[var(--bg-overlay)]">
+                <span className="text-lg font-black text-[var(--text-main)] tracking-tight">Tokenomics</span>
+              </div>
+              <div className="p-6 flex-1">
+                <TokenomicsWidget coin={coin} />
+              </div>
+            </motion.div>
+
           </div>
         </motion.div>
       </div>
     </div>
-  );
-}
-
-
-
+  );}
