@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell, Settings, Menu, Moon, Sun } from 'lucide-react';
+import { Bell, Settings, Menu, Moon, Sun, Plus, TrendingUp, TrendingDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?: () => void }) {
   const location = useLocation();
@@ -11,6 +12,17 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
   
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const [hasNotif, setHasNotif] = useState(true);
+  
+  // Local Price Alerts State
+  const [activeTab, setActiveTab] = useState<'notif' | 'alerts'>('alerts');
+  const [alerts, setAlerts] = useState<{id: number, symbol: string, target: number, above: boolean}[]>([
+    { id: 1, symbol: 'BTC', target: 95000, above: true },
+    { id: 2, symbol: 'ETH', target: 3000, above: false }
+  ]);
+  const [newSymbol, setNewSymbol] = useState('SOL');
+  const [newTarget, setNewTarget] = useState(200);
+  const [newAbove, setNewAbove] = useState(true);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -50,7 +62,14 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
 
       {/* Right: Actions */}
       <div ref={wrapperRef} className="flex items-center gap-4 relative">
-        <div className="flex items-center gap-2 pl-2 sm:pl-4 ml-1 sm:ml-2">
+        <div className="hidden sm:block">
+          <ConnectButton 
+            showBalance={false} 
+            chainStatus="icon" 
+            accountStatus="address"
+          />
+        </div>
+        <div className="flex items-center gap-2 pl-2 sm:pl-4 ml-1 sm:ml-2 border-l border-[var(--border-subtle)]">
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
@@ -70,25 +89,105 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
             </button>
             
             {activePopover === 'notif' && (
-              <div className="absolute top-full right-0 mt-2 w-72 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-3xl shadow-2xl overflow-hidden z-50">
-                 <div className="p-4 border-b border-[var(--border-subtle)] flex justify-between items-center bg-[var(--bg-elevated)]">
-                   <h4 className="text-[var(--text-main)] font-medium text-sm">Notifications</h4>
-                   {hasNotif && (
-                     <button onClick={() => setHasNotif(false)} className="text-xs text-blue-400 hover:text-blue-300 cursor-pointer">
-                       Mark all read
-                     </button>
-                   )}
+              <div className="absolute top-full right-0 mt-2 w-80 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-3xl shadow-2xl overflow-hidden z-50">
+                 <div className="flex border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
+                   <button 
+                     onClick={() => setActiveTab('alerts')}
+                     className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'alerts' ? 'text-[var(--accent)] border-b-2 border-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
+                   >
+                     Price Alerts
+                   </button>
+                   <button 
+                     onClick={() => setActiveTab('notif')}
+                     className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'notif' ? 'text-[var(--accent)] border-b-2 border-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
+                   >
+                     Notifications {hasNotif && <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white text-[10px]">1</span>}
+                   </button>
                  </div>
-                 {hasNotif ? (
-                   <div className="p-4 hover:bg-[var(--border-subtle)] cursor-pointer border-b border-[var(--border-subtle)] transition-colors">
-                     <p className="text-sm text-[var(--text-main)] mb-1">Welcome to CryptoNeko Pro!</p>
-                     <p className="text-xs text-[var(--text-muted)]">Your account has been successfully created. Explore the dashboard.</p>
-                     <p className="text-[10px] text-[var(--text-muted)] mt-2">Just now</p>
+
+                 {activeTab === 'alerts' ? (
+                   <div className="flex flex-col">
+                     <div className="p-4 border-b border-[var(--border-subtle)] bg-black/10">
+                       <p className="text-xs text-[var(--text-muted)] mb-2 uppercase font-bold tracking-wider">Create Alert</p>
+                       <div className="flex items-center gap-2">
+                         <input 
+                           value={newSymbol}
+                           onChange={e => setNewSymbol(e.target.value.toUpperCase())}
+                           placeholder="BTC"
+                           className="w-16 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-xl px-2 py-1.5 text-sm text-[var(--text-main)] focus:border-[var(--accent)] outline-none uppercase font-bold"
+                         />
+                         <button 
+                           onClick={() => setNewAbove(!newAbove)}
+                           className={`p-1.5 rounded-xl border ${newAbove ? 'bg-[var(--positive)]/10 border-[var(--positive)]/30 text-[var(--positive)]' : 'bg-[var(--negative)]/10 border-[var(--negative)]/30 text-[var(--negative)]'}`}
+                         >
+                           {newAbove ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                         </button>
+                         <div className="relative flex-1">
+                           <span className="absolute left-2 top-1.5 text-sm text-[var(--text-muted)]">$</span>
+                           <input 
+                             type="number"
+                             value={newTarget}
+                             onChange={e => setNewTarget(Number(e.target.value))}
+                             className="w-full bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-xl pl-5 pr-2 py-1.5 text-sm text-[var(--text-main)] focus:border-[var(--accent)] outline-none font-medium"
+                           />
+                         </div>
+                         <button 
+                           onClick={() => {
+                             if (newSymbol && newTarget > 0) {
+                               setAlerts([{ id: Date.now(), symbol: newSymbol, target: newTarget, above: newAbove }, ...alerts]);
+                               setNewSymbol('');
+                               setNewTarget(0);
+                             }
+                           }}
+                           className="p-1.5 rounded-xl bg-[var(--accent)] text-white hover:opacity-80 transition-opacity"
+                         >
+                           <Plus size={16} />
+                         </button>
+                       </div>
+                     </div>
+                     <div className="max-h-48 overflow-y-auto p-2 space-y-1">
+                       {alerts.length === 0 ? (
+                         <div className="py-6 text-center text-xs text-[var(--text-muted)]">No active alerts</div>
+                       ) : (
+                         alerts.map(a => (
+                           <div key={a.id} className="flex items-center justify-between p-2 rounded-xl hover:bg-[var(--bg-base)] transition-colors group">
+                             <div className="flex items-center gap-3">
+                               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${a.above ? 'bg-[var(--positive)]/10 text-[var(--positive)]' : 'bg-[var(--negative)]/10 text-[var(--negative)]'}`}>
+                                 {a.above ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                               </div>
+                               <div>
+                                 <p className="text-sm font-bold text-[var(--text-main)]">{a.symbol}</p>
+                                 <p className="text-xs text-[var(--text-muted)]">{a.above ? 'Crosses above' : 'Drops below'} ${a.target.toLocaleString()}</p>
+                               </div>
+                             </div>
+                             <button 
+                               onClick={() => setAlerts(alerts.filter(x => x.id !== a.id))}
+                               className="text-xs text-[var(--negative)] opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-lg hover:bg-[var(--negative)]/10"
+                             >
+                               Remove
+                             </button>
+                           </div>
+                         ))
+                       )}
+                     </div>
                    </div>
                  ) : (
-                   <div className="p-8 text-center text-sm text-[var(--text-muted)] flex flex-col items-center gap-2">
-                     <Bell size={24} className="text-gray-600 mb-1 opacity-50" />
-                     You're all caught up!
+                   <div>
+                     {hasNotif ? (
+                       <div className="p-4 hover:bg-[var(--border-subtle)] cursor-pointer border-b border-[var(--border-subtle)] transition-colors">
+                         <div className="flex justify-between items-start mb-1">
+                           <p className="text-sm font-bold text-[var(--text-main)]">Welcome to CryptoNeko!</p>
+                           <button onClick={() => setHasNotif(false)} className="text-[10px] text-[var(--accent)] hover:underline">Mark read</button>
+                         </div>
+                         <p className="text-xs text-[var(--text-muted)]">Web3 wallet connection and local price alerts are now active.</p>
+                         <p className="text-[10px] text-[var(--text-muted)] mt-2">Just now</p>
+                       </div>
+                     ) : (
+                       <div className="p-8 text-center text-sm text-[var(--text-muted)] flex flex-col items-center gap-2">
+                         <Bell size={24} className="text-gray-600 mb-1 opacity-50" />
+                         You're all caught up!
+                       </div>
+                     )}
                    </div>
                  )}
               </div>
