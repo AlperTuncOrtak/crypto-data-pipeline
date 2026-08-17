@@ -47,7 +47,7 @@ export default function Narratives() {
           className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] rounded-[100%] blur-[150px] opacity-[0.25] mix-blend-screen transition-colors duration-1000"
           style={{ background: "radial-gradient(ellipse at top, var(--accent), transparent 70%)" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0f]/90 to-[#0d0d0f] z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--bg-base)]/90 to-[var(--bg-base)] z-10" />
       </div>
 
       <div className="max-w-[1400px] mx-auto relative z-20 h-full flex flex-col">

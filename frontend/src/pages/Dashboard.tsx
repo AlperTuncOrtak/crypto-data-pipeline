@@ -287,7 +287,7 @@ export default function Dashboard() {
                  <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Dominance</div>
                  <div>
                    <div className="flex items-end gap-2">
-                     <div className="text-3xl font-semibold text-[#F59E0B] tracking-tight">{btcDom}%</div>
+                     <div className="text-3xl font-semibold text-[var(--accent)] tracking-tight">{btcDom}%</div>
                      <div className="text-[14px] font-medium text-[var(--text-muted)] mb-1">BTC</div>
                    </div>
                    <div className="text-[13px] font-medium text-[var(--text-muted)] mt-1">ETH: <span className="text-[var(--text-main)]">{ethDom}%</span></div>

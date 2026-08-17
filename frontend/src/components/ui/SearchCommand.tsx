@@ -208,7 +208,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                             <div className="flex items-center gap-2">
                               <span className="text-[12px] text-zinc-500 font-mono tracking-wider">{item.symbol}</span>
                               {isSelected && (
-                                <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[10px] text-zinc-400 font-mono shadow-sm">
+                                <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] text-[10px] text-zinc-400 font-mono shadow-sm">
                                   ↵
                                 </kbd>
                               )}
@@ -254,7 +254,7 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
                               </div>
                             </div>
                             {isSelected && (
-                               <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[10px] text-zinc-400 font-mono shadow-sm">
+                               <kbd className="hidden sm:flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] text-[10px] text-zinc-400 font-mono shadow-sm">
                                  ↵
                                </kbd>
                             )}
@@ -271,23 +271,23 @@ export default function SearchCommand({ isOpen, onClose }: SearchCommandProps) {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--border-base)] bg-[var(--bg-base)] text-[12px] text-[#9c9c9d]">
+              <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--border-base)] bg-[var(--bg-base)] text-[12px] text-[var(--text-muted)]">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1.5">
                     <div className="flex items-center gap-0.5">
-                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm">↑</kbd>
-                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm">↓</kbd>
+                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] text-[var(--text-main)] font-sans shadow-sm">↑</kbd>
+                      <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] text-[var(--text-main)] font-sans shadow-sm">↓</kbd>
                     </div>
                     <span>Navigate</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm">↵</kbd>
+                    <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] text-[var(--text-main)] font-sans shadow-sm">↵</kbd>
                     <span>Open</span>
                   </span>
                 </div>
                 <span className="flex items-center gap-1.5">
                   <span>Close</span>
-                  <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[#121212] to-[#0d0d0d] border border-[var(--border-base)] text-[#cdcdcd] font-sans shadow-sm text-[10px]">ESC</kbd>
+                  <kbd className="flex items-center justify-center h-5 px-1.5 rounded-sm bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] text-[var(--text-main)] font-sans shadow-sm text-[10px]">ESC</kbd>
                 </span>
               </div>
 

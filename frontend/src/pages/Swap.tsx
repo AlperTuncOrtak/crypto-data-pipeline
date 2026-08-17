@@ -391,7 +391,7 @@ export default function Swap() {
         <div className="w-full max-w-[480px] flex flex-col gap-6 relative z-10">
           
           {/* Main Swap Card */}
-          <div className="w-full rounded-[24px] bg-gradient-to-b from-[#111214] to-[#0a0b0d] border border-[var(--border-base)] p-2 shadow-2xl overflow-hidden relative">
+          <div className="w-full rounded-[24px] bg-gradient-to-b from-[var(--bg-subtle)] to-[var(--bg-base)] border border-[var(--border-base)] p-2 shadow-2xl overflow-hidden relative">
             
             {/* AI Intent Input */}
             <div className="w-full px-2 pt-2 pb-1 relative z-20">

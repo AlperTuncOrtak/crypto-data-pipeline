@@ -289,7 +289,7 @@ export default function WatchlistPanel({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="m-4 p-4 bg-gradient-to-br from-[#16181c] to-[#0a0b0d] border border-[var(--accent)]/30 rounded-2xl shadow-[0_0_40px_rgba(83,58,253,0.15)] relative overflow-hidden"
+            className="m-4 p-4 bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-base)] border border-[var(--accent)]/30 rounded-2xl shadow-[0_0_40px_rgba(83,58,253,0.15)] relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent)]/10 blur-3xl rounded-full" />
             <div className="relative z-10">

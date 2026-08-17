@@ -94,7 +94,7 @@ function CoinSearchDropdown({ allCoins, selected, onAdd }) {
 
   return (
     <div className="relative w-[280px]">
-      <div className={`flex items-center gap-2 px-3 py-2.5 rounded-3xl bg-[#111113] border transition-colors duration-200 ${open ? 'border-[var(--accent)]' : 'border-[var(--border-base)]'}`}>
+      <div className={`flex items-center gap-2 px-3 py-2.5 rounded-3xl bg-[var(--bg-subtle)] border transition-colors duration-200 ${open ? 'border-[var(--accent)]' : 'border-[var(--border-base)]'}`}>
         <Search size={14} className="text-[var(--text-muted)] shrink-0" />
         <input
           type="text"
@@ -167,7 +167,7 @@ export default function Analysis() {
       {/* BACKGROUND GLOWS */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
         <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>
-        <div className="w-[600px] h-[250px] bg-[#059669] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
+        <div className="w-[600px] h-[250px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div>
       </div>
 
       <div className="max-w-[1100px] mx-auto relative z-20">
