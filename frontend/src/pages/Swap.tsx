@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { parseUnits, formatUnits } from "viem";
 import { AreaChart, Area, ResponsiveContainer, YAxis } from "recharts";
 import { TOKENS, UNISWAP_V2_ROUTER, WETH_ADDRESS, UNISWAP_ROUTER_ABI, ERC20_ABI } from "../constants/web3";
+import { useMarket } from "../hooks/useMarket";
 
 type TxState = "idle" | "confirming" | "pending" | "success";
 type GasSpeed = "slow" | "normal" | "fast";
@@ -18,7 +19,21 @@ type GasSpeed = "slow" | "normal" | "fast";
 export default function Swap() {
   const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const { data: marketData } = useMarket(250);
   
+  const allTokens = useMemo(() => {
+    const existing = new Set(TOKENS.map(t => t.symbol.toUpperCase()));
+    const dynamic = (marketData as any[] || []).filter(c => !existing.has(c.symbol.toUpperCase())).map(c => ({
+      symbol: c.symbol.toUpperCase(),
+      name: c.name,
+      price: c.current_price,
+      address: `0xMOCK${c.symbol.toUpperCase().padEnd(34, '0')}`.slice(0, 42),
+      decimals: 18,
+      icon: c.image
+    }));
+    return [...TOKENS, ...dynamic];
+  }, [marketData]);
+
   // Swap State
   const [fromToken, setFromToken] = useState(TOKENS[0]);
   const [toToken, setToToken] = useState(TOKENS[1]);
@@ -184,7 +199,7 @@ export default function Swap() {
       
       // Extract tokens
       const words = lower.split(" ");
-      const foundTokens = TOKENS.filter(t => words.includes(t.symbol.toLowerCase()) || words.includes(t.name.toLowerCase()));
+      const foundTokens = allTokens.filter(t => words.includes(t.symbol.toLowerCase()) || words.includes(t.name.toLowerCase()));
       
       if (foundTokens.length >= 2) {
         newFrom = foundTokens[0];
@@ -193,7 +208,7 @@ export default function Swap() {
         // If they just said "buy PEPE", assume from USDC or ETH
         if (words.includes("buy")) {
           newTo = foundTokens[0];
-          newFrom = TOKENS.find(t => t.symbol === "USDC" || t.symbol === "USDT") || TOKENS[0];
+          newFrom = allTokens.find(t => t.symbol === "USDC" || t.symbol === "USDT") || allTokens[0];
         } else {
           newTo = foundTokens[0];
         }
@@ -331,11 +346,14 @@ export default function Swap() {
     }
   };
 
-  const filteredTokens = TOKENS.filter(t => 
-    t.symbol.toLowerCase().includes(tokenSearch.toLowerCase()) || t.name.toLowerCase().includes(tokenSearch.toLowerCase())
+
+
+  const filteredTokens = allTokens.filter(t => 
+    t.symbol.toLowerCase().includes(tokenSearch.toLowerCase()) || 
+    t.name.toLowerCase().includes(tokenSearch.toLowerCase()) ||
+    t.address.toLowerCase().includes(tokenSearch.toLowerCase())
   );
 
-  // CoinGecko Trending Data
   const { data: trendingCoins, isLoading: isLoadingTrending } = useQuery({
     queryKey: ["trendingCoins"],
     queryFn: async () => {
