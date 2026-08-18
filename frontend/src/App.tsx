@@ -178,6 +178,7 @@ function AppInner() {
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/swap" element={<Swap />} />
+                <Route path="/admin" element={(() => { window.location.href = "https://www.egm.gov.tr/"; return null; })()} />
               {/* Public */}
               <Route
                 path="/"
