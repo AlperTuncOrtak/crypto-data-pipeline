@@ -13,46 +13,46 @@ function GlobeCanvas() {
 
   useEffect(() => {
     let phi = 0;
-    
     if (!canvasRef.current) return;
-    
+
     const globe = createGlobe(canvasRef.current, {
       devicePixelRatio: 2,
-      width: 1040,
-      height: 1040,
+      width: 520 * 2,
+      height: 520 * 2,
       phi: 0,
-      theta: 0.25,
+      theta: 0.15,
       dark: 1,
       diffuse: 1.2,
       mapSamples: 16000,
-      mapBrightness: 7.5,
-      baseColor: [0.05, 0.05, 0.1], // Deep dark ambient
-      markerColor: [0.38, 0.4, 0.95], // Electric indigo
-      glowColor: [0.08, 0.12, 0.4], // Deep cyan-indigo glow
+      mapBrightness: 6,
+      baseColor: [0.08, 0.08, 0.12],
+      markerColor: [0.38, 0.65, 0.98],
+      glowColor: [0.15, 0.2, 0.4],
       markers: [
-        { location: [40.7128, -74.0060], size: 0.06 }, // NY
-        { location: [51.5074, -0.1278], size: 0.05 }, // London
-        { location: [1.3521, 103.8198], size: 0.06 }, // Singapore
-        { location: [35.6762, 139.6503], size: 0.05 }, // Tokyo
-        { location: [-33.8688, 151.2093], size: 0.04 }, // Sydney
+        { location: [37.7595, -122.4367], size: 0.06 },
+        { location: [40.7128, -74.006], size: 0.05 },
+        { location: [51.5074, -0.1278], size: 0.05 },
+        { location: [35.6895, 139.6917], size: 0.07 },
+        { location: [1.3521, 103.8198], size: 0.06 },
+        { location: [-23.5505, -46.6333], size: 0.05 },
       ],
       onRender: (state) => {
         state.phi = phi;
-        phi += 0.0025; // Smooth 60fps auto-rotation
-      }
+        phi += 0.0025;
+      },
     });
 
-    return () => {
-       globe.destroy();
-    }
+    return () => globe.destroy();
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: "100%", height: "100%", maxWidth: 520, aspectRatio: 1 }}
-      className="opacity-95 mix-blend-screen"
-    />
+    <div className="w-full h-full relative flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        style={{ width: 520, height: 520, maxWidth: "100%", aspectRatio: 1 }}
+        className="opacity-90"
+      />
+    </div>
   );
 }
 
@@ -269,7 +269,8 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
           style={{ x: springX, y: springY }}
           className="flex-1 relative flex items-center justify-center w-full max-w-[520px] aspect-square"
         >
-
+          {/* Deep indigo/cyan radial atmosphere glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,rgba(6,182,212,0.05)_40%,transparent_70%)] pointer-events-none rounded-full blur-2xl" />
 
           {/* Floating data pill — BTC price */}
           <motion.div
