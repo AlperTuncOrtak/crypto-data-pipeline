@@ -5,7 +5,7 @@ from backend.auth import verify_token
 from backend.services.alchemy_service import get_wallet_balances
 from pydantic import BaseModel
 
-router = APIRouter(prefix="/api/wallets", tags=["wallets"])
+router = APIRouter(prefix="/wallets", tags=["wallets"])
 
 class LinkWalletRequest(BaseModel):
     wallet_address: str
