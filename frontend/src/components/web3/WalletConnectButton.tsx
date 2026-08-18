@@ -5,6 +5,7 @@ import { useDisconnect, useAccount } from 'wagmi';
 import { useAuth } from '../../hooks/useAuth';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
+import { apiClient } from '../../api/client';
 
 export default function WalletConnectButton() {
   const { disconnect } = useDisconnect();
@@ -15,17 +16,9 @@ export default function WalletConnectButton() {
   useEffect(() => {
     if (isConnected && address && isLoggedIn && token && !hasLinkedRef.current) {
       hasLinkedRef.current = true;
-      fetch('http://localhost:8000/api/wallets/link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ wallet_address: address, provider: 'metamask' })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'success') {
+      apiClient.post('/wallets/link', { wallet_address: address, provider: 'metamask' })
+      .then(res => {
+        if (res.data.status === 'success') {
           toast.success("Cüzdan hesabınıza başarıyla bağlandı!");
         }
       })
