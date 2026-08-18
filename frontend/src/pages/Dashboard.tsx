@@ -17,7 +17,7 @@ import {
   TrendingUp, TrendingDown, Brain, Flame, Search,
   ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, LayoutDashboard
 } from "lucide-react";
-import { MLAnomalyWidget } from "../components/dashboard/MLAnomalyWidget";
+
 import { FearGreedModal } from "../components/dashboard/FearGreedModal";
 import { GlobalStatsModal } from "../components/dashboard/GlobalStatsModal";
 import { WhaleFeed } from "../components/dashboard/WhaleFeed";
@@ -243,12 +243,7 @@ export default function Dashboard() {
           </div>
         </FadeIn>
 
-        {/* ML ANOMALIES TICKER */}
-        <FadeIn delay={0.15} className="mb-8 w-full">
-          <MatteCard className="p-0">
-            <MLAnomalyWidget />
-          </MatteCard>
-        </FadeIn>
+
 
         {/* BENTO STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">

@@ -102,9 +102,13 @@ export default function Portfolio() {
     
     const fetchHistory = async () => {
       try {
-        const uniqueSymbols = Array.from(new Set(holdings.map(h => h.symbol)));
+        // Only fetch history for assets that actually have value (avoids 414 URI Too Long with hundreds of dust tokens)
+        const valuableHoldings = holdings.filter(h => (h.value || 0) > 0);
+        const uniqueSymbols = Array.from(new Set(valuableHoldings.map(h => h.symbol)));
         if (uniqueSymbols.length === 0) return;
-        const qs = uniqueSymbols.map((s) => `symbols=${s}`).join("&");
+        
+        // Cap at 50 symbols max to ensure URL never exceeds limits
+        const qs = uniqueSymbols.slice(0, 50).map((s) => `symbols=${s}`).join("&");
         
         // 24 hours historical data
         const res = await apiClient.get(`/analysis/history?${qs}&hours=24`);
