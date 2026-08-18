@@ -756,9 +756,20 @@ def ai_chat(payload: dict, user: dict = Depends(verify_token)):
                 system_instruction=system_prompt
             )
         )
-        raise HTTPException(status_code=500, detail="All AI models failed")
+        for chunk in resp:
+            if chunk.text:
+                yield f"data: {json.dumps({'text': chunk.text})}\n\n"
 
-    return {"reply": reply}
+    if GROQ_KEY:
+        try:
+            return StreamingResponse(stream_groq(), media_type="text/event-stream")
+        except Exception:
+            pass
+
+    if GEMINI_KEY:
+        return StreamingResponse(stream_gemini(), media_type="text/event-stream")
+
+    raise HTTPException(status_code=500, detail="All AI models failed")
 
 _pulse_cache = {}
 

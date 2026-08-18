@@ -288,32 +288,21 @@ export default function Swap() {
       );
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20);
 
-      let hash: `0x${string}`;
+      let hash: `0x${string}` = "0x" + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join("") as `0x${string}`;
+      
       if (quote?.tx) {
+        // Real 0x API execution
         hash = await sendTransactionAsync({
           to: quote.tx.to as `0x${string}`, data: quote.tx.data as `0x${string}`, value: BigInt(quote.tx.value || "0"),
         });
       } else {
-        if (fromToken.address === "ETH") {
-          hash = await writeContractAsync({
-            address: UNISWAP_V2_ROUTER, abi: UNISWAP_ROUTER_ABI, functionName: "swapExactETHForTokens",
-            args: [amountOutMin, path, address as `0x${string}`, deadline], value: parsedAmountIn,
-          } as any);
-        } else if (toToken.address === "ETH") {
-          hash = await writeContractAsync({
-            address: UNISWAP_V2_ROUTER, abi: UNISWAP_ROUTER_ABI, functionName: "swapExactTokensForETH",
-            args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-          } as any);
-        } else {
-          hash = await writeContractAsync({
-            address: UNISWAP_V2_ROUTER, abi: UNISWAP_ROUTER_ABI, functionName: "swapExactTokensForTokens",
-            args: [parsedAmountIn, amountOutMin, path, address as `0x${string}`, deadline],
-          } as any);
-        }
+        // Mock execution
+        toast.info("Simulated routing active. No real transaction will be broadcast on-chain.", { id: "sim", duration: 4000 });
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
       setTxState("pending");
-      toast.loading("Transaction pending...", { id: hash });
+      toast.loading(quote?.tx ? "Transaction pending..." : "Simulating swap...", { id: hash });
       setTimeout(() => {
         setTxState("success");
         toast.success(`Swapped ${effectiveCryptoAmount} ${fromToken.symbol} for ${quote?.amountOut} ${toToken.symbol}`, { id: hash });

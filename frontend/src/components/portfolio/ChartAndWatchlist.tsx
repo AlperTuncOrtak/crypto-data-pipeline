@@ -47,27 +47,34 @@ export default function ChartAndWatchlist({
               </div>
             </div>
           </div>
-          <div className="h-[260px] w-full" style={{ touchAction: 'pan-y' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--positive)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--positive)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2d31" vertical={false} />
-                <XAxis dataKey="time" stroke="#4a4d51" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} />
-                <YAxis stroke="#4a4d51" fontSize={10} tickFormatter={(val) => '$' + (val / 1000) + 'k'} axisLine={false} tickLine={false} />
-                <RechartTooltip
-                  contentStyle={{ backgroundColor: '#1a1d21', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                  itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                  formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'Portfolio Value']}
-                  labelFormatter={(label) => `Time: ${label}`}
-                />
-                <Area type="monotone" dataKey="value" stroke="var(--positive)" strokeWidth={3} fill="url(#colorValue)" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-[260px] w-full relative" style={{ touchAction: 'pan-y' }}>
+            {chartData && chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--positive)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--positive)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2d31" vertical={false} />
+                  <XAxis dataKey="time" stroke="#4a4d51" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} />
+                  <YAxis stroke="#4a4d51" fontSize={10} tickFormatter={(val) => '$' + (val / 1000) + 'k'} axisLine={false} tickLine={false} />
+                  <RechartTooltip
+                    contentStyle={{ backgroundColor: '#1a1d21', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                    itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+                    formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'Portfolio Value']}
+                    labelFormatter={(label) => `Time: ${label}`}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="var(--positive)" strokeWidth={3} fill="url(#colorValue)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--text-muted)] border border-dashed border-[var(--border-subtle)] rounded-[12px] bg-[var(--bg-elevated)]/30">
+                <span className="text-[14px] font-bold">No Historical Data</span>
+                <span className="text-[12px]">Portfolio chart will populate soon as data is collected.</span>
+              </div>
+            )}
           </div>
         </div>
 
