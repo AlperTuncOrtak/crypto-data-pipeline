@@ -148,7 +148,7 @@ export default function ChartAndWatchlist({
             <h3 className="text-[15px] font-bold text-[var(--text-main)]">Recent news</h3>
             <button className="text-[11px] font-bold text-blue-500 hover:text-blue-400">View details &gt;</button>
           </div>
-          <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-4 pr-2">
             {marketNews && marketNews.length > 0 ? (
               marketNews.map((newsItem: any, i: number) => (
                 <a key={i} href={newsItem.url} target="_blank" rel="noopener noreferrer" className="flex gap-4 group p-2 rounded-3xl hover:bg-[var(--border-subtle)] transition-colors">

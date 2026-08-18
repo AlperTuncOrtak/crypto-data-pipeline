@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Bell, Settings, Menu, Moon, Sun, Plus, TrendingUp, TrendingDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import WalletConnectButton from '../web3/WalletConnectButton';
 
 export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?: () => void }) {
   const location = useLocation();
@@ -63,11 +63,7 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
       {/* Right: Actions */}
       <div ref={wrapperRef} className="flex items-center gap-4 relative">
         <div className="hidden sm:block">
-          <ConnectButton 
-            showBalance={false} 
-            chainStatus="icon" 
-            accountStatus="address"
-          />
+          <WalletConnectButton />
         </div>
         <div className="flex items-center gap-2 pl-2 sm:pl-4 ml-1 sm:ml-2 border-l border-[var(--border-subtle)]">
           {/* Theme Toggle */}
