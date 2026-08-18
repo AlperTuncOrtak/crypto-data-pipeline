@@ -25,7 +25,7 @@ function GlobeCanvas() {
       diffuse: 1.2,
       mapSamples: 16000,
       mapBrightness: 6,
-      baseColor: [0.08, 0.08, 0.12],
+      baseColor: [1, 1, 1],
       markerColor: [0.38, 0.65, 0.98],
       glowColor: [0.15, 0.2, 0.4],
       markers: [
