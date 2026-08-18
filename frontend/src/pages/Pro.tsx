@@ -59,13 +59,6 @@ interface BentoCardProps {
 }
 
 const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setCoords({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  }
 
   return (
     <motion.div
@@ -73,9 +66,6 @@ const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         position: "relative",
         background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
@@ -90,18 +80,6 @@ const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
         boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)"
       }}
     >
-      {/* Spotlight Hover */}
-      {isHovered && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            background: `radial-gradient(300px circle at ${coords.x}px ${coords.y}px, rgba(255,255,255,0.03), transparent 80%)`,
-            zIndex: 0
-          }}
-        />
-      )}
       
       {/* Subtle top border highlight */}
       <div style={{ position: "absolute", top: 0, left: 20, right: 20, height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)" }} />

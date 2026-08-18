@@ -63,3 +63,5 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 **Tasarım Notu:** Yeni eklenecek tüm özelliklerde `bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl` cam efekti ve Framer Motion geçişleri kullanılması zorunludur.
 
 - [x] TODO: Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine (AI Rebalance live API 404/SSL errors)
+- [ ] Landing page hero section'a güzel bir animasyon eklenecek.
+- [ ] Portfolio sayfasındaki sorunlar giderilecek. (Örnek Cüzdan: 0x00000000219ab540356cBB839Cbe05303d7705Fa)

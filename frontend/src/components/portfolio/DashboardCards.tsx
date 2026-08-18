@@ -4,9 +4,8 @@ import { ResponsiveContainer, LineChart, Line } from "recharts";
 
 interface DashboardCardsProps {
   totalValue: number;
-  totalPnl: number;
-  totalCost: number;
-  taxData: any;
+  change24hValue: number;
+  change24hPct: number;
   allocation: any[];
   buyingPower: number;
   setActiveTab: (tab: string) => void;
@@ -14,9 +13,8 @@ interface DashboardCardsProps {
 
 export default function DashboardCards({
   totalValue,
-  totalPnl,
-  totalCost,
-  taxData,
+  change24hValue,
+  change24hPct,
   allocation,
   buyingPower,
   setActiveTab,
@@ -39,7 +37,7 @@ export default function DashboardCards({
                 <Line
                   type="monotone"
                   dataKey="v"
-                  stroke="var(--positive)"
+                  stroke={change24hValue >= 0 ? "var(--positive)" : "var(--negative)"}
                   strokeWidth={2}
                   dot={false}
                   isAnimationActive={false}
@@ -50,23 +48,22 @@ export default function DashboardCards({
         </div>
         <div className="flex items-center justify-between text-[11px] font-bold border-t border-[var(--border-subtle)] pt-4">
           <div>
-            <div className="text-[var(--text-muted)] mb-1">P&L</div>
-            <div className={totalPnl >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
-              {totalPnl >= 0 ? "+" : "-"}$
-              {Math.abs(totalPnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <div className="text-[var(--text-muted)] mb-1">24H Change</div>
+            <div className={change24hValue >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
+              {change24hValue >= 0 ? "+" : "-"}$
+              {Math.abs(change24hValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
           <div>
-            <div className="text-[var(--text-muted)] mb-1">Gain</div>
-            <div className={totalPnl >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
-              {totalCost > 0 ? `${totalPnl >= 0 ? "+" : ""}${((totalPnl / totalCost) * 100).toFixed(2)}%` : "—"}
+            <div className="text-[var(--text-muted)] mb-1">24H %</div>
+            <div className={change24hValue >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
+              {change24hValue >= 0 ? "+" : ""}{change24hPct.toFixed(2)}%
             </div>
           </div>
           <div>
-            <div className="text-[var(--text-muted)] mb-1">Realized</div>
-            <div className={taxData.net >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
-              {taxData.net >= 0 ? "+" : "-"}$
-              {Math.abs(taxData.net).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            <div className="text-[var(--text-muted)] mb-1">Status</div>
+            <div className={change24hValue >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
+              {change24hValue >= 0 ? "Bullish" : "Bearish"}
             </div>
           </div>
         </div>
@@ -77,14 +74,14 @@ export default function DashboardCards({
         <div className="text-[12px] font-bold text-[var(--text-muted)] mb-6">Allocation</div>
         <div className="flex h-3 rounded-full overflow-hidden mb-6">
           {allocation.map((item, i) => (
-            <div key={i} style={{ width: `${item.pct}%`, backgroundColor: item.color }}></div>
+            <div key={i} style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
           ))}
         </div>
         <div className="flex items-center justify-between text-[11px] font-bold">
-          {allocation.map((item, i) => (
+          {allocation.slice(0, 4).map((item, i) => (
             <div key={i} className="flex flex-col items-center">
               <div className="flex items-center gap-1.5 mb-1">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
                 <span className="text-[var(--text-muted)]">{item.name}</span>
               </div>
               <div className="text-[var(--text-main)] text-[13px]">{item.pct.toFixed(0)}%</div>
