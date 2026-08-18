@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Wallet, AlertTriangle, LogOut, ArrowRightLeft } from 'lucide-react';
 import { useDisconnect, useAccount } from 'wagmi';
 import { useAuth } from '../../hooks/useAuth';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { apiClient } from '../../api/client';
 
