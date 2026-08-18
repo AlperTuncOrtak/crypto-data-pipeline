@@ -1,10 +1,51 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion } from 'framer-motion';
 import { Wallet, AlertTriangle, LogOut } from 'lucide-react';
-import { useDisconnect } from 'wagmi';
+import { useDisconnect, useAccount } from 'wagmi';
+import { useAuth } from '../../hooks/useAuth';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 export default function WalletConnectButton() {
   const { disconnect } = useDisconnect();
+  const { address, isConnected } = useAccount();
+  const { isLoggedIn, token } = useAuth();
+  const hasLinkedRef = useRef(false);
+
+  useEffect(() => {
+    if (isConnected && address && isLoggedIn && token && !hasLinkedRef.current) {
+      hasLinkedRef.current = true;
+      fetch('http://localhost:8000/api/wallets/link', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ wallet_address: address, provider: 'metamask' })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          toast.success("Cüzdan hesabınıza başarıyla bağlandı!");
+        }
+      })
+      .catch(err => {
+        console.error("Wallet link error:", err);
+      });
+    }
+    
+    if (!isConnected) {
+      hasLinkedRef.current = false;
+    }
+  }, [isConnected, address, isLoggedIn, token]);
+
+  const handleConnectClick = (openModal: () => void) => {
+    if (!isLoggedIn) {
+      window.dispatchEvent(new Event('open-login'));
+      return;
+    }
+    openModal();
+  };
 
   return (
     <ConnectButton.Custom>
@@ -42,12 +83,12 @@ export default function WalletConnectButton() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={openConnectModal}
+                    onClick={() => handleConnectClick(openConnectModal)}
                     type="button"
                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--accent)] to-purple-500 rounded-full text-[var(--text-main)] font-bold text-sm shadow-[0_0_20px_var(--accent)] hover:shadow-[0_0_30px_rgba(83,58,253,0.5)] transition-all"
                   >
                     <Wallet size={16} />
-                    Connect Wallet
+                    {isLoggedIn ? "Connect Wallet" : "Login to Connect"}
                   </motion.button>
                 );
               }

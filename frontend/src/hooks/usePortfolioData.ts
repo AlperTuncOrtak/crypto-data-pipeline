@@ -167,10 +167,32 @@ export function usePortfolioData(user: any, marketData: any[]) {
     if (binanceKeys.key && binanceKeys.secret) syncBinance(binanceKeys.key, binanceKeys.secret);
   }, []);
 
+  // --- BACKEND LINKED WALLET (Alchemy) ---
+  const [alchemyHoldings, setAlchemyHoldings] = useState<any[]>([]);
+  useEffect(() => {
+    if (!user) return;
+    const fetchLinkedWallet = async () => {
+      try {
+        const res = await apiClient.get("/wallets/portfolio");
+        if (res.data?.portfolio?.balances) {
+          const formatted = res.data.portfolio.balances.map((b: any) => ({
+            symbol: b.symbol,
+            quantity: b.balance,
+            source: "Wallet"
+          }));
+          setAlchemyHoldings(formatted);
+        }
+      } catch (e) {
+        console.error("Alchemy sync error", e);
+      }
+    };
+    fetchLinkedWallet();
+  }, [user]);
+
   // --- FINAL AGGREGATION ---
   const holdings = useMemo(
-    () => calcHoldings(trades, marketData, [...walletHoldings, ...web3Holdings, ...binanceHoldings]),
-    [trades, marketData, walletHoldings, web3Holdings, binanceHoldings]
+    () => calcHoldings(trades, marketData, [...walletHoldings, ...web3Holdings, ...binanceHoldings, ...alchemyHoldings]),
+    [trades, marketData, walletHoldings, web3Holdings, binanceHoldings, alchemyHoldings]
   );
 
   return {

@@ -105,6 +105,16 @@ function AppInner() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Custom event to trigger login modal from anywhere
+  useEffect(() => {
+    const handleOpenLogin = () => {
+      setAuthMode("login");
+      setAuthOpen(true);
+    };
+    window.addEventListener('open-login', handleOpenLogin);
+    return () => window.removeEventListener('open-login', handleOpenLogin);
+  }, []);
+
   const {
     watchlist,
     addToWatchlist,
