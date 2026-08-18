@@ -8,6 +8,13 @@
       }
     }
   ],
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "https://www.egm.gov.tr/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
