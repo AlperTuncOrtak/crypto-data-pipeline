@@ -46,3 +46,4 @@ joblib==1.4.0
 jupyter==1.0.0
 matplotlib==3.8.4
 seaborn==0.13.2
+slowapi
