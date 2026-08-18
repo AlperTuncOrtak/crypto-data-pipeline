@@ -5,130 +5,55 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useMarket } from "../../hooks/useMarket";
 
+import createGlobe from "cobe";
+
 // ─── Animated 3D Globe Canvas ────────────────────────────────────────────────
 function GlobeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animRef = useRef<number>(0);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    let phi = 0;
+    
+    if (!canvasRef.current) return;
+    
+    const globe = createGlobe(canvasRef.current, {
+      devicePixelRatio: 2,
+      width: 1040,
+      height: 1040,
+      phi: 0,
+      theta: 0.25,
+      dark: 1,
+      diffuse: 1.2,
+      mapSamples: 16000,
+      mapBrightness: 7.5,
+      baseColor: [0.05, 0.05, 0.1], // Deep dark ambient
+      markerColor: [0.38, 0.4, 0.95], // Electric indigo
+      glowColor: [0.08, 0.12, 0.4], // Deep cyan-indigo glow
+      markers: [
+        { location: [40.7128, -74.0060], size: 0.06 }, // NY
+        { location: [51.5074, -0.1278], size: 0.05 }, // London
+        { location: [1.3521, 103.8198], size: 0.06 }, // Singapore
+        { location: [35.6762, 139.6503], size: 0.05 }, // Tokyo
+        { location: [-33.8688, 151.2093], size: 0.04 }, // Sydney
+      ],
+      onRender: (state) => {
+        state.phi = phi;
+        phi += 0.0025; // Smooth 60fps auto-rotation
+      }
+    });
 
-    const W = (canvas.width = 520);
-    const H = (canvas.height = 520);
-    const cx = W / 2, cy = H / 2, R = 190;
-    let rot = 0;
-
-    const pts: { lat: number; lng: number; size: number; opacity: number }[] = [];
-    for (let i = 0; i < 200; i++) {
-      pts.push({
-        lat: (Math.random() - 0.5) * Math.PI,
-        lng: Math.random() * Math.PI * 2,
-        size: Math.random() * 1.6 + 0.4,
-        opacity: Math.random() * 0.5 + 0.3,
-      });
+    return () => {
+       globe.destroy();
     }
-
-    const gridLines: { lat?: number; lng?: number; isLat: boolean }[] = [];
-    for (let i = -75; i <= 75; i += 25) gridLines.push({ lat: (i * Math.PI) / 180, isLat: true });
-    for (let i = 0; i < 360; i += 30) gridLines.push({ lng: (i * Math.PI) / 180, isLat: false });
-
-    function project(lat: number, lng: number) {
-      const x3 = Math.cos(lat) * Math.cos(lng + rot);
-      const y3 = Math.sin(lat);
-      const z3 = Math.cos(lat) * Math.sin(lng + rot);
-      return { x: cx + x3 * R, y: cy - y3 * R, z: z3 };
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-
-      // Outer ambient glow
-      const outerGlow = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 1.6);
-      outerGlow.addColorStop(0, "rgba(99,102,241,0.0)");
-      outerGlow.addColorStop(0.6, "rgba(99,102,241,0.06)");
-      outerGlow.addColorStop(1, "rgba(99,102,241,0.14)");
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.6, 0, Math.PI * 2);
-      ctx.fillStyle = outerGlow;
-      ctx.fill();
-
-      // Sphere base
-      const sphere = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, 0, cx, cy, R);
-      sphere.addColorStop(0, "rgba(20, 18, 35, 0.92)");
-      sphere.addColorStop(1, "rgba(7, 6, 14, 0.98)");
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.fillStyle = sphere;
-      ctx.fill();
-
-      // Clip to sphere for grid lines
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
-
-      // Grid lines
-      gridLines.forEach(({ lat, lng, isLat }) => {
-        ctx.beginPath();
-        let firstVisible = true;
-        const steps = 80;
-        for (let s = 0; s <= steps; s++) {
-          const t = (s / steps) * Math.PI * 2;
-          const pLat = isLat ? lat! : t - Math.PI;
-          const pLng = isLat ? t : lng!;
-          const { x, y, z } = project(pLat, pLng);
-          if (z < -0.05) { firstVisible = true; continue; }
-          if (firstVisible) { ctx.moveTo(x, y); firstVisible = false; }
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = "rgba(99,102,241,0.09)";
-        ctx.lineWidth = 0.6;
-        ctx.stroke();
-      });
-      ctx.restore();
-
-      // Points (clipped to front hemisphere)
-      pts.forEach((pt) => {
-        const { x, y, z } = project(pt.lat, pt.lng);
-        if (z < 0) return;
-        const b = 0.35 + z * 0.65;
-        // Point glow
-        const g = ctx.createRadialGradient(x, y, 0, x, y, pt.size * 4);
-        g.addColorStop(0, `rgba(160,170,255,${pt.opacity * b * 0.8})`);
-        g.addColorStop(1, "transparent");
-        ctx.beginPath();
-        ctx.arc(x, y, pt.size * 4, 0, Math.PI * 2);
-        ctx.fillStyle = g;
-        ctx.fill();
-        // Point dot
-        ctx.beginPath();
-        ctx.arc(x, y, pt.size * 0.9, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(210,220,255,${pt.opacity * b})`;
-        ctx.fill();
-      });
-
-      // Atmosphere rim
-      const rim = ctx.createRadialGradient(cx, cy, R * 0.82, cx, cy, R * 1.05);
-      rim.addColorStop(0, "rgba(99,102,241,0)");
-      rim.addColorStop(0.7, "rgba(99,102,241,0.05)");
-      rim.addColorStop(1, "rgba(140,120,255,0.22)");
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.05, 0, Math.PI * 2);
-      ctx.fillStyle = rim;
-      ctx.fill();
-
-      rot += 0.0018;
-      animRef.current = requestAnimationFrame(draw);
-    }
-
-    draw();
-    return () => cancelAnimationFrame(animRef.current);
   }, []);
 
-  return <canvas ref={canvasRef} width={520} height={520} className="w-full h-full" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ width: "100%", height: "100%", maxWidth: 520, aspectRatio: 1 }}
+      className="opacity-95 mix-blend-screen"
+    />
+  );
 }
 
 // ─── Animated Number Counter ──────────────────────────────────────────────────
@@ -344,17 +269,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
           style={{ x: springX, y: springY }}
           className="flex-1 relative flex items-center justify-center w-full max-w-[520px] aspect-square"
         >
-          {/* Rotation rings */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-[3%] rounded-full border border-white/[0.04]"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-[9%] rounded-full border border-[var(--accent)]/[0.07]"
-          />
+
 
           {/* Floating data pill — BTC price */}
           <motion.div

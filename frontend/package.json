@@ -33,6 +33,7 @@
     "@tsparticles/slim": "^3.9.1",
     "axios": "^1.7.0",
     "clsx": "^2.1.1",
+    "cobe": "^2.0.1",
     "ethers": "^6.16.0",
     "framer-motion": "^12.43.0",
     "i18next": "^26.3.1",
