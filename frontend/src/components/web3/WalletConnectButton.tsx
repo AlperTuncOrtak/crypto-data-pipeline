@@ -1,6 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion } from 'framer-motion';
-import { Wallet, AlertTriangle, LogOut } from 'lucide-react';
+import { Wallet, AlertTriangle, LogOut, ArrowRightLeft } from 'lucide-react';
 import { useDisconnect, useAccount } from 'wagmi';
 import { useAuth } from '../../hooks/useAuth';
 import { useEffect, useRef } from 'react';
@@ -151,6 +151,23 @@ export default function WalletConnectButton() {
                       title="Disconnect Wallet"
                     >
                       <LogOut size={14} />
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => {
+                        disconnect();
+                        // Delay opening connect modal slightly to let disconnect process
+                        setTimeout(() => {
+                           if (openConnectModal) openConnectModal();
+                        }, 300);
+                      }}
+                      type="button"
+                      className="flex items-center justify-center w-7 h-7 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-full transition-colors ml-1"
+                      title="Switch Wallet"
+                    >
+                      <ArrowRightLeft size={14} />
                     </motion.button>
                   </div>
                 </div>
