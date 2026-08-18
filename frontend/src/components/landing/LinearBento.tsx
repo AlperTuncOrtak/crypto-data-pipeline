@@ -14,7 +14,7 @@ function GlassCard({ children, className = "", delay = 0 }: { children: React.Re
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={ + "" + elative overflow-hidden rounded-[20px] bg-[#0a0a0f] border border-white/[0.06] shadow-2xl transition-all duration-300 hover:border-white/[0.1]  + "$" + {className} + "" + }
+      className={`relative overflow-hidden rounded-[20px] bg-[#0a0a0f] border border-white/[0.06] shadow-2xl transition-all duration-300 hover:border-white/[0.1] ${className}`}
     >
       {/* Subtle top inner highlight */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-0" />
@@ -28,15 +28,15 @@ function GlassCard({ children, className = "", delay = 0 }: { children: React.Re
 // ¦¦¦ Section 1: The Holy Grail ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 function APYRow({ name, value, active, icon: Icon }: { name: string; value: string; active?: boolean; icon: any }) {
   return (
-    <div className={ + "" + lex items-center gap-4 py-4 border-b border-white/[0.04] last:border-0  + "$" + {active ? "opacity-100" : "opacity-50"} + "" + }>
+    <div className={`flex items-center gap-4 py-4 border-b border-white/[0.04] last:border-0 ${active ? "opacity-100" : "opacity-50"}`}>
       <div className="flex items-center gap-3 w-40">
-        <div className={ + "" + lex items-center justify-center w-6 h-6 rounded-full  + "$" + {active ? "bg-[var(--accent)]" : "bg-white/10"} + "" + }>
+        <div className={`flex items-center justify-center w-6 h-6 rounded-full ${active ? "bg-[var(--accent)]" : "bg-white/10"}`}>
           <Icon size={12} className={active ? "text-white" : "text-white/60"} />
         </div>
         <span className="text-[14px] font-medium text-white">{name}</span>
       </div>
       <div className="flex-1 border-t border-dashed border-white/20 mx-4" />
-      <div className={ + "" + 	ext-[15px] font-mono font-bold  + "$" + {active ? "text-[var(--accent)]" : "text-white"} + "" + }>
+      <div className={`text-[15px] font-mono font-bold ${active ? "text-[var(--accent)]" : "text-white"}`}>
         {value}
       </div>
     </div>
@@ -97,7 +97,7 @@ function WhaleRadarMini() {
         const newItem = {
           id: idCounter++,
           type: typeStr,
-          amount:  + "" + $ + "$" + {Math.floor(Math.random() * 500 + 10)}  + "$" + {assets[Math.floor(Math.random() * assets.length)]} + "" + ,
+          amount: `${Math.floor(Math.random() * 500 + 10)} ${assets[Math.floor(Math.random() * assets.length)]}`,
           time: "Just now"
         };
         return [newItem, ...prev.map(p => ({ ...p, time: "2s ago" }))].slice(0, 2);
@@ -119,9 +119,9 @@ function WhaleRadarMini() {
             className="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.03] border border-white/[0.05]"
           >
             <div className="flex gap-3 items-center">
-              <span className={ + "" + 	ext-[9px] font-bold px-2 py-0.5 rounded-[4px] tracking-wider uppercase border  + "$" + {
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-[4px] tracking-wider uppercase border ${
                 item.type === "ANOMALY" ? "text-orange-400 border-orange-400/20 bg-orange-400/10" : "text-green-400 border-green-400/20 bg-green-400/10"
-              } + "" + }>
+              }`}>
                 {item.type}
               </span>
               <span className="text-[13px] text-white font-mono font-semibold">{item.amount}</span>
