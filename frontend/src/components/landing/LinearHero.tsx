@@ -160,9 +160,9 @@ function MetricStrip({ coins }: { coins?: any[] }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.55 }}
-      className="relative z-10 w-full border-t border-b border-white/[0.06] bg-[#08080d]/80 backdrop-blur-xl"
+      className="relative z-10 w-full border-t border-white/5 bg-[#08080d]/80 backdrop-blur-xl"
     >
-      <div className="max-w-[1200px] mx-auto flex items-stretch divide-x divide-white/[0.06] overflow-x-auto scrollbar-none">
+      <div className="max-w-[1200px] mx-auto flex items-stretch divide-x divide-white/5 overflow-x-auto scrollbar-none">
         {metrics.map(({ label, num, prefix, suffix, dec, Icon }, i) => (
           <motion.div
             key={label}
@@ -170,7 +170,7 @@ function MetricStrip({ coins }: { coins?: any[] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 + i * 0.06 }}
             whileHover={{ backgroundColor: "rgba(99,102,241,0.05)" }}
-            className="flex-1 min-w-[140px] flex flex-col items-center justify-center py-5 px-4 gap-1.5 cursor-default transition-colors"
+            className="flex-1 min-w-[140px] flex flex-col items-center justify-center py-6 px-4 gap-1.5 cursor-default transition-colors"
           >
             <Icon size={13} className="text-[var(--accent)] opacity-60" />
             <div className="text-[1.15rem] font-bold text-[var(--text-main)] font-mono tabular-nums tracking-tight leading-none">
@@ -265,7 +265,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
               <motion.span
                 animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-main)] via-[var(--accent)] to-indigo-300 bg-[length:200%_auto]"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-[#818cf8] via-[#60a5fa] to-[#818cf8] bg-[length:200%_auto]"
               >
                 Analytics.
               </motion.span>
@@ -358,7 +358,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
 
           {/* Floating data pill — BTC price */}
           <motion.div
-            animate={{ y: [0, -14, 0] }}
+            animate={{ y: [0, -6, 0] }}
             transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
             whileHover={{ scale: 1.06 }}
             className="absolute top-[8%] right-[4%] bg-white/[0.05] border border-white/[0.09] backdrop-blur-xl rounded-2xl px-4 py-3 shadow-2xl z-10"
@@ -370,7 +370,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
 
           {/* Floating data pill — Signal */}
           <motion.div
-            animate={{ y: [0, 16, 0] }}
+            animate={{ y: [0, 6, 0] }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
             whileHover={{ scale: 1.06 }}
             className="absolute bottom-[12%] left-[2%] bg-white/[0.05] border border-white/[0.09] backdrop-blur-xl rounded-2xl px-4 py-3.5 shadow-2xl z-10"
@@ -385,7 +385,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
 
           {/* Floating data pill — Latency */}
           <motion.div
-            animate={{ y: [0, -10, 0] }}
+            animate={{ y: [0, -4, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
             whileHover={{ scale: 1.06 }}
             className="absolute top-[44%] right-[0%] bg-white/[0.05] border border-white/[0.09] backdrop-blur-xl rounded-xl px-3.5 py-2.5 shadow-xl z-10"
