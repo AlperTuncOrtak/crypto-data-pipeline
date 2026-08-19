@@ -212,8 +212,8 @@ export function usePortfolioData(user: any, marketData: any[]) {
   console.log("[Portfolio:agg] web3Holdings:", web3Holdings.length, "alchemyHoldings:", alchemyHoldings.length, "merged:", mergedHoldings.length, "binance:", binanceHoldings.length);
 
   const holdings = useMemo(
-    () => calcHoldings(trades, marketData, [...mergedHoldings, ...binanceHoldings]),
-    [trades, marketData, mergedHoldings, binanceHoldings]
+    () => calcHoldings(marketData, [...mergedHoldings, ...binanceHoldings]),
+    [marketData, mergedHoldings, binanceHoldings]
   );
 
   console.log("[Portfolio:agg] Final holdings count:", holdings.length, "values:", holdings.map((h: any) => `${h.symbol}=$${h.value?.toFixed(2)}`));
