@@ -232,76 +232,69 @@ export default function Dashboard() {
 
 
 
-        {/* BENTO STATS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          
-          <motion.div className="md:col-span-1 h-[170px]">
-            <FadeIn delay={0.2} className="h-full">
-               <BaseGlassCard hoverEffect onClick={() => setStatsModalType("mcap")} className="p-6 flex flex-col justify-between group">
-                 <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Global Market Cap</div>
-                 <div>
-                   <div className="text-3xl font-semibold text-[var(--text-main)] tracking-tight">
-                     <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
-                   </div>
-                   <div className="text-[13px] font-medium text-[var(--text-faint)] mt-1">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
-                 </div>
-               </BaseGlassCard>
-            </FadeIn>
-          </motion.div>
+        {/* METRIC STRIP */}
+        <div className="w-full relative z-10 border border-white/[0.06] rounded-[20px] bg-[#09090b]/60 backdrop-blur-xl mb-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="flex flex-col lg:flex-row items-stretch divide-y lg:divide-y-0 lg:divide-x divide-white/[0.06]">
+            
+            {/* Market Cap */}
+            <div onClick={() => setStatsModalType("mcap")} className="flex-1 p-6 md:p-8 flex flex-col justify-center cursor-pointer hover:bg-white/[0.02] transition-colors group">
+              <div className="text-[11px] text-white/40 uppercase tracking-[0.15em] font-medium mb-3 flex items-center gap-2 group-hover:text-white/60 transition-colors">
+                 Global Market Cap
+              </div>
+              <div className="text-[28px] md:text-[32px] font-semibold text-white tracking-tight tabular-nums mb-1">
+                <NumberFlow value={mcapFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={mcapFlow.suffix} />
+              </div>
+              <div className="text-[12px] text-white/30">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
+            </div>
 
-          <motion.div className="md:col-span-1 h-[170px]">
-            <FadeIn delay={0.3} className="h-full">
-               <BaseGlassCard hoverEffect onClick={() => setStatsModalType("volume")} className="p-6 flex flex-col justify-between group">
-                 <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">24h Volume</div>
-                 <div>
-                   <div className="text-3xl font-semibold text-[var(--text-main)] tracking-tight">
-                     <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
-                   </div>
-                   <div className="text-[13px] font-medium text-[var(--text-faint)] mt-1">Global network activity</div>
-                 </div>
-               </BaseGlassCard>
-            </FadeIn>
-          </motion.div>
+            {/* Volume */}
+            <div onClick={() => setStatsModalType("volume")} className="flex-1 p-6 md:p-8 flex flex-col justify-center cursor-pointer hover:bg-white/[0.02] transition-colors group">
+              <div className="text-[11px] text-white/40 uppercase tracking-[0.15em] font-medium mb-3 flex items-center gap-2 group-hover:text-white/60 transition-colors">
+                24h Volume
+              </div>
+              <div className="text-[28px] md:text-[32px] font-semibold text-white tracking-tight tabular-nums mb-1">
+                <NumberFlow value={volFlow.val} format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 2 }} suffix={volFlow.suffix} />
+              </div>
+              <div className="text-[12px] text-white/30">Global network activity</div>
+            </div>
 
-          <motion.div className="md:col-span-1 h-[170px]">
-            <FadeIn delay={0.4} className="h-full">
-               <BaseGlassCard hoverEffect onClick={() => setStatsModalType("dominance")} className="p-6 flex flex-col justify-between group">
-                 <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Dominance</div>
-                 <div>
-                   <div className="flex items-end gap-2">
-                     <div className="text-3xl font-semibold text-[var(--accent)] tracking-tight">{btcDom}%</div>
-                     <div className="text-[14px] font-medium text-[var(--text-muted)] mb-1">BTC</div>
-                   </div>
-                   <div className="text-[13px] font-medium text-[var(--text-muted)] mt-1">ETH: <span className="text-[var(--text-main)]">{ethDom}%</span></div>
-                 </div>
-               </BaseGlassCard>
-            </FadeIn>
-          </motion.div>
+            {/* Dominance */}
+            <div onClick={() => setStatsModalType("dominance")} className="flex-1 p-6 md:p-8 flex flex-col justify-center cursor-pointer hover:bg-white/[0.02] transition-colors group">
+              <div className="text-[11px] text-white/40 uppercase tracking-[0.15em] font-medium mb-3 flex items-center gap-2 group-hover:text-white/60 transition-colors">
+                Dominance
+              </div>
+              <div className="flex items-baseline gap-2 mb-1">
+                <div className="text-[28px] md:text-[32px] font-semibold text-white tracking-tight tabular-nums">{btcDom}%</div>
+                <div className="text-[14px] font-medium text-[var(--accent)] mb-1">BTC</div>
+              </div>
+              <div className="text-[12px] text-white/30">ETH: <span className="text-white/60">{ethDom}%</span></div>
+            </div>
 
-          <motion.div className="md:col-span-1 h-[170px]">
-            <FadeIn delay={0.5} className="h-full">
-               <BaseGlassCard hoverEffect onClick={() => setIsFngModalOpen(true)} className="p-6 flex flex-col justify-between group">
-                 <div className="flex items-center justify-between">
-                   <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Fear & Greed</div>
-                   <div className="text-[11px] bg-[var(--bg-overlay)] border border-[var(--border-subtle)] px-2 py-1 rounded-md font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">VIEW</div>
-                 </div>
-                 {fngValue !== null ? (
-                   <div className="flex items-center gap-4">
-                     <div className="relative w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(128,128,128,0.1) ${fngValue}% 100%)` }}>
-                       <div className="absolute inset-[3px] rounded-full bg-[var(--bg-elevated)] flex items-center justify-center">
-                         <span className="text-[14px] font-medium text-[var(--text-main)]">{fngValue}</span>
-                       </div>
-                     </div>
-                     <div>
-                       <div className="text-[15px] font-medium" style={{ color: fngColor }}>{fngLabel}</div>
-                     </div>
-                   </div>
-                 ) : (
-                   <div className="text-3xl font-semibold text-[var(--text-faint)]">—</div>
-                 )}
-               </BaseGlassCard>
-            </FadeIn>
-          </motion.div>
+            {/* Fear & Greed */}
+            <div onClick={() => setIsFngModalOpen(true)} className="flex-1 p-6 md:p-8 flex flex-col justify-center cursor-pointer hover:bg-white/[0.02] transition-colors group">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[11px] text-white/40 uppercase tracking-[0.15em] font-medium flex items-center gap-2 group-hover:text-white/60 transition-colors">
+                  Fear & Greed
+                </div>
+                <div className="text-[10px] bg-white/[0.03] border border-white/[0.06] px-2 py-0.5 rounded-md font-medium text-white/40 group-hover:text-white/80 transition-colors">VIEW</div>
+              </div>
+              {fngValue !== null ? (
+                <div className="flex items-center gap-4">
+                  <div className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(${fngColor} 0% ${fngValue}%, rgba(255,255,255,0.05) ${fngValue}% 100%)` }}>
+                    <div className="absolute inset-[3px] rounded-full bg-[#09090b] flex items-center justify-center">
+                      <span className="text-[15px] font-medium text-white">{fngValue}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[16px] font-medium" style={{ color: fngColor }}>{fngLabel}</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-[28px] md:text-[32px] font-semibold text-white/20">—</div>
+              )}
+            </div>
+
+          </div>
         </div>
 
         {/* MAIN 12-COLUMN LAYOUT */}
