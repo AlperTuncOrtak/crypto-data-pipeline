@@ -43,11 +43,9 @@ const mainNavSections = [
   {
     title: 'ANALYTICS & INSIGHTS',
     items: [
-      { 
-        name: 'Market Data', 
-        path: '/market', 
-        icon: BarChart2
-      }
+      { name: 'Market Data', path: '/market', icon: BarChart2 },
+      { name: 'AI Analysis', path: '/analysis', icon: Brain },
+      { name: 'Whale X-Ray', path: '/whale', icon: Activity },
     ]
   }
 ];
@@ -56,10 +54,8 @@ const supportSection = {
   title: 'SUPPORT',
   items: [
     { name: 'Alerts', path: '/alerts', icon: Bell },
-    { name: 'Leaderboard', path: '/leaderboard', icon: Users },
-    { name: 'Help & Support', path: '/support', icon: HelpCircle },
     { name: 'Settings', path: '/settings', icon: Settings },
-    { name: 'Contact Me', path: 'mailto:support@cryptoneko.com', icon: MessageCircle },
+    { name: 'Help & Support', path: '/support', icon: HelpCircle },
   ]
 };
 
