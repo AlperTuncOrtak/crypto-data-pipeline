@@ -201,6 +201,7 @@ interface PricingPlan {
   buttonText: string;
   href: string;
   isPopular?: boolean;
+  onClick?: (isMonthly: boolean) => void;
 }
 
 interface PricingSectionProps {
@@ -442,18 +443,36 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         </ul>
 
         <div className="mt-auto pt-8">
-          <a
-            href={plan.href}
-            className={cn(
-              buttonVariants({
-                variant: plan.isPopular ? "default" : "outline",
-                size: "lg",
-              }),
-              "w-full",
-            )}
-          >
-            {plan.buttonText}
-          </a>
+          {plan.onClick ? (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                plan.onClick!(isMonthly);
+              }}
+              className={cn(
+                buttonVariants({
+                  variant: plan.isPopular ? "default" : "outline",
+                  size: "lg",
+                }),
+                "w-full cursor-pointer",
+              )}
+            >
+              {plan.buttonText}
+            </button>
+          ) : (
+            <a
+              href={plan.href}
+              className={cn(
+                buttonVariants({
+                  variant: plan.isPopular ? "default" : "outline",
+                  size: "lg",
+                }),
+                "w-full cursor-pointer",
+              )}
+            >
+              {plan.buttonText}
+            </a>
+          )}
         </div>
       </div>
     </motion.div>
