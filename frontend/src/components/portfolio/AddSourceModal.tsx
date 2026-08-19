@@ -121,29 +121,7 @@ export default function AddSourceModal({
                   })}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3">ETH Address</p>
-                    <div className="flex flex-col gap-2">
-                      <input 
-                        value={walletInput} 
-                        onChange={e => setWalletInput(e.target.value)} 
-                        placeholder="0x..."
-                        className="w-full bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-3xl px-4 py-3 text-[13px] text-[var(--text-main)] focus:outline-none focus:border-[var(--positive)]/50 transition-all" 
-                      />
-                      <button 
-                        onClick={() => { 
-                          if (walletInput.trim()) { 
-                            setWallets(prev => [...new Set([...prev, walletInput.trim()])]); 
-                            setWalletInput(""); 
-                          } 
-                        }}
-                        className="w-full py-3 rounded-3xl bg-white/5 hover:bg-[var(--border-base)] border border-[var(--border-subtle)] text-[13px] font-semibold transition-all text-[var(--text-main)]"
-                      >
-                        {isFetchingWallet ? "Fetching..." : "Add Public Wallet"}
-                      </button>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 gap-6">
                   <div>
                     <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3">CSV Import</p>
                     <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); onClose(); }} />

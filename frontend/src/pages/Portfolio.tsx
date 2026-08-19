@@ -280,6 +280,7 @@ export default function Portfolio() {
                 allocation={allocation}
                 buyingPower={buyingPower}
                 setActiveTab={setActiveTab}
+                holdings={holdings}
               />
 
               <ChartAndWatchlist 

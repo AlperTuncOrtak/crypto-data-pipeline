@@ -31,48 +31,19 @@ export function usePortfolioData(user: any, marketData: any[]) {
       });
   }, [user]);
 
-  // --- MANUAL WALLETS (ETHPlorer) ---
-  const [wallets, setWallets] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem("crypto_neko_wallets") || "[]");
-    } catch {
-      return [];
-    }
-  });
-  const [walletHoldings, setWalletHoldings] = useState<any[]>([]);
-  const [isFetchingWallet, setIsFetchingWallet] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem("crypto_neko_wallets", JSON.stringify(wallets));
-    if (wallets.length === 0) {
-      setWalletHoldings([]);
-      return;
-    }
-    const fetchWallets = async () => {
-      setIsFetchingWallet(true);
-      const all: any[] = [];
-      for (const w of wallets) {
-        try {
-          const res = await fetch(`https://api.ethplorer.io/getAddressInfo/${w}?apiKey=freekey`);
-          const data = await res.json();
-          if (data.ETH?.balance > 0) all.push({ symbol: "ETH", quantity: data.ETH.balance, source: "Wallet" });
-          for (const t of data.tokens || []) {
-            if (!t.tokenInfo?.symbol) continue;
-            const bal = t.balance / Math.pow(10, parseInt(t.tokenInfo.decimals) || 18);
-            if (bal > 0) all.push({ symbol: t.tokenInfo.symbol, quantity: bal, source: "Wallet" });
-          }
-        } catch {}
-      }
-      setWalletHoldings(all);
-      setIsFetchingWallet(false);
-    };
-    fetchWallets();
-  }, [wallets]);
+  // ponytail: manual ETH address input removed — Alchemy handles everything.
+  useEffect(() => { localStorage.removeItem("crypto_neko_wallets"); }, []);
+  const wallets: string[] = [];
+  const walletHoldings: any[] = [];
+  const setWallets = () => {};
+  const isFetchingWallet = false;
 
   // --- LIVE WALLET BALANCES (WAGMI) ---
   const { address, isConnected } = useAccount();
   const { data: ethBalance } = useBalance({ address });
   const [web3Holdings, setWeb3Holdings] = useState<any[]>([]);
+
+  console.log("[Portfolio:wagmi] isConnected:", isConnected, "address:", address, "ethBalance:", ethBalance?.formatted);
 
   const erc20Tokens = useMemo(() => TOKENS.filter((t) => t.symbol !== "ETH"), []);
   const erc20Contracts = useMemo(
@@ -92,7 +63,11 @@ export function usePortfolioData(user: any, marketData: any[]) {
   });
 
   useEffect(() => {
+    console.log("[Portfolio:wagmi] Effect fired. isConnected:", isConnected, "address:", address);
+    console.log("[Portfolio:wagmi] ethBalance:", ethBalance?.formatted, "tokenBalances:", tokenBalances);
+
     if (!isConnected || !address) {
+      console.log("[Portfolio:wagmi] Not connected, clearing web3Holdings");
       setWeb3Holdings([]);
       return;
     }
@@ -102,23 +77,29 @@ export function usePortfolioData(user: any, marketData: any[]) {
     // Add ETH
     if (ethBalance) {
       const amount = Number(ethBalance.formatted);
+      console.log("[Portfolio:wagmi] ETH amount:", amount);
       if (amount > 0) {
+        const ethPrice = marketData?.find((m) => m.symbol === "ETH")?.current_price || TOKENS[0].price;
+        console.log("[Portfolio:wagmi] ETH price:", ethPrice, "value:", amount * ethPrice);
         newHoldings.push({
           source: "Wallet",
           symbol: "ETH",
           quantity: amount,
-          cost_basis: amount * (marketData?.find((m) => m.symbol === "ETH")?.current_price || TOKENS[0].price),
+          cost_basis: amount * ethPrice,
         });
       }
+    } else {
+      console.log("[Portfolio:wagmi] ethBalance is null/undefined");
     }
 
     // Add ERC20s
     if (tokenBalances) {
       tokenBalances.forEach((result, index) => {
+        const token = erc20Tokens[index];
+        console.log("[Portfolio:wagmi] Token", token.symbol, "status:", result.status, "result:", result.result?.toString());
         if (result.status === "success") {
-          const token = erc20Tokens[index];
           const amount = Number(formatUnits(result.result as bigint, token.decimals));
-          if (amount > 0 && Number(ethBalance?.formatted) !== 0) {
+          if (amount > 0) {
             newHoldings.push({
               source: "Wallet",
               symbol: token.symbol,
@@ -128,8 +109,11 @@ export function usePortfolioData(user: any, marketData: any[]) {
           }
         }
       });
+    } else {
+      console.log("[Portfolio:wagmi] tokenBalances is null/undefined");
     }
 
+    console.log("[Portfolio:wagmi] Final web3Holdings:", JSON.stringify(newHoldings));
     setWeb3Holdings(newHoldings);
   }, [isConnected, address, ethBalance, tokenBalances, marketData, erc20Tokens]);
 
@@ -169,31 +153,70 @@ export function usePortfolioData(user: any, marketData: any[]) {
 
   // --- BACKEND LINKED WALLET (Alchemy) ---
   const [alchemyHoldings, setAlchemyHoldings] = useState<any[]>([]);
+  const [alchemyFetchKey, setAlchemyFetchKey] = useState(0);
+
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log("[Portfolio:alchemy] No user, skipping fetch");
+      return;
+    }
+    console.log("[Portfolio:alchemy] Fetching /wallets/portfolio. user.id:", user.id, "address:", address, "fetchKey:", alchemyFetchKey);
+
     const fetchLinkedWallet = async () => {
       try {
         const res = await apiClient.get("/wallets/portfolio");
-        if (res.data?.portfolio?.balances) {
+        console.log("[Portfolio:alchemy] Response:", JSON.stringify(res.data));
+        if (res.data?.portfolio?.balances && res.data.portfolio.balances.length > 0) {
           const formatted = res.data.portfolio.balances.map((b: any) => ({
             symbol: b.symbol,
             quantity: b.balance,
             source: "Wallet"
           }));
+          console.log("[Portfolio:alchemy] Setting alchemyHoldings:", JSON.stringify(formatted));
           setAlchemyHoldings(formatted);
+        } else {
+          console.warn("[Portfolio:alchemy] Empty or no balances. Response:", JSON.stringify(res.data));
+          // ponytail: don't clear alchemyHoldings if backend returns empty — 
+          // user_wallets might not be linked yet
         }
-      } catch (e) {
-        console.error("Alchemy sync error", e);
+      } catch (e: any) {
+        console.error("[Portfolio:alchemy] Error:", e?.response?.status, e?.response?.data, e.message);
       }
     };
     fetchLinkedWallet();
-  }, [user]);
+  }, [user, address, alchemyFetchKey]);
+
+  // ponytail: after wallet connects, wait for /wallets/link POST to complete, then re-fetch
+  useEffect(() => {
+    if (!isConnected || !address) return;
+    console.log("[Portfolio:alchemy] Wallet connected, scheduling re-fetch in 3s");
+    const timer = setTimeout(() => setAlchemyFetchKey(k => k + 1), 3000);
+    return () => clearTimeout(timer);
+  }, [isConnected, address]);
 
   // --- FINAL AGGREGATION ---
+  // ponytail: Use BOTH wagmi and alchemy, but deduplicate by symbol.
+  // Alchemy has more accurate data, so it takes priority over wagmi for same symbol.
+  const mergedHoldings = useMemo(() => {
+    const all = [...alchemyHoldings];
+    const alchemySymbols = new Set(alchemyHoldings.map(h => h.symbol));
+    // Add wagmi holdings that aren't already covered by alchemy
+    for (const wh of web3Holdings) {
+      if (!alchemySymbols.has(wh.symbol)) {
+        all.push(wh);
+      }
+    }
+    return all;
+  }, [web3Holdings, alchemyHoldings]);
+
+  console.log("[Portfolio:agg] web3Holdings:", web3Holdings.length, "alchemyHoldings:", alchemyHoldings.length, "merged:", mergedHoldings.length, "binance:", binanceHoldings.length);
+
   const holdings = useMemo(
-    () => calcHoldings(trades, marketData, [...walletHoldings, ...web3Holdings, ...binanceHoldings, ...alchemyHoldings]),
-    [trades, marketData, walletHoldings, web3Holdings, binanceHoldings, alchemyHoldings]
+    () => calcHoldings(trades, marketData, [...mergedHoldings, ...binanceHoldings]),
+    [trades, marketData, mergedHoldings, binanceHoldings]
   );
+
+  console.log("[Portfolio:agg] Final holdings count:", holdings.length, "values:", holdings.map((h: any) => `${h.symbol}=$${h.value?.toFixed(2)}`));
 
   return {
     trades,
@@ -207,6 +230,7 @@ export function usePortfolioData(user: any, marketData: any[]) {
     holdings,
     walletHoldings,
     web3Holdings,
+    alchemyHoldings,
     binanceHoldings
   };
 }

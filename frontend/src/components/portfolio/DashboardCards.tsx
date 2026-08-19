@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line } from "recharts";
+import DepositModal from "./DepositModal";
+import WithdrawModal from "./WithdrawModal";
 
 interface DashboardCardsProps {
   totalValue: number;
@@ -10,6 +12,7 @@ interface DashboardCardsProps {
   allocation: any[];
   buyingPower: number;
   setActiveTab: (tab: string) => void;
+  holdings?: any[];
 }
 
 export default function DashboardCards({
@@ -20,8 +23,13 @@ export default function DashboardCards({
   allocation,
   buyingPower,
   setActiveTab,
+  holdings = [],
 }: DashboardCardsProps) {
+  const [isDepositOpen, setIsDepositOpen] = useState(false);
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
+
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Card 1: Total Equity */}
       <div className="p-6 rounded-[20px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between">
@@ -106,13 +114,13 @@ export default function DashboardCards({
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => setActiveTab("swap")}
+            onClick={() => setIsDepositOpen(true)}
             className="flex-1 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-[var(--text-main)] font-bold py-2.5 rounded-3xl text-[13px] transition-all flex items-center justify-center gap-2"
           >
             <ArrowUpRight size={16} /> Deposit
           </button>
           <button
-            onClick={() => setActiveTab("swap")}
+            onClick={() => setIsWithdrawOpen(true)}
             className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-base)] hover:bg-[var(--bg-elevated)] text-[var(--text-main)] font-bold py-2.5 rounded-3xl text-[13px] transition-all flex items-center justify-center gap-2"
           >
             <ArrowDownRight size={16} /> Withdraw
@@ -120,5 +128,9 @@ export default function DashboardCards({
         </div>
       </div>
     </div>
+
+      <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(false)} />
+      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(false)} holdings={holdings} />
+    </>
   );
 }

@@ -14,16 +14,19 @@ export default function WalletConnectButton() {
   const hasLinkedRef = useRef(false);
 
   useEffect(() => {
+    console.log("[WalletLink] Effect fired:", { isConnected, address, isLoggedIn, token: token ? "exists" : "null", hasLinked: hasLinkedRef.current });
     if (isConnected && address && isLoggedIn && token && !hasLinkedRef.current) {
       hasLinkedRef.current = true;
+      console.log("[WalletLink] POSTing /wallets/link for", address);
       apiClient.post('/wallets/link', { wallet_address: address, provider: 'metamask' })
       .then(res => {
+        console.log("[WalletLink] POST response:", res.data);
         if (res.data.status === 'success') {
           toast.success("Cüzdan hesabınıza başarıyla bağlandı!");
         }
       })
       .catch(err => {
-        console.error("Wallet link error:", err);
+        console.error("[WalletLink] POST error:", err?.response?.status, err?.response?.data, err.message);
       });
     }
     

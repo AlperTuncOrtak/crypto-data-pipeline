@@ -18,10 +18,12 @@ export default defineConfig({
     tailwindcss(),
     nodePolyfills(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'logo.png'],
       workbox: {
-        maximumFileSizeToCacheInBytes: 5000000 // 5 MB
+        maximumFileSizeToCacheInBytes: 5000000, // 5 MB
+        skipWaiting: true,
+        clientsClaim: true,
       },
       manifest: {
         name: 'CryptoNeko Terminal',
