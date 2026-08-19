@@ -1,6 +1,7 @@
 import ccxt.async_support as ccxt
 from fastapi import HTTPException
 import logging
+from backend.services.price_service import get_live_prices_async
 
 logger = logging.getLogger(__name__)
 
@@ -29,17 +30,44 @@ async def sync_exchange_balance(exchange_id: str, api_key: str, secret: str, pas
             # Fetch spot balances
             balance = await exchange.fetch_balance()
             
-            holdings = []
+            raw_holdings = []
             if 'total' in balance:
                 for currency, amount in balance['total'].items():
                     if amount > 0:
-                        holdings.append({
+                        raw_holdings.append({
                             "symbol": currency,
                             "quantity": amount
                         })
             
             await exchange.close()
-            return holdings
+            
+            if not raw_holdings:
+                return []
+                
+            # --- NEW: USD Price Calculation and Dust Filter ---
+            symbols = [h["symbol"] for h in raw_holdings]
+            prices = await get_live_prices_async(symbols)
+            
+            filtered_holdings = []
+            for h in raw_holdings:
+                sym = h["symbol"]
+                price = prices.get(sym, 0)
+                usd_value = h["quantity"] * price
+                
+                # Sadece USDC/USDT/USD veya degeri > 1$ olanlar kalsin. Ayrica fiyat bulamadigimiz coini dusuk miktarliyken gostermeyelim
+                # Eger fiyat bulunamadiysa (0) ve miktari asiri buyuk degilse (100+) filtrele
+                is_stablecoin = sym in ["USDT", "USDC", "BUSD", "DAI", "FDUSD", "TUSD", "USDE"]
+                
+                if usd_value >= 1.0 or is_stablecoin or (price == 0 and h["quantity"] > 100):
+                    h["usd_value"] = usd_value
+                    h["price"] = price
+                    filtered_holdings.append(h)
+                    
+            # Sort by usd_value descending
+            filtered_holdings.sort(key=lambda x: x.get("usd_value", 0), reverse=True)
+            
+            return filtered_holdings
+            
         except ccxt.AuthenticationError as e:
             await exchange.close()
             raise HTTPException(status_code=401, detail="Invalid API Key, Secret, or Password.")

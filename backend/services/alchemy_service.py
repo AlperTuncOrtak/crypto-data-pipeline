@@ -1,12 +1,12 @@
 import os
 import httpx
 from typing import List, Dict, Any
-import asyncio
+from backend.services.price_service import get_live_prices_sync
 
 def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
-    """
+    '''
     Fetches the ERC20 token balances and native ETH balance for a given wallet address using Alchemy API.
-    """
+    '''
     alchemy_api_key = os.getenv("ALCHEMY_API_KEY", "")
     
     if not alchemy_api_key:
@@ -94,10 +94,22 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
         except Exception as token_err:
             print(f"Token balance fetch error for {wallet_address}: {token_err}")
             
+        # --- NEW: USD Price Calculation ---
+        symbols = [b["symbol"] for b in formatted_balances]
+        prices = get_live_prices_sync(symbols)
+        
+        total_usd = 0
+        for b in formatted_balances:
+            sym = b["symbol"]
+            price = prices.get(sym, 0)
+            b["usd_value"] = b["balance"] * price
+            total_usd += b["usd_value"]
+            
         return {
             "balances": formatted_balances,
-            "total_usd": 0
+            "total_usd": total_usd
         }
         
     except Exception as e:
         return {"balances": [], "total_usd": 0, "error": str(e)}
+
