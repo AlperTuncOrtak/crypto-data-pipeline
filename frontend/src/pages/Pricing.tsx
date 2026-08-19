@@ -8,6 +8,14 @@ import { motion } from "framer-motion";
 import NumberFlow from "@number-flow/react";
 
 import { Sparkles as SparklesComp } from "../components/ui/sparkles";
+
+const TimelineContent = ({ children, className, as: Component = "div", ...props }: any) => {
+  return <Component className={className} {...props}>{children}</Component>;
+};
+
+const VerticalCutReveal = ({ children, className, ...props }: any) => {
+  return <div className={className} {...props}>{children}</div>;
+};
 import { cn } from "../lib/utils";
 import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
@@ -175,7 +183,12 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40"><div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div><div className="w-[600px] h-[250px] bg-[var(--accent-hover)] blur-[150px] rounded-[100%] opacity-20 absolute top-[50px] right-[10%]"></div></div>
 
       {/* Background & Particles */}
-      
+      <TimelineContent
+        animationNum={0}
+        timelineRef={pricingRef}
+        customVariants={revealVariants}
+        className="absolute top-0 h-[600px] w-screen overflow-hidden [mask-image:radial-gradient(50%_50%,white,transparent)] pointer-events-none z-10"
+      >
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:80px_80px]"></div>
         <SparklesComp
           density={1200}
@@ -184,25 +197,32 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
           color="#8350e8"
           className="absolute inset-0 h-full w-full [mask-image:radial-gradient(50%_50%,white,transparent_85%)]"
         />
-      
+      </TimelineContent>
 
       <div className="max-w-[1200px] mx-auto px-6 relative z-20">
         
         {/* Header Section */}
         <article className="text-center mb-16 pt-16 max-w-2xl mx-auto space-y-4">
           <h1 className="text-5xl md:text-6xl font-black text-[var(--text-main)] tracking-tight drop-shadow-xl">
-            
+            <VerticalCutReveal
+              splitBy="words"
+              staggerDuration={0.1}
+              staggerFrom="first"
+              reverse={true}
+              containerClassName="justify-center"
+              transition={{ type: "spring", stiffness: 250, damping: 40 }}
+            >
               Unlock CryptoNeko Pro
-            
+            </VerticalCutReveal>
           </h1>
           
-          
+          <TimelineContent as="p" animationNum={1} timelineRef={pricingRef} customVariants={revealVariants} className="text-[var(--text-muted)] text-lg md:text-xl font-medium drop-shadow-sm">
             Join the top 1% of traders with algorithmic signals, portfolio insights, and zero-delay execution.
-          
+          </TimelineContent>
 
-          
+          <TimelineContent as="div" animationNum={2} timelineRef={pricingRef} customVariants={revealVariants} className="pt-8">
             <PricingSwitch isYearly={isYearly} onSwitch={setIsYearly} />
-          
+          </TimelineContent>
         </article>
 
         {/* Pricing Cards Grid */}
@@ -213,7 +233,7 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
             const isPrimary = plan.ctaVariant === "primary";
 
             return (
-              
+              <TimelineContent key={plan.id} as="div" animationNum={3 + index} timelineRef={pricingRef} customVariants={revealVariants}>
                 <div className={cn(
                   "relative overflow-hidden rounded-[2.5rem] bg-[var(--bg-subtle)]/80 backdrop-blur-xl border p-8 flex flex-col h-full group transition-all duration-700",
                   isPrimary ? "border-[var(--accent)] shadow-[0_0_80px_-20px_var(--accent)]" : "border-[var(--border-base)] hover:border-white/20 shadow-2xl hover:shadow-[0_0_50px_rgba(255,255,255,0.05)]"
@@ -300,15 +320,15 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
                     ))}
                   </div>
                 </div>
-              
+              </TimelineContent>
             );
           })}
         </div>
 
         {/* Comparison Matrix */}
-        
+        <TimelineContent as="div" animationNum={6} timelineRef={pricingRef} customVariants={revealVariants}>
           <ComparisonMatrix />
-        
+        </TimelineContent>
 
       </div>
     </div>

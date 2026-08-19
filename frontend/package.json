@@ -21,6 +21,7 @@
     "@capacitor/status-bar": "^8.0.2",
     "@hcaptcha/react-hcaptcha": "^2.0.2",
     "@lifi/widget": "^3.40.12",
+    "@lucide/lab": "^0.2.0",
     "@number-flow/react": "^0.6.1",
     "@rainbow-me/rainbowkit": "^2.2.11",
     "@react-three/drei": "^9.122.0",
