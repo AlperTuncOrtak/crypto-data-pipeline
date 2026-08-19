@@ -13,6 +13,24 @@
 ───────────────────────────────────────────────────────────── */
 @theme inline {
   --color-destructive-foreground: oklch(1 0 0);
+    /* Shadcn Aliases */
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-main);
+  --color-card: var(--bg-subtle);
+  --color-card-foreground: var(--text-main);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-main);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--bg-subtle);
+  --color-secondary-foreground: var(--text-main);
+  --color-muted: var(--bg-subtle);
+  --color-muted-foreground: var(--text-muted);
+  --color-destructive: var(--negative);
+  --color-border: var(--border-base);
+  --color-input: var(--border-subtle);
+  --color-ring: var(--accent);
+
   /* Surfaces */
   --color-bg-base:      var(--bg-base);
   --color-bg-subtle:    var(--bg-subtle);
@@ -55,6 +73,24 @@
 [data-theme="dark"],
 [data-theme="midnight"] {
   color-scheme: dark;
+
+    /* Shadcn Aliases */
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-main);
+  --color-card: var(--bg-subtle);
+  --color-card-foreground: var(--text-main);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-main);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--bg-subtle);
+  --color-secondary-foreground: var(--text-main);
+  --color-muted: var(--bg-subtle);
+  --color-muted-foreground: var(--text-muted);
+  --color-destructive: var(--negative);
+  --color-border: var(--border-base);
+  --color-input: var(--border-subtle);
+  --color-ring: var(--accent);
 
   /* Surfaces */
   --bg-base:     #09090b;   /* Page backdrop */
