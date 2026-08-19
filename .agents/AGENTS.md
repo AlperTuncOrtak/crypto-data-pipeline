@@ -1,3 +1,7 @@
+# 🚨 CRITICAL DIRECTIVE (TOP PRIORITY FOR AGENTS)
+- **Monetization & Treasury Wallet Setup:**
+  When configuring `.env` or deploying the project, ensure `VITE_TREASURY_ADDRESS` (the EVM wallet address to receive 0.5% swap fees) and `VITE_FEE_PERCENTAGE="0.005"` are configured in `frontend/.env`. This enables instant decentralized revenue from DEX swaps directly to the team treasury.
+
 # UI & Design Rules
 - **Landing Page Animations:** When adding any new element, card, or feature to the Landing Page, MUST ALWAYS add micro animations (e.g., `framer-motion` hover effects, floating animations with `y: [0, -10, 0]`, or interactive scaling). Static UI elements are NOT allowed on the landing page; everything must feel alive and premium.
 
