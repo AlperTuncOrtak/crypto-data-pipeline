@@ -22,19 +22,11 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
 const Alerts = lazy(() => import("./pages/Alerts"));
-const Analysis = lazy(() => import("./pages/Analysis"));
-const Narratives = lazy(() => import("./pages/Narratives"));
-const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
-const TimeMachine = lazy(() => import("./pages/TimeMachine"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Swap = lazy(() => import("./pages/Swap"));
-const Terminal = lazy(() => import("./pages/Terminal"));
 const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
-const Heatmap = lazy(() => import("./pages/Heatmap"));
-const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
-const TradingViewAnalyst = lazy(() => import("./pages/TradingViewAnalyst"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Pro = lazy(() => import("./pages/Pro"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
@@ -208,11 +200,6 @@ function AppInner() {
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
-              <Route path="/heatmap" element={<Heatmap />} />
-              <Route path="/whale" element={<WhaleXRay />} />
-              <Route path="/timemachine" element={<TimeMachine />} />
-              <Route path="/analysis" element={<Analysis />} />
-              <Route path="/terminal" element={<Terminal />} />
 
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
@@ -258,37 +245,7 @@ function AppInner() {
                 }
               />
 
-              {/* Pro gerekli */}
-              <Route
-                path="/analysis/ai"
-                element={
-                  <ProtectedRoute
-                    requirePro
-                    featureName="AI Technical Analysis"
-                    onAuthOpen={() => {
-                      setAuthMode("login");
-                      setAuthOpen(true);
-                    }}
-                  >
-                    <AIAnalysis />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/tv-analyst"
-                element={
-                  <ProtectedRoute
-                    requirePro
-                    featureName="TradingView OS Analyst"
-                    onAuthOpen={() => {
-                      setAuthMode("login");
-                      setAuthOpen(true);
-                    }}
-                  >
-                    <TradingViewAnalyst />
-                  </ProtectedRoute>
-                }
-              />
+
               
               <Route
                 path="/dashboard/builder"

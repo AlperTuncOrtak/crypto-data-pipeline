@@ -47,12 +47,7 @@ const mainNavSections = [
         name: 'Market Data', 
         path: '/market', 
         icon: BarChart2
-      },
-      { name: 'AI Analysis', path: '/analysis', icon: Brain },
-      { name: 'TV Analyst', path: '/tv-analyst', icon: Activity },
-      { name: 'Whale X-Ray', path: '/whale', icon: Activity },
-      { name: 'Heatmap', path: '/heatmap', icon: MapIcon },
-      { name: 'Time Machine', path: '/timemachine', icon: Clock },
+      }
     ]
   }
 ];
