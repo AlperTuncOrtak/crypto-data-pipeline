@@ -8,8 +8,14 @@ import { motion } from "framer-motion";
 import NumberFlow from "@number-flow/react";
 
 import { Sparkles as SparklesComp } from "../components/ui/sparkles";
-import { TimelineContent } from "../components/ui/timeline-animation";
-import { VerticalCutReveal } from "../components/ui/vertical-cut-reveal";
+
+const TimelineContent = ({ children, className, as: Component = "div", ...props }: any) => {
+  return <Component className={className} {...props}>{children}</Component>;
+};
+
+const VerticalCutReveal = ({ children, className, ...props }: any) => {
+  return <div className={className} {...props}>{children}</div>;
+};
 import { cn } from "../lib/utils";
 import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
