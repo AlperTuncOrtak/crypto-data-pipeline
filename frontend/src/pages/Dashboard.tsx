@@ -74,8 +74,8 @@ function MiniSparkline({ data, up }: { data?: any[], up: boolean }) {
 function ChangeBadge({ value }: { value: number }) {
   const isUp = value >= 0;
   return (
-    <span className={`inline-flex items-center gap-0.5 text-[14px] font-medium ${isUp ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}>
-      {isUp ? <ArrowUpRight size={16} strokeWidth={2.5} /> : <ArrowDownRight size={16} strokeWidth={2.5} />}
+    <span className={`inline-flex items-center gap-0.5 text-[13px] font-semibold font-mono ${isUp ? 'text-emerald-400' : 'text-rose-400'}`}>
+      {isUp ? <ArrowUpRight size={14} strokeWidth={2.5} /> : <ArrowDownRight size={14} strokeWidth={2.5} />}
       {Math.abs(value).toFixed(2)}%
     </span>
   );
@@ -90,12 +90,12 @@ function TH({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 text-[13px] font-bold tracking-wider uppercase ${align === "right" ? "ml-auto" : ""} ${active ? "text-[var(--text-main)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)]"} transition-colors`}
+      className={`flex items-center gap-1 text-[10px] font-semibold tracking-[0.18em] uppercase ${align === "right" ? "ml-auto" : ""} ${active ? "text-white" : "text-white/30 hover:text-white/60"} transition-colors`}
     >
       {label}
       {active && (
-        <span className="text-[var(--text-main)] opacity-70">
-          {direction === "asc" ? <ChevronUp size={15} strokeWidth={3} /> : <ChevronDown size={15} strokeWidth={3} />}
+        <span className="text-white opacity-70">
+          {direction === "asc" ? <ChevronUp size={12} strokeWidth={3} /> : <ChevronDown size={12} strokeWidth={3} />}
         </span>
       )}
     </button>
@@ -305,14 +305,14 @@ export default function Dashboard() {
             <FadeIn delay={0.6} className="h-full">
               <BaseGlassCard className="flex flex-col h-full">
                 {/* Toolbar */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-[var(--border-subtle)] gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-white/[0.04] gap-4">
                   <div className="relative w-full max-w-[280px]">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                    <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search assets..." className="w-full bg-[var(--bg-overlay)] border border-[var(--border-subtle)] rounded-[10px] py-2 pl-10 pr-4 text-[14px] font-medium text-[var(--text-main)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-border)] transition-all" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                    <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search assets..." className="w-full bg-white/[0.02] border border-white/[0.06] rounded-[10px] py-2 pl-10 pr-4 text-[13px] font-medium text-white placeholder-white/20 focus:outline-none focus:border-white/[0.12] transition-all" />
                   </div>
-                  <div className="flex items-center gap-1 bg-[var(--bg-overlay)] p-1 rounded-[10px] border border-[var(--border-subtle)]">
+                  <div className="flex items-center gap-1 bg-white/[0.02] p-1 rounded-[10px] border border-white/[0.06]">
                     {([ { key: "all", label: "All" }, { key: "gainers", label: "Gainers" }, { key: "losers", label: "Losers" }, { key: "trending", label: "Trending" } ] as const).map(tab => (
-                      <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`px-4 py-1.5 text-[13px] font-medium rounded-lg transition-colors ${activeTab === tab.key ? "bg-[var(--bg-elevated)] text-[var(--text-main)] shadow-sm border border-[var(--border-subtle)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-subtle)] border border-transparent"}`}>
+                      <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`px-4 py-1.5 text-[12px] font-semibold rounded-lg transition-all ${activeTab === tab.key ? "bg-white/[0.06] text-white shadow-sm border border-white/[0.08]" : "text-white/40 hover:text-white hover:bg-white/[0.01] border border-transparent"}`}>
                         {tab.label}
                       </button>
                     ))}
@@ -323,20 +323,20 @@ export default function Dashboard() {
                 <div className="overflow-x-auto flex-1">
                   <div className="min-w-max w-full">
                     {/* Header */}
-                    <div className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+                    <div className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/[0.04] bg-transparent">
                       <TH label="#" active={sortKey === "rank"} direction={sortDir} onClick={() => toggleSort("rank")} />
                       <TH label="Asset" active={sortKey === "rank"} direction={sortDir} onClick={() => toggleSort("rank")} />
                       <TH label="Price" align="right" active={sortKey === "price"} direction={sortDir} onClick={() => toggleSort("price")} />
                       <TH label="24h %" align="right" active={sortKey === "change"} direction={sortDir} onClick={() => toggleSort("change")} />
                       <TH label="Volume" align="right" active={sortKey === "volume"} direction={sortDir} onClick={() => toggleSort("volume")} />
                       <TH label="Market Cap" align="right" active={sortKey === "mcap"} direction={sortDir} onClick={() => toggleSort("mcap")} />
-                      <div className="text-[13px] font-medium tracking-wide text-zinc-500 text-right pr-2">7d Trend</div>
+                      <div className="text-[10px] font-semibold tracking-[0.18em] uppercase text-white/30 text-right pr-2">7d Trend</div>
                     </div>
 
                     {/* Body */}
                     <div className="flex flex-col pb-4">
                       {filtered.length === 0 ? (
-                        <div className="p-16 text-center text-[var(--text-faint)] font-medium text-[14px]">No assets found.</div>
+                        <div className="p-16 text-center text-white/30 font-medium text-[13px]">No assets found.</div>
                       ) : (
                         filtered.slice(0, 15).map((coin: any, i: number) => {
                           const change = Number(coin.price_change_percentage_24h) || 0;
@@ -348,20 +348,20 @@ export default function Dashboard() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: i * 0.04, ease: "easeOut" }}
                               onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
-                              className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 items-center cursor-pointer hover:bg-[var(--bg-overlay)] transition-colors group"
+                              className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/[0.04] last:border-0 items-center cursor-pointer hover:bg-white/[0.015] transition-colors group"
                             >
-                              <div className="text-[var(--text-faint)] font-medium text-[14px]">{coin.market_cap_rank || i + 1}</div>
+                              <div className="text-white/30 font-medium text-[13px] font-mono">{coin.market_cap_rank || i + 1}</div>
                               <div className="flex items-center gap-3">
-                                {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full" /> : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium bg-[var(--bg-overlay)] text-[var(--text-muted)]">{coin.symbol?.[0]}</div>}
+                                {coin.image_url ? <img src={coin.image_url} alt={coin.symbol} className="w-8 h-8 rounded-full" /> : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold bg-white/[0.04] text-white/40">{coin.symbol?.[0]}</div>}
                                 <div>
-                                  <div className="font-medium text-[var(--text-main)] text-[15px]">{coin.name}</div>
-                                  <div className="text-[13px] text-[var(--text-faint)] font-medium">{coin.symbol?.toUpperCase()}</div>
+                                  <div className="font-semibold text-white text-[14px]">{coin.name}</div>
+                                  <div className="text-[11px] text-white/40 font-mono tracking-wider">{coin.symbol?.toUpperCase()}</div>
                                 </div>
                               </div>
-                              <div className="text-right text-[var(--text-main)] font-medium text-[15px] font-mono tabular-nums"><PriceCell price={coin.current_price} /></div>
+                              <div className="text-right text-white font-medium text-[14px] font-mono tabular-nums"><PriceCell price={coin.current_price} /></div>
                               <div className="text-right flex justify-end"><ChangeBadge value={change} /></div>
-                              <div className="text-right font-medium text-[var(--text-muted)] text-[14px] font-mono">{fmt(coin.total_volume)}</div>
-                              <div className="text-right font-medium text-[var(--text-muted)] text-[14px] font-mono">{fmt(coin.market_cap)}</div>
+                              <div className="text-right font-medium text-white/60 text-[13px] font-mono">{fmt(coin.total_volume)}</div>
+                              <div className="text-right font-medium text-white/60 text-[13px] font-mono">{fmt(coin.market_cap)}</div>
                               <div className="pr-2"><MiniSparkline data={sparklineData?.[coin.symbol?.toUpperCase()]} up={isUp} /></div>
                             </motion.div>
                           );
