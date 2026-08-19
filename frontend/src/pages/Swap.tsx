@@ -4,7 +4,7 @@ import {
   ArrowDownUp, Settings, Loader, Search, ChevronDown, CheckCircle2, 
   X, Sparkles, LineChart, Zap, Activity, Info, CornerDownLeft, ShieldCheck
 } from "lucide-react";
-import { useAccount, useBalance, useReadContract, useWriteContract, useSendTransaction } from "wagmi";
+import { useAccount, useBalance, useReadContract, useWriteContract, useSendTransaction, usePublicClient } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
@@ -158,7 +158,7 @@ export default function Swap() {
             platformFee: feeStr,
             priceImpact: Number(data.estimatedPriceImpact || 0.5),
             route: [fromToken.symbol, "0x Aggregator", toToken.symbol],
-            tx: { to: data.to, data: data.data, value: data.value }
+            tx: { to: data.to, data: data.data, value: data.value, allowanceTarget: data.allowanceTarget }
           });
         }
       } catch (error) {
@@ -175,7 +175,7 @@ export default function Swap() {
     address: fromToken.address as `0x${string}`,
     abi: ERC20_ABI,
     functionName: "allowance",
-    args: [address as `0x${string}`, UNISWAP_V2_ROUTER],
+    args: [address as `0x${string}`, (quote?.tx?.allowanceTarget || UNISWAP_V2_ROUTER) as `0x${string}`],
     query: { enabled: fromToken.address !== "ETH" && !!address }
   });
 
@@ -183,6 +183,7 @@ export default function Swap() {
 
   const { writeContractAsync } = useWriteContract();
   const { sendTransactionAsync } = useSendTransaction();
+  const publicClient = usePublicClient();
 
   // ----- AI COMMAND ENGINE (NLP MOCK) -----
   const processAICommand = (cmd: string) => {
@@ -262,7 +263,7 @@ export default function Swap() {
         address: fromToken.address as `0x${string}`,
         abi: ERC20_ABI,
         functionName: "approve",
-        args: [UNISWAP_V2_ROUTER, parsedAmountIn],
+        args: [(quote?.tx?.allowanceTarget || UNISWAP_V2_ROUTER) as "0x${string}", parsedAmountIn],
       } as any);
       toast.loading("Approving token...", { id: "approve" });
       setTimeout(() => {
@@ -282,33 +283,39 @@ export default function Swap() {
     
     setTxState("confirming");
     try {
-      const amountOutMin = parseUnits(
-        (Number(quote?.amountOut) * (1 - Number(slippage) / 100)).toFixed(toToken.decimals),
-        toToken.decimals
-      );
-      const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20);
-
-      let hash: `0x${string}` = "0x" + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join("") as `0x${string}`;
+      let hash: `0x${string}` = "0x";
       
       if (quote?.tx) {
         // Real 0x API execution
         hash = await sendTransactionAsync({
           to: quote.tx.to as `0x${string}`, data: quote.tx.data as `0x${string}`, value: BigInt(quote.tx.value || "0"),
         });
-      } else {
-        // Mock execution
-        toast.info("Simulated routing active. No real transaction will be broadcast on-chain.", { id: "sim", duration: 4000 });
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-
-      setTxState("pending");
-      toast.loading(quote?.tx ? "Transaction pending..." : "Simulating swap...", { id: hash });
-      setTimeout(() => {
+        
+        setTxState("pending");
+        toast.loading("Transaction pending...", { id: hash });
+        
+        if (publicClient) {
+          await publicClient.waitForTransactionReceipt({ hash });
+        } else {
+          await new Promise(r => setTimeout(r, 4000));
+        }
+        
         setTxState("success");
         toast.success(`Swapped ${effectiveCryptoAmount} ${fromToken.symbol} for ${quote?.amountOut} ${toToken.symbol}`, { id: hash });
         setTimeout(() => { setTxState("idle"); setAmountIn(""); }, 3000);
-      }, 5000);
-    } catch (error) {
+      } else {
+        // Mock execution
+        hash = "0x" + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join("") as `0x${string}`;
+        toast.info("Simulated routing active. No real transaction will be broadcast on-chain.", { id: "sim", duration: 4000 });
+        setTxState("pending");
+        toast.loading("Simulating swap...", { id: hash });
+        setTimeout(() => {
+          setTxState("success");
+          toast.success(`Swapped ${effectiveCryptoAmount} ${fromToken.symbol} for ${quote?.amountOut} ${toToken.symbol}`, { id: hash });
+          setTimeout(() => { setTxState("idle"); setAmountIn(""); }, 3000);
+        }, 5000);
+      }
+    } catch (error: any) {
       console.error(error);
       setTxState("idle");
       toast.error("Transaction failed or rejected.");
@@ -660,6 +667,7 @@ export default function Swap() {
     </div>
   );
 }
+
 
 
 
