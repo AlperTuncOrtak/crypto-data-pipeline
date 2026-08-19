@@ -16,9 +16,6 @@ import SwapInterface from "../components/portfolio/SwapInterface";
 import DashboardCards from "../components/portfolio/DashboardCards";
 import ChartAndWatchlist from "../components/portfolio/ChartAndWatchlist";
 import AddSourceModal from "../components/portfolio/AddSourceModal";
-import HistoryTab from "../components/portfolio/HistoryTab";
-import AnalyticsTab from "../components/portfolio/AnalyticsTab";
-import TaxesTab from "../components/portfolio/TaxesTab";
 
 import { usePortfolioData } from "../hooks/usePortfolioData";
 import {
