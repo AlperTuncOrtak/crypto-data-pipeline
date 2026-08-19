@@ -59,6 +59,25 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 - [x] Ayarlar (Settings) menüsüne dil değiştirme (Language Switcher) seçeneğinin eklenmesi.
 # 🚀 CryptoNeko - Gelecek Yol Haritası ve Görevler (TODO)
 
+## 🚨 [EN YÜKSEK ÖNCELİK / TOP PRIORITY #1] - Kasa Cüzdanı & Komisyon Ayarı (Swap Treasury)
+> **DİKKAT (Alper ve AI Agentları):** Swap modülündeki komisyon kesintisi ve para tahsilat sistemi tamamlanmıştır. İlk yapılması gereken iş `.env` dosyasına gerçek kasa cüzdan adresini ve komisyon oranını eklemektir.
+
+- [ ] **Kasa Cüzdan Adresi ve Komisyon Oranı Tanımlaması:**
+  - `frontend/.env` (ve Vercel/Production ortam değişkenlerine) şu satırları ekleyin:
+    ```env
+    # Swap işlemlerinden kesilecek komisyonun otomatik aktarılacağı cüzdan (Metamask/EVM):
+    VITE_TREASURY_ADDRESS="0xSizinCuzdanAdresiniz..."
+    
+    # Platform komisyon yüzdesi (0.005 = %0.5, 0.01 = %1):
+    VITE_FEE_PERCENTAGE="0.005"
+    
+    # 0x Aggregator API Anahtarı (Gerçek Mainnet Swap için):
+    VITE_0X_API_KEY="YOUR_0X_API_KEY_HERE"
+    ```
+  - **Nasıl Çalışıyor:** `frontend/src/pages/Swap.tsx` dosyasında 0x API'ye `feeRecipient` olarak `VITE_TREASURY_ADDRESS` ve `buyTokenPercentageFee` olarak `VITE_FEE_PERCENTAGE` gönderilmektedir. Kullanıcılar swap yaptıkça komisyon **aracısız ve anında** bu cüzdana token olarak yatacaktır.
+
+---
+
 Bu dosya, projenin sonraki adımlarını koordine etmek için kullanılır.
 Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlarına geçirilmiştir. Yeni eklenecek tüm özellikler bu tasarım standartlarına uymak zorundadır.
 
@@ -108,25 +127,19 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
   - [x] Mobil cihazlarda dokunmatik titreşim (Haptic Feedback) API'sini entegre et.
   - [ ] **Mobil Uygulama Testleri:** Xcode ve Android Studio üzerinde derleyip, gerçek cihaz/simülatör testlerinin (UI/UX, Stripe Modal, Haptics) yapılması.
 
-## 💰 Gelir Modeli & Komisyon Ayarları (Monetization & Treasury)
-- [ ] **Swap (DEX) Komisyon Ayarı (.env):** Kullanıcıların yaptığı her swap işleminden kasamıza %0.5 (binde 5) kripto komisyonu kalması için `.env` dosyasına şu değişkenler tanımlanmalı:
-  ```env
-  VITE_TREASURY_ADDRESS="0xSizinCuzdanAdresiniz..." # Komisyonların otomatik aktarılacağı EVM cüzdan adresi
-  VITE_FEE_PERCENTAGE="0.005"                       # %0.5 komisyon (ör: 0.01 yapılırsa %1 olur)
-  VITE_0X_API_KEY="your-0x-api-key"                 # Gerçek mainnet işlemleri için 0x API key
-  ```
-- [ ] **Stripe Kredi Kartı Abonelikleri (.env):** PRO/Enterprise paket satışlarının banka hesabına aktarılması için:
-  ```env
-  STRIPE_SECRET_KEY="sk_live_..."
-  STRIPE_WEBHOOK_SECRET="whsec_..."
-  STRIPE_PRICE_PRO_MONTHLY="price_..."
-  STRIPE_PRICE_PRO_YEARLY="price_..."
-  ```
+## 📌 Sonraki Aşama (Backlog)
+
+### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
+- [x] 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla. (Li.Fi Widget ile tamamlandı)
+
+### 4. UI/UX ve Genel İyileştirmeler
+- [x] Orijinal kedi logosunun (CryptoNeko) sisteme tekrar entegre edilmesi.
+- [x] Ayarlar (Settings) menüsüne dil değiştirme (Language Switcher) seçeneğinin eklenmesi.
+- [x] Destek (Support) veya iletişim kısımlarına "Contact Me" bölümünün eklenmesi.
 
 ---
-**Tasarım Notu:** Yeni eklenecek tüm özelliklerde `#09090b` (zinc-950) koyu zemin ve `white/[0.04]` Ethena cam efekti standarttır.
+**Tasarım Notu:** Yeni eklenecek tüm özelliklerde `bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl` cam efekti ve Framer Motion geçişleri kullanılması zorunludur.
 
-- [x] Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine
-- [x] Landing page hero section animasyonları
-- [x] Portfolio sayfası USD hesaplamaları & Dust filtreleri (price_service.py)
-- [x] Swap motoru 0x allowanceTarget ve transaction receipt bekletme geliştirmeleri
+- [x] TODO: Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine (AI Rebalance live API 404/SSL errors)
+- [x] Landing page hero section'a güzel bir animasyon eklenecek.
+- [ ] Portfolio sayfasındaki sorunlar giderilecek. (Örnek Cüzdan: 0x00000000219ab540356cBB839Cbe05303d7705Fa)
