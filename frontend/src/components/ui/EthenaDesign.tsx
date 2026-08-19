@@ -10,6 +10,8 @@ export interface BaseGlassCardProps {
   glowPosition?: "top-right" | "top-left" | "bottom" | "center" | "none";
   glowColor?: string;
   delay?: number;
+  hoverEffect?: boolean;
+  onClick?: () => void;
 }
 
 export function BaseGlassCard({ 
@@ -17,7 +19,9 @@ export function BaseGlassCard({
   className = "", 
   glowPosition = "top-right",
   glowColor = "rgba(99,102,241,0.06)",
-  delay = 0
+  delay = 0,
+  hoverEffect = false,
+  onClick
 }: BaseGlassCardProps) {
   
   const getGlowStyle = () => {
@@ -39,7 +43,9 @@ export function BaseGlassCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={`relative overflow-hidden rounded-[20px] bg-[#09090b]/80 border border-white/[0.06] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-colors hover:border-white/[0.12] ${className}`}
+      onClick={onClick}
+      whileHover={hoverEffect ? { y: -2, borderColor: "rgba(255,255,255,0.12)" } : undefined}
+      className={`relative overflow-hidden rounded-[20px] bg-[#09090b]/80 border border-white/[0.06] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all ${hoverEffect ? "cursor-pointer hover:border-white/[0.12]" : ""} ${className}`}
     >
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-0 opacity-70" />
       <div className="absolute inset-0 z-0 pointer-events-none" style={getGlowStyle()} />
