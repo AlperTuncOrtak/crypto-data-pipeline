@@ -22,15 +22,10 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
 const Alerts = lazy(() => import("./pages/Alerts"));
-const Analysis = lazy(() => import("./pages/Analysis"));
-const Narratives = lazy(() => import("./pages/Narratives"));
-const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
 const Swap = lazy(() => import("./pages/Swap"));
-const Terminal = lazy(() => import("./pages/Terminal"));
 const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
-const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Pro = lazy(() => import("./pages/Pro"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
@@ -203,9 +198,6 @@ function AppInner() {
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
-              <Route path="/whale" element={<WhaleXRay />} />
-              <Route path="/analysis" element={<Analysis />} />
-              <Route path="/terminal" element={<Terminal />} />
 
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />

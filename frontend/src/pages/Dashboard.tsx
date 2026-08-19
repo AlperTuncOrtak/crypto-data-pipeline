@@ -21,20 +21,7 @@ import {
 import { FearGreedModal } from "../components/dashboard/FearGreedModal";
 import { GlobalStatsModal } from "../components/dashboard/GlobalStatsModal";
 import { WhaleFeed } from "../components/dashboard/WhaleFeed";
-
-// ─── MATTE CARD WRAPPER ────────────────────────
-function MatteCard({ children, className = "", onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) {
-  return (
-    <motion.div
-      onClick={onClick}
-      whileHover={onClick ? { y: -2 } : undefined}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`bg-[var(--bg-elevated)] rounded-2xl border border-[var(--border-subtle)] overflow-hidden w-full h-full transition-colors duration-200 shadow-sm ${onClick ? "cursor-pointer hover:border-[var(--border-base)] hover:shadow-lg" : ""} ${className}`}
-    >
-      {children}
-    </motion.div>
-  );
-}
+import { BaseGlassCard } from "../components/ui/EthenaDesign";
 
 // ─── HELPERS ────────────────────────────────────────────────
 function fmt(n: number) {
@@ -250,7 +237,7 @@ export default function Dashboard() {
           
           <motion.div className="md:col-span-1 h-[170px]">
             <FadeIn delay={0.2} className="h-full">
-               <MatteCard onClick={() => setStatsModalType("mcap")} className="p-6 flex flex-col justify-between group">
+               <BaseGlassCard hoverEffect onClick={() => setStatsModalType("mcap")} className="p-6 flex flex-col justify-between group">
                  <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Global Market Cap</div>
                  <div>
                    <div className="text-3xl font-semibold text-[var(--text-main)] tracking-tight">
@@ -258,13 +245,13 @@ export default function Dashboard() {
                    </div>
                    <div className="text-[13px] font-medium text-[var(--text-faint)] mt-1">{(coins || []).length > 0 ? `${(coins || []).length}+ assets tracked` : "Loading..."}</div>
                  </div>
-               </MatteCard>
+               </BaseGlassCard>
             </FadeIn>
           </motion.div>
 
           <motion.div className="md:col-span-1 h-[170px]">
             <FadeIn delay={0.3} className="h-full">
-               <MatteCard onClick={() => setStatsModalType("volume")} className="p-6 flex flex-col justify-between group">
+               <BaseGlassCard hoverEffect onClick={() => setStatsModalType("volume")} className="p-6 flex flex-col justify-between group">
                  <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">24h Volume</div>
                  <div>
                    <div className="text-3xl font-semibold text-[var(--text-main)] tracking-tight">
@@ -272,13 +259,13 @@ export default function Dashboard() {
                    </div>
                    <div className="text-[13px] font-medium text-[var(--text-faint)] mt-1">Global network activity</div>
                  </div>
-               </MatteCard>
+               </BaseGlassCard>
             </FadeIn>
           </motion.div>
 
           <motion.div className="md:col-span-1 h-[170px]">
             <FadeIn delay={0.4} className="h-full">
-               <MatteCard onClick={() => setStatsModalType("dominance")} className="p-6 flex flex-col justify-between group">
+               <BaseGlassCard hoverEffect onClick={() => setStatsModalType("dominance")} className="p-6 flex flex-col justify-between group">
                  <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Dominance</div>
                  <div>
                    <div className="flex items-end gap-2">
@@ -287,13 +274,13 @@ export default function Dashboard() {
                    </div>
                    <div className="text-[13px] font-medium text-[var(--text-muted)] mt-1">ETH: <span className="text-[var(--text-main)]">{ethDom}%</span></div>
                  </div>
-               </MatteCard>
+               </BaseGlassCard>
             </FadeIn>
           </motion.div>
 
           <motion.div className="md:col-span-1 h-[170px]">
             <FadeIn delay={0.5} className="h-full">
-               <MatteCard onClick={() => setIsFngModalOpen(true)} className="p-6 flex flex-col justify-between group">
+               <BaseGlassCard hoverEffect onClick={() => setIsFngModalOpen(true)} className="p-6 flex flex-col justify-between group">
                  <div className="flex items-center justify-between">
                    <div className="text-[14px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">Fear & Greed</div>
                    <div className="text-[11px] bg-[var(--bg-overlay)] border border-[var(--border-subtle)] px-2 py-1 rounded-md font-medium text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors">VIEW</div>
@@ -312,7 +299,7 @@ export default function Dashboard() {
                  ) : (
                    <div className="text-3xl font-semibold text-[var(--text-faint)]">—</div>
                  )}
-               </MatteCard>
+               </BaseGlassCard>
             </FadeIn>
           </motion.div>
         </div>
@@ -323,7 +310,7 @@ export default function Dashboard() {
           {/* LEFT: TABLE (8 cols) */}
           <div className="xl:col-span-8">
             <FadeIn delay={0.6} className="h-full">
-              <MatteCard className="flex flex-col h-full">
+              <BaseGlassCard className="flex flex-col h-full">
                 {/* Toolbar */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-[var(--border-subtle)] gap-4">
                   <div className="relative w-full max-w-[280px]">
@@ -390,7 +377,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-              </MatteCard>
+              </BaseGlassCard>
             </FadeIn>
           </div>
 
@@ -398,9 +385,9 @@ export default function Dashboard() {
           <div className="xl:col-span-4 flex flex-col gap-6">
 
             <FadeIn delay={0.8} className="w-full flex-1">
-              <MatteCard className="p-0 h-full min-h-[600px]">
+              <BaseGlassCard className="p-0 h-full min-h-[600px]">
                  <WhaleFeed />
-              </MatteCard>
+              </BaseGlassCard>
             </FadeIn>
 
           </div>
