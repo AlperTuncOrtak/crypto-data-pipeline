@@ -135,3 +135,8 @@ export const calcAllocation = (holdings: any[]) => {
     color: COIN_COLORS[h.symbol] || CHART_COLORS[index % CHART_COLORS.length]
   })).sort((a, b) => b.value - a.value);
 };
+
+export const calcTax = () => ({});
+export const GuideModal = () => null;
+export const parseCSV = () => ({ trades: [], count: 0 });
+export const EXCHANGE_GUIDES = {};
