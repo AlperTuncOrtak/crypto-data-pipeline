@@ -45,7 +45,7 @@ export default function Swap() {
     platformFee: string;
     priceImpact: number;
     route: string[];
-    tx?: { to: string, data: string, value: string } 
+    tx?: { to: string, data: string, value: string, allowanceTarget?: string } 
   } | null>(null);
 
   // Settings & UI State

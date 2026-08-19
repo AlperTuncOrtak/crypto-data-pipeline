@@ -71,7 +71,7 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
           address: selectedAsset.contractAddress as `0x${string}`,
           functionName: "transfer",
           args: [recipient as `0x${string}`, parseUnits(amount, selectedAsset.decimals || 18)],
-        });
+        } as any);
       }
       setStatus("success");
     } catch (err: any) {

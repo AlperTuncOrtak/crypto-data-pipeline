@@ -96,9 +96,9 @@ export function usePortfolioData(user: any, marketData: any[]) {
     if (tokenBalances) {
       tokenBalances.forEach((result, index) => {
         const token = erc20Tokens[index];
-        console.log("[Portfolio:wagmi] Token", token.symbol, "status:", result.status, "result:", result.result?.toString());
-        if (result.status === "success") {
-          const amount = Number(formatUnits(result.result as bigint, token.decimals));
+        console.log("[Portfolio:wagmi] Token", token.symbol, "status:", result.status, "result:", (result as any).result?.toString());
+        if (result.status === "success" && (result as any).result !== undefined) {
+          const amount = Number(formatUnits((result as any).result as bigint, token.decimals));
           if (amount > 0) {
             newHoldings.push({
               source: "Wallet",
