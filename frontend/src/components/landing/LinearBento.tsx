@@ -8,15 +8,6 @@ function BentoCard({ children, className = "", delay = 0 }: {
   className?: string;
   delay?: number;
 }) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function onMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
@@ -24,18 +15,9 @@ function BentoCard({ children, className = "", delay = 0 }: {
       whileHover={{ y: -4 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, delay, ease: [0.32, 0.72, 0, 1] }}
-      onMouseMove={onMouseMove}
       className={`group relative rounded-[20px] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-overlay)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-[var(--border-base)] hover:bg-[var(--bg-elevated)] transition-all duration-300 ${className}`}
     >
-      <motion.div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100 z-0 rounded-[20px]"
-        style={{
-          background: useTransform(
-            [mouseX, mouseY],
-            ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, rgba(99,102,241,0.06), transparent 50%)`
-          )
-        }}
-      />
+
       {/* Subtle top edge highlight for glass effect */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent z-0" />
       <div className="relative z-10 w-full h-full flex flex-col p-7">

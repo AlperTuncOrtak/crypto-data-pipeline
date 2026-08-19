@@ -7,9 +7,9 @@ import { supabase } from "../lib/supabase";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [plan, setPlan] = useState("free");
+  const [user, setUser] = useState<any>(window.location.hostname === "localhost" ? { id: "local-dev-user", email: "dev@localhost", user_metadata: { full_name: "Local Dev" } } : null);
+  const [token, setToken] = useState<any>(window.location.hostname === "localhost" ? "mock-token" : null);
+  const [plan, setPlan] = useState<string>(window.location.hostname === "localhost" ? "pro" : "free");
   const [loading, setLoading] = useState(true);
 
   async function fetchPlan(userId) {
@@ -33,6 +33,10 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    if (window.location.hostname === "localhost") {
+      setLoading(false);
+      return;
+    }
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setToken(session?.access_token ?? null);

@@ -22,6 +22,11 @@ load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
 from fastapi import FastAPI, Query, HTTPException, Depends, Request
 from backend.auth import verify_token, verify_pro
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
+limiter = Limiter(key_func=get_remote_address)
 
 from shared.db import get_connection
 from backend.services.market_service import (
@@ -52,6 +57,8 @@ class ExchangeSyncRequest(BaseModel):
     password: str = None
 
 app = FastAPI(title="Crypto Analytics API", version="2.0.0")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # -----------------------
@@ -68,7 +75,7 @@ _ALLOWED_ORIGINS = _os.getenv(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -87,7 +94,8 @@ app.include_router(wallet.router)
 # -----------------------
 # Basit "servis ayakta mi" endpoint'i. Monitoring icin kullanilabilir.
 @app.get("/health")
-def health():
+@limiter.limit("5/minute")
+def health(request: Request):
     return {"status": "ok"}
 
 
@@ -95,7 +103,8 @@ def health():
 # MARKET ENDPOINTS
 # -----------------------
 @app.get("/market")
-def market(limit: int = 20):
+@limiter.limit("60/minute")
+def market(request: Request, limit: int = 20):
     """En guncel market snapshot'i. Dashboard ana tablosu bunu kullanir."""
     return get_latest_market(limit)
 
@@ -747,9 +756,20 @@ def ai_chat(payload: dict, user: dict = Depends(verify_token)):
                 system_instruction=system_prompt
             )
         )
-        raise HTTPException(status_code=500, detail="All AI models failed")
+        for chunk in resp:
+            if chunk.text:
+                yield f"data: {json.dumps({'text': chunk.text})}\n\n"
 
-    return {"reply": reply}
+    if GROQ_KEY:
+        try:
+            return StreamingResponse(stream_groq(), media_type="text/event-stream")
+        except Exception:
+            pass
+
+    if GEMINI_KEY:
+        return StreamingResponse(stream_gemini(), media_type="text/event-stream")
+
+    raise HTTPException(status_code=500, detail="All AI models failed")
 
 _pulse_cache = {}
 

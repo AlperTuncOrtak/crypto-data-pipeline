@@ -47,8 +47,8 @@ def verify_pro(user: dict = Depends(verify_token)):
     supabase_service_key = os.getenv("SUPABASE_SERVICE_KEY", "")
 
     if not supabase_service_key:
-        # Service key yoksa (dev ortami) plan kontrolunu atla
-        return user
+        # FAIL-CLOSED: Service key yoksa plan kontrolunu atlama, erisimi reddet
+        raise HTTPException(status_code=500, detail="Server configuration error: Missing service key")
 
     try:
         sb = create_client(supabase_url, supabase_service_key)

@@ -93,6 +93,13 @@ function AppInner() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
+  // Global redirect for /admin
+  useEffect(() => {
+    if (window.location.pathname === '/admin') {
+      window.location.href = 'https://www.egm.gov.tr/';
+    }
+  }, [location.pathname]);
+
   // Global CMD+K shortcut to open search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

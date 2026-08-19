@@ -32,21 +32,41 @@ export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebala
         await new Promise(r => setTimeout(r, 500));
         setScanText("Querying Llama 3.3 70B Engine...");
         
-        const response = await apiClient.post("/ai/analyze-portfolio", {
-          portfolio: {
-            total_value: holdings.reduce((sum, h) => sum + (h.value || 0), 0),
-            assets: holdings.map(h => ({
-              symbol: h.symbol,
-              allocation_pct: h.allocation || 0,
-              value: h.value || 0
-            }))
-          }
+        const response = await apiClient.post("/ai/portfolio", {
+          holdings: holdings.map(h => ({
+            symbol: h.symbol,
+            value: h.value || 0,
+            pnl_pct: h.change_24h || 0,
+            quantity: h.quantity || 0,
+            avg_cost: (h.value || 0) / (h.quantity || 1)
+          })),
+          total_value: holdings.reduce((sum, h) => sum + (h.value || 0), 0),
+          total_pnl: 0 // Mocking PnL for now as it's not strictly available in holdings
         });
 
-        if (response.data && response.data.status === "success") {
-          setAiAnalysis(response.data.analysis);
+        if (response.data && response.data.risk_score) {
+          const d = response.data;
+          const md = `### 📊 Portfolio AI Analysis
+**Risk Score:** ${d.risk_score}/10 (${d.risk_label})
+**Diversification:** ${d.diversification_score}/10 | **Dominant Sector:** ${d.dominant_sector}
+
+${d.summary}
+
+#### 💡 Recommendations
+${d.recommendations.map((r: string) => `- ${r}`).join("\n")}
+
+#### 🟢 Strengths
+${d.strengths.map((s: string) => `- ${s}`).join("\n")}
+
+#### 🔴 Risks
+${d.risks.map((r: string) => `- ${r}`).join("\n")}
+
+**Best Performer:** ${d.best_position}
+**Needs Attention:** ${d.worst_position}
+`;
+          setAiAnalysis(md);
         } else {
-          throw new Error(response.data?.message || "Failed to analyze portfolio");
+          throw new Error("Failed to analyze portfolio structure");
         }
       } catch (err: any) {
         setAiAnalysis(`### 🚨 Analysis Failed\n\nCould not connect to the AI Engine. Please check your network or try again later.\n\n**Error Details:** ${err.message}`);

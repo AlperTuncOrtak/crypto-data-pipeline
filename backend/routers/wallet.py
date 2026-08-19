@@ -7,9 +7,16 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix="/wallets", tags=["wallets"])
 
+import re
+
 class LinkWalletRequest(BaseModel):
     wallet_address: str
     provider: str = "metamask"
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if not re.match(r"^0x[a-fA-F0-9]{40}$", self.wallet_address):
+            raise ValueError("Invalid EVM wallet address format")
 
 @router.post("/link")
 def link_wallet(request: LinkWalletRequest, user: dict = Depends(verify_token)):
@@ -37,7 +44,8 @@ def link_wallet(request: LinkWalletRequest, user: dict = Depends(verify_token)):
         
         return {"status": "success", "data": result.data}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error linking wallet: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error while linking wallet")
 
 @router.get("")
 def get_linked_wallets(user: dict = Depends(verify_token)):

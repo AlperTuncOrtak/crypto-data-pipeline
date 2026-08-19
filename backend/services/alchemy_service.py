@@ -41,55 +41,58 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
         except Exception:
             pass
 
-        # 2. Token Balances
-        balance_payload = {
-            "id": 1,
-            "jsonrpc": "2.0",
-            "method": "alchemy_getTokenBalances",
-            "params": [wallet_address, "erc20"]
-        }
-        
-        resp = httpx.post(base_url, json=balance_payload, headers=headers, timeout=10.0)
-        resp.raise_for_status()
-        
-        data = resp.json()
-        token_balances = data.get("result", {}).get("tokenBalances", [])
-        
-        non_zero_balances = [
-            tb for tb in token_balances 
-            if tb.get("tokenBalance") != "0x0" and tb.get("tokenBalance") != "0x0000000000000000000000000000000000000000000000000000000000000000"
-        ]
-        
-        # 3. Fetch Metadata for each token
-        for tb in non_zero_balances[:10]: # Top 10 token for MVP
-            contract_address = tb.get("contractAddress")
-            raw_balance = tb.get("tokenBalance")
-            
-            meta_payload = {
+        try:
+            # 2. Token Balances
+            balance_payload = {
                 "id": 1,
                 "jsonrpc": "2.0",
-                "method": "alchemy_getTokenMetadata",
-                "params": [contract_address]
+                "method": "alchemy_getTokenBalances",
+                "params": [wallet_address, "erc20"]
             }
             
-            try:
-                meta_resp = httpx.post(base_url, json=meta_payload, headers=headers, timeout=5.0)
-                meta_data = meta_resp.json().get("result", {})
+            resp = httpx.post(base_url, json=balance_payload, headers=headers, timeout=10.0)
+            resp.raise_for_status()
+            
+            data = resp.json()
+            token_balances = data.get("result", {}).get("tokenBalances", [])
+            
+            non_zero_balances = [
+                tb for tb in token_balances 
+                if tb.get("tokenBalance") != "0x0" and tb.get("tokenBalance") != "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ]
+            
+            # 3. Fetch Metadata for each token
+            for tb in non_zero_balances[:10]: # Top 10 token for MVP
+                contract_address = tb.get("contractAddress")
+                raw_balance = tb.get("tokenBalance")
                 
-                decimals = meta_data.get("decimals") or 18
-                symbol = meta_data.get("symbol") or "TKN"
+                meta_payload = {
+                    "id": 1,
+                    "jsonrpc": "2.0",
+                    "method": "alchemy_getTokenMetadata",
+                    "params": [contract_address]
+                }
                 
-                numeric_balance = int(raw_balance, 16) / (10**decimals)
-                
-                if numeric_balance > 0:
-                    formatted_balances.append({
-                        "contract_address": contract_address,
-                        "balance": numeric_balance,
-                        "symbol": symbol.upper(),
-                        "usd_value": 0
-                    })
-            except Exception as e:
-                print(f"Metadata error for {contract_address}: {e}")
+                try:
+                    meta_resp = httpx.post(base_url, json=meta_payload, headers=headers, timeout=5.0)
+                    meta_data = meta_resp.json().get("result", {})
+                    
+                    decimals = meta_data.get("decimals") or 18
+                    symbol = meta_data.get("symbol") or "TKN"
+                    
+                    numeric_balance = int(raw_balance, 16) / (10**decimals)
+                    
+                    if numeric_balance > 0:
+                        formatted_balances.append({
+                            "contract_address": contract_address,
+                            "balance": numeric_balance,
+                            "symbol": symbol.upper(),
+                            "usd_value": 0
+                        })
+                except Exception as e:
+                    print(f"Metadata error for {contract_address}: {e}")
+        except Exception as token_err:
+            print(f"Token balance fetch error for {wallet_address}: {token_err}")
             
         return {
             "balances": formatted_balances,

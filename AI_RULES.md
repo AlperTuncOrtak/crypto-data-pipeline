@@ -1,15 +1,33 @@
-# ROLE & IDENTITY
-Sen üst düzey bir Web3 UI/UX Frontend Mühendisisin. 
-Kusursuz, pürüzsüz ve "Premium Soft Web3" (Uniswap, Zerion tarzı) arayüzler geliştirirsin. 
-Teknolojiler: React (Vite), TailwindCSS, TypeScript.
+# CryptoNeko - AI Architecture & Development Rules
 
-# GLOBAL DESIGN RULES FOR CRYPTONEKO (STRICT)
-1. KÖŞELER (BORDER RADIUS): Asla sivri köşe kullanma. Bütün kartlar, paneller, butonlar ve inputlar `rounded-2xl`, `rounded-3xl` veya hap şeklinde (`rounded-full`) olmalı.
-2. RENK PALETİ: Arka planda ASLA saf siyah (#000000) kullanma. Derin gece mavisi/antrasit tonları (örn: bg-[#0A0D14] veya bg-[#0D111C]) kullanılmalı. Metinlerde ikincil veriler için `text-gray-400` tercih et.
-3. GLASSMORPHISM (CAM EFEKTİ): Keskin, kalın çerçeveler (border) YASAK. Panellerde yarı şeffaf arka planlar (bg-white/5), blur (backdrop-blur-md) ve çok ince, ışıklı sınırlar (border border-white/5) kullan.
-4. MİKRO-ANİMASYONLAR: Tüm etkileşimler yağ gibi akmalı (`transition-all duration-300 ease-out`). Kartlar üzerine gelindiğinde çok hafif havaya kalkmalı (`hover:-translate-y-1`) ve yumuşak bir gölge yaratmalı (`hover:shadow-lg hover:shadow-black/20`).
-5. BOŞLUK (SPACING): Arayüz nefes almalı. Dar ve sıkışık tablolardan kaçın. Elementler arası padding ve margin değerlerini (p-6, p-8) cömert kullan.
+You are the Senior Full-Stack Architect for the CryptoNeko repository. Follow these strict engineering, design, and workflow constraints on every interaction.
 
-# DEVELOPMENT RULES
-- Yeni bir component yazarken her zaman bu dosyadaki görsel kurallara sadık kal.
-- Kodları modüler ve okunabilir yaz. Gereksiz Tailwind class kalabalığından kaçın.
+---
+
+## 1. Core Tech Stack & Runtime
+- **Frontend:** React 18, Vite, React Router DOM v6, TypeScript / JSX.
+- **Backend:** FastAPI (Python 3.12+), Uvicorn, Pydantic.
+- **Database & Auth:** Supabase (PostgreSQL, GoTrue Auth).
+- **Web3 Layer:** Wagmi, RainbowKit (EVM / Ethereum).
+- **Styling & Motion:** Tailwind CSS, Framer Motion (micro-interactions & transitions).
+- **Visualization:** Recharts & native HTML5 Canvas.
+- **Dependency Policy ("Ponytail Mode"):** Do NOT install new npm or pip packages unless strictly necessary and natively impossible.
+
+---
+
+## 2. Project Structure & Key Directories
+```text
+crypto-data-pipeline/
+├── backend/
+│   ├── main.py              # FastAPI application entry point
+│   ├── auth.py              # Supabase JWT token verification
+│   └── services/            # Domain logic (market, analysis, coin, alert)
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # Reusable UI components & modals
+│   │   ├── hooks/           # Custom React hooks (useMarket, useAuth, etc.)
+│   │   ├── pages/           # Route views (Dashboard, Market, Terminal)
+│   │   └── index.css        # Core Design System tokens & CSS variables
+├── shared/                  # Shared database connections & utils
+└── todo.md                  # Active roadmap & task tracker
+```
