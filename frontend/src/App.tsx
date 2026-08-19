@@ -245,21 +245,6 @@ function AppInner() {
 
               {/* Pro gerekli */}
               <Route
-                path="/analysis/ai"
-                element={
-                  <ProtectedRoute
-                    requirePro
-                    featureName="AI Technical Analysis"
-                    onAuthOpen={() => {
-                      setAuthMode("login");
-                      setAuthOpen(true);
-                    }}
-                  >
-                    <AIAnalysis />
-                  </ProtectedRoute>
-                }
-              />
-<Route
                 path="/dashboard/builder"
                 element={
                   <ProtectedRoute
