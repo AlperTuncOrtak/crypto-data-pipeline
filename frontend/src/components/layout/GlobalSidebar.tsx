@@ -44,8 +44,6 @@ const mainNavSections = [
     title: 'ANALYTICS & INSIGHTS',
     items: [
       { name: 'Market Data', path: '/market', icon: BarChart2 },
-      { name: 'AI Analysis', path: '/analysis', icon: Brain },
-      { name: 'Whale X-Ray', path: '/whale', icon: Activity },
     ]
   }
 ];
@@ -271,3 +269,4 @@ export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOp
     </div>
   );
 }
+

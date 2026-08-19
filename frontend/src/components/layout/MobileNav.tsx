@@ -18,8 +18,6 @@ export default function MobileNav() {
   const navItems = [
     { path: "/", icon: LayoutDashboard, label: "Home" },
     { path: "/market", icon: LineChart, label: "Market" },
-    { path: "/whale", icon: Activity, label: "X-Ray" },
-    { path: "/timemachine", icon: Target, label: "Time" },
     { path: "/swap", icon: ArrowDownUp, label: "Swap" },
     { path: "/portfolio", icon: PieChart, label: "Portfolio" },
   ];
@@ -63,3 +61,4 @@ export default function MobileNav() {
     </div>
   );
 }
+
