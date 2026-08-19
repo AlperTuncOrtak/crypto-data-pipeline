@@ -175,18 +175,18 @@ export default function Portfolio() {
   }, [holdings]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] pt-24 pb-32 overflow-x-hidden selection:bg-[var(--accent)]/30 relative font-sans">
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[var(--accent)]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[var(--accent)]/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#09090b] pt-24 pb-32 overflow-x-hidden selection:bg-[var(--accent)]/30 relative font-sans">
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-white/[0.02] rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/[0.02] rounded-full blur-[120px] pointer-events-none" />
       
       <div className="max-w-[1400px] mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-3 flex items-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-3 flex items-center gap-3">
               Portfolio
               {totalValue > 100000 && <span className="text-2xl">🐳</span>}
             </h1>
-            <p className="text-[var(--text-muted)] text-[15px] font-medium max-w-xl">
+            <p className="text-white/40 text-[15px] font-medium max-w-xl">
               Track your crypto wealth across exchanges and wallets in real-time.
             </p>
           </div>
@@ -200,14 +200,14 @@ export default function Portfolio() {
             
             <button
               onClick={() => setIsRebalanceOpen(true)}
-              className="flex items-center gap-2 bg-[var(--bg-subtle)] hover:bg-[var(--bg-elevated)] text-[var(--text-main)] border border-[var(--border-subtle)] hover:border-[var(--border-base)] font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm group"
+              className="flex items-center gap-2 bg-[#09090b]/40 hover:bg-white/[0.02] text-white border border-white/[0.04] hover:border-white/[0.08] font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm group"
             >
               <Brain size={16} className="group-hover:scale-110 transition-transform text-[var(--accent)]" />
               AI Rebalance
             </button>
             <button
               onClick={() => setShowAddSource(true)}
-              className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-md shadow-[var(--accent)]/20 hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-white hover:bg-white/90 text-black font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm hover:-translate-y-0.5"
             >
               <Plus size={16} strokeWidth={3} />
               Add Source
@@ -215,12 +215,12 @@ export default function Portfolio() {
           </div>
         </div>
 
-        <div className="flex overflow-x-auto custom-scrollbar gap-2 mb-8 p-1 bg-[var(--bg-base)]/50 border border-[var(--border-subtle)] rounded-2xl w-fit backdrop-blur-md">
-          {["overview", "swap", "history", "analytics", "taxes"].map((tab) => (
+        <div className="flex overflow-x-auto custom-scrollbar gap-2 mb-8 p-1 bg-[#09090b]/40 border border-white/[0.04] rounded-2xl w-fit backdrop-blur-xl">
+          {["overview", "swap"].map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
-              className={`px-6 py-2.5 rounded-3xl text-[13px] font-bold capitalize transition-all duration-300 ${activeTab === tab ? "bg-[var(--bg-elevated)] text-[var(--text-main)] shadow-sm border border-[var(--border-base)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] border border-transparent"}`}
+              className={`px-6 py-2.5 rounded-3xl text-[13px] font-bold capitalize transition-all duration-300 ${activeTab === tab ? "bg-white/[0.04] text-white shadow-sm border border-white/[0.04]" : "text-white/40 hover:text-white hover:bg-white/[0.02] border border-transparent"}`}
             >
               {tab}
             </button>
@@ -248,14 +248,14 @@ export default function Portfolio() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-6"
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-white/[0.04]">
                 <div>
-                  <h2 className="text-xl font-bold text-[var(--text-main)] mb-1">Overview</h2>
-                  <p className="text-[13px] text-[var(--text-muted)]">High level real-time data from your portfolio</p>
+                  <h2 className="text-xl font-semibold text-white mb-1">Overview</h2>
+                  <p className="text-[13px] text-white/40">High level real-time data from your portfolio</p>
                 </div>
-                <div className="flex bg-[var(--bg-elevated)] rounded-2xl p-1 border border-[var(--border-subtle)] mt-4 md:mt-0">
+                <div className="flex bg-[#09090b]/60 rounded-2xl p-1 border border-white/[0.04] mt-4 md:mt-0 backdrop-blur-xl">
                   {['1D', '1W', '1M', '6M', 'YTD', '1Y', 'All'].map(t => (
-                    <button key={t} className={`px-4 py-1.5 rounded-2xl text-[11px] font-bold transition-all ${t === 'All' ? 'bg-[var(--bg-elevated)] text-[var(--text-main)] shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}>
+                    <button key={t} className={`px-4 py-1.5 rounded-2xl text-[11px] font-bold transition-all ${t === 'All' ? 'bg-white/[0.04] text-white shadow' : 'text-white/40 hover:text-white'}`}>
                       {t}
                     </button>
                   ))}
@@ -284,38 +284,7 @@ export default function Portfolio() {
             </motion.div>
           )}
 
-          {activeTab === "history" && (
-            <motion.div
-              key="history"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <HistoryTab trades={trades} />
-            </motion.div>
-          )}
-
-          {activeTab === "analytics" && (
-            <motion.div
-              key="analytics"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <AnalyticsTab holdings={holdings} />
-            </motion.div>
-          )}
-
-          {activeTab === "taxes" && (
-            <motion.div
-              key="taxes"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <TaxesTab taxData={taxData} />
-            </motion.div>
-          )}
+          
         </AnimatePresence>
 
         <AddSourceModal 
@@ -345,4 +314,7 @@ export default function Portfolio() {
     </div>
   );
 }
+
+
+
 

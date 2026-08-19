@@ -21,29 +21,29 @@ export default function ChartAndWatchlist({
       {/* MIDDLE ROW: Chart & Watchlist */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cumulative Return Chart */}
-        <div className="lg:col-span-2 p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl">
+        <div className="lg:col-span-2 p-6 rounded-[20px] bg-[#09090b]/40 backdrop-blur-xl border border-white/[0.04] shadow-xl">
           <div className="flex justify-between items-start mb-8">
-            <h3 className="text-[15px] font-bold text-[var(--text-main)]">Cumulative return</h3>
+            <h3 className="text-[15px] font-bold text-white">Cumulative return</h3>
             <div className="flex gap-6">
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-[var(--positive)] rounded-full"></div> Portfolio (24H)
+                <span className="text-[11px] font-bold text-white/40 mb-1 flex items-center gap-1.5">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div> Portfolio (24H)
                 </span>
-                <span className={`text-[13px] font-black ${change24hPct >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
+                <span className={`text-[13px] font-black ${change24hPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                   {change24hPct >= 0 ? "+" : ""}{change24hPct.toFixed(2)}%
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-white/40 mb-1 flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div> BTC
                 </span>
-                <span className="text-[13px] font-black text-[var(--negative)]">-0.33%</span>
+                <span className="text-[13px] font-black text-rose-400">-0.33%</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-white/40 mb-1 flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div> ETH
                 </span>
-                <span className="text-[13px] font-black text-[var(--negative)]">-4.27%</span>
+                <span className="text-[13px] font-black text-rose-400">-4.27%</span>
               </div>
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function ChartAndWatchlist({
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--text-muted)] border border-dashed border-[var(--border-subtle)] rounded-[12px] bg-[var(--bg-elevated)]/30">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white/40 border border-dashed border-white/[0.04] rounded-[12px] bg-white/[0.02]">
                 <span className="text-[14px] font-bold">No Historical Data</span>
                 <span className="text-[12px]">Portfolio chart will populate soon as data is collected.</span>
               </div>
@@ -79,23 +79,23 @@ export default function ChartAndWatchlist({
         </div>
 
         {/* Watchlist Grid */}
-        <div className="p-6 rounded-[20px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col">
-          <div className="relative z-10 flex gap-4 mb-6 border-b border-[var(--border-subtle)] pb-3">
-            <button className="relative z-20 text-[12px] font-bold text-[var(--text-main)] border-b-2 border-white pb-3 -mb-[13px] cursor-pointer">Watchlist</button>
-            <button className="relative z-20 text-[12px] font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors pb-3 -mb-[13px] cursor-pointer">Trending</button>
-            <button className="relative z-20 text-[12px] font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors pb-3 -mb-[13px] cursor-pointer">Top Gainers</button>
+        <div className="p-6 rounded-[20px] bg-[#09090b]/40 backdrop-blur-xl border border-white/[0.04] shadow-xl flex flex-col">
+          <div className="relative z-10 flex gap-4 mb-6 border-b border-white/[0.04] pb-3">
+            <button className="relative z-20 text-[12px] font-bold text-white border-b-2 border-white pb-3 -mb-[13px] cursor-pointer">Watchlist</button>
+            <button className="relative z-20 text-[12px] font-bold text-white/40 hover:text-white transition-colors pb-3 -mb-[13px] cursor-pointer">Trending</button>
+            <button className="relative z-20 text-[12px] font-bold text-white/40 hover:text-white transition-colors pb-3 -mb-[13px] cursor-pointer">Top Gainers</button>
           </div>
 
           <div className="grid grid-cols-2 gap-4 flex-1">
             {holdings.slice(0, 4).map((asset, i) => (
-              <div key={i} className="bg-[var(--bg-elevated)] rounded-3xl p-3 flex flex-col justify-between border border-[var(--border-subtle)] hover:border-[var(--border-base)] transition-colors cursor-pointer group">
+              <div key={i} className="bg-white/[0.02] rounded-3xl p-3 flex flex-col justify-between border border-white/[0.04] hover:border-white/[0.08] transition-colors cursor-pointer group">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <img src={`https://assets.coincap.io/assets/icons/${asset.symbol.toLowerCase()}@2x.png`} className="w-5 h-5 rounded-full" alt={asset.symbol} onError={(e: any) => { e.target.src = "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=024"; }} />
-                    <span className="text-[11px] font-bold text-[var(--text-main)] truncate">{asset.symbol}</span>
+                    <span className="text-[11px] font-bold text-white truncate">{asset.symbol}</span>
                   </div>
-                  <div className="text-[15px] font-black text-[var(--text-main)]">${(asset.current_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className={`text-[10px] font-bold ${(asset.change_24h ?? 0) >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}>
+                  <div className="text-[15px] font-black text-white">${(asset.current_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className={`text-[10px] font-bold ${(asset.change_24h ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                     {(asset.change_24h ?? 0) >= 0 ? '+' : ''}{(asset.change_24h ?? 0).toFixed(2)}%
                   </div>
                 </div>
@@ -121,3 +121,4 @@ export default function ChartAndWatchlist({
     </>
   );
 }
+

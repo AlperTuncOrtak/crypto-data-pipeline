@@ -86,20 +86,20 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-2xl bg-[var(--bg-base)] border border-[var(--positive)]/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-2xl bg-[#09090b]/90 backdrop-blur-3xl border border-white/[0.04] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
+        <div className="flex items-center justify-between p-6 border-b border-white/[0.04] bg-[#09090b]/40">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-3xl bg-gradient-to-br from-[var(--positive)]/20 to-transparent flex items-center justify-center border border-[var(--positive)]/30">
               <Brain className="text-[var(--positive)]" size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[var(--text-main)]">AI Portfolio Engine</h2>
-              <p className="text-xs text-[var(--text-muted)]">Powered by Llama 3.3 70B</p>
+              <h2 className="text-lg font-bold text-white">AI Portfolio Engine</h2>
+              <p className="text-xs text-white/40">Powered by Llama 3.3 70B</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors bg-white/5 rounded-2xl">
+          <button onClick={onClose} className="p-2 text-white/40 hover:text-white transition-colors bg-white/5 rounded-2xl">
             <X size={20} />
           </button>
         </div>
@@ -123,7 +123,7 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
                   </div>
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-bold text-[var(--text-main)] tracking-wider animate-pulse">Processing</h3>
+                  <h3 className="text-xl font-bold text-white tracking-wider animate-pulse">Processing</h3>
                   <p className="text-sm font-medium text-[var(--positive)]">{scanText}</p>
                 </div>
               </motion.div>
@@ -134,7 +134,7 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
                 key="results"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="prose prose-invert prose-p:text-gray-300 prose-headings:text-[var(--text-main)] prose-strong:text-[var(--positive)] prose-ul:text-gray-300 prose-li:marker:text-[var(--positive)] max-w-none"
+                className="prose prose-invert prose-p:text-gray-300 prose-headings:text-white prose-strong:text-[var(--positive)] prose-ul:text-gray-300 prose-li:marker:text-[var(--positive)] max-w-none"
               >
                 <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
               </motion.div>
@@ -145,3 +145,4 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
     </div>
   );
 }
+
