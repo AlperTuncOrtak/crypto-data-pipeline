@@ -81,11 +81,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from backend.routers import whale, stripe_router, paper, wallet
+from backend.routers import whale, stripe_router, wallet
 
 app.include_router(whale.router)
 app.include_router(stripe_router.router)
-app.include_router(paper.router)
 app.include_router(wallet.router)
 
 

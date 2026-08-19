@@ -1,0 +1,17 @@
+$file = 'frontend/src/components/layout/TopHeader.tsx'
+$c = Get-Content $file -Raw
+$c = $c -replace '<div className="h-16 flex items-center justify-between px-3 sm:px-6 border-b border-\[var\(--border-subtle\)\] bg-\[var\(--bg-subtle\)\]/80 backdrop-blur-md sticky top-0 z-40">', '<div className="h-[60px] flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.04] bg-[#09090b]/60 backdrop-blur-xl sticky top-0 z-40">'
+$c = $c -replace '<button onClick=\{onMobileMenuToggle\} className="md:hidden p-1.5 sm:p-2 text-\[var\(--text-muted\)\] hover:text-\[var\(--text-main\)\]">', '<button onClick={onMobileMenuToggle} className="md:hidden p-1.5 sm:p-2 text-white/40 hover:text-white transition-colors">'
+$c = $c -replace '<Menu size=\{20\} />', '<Menu size={18} />'
+$c = $c -replace '<div className="flex items-center gap-2 text-sm">', '<div className="flex items-center gap-2 text-[13px] font-medium">'
+$c = $c -replace '<span className="hidden sm:inline text-\[var\(--text-muted\)\]">Overview</span>', '<span className="hidden sm:inline text-white/40">Overview</span>'
+$c = $c -replace '<span className="hidden sm:inline text-gray-600">/</span>', '<span className="hidden sm:inline text-white/20">/</span>'
+$c = $c -replace '<span className="text-\[var\(--text-main\)\] font-medium truncate max-w-\[120px\] sm:max-w-none">\{pageName\}</span>', '<span className="text-white tracking-wide truncate max-w-[120px] sm:max-w-none">{pageName}</span>'
+$c = $c -replace '<div className="flex items-center gap-2 pl-2 sm:pl-4 ml-1 sm:ml-2 border-l border-\[var\(--border-subtle\)\]">', '<div className="flex items-center gap-1 sm:gap-2 pl-3 sm:pl-5 ml-1 sm:ml-2 border-l border-white/[0.06]">'
+$c = $c -replace 'className="p-2 text-\[var\(--text-muted\)\] hover:text-\[var\(--text-main\)\] transition-colors"', 'className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/[0.02] transition-colors"'
+$c = $c -replace 'className="p-2 text-\[var\(--text-muted\)\] hover:text-\[var\(--text-main\)\] transition-colors relative"', 'className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/[0.02] transition-colors relative"'
+$c = $c -replace '<Moon size=\{18\} /> : <Sun size=\{18\} />', '<Moon size={16} /> : <Sun size={16} />'
+$c = $c -replace '<Bell size=\{18\} />', '<Bell size={16} />'
+$c = $c -replace '<Settings size=\{18\} />', '<Settings size={16} />'
+$c = $c -replace 'w-2 h-2 bg-blue-500 rounded-full border-2 border-\[\#111214\]', 'w-1.5 h-1.5 bg-indigo-500 rounded-full border-2 border-[#09090b]'
+Set-Content $file $c

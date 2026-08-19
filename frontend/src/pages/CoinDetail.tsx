@@ -10,7 +10,7 @@ import {
   LineChart, CandlestickChart, Lock,
   Brain
 } from "lucide-react";
-import AICandlestickChart from "../components/market/AICandlestickChart";
+import { Component as CandleChart } from "../components/ui/candle-chart";
 import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
@@ -356,7 +356,7 @@ export default function CoinDetail() {
                     <span className="text-sm font-medium">No chart data available for this range</span>
                   </div>
                 ) : chartType === "pro" ? (
-                   <AICandlestickChart symbol={coin.symbol} data={ohlcData} />
+                   <CandleChart symbol={coin.symbol} mid={Number(coin.current_price)} fill={true} chrome={false} />
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={simpleChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>

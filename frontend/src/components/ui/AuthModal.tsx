@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, CheckCircle, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { X, CheckCircle, Mail, Lock, User, Eye, EyeOff, LogIn } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
 function getStrength(pw: string) {
@@ -29,7 +29,7 @@ function MatteInput({ icon: Icon, type, rightEl, ...props }: any) {
       <input
         type={type}
         {...props}
-        className="w-full bg-[var(--bg-base)] border border-[var(--border-subtle)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[#6366f1]/50 rounded-[12px] text-[14px] text-zinc-100 outline-none transition-all placeholder:text-zinc-600 font-sans"
+        className="w-full bg-white/[0.02] border border-white/[0.04] focus:border-[var(--accent)] focus:bg-white/[0.04] rounded-xl text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600 font-sans"
         style={{ padding: `12px ${rightEl ? '44px' : '16px'} 12px ${Icon ? '44px' : '16px'}` }}
       />
       {rightEl}
@@ -147,61 +147,41 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
 
   return (
     <>
-      {/* Soft Glass Backdrop */}
       <div 
         onClick={onClose} 
-        className="fixed inset-0 z-[999] bg-[var(--bg-base)]/80 backdrop-blur-md transition-opacity duration-300"
+        className="fixed inset-0 z-[999] bg-[#09090b]/80 backdrop-blur-xl transition-opacity duration-300"
       />
 
-      {/* Premium Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] w-full max-w-[400px] px-4 animate-in fade-in zoom-in-95 duration-200">
-        <div className="bg-[var(--bg-elevated)] border border-[var(--border-subtle)] p-8 rounded-[24px] shadow-[0_32px_64px_rgba(0,0,0,0.5)] relative">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] w-full max-w-[420px] px-4 animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-[#09090b] border border-white/[0.04] p-8 rounded-3xl shadow-2xl relative">
           
-          {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+            className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/[0.02] text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] transition-colors"
           >
             <X size={16} />
           </button>
 
-          {/* Header */}
           <div className="mb-8 text-center mt-2">
-            <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center text-xl font-bold mx-auto mb-4 border border-[var(--accent)]/20">
-              N
+            <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-300 mx-auto mb-5 shadow-inner">
+              <LogIn size={20} />
             </div>
-            <h2 className="text-[20px] font-semibold text-white tracking-tight mb-1">
+            <h2 className="text-2xl font-medium text-white tracking-tight mb-2">
               {isLogin ? "Welcome back" : "Create an account"}
             </h2>
-            <p className="text-[14px] text-zinc-400">
-              {isLogin ? "Enter your details to access your dashboard" : "Join CryptoNeko to unlock pro features"}
+            <p className="text-sm text-zinc-500">
+              {isLogin ? "Enter your details to sign in to your account" : "Join us to unlock pro features"}
             </p>
           </div>
 
-          {/* Fast Login */}
-          <button
-            type="button"
-            onClick={handleGoogle}
-            className="w-full h-12 flex items-center justify-center gap-3 bg-white/[0.03] hover:bg-white/[0.06] border border-[var(--border-subtle)] rounded-[12px] text-[14px] font-medium text-white transition-all mb-6 cursor-pointer"
-          >
-            <GoogleIcon /> Continue with Google
-          </button>
-
-          <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">or email</span>
-            <div className="flex-1 h-px bg-white/[0.06]" />
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {!isLogin && (
               <MatteInput icon={User} type="text" placeholder="Full Name" value={name} onChange={(e: any) => setName(e.target.value)} required />
             )}
             
             <MatteInput icon={Mail} type="email" placeholder="Email Address" value={email} onChange={(e: any) => setEmail(e.target.value)} required />
             
-            <div>
+            <div className="flex flex-col gap-2">
               <MatteInput 
                 icon={Lock} 
                 type={showPass ? "text" : "password"} 
@@ -213,14 +193,20 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
                   <button
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-zinc-300 transition-colors"
                   >
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 }
               />
-              {!isLogin && password && (
-                <div className="flex items-center justify-between px-2 mt-2">
+              {isLogin ? (
+                <div className="flex justify-end w-full">
+                  <button type="button" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+                    Forgot password?
+                  </button>
+                </div>
+              ) : password && (
+                <div className="flex items-center justify-between px-2 mt-1">
                   <div className="flex gap-1 flex-1 mr-3">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <div
@@ -237,24 +223,40 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
               )}
             </div>
 
-            {error && <div className="text-[var(--negative)] text-[13px] px-1 py-1 mt-1 text-center">{error}</div>}
-            {success && <div className="text-[var(--positive)] text-[13px] px-1 py-1 mt-1 text-center flex items-center justify-center gap-1"><CheckCircle size={14}/> {success}</div>}
+            {error && <div className="text-red-400 text-sm px-1 py-1 text-center bg-red-400/10 rounded-lg">{error}</div>}
+            {success && <div className="text-emerald-400 text-sm px-1 py-1 text-center bg-emerald-400/10 rounded-lg flex items-center justify-center gap-2"><CheckCircle size={14}/> {success}</div>}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[#4f46e5] text-white rounded-[12px] text-[14px] font-semibold transition-all disabled:opacity-50 mt-2 cursor-pointer shadow-md shadow-[var(--accent)]/20"
+              className="w-full h-11 flex items-center justify-center gap-2 bg-white text-black hover:bg-zinc-200 rounded-xl text-sm font-medium transition-all disabled:opacity-50 mt-2 cursor-pointer shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]"
             >
               {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
             </button>
           </form>
 
-          {/* Switcher */}
-          <div className="mt-6 text-center text-[13px] text-zinc-500">
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/[0.04]"></div>
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-[#09090b] px-4 text-zinc-500">Or continue with</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogle}
+            className="w-full h-11 flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm font-medium text-zinc-300 transition-all cursor-pointer"
+          >
+            <GoogleIcon /> Google
+          </button>
+
+          <div className="mt-8 text-center text-sm text-zinc-500">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => switchMode(isLogin ? "signup" : "login")}
-              className="text-white hover:underline font-medium transition-colors cursor-pointer"
+              className="text-zinc-300 hover:text-white font-medium transition-colors cursor-pointer"
             >
               {isLogin ? "Sign up" : "Sign in"}
             </button>
@@ -265,3 +267,4 @@ export default function AuthModal({ isOpen, onClose, onLogin, initialMode = "log
     </>
   );
 }
+
