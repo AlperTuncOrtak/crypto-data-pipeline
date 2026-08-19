@@ -108,19 +108,25 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
   - [x] Mobil cihazlarda dokunmatik titreşim (Haptic Feedback) API'sini entegre et.
   - [ ] **Mobil Uygulama Testleri:** Xcode ve Android Studio üzerinde derleyip, gerçek cihaz/simülatör testlerinin (UI/UX, Stripe Modal, Haptics) yapılması.
 
-## 📌 Sonraki Aşama (Backlog)
-
-### 3. Uygulama İçi Takas (DEX Swap Entegrasyonu)
-- [x] 1inch veya Jupiter API'sini bağlayarak kullanıcıların siteyi terk etmeden cüzdanlarındaki token'ları anında takas (Swap) yapabilmesini sağla. (Li.Fi Widget ile tamamlandı)
-
-### 4. UI/UX ve Genel İyileştirmeler
-- [x] Orijinal kedi logosunun (CryptoNeko) sisteme tekrar entegre edilmesi.
-- [x] Ayarlar (Settings) menüsüne dil değiştirme (Language Switcher) seçeneğinin eklenmesi.
-- [x] Destek (Support) veya iletişim kısımlarına "Contact Me" bölümünün eklenmesi.
+## 💰 Gelir Modeli & Komisyon Ayarları (Monetization & Treasury)
+- [ ] **Swap (DEX) Komisyon Ayarı (.env):** Kullanıcıların yaptığı her swap işleminden kasamıza %0.5 (binde 5) kripto komisyonu kalması için `.env` dosyasına şu değişkenler tanımlanmalı:
+  ```env
+  VITE_TREASURY_ADDRESS="0xSizinCuzdanAdresiniz..." # Komisyonların otomatik aktarılacağı EVM cüzdan adresi
+  VITE_FEE_PERCENTAGE="0.005"                       # %0.5 komisyon (ör: 0.01 yapılırsa %1 olur)
+  VITE_0X_API_KEY="your-0x-api-key"                 # Gerçek mainnet işlemleri için 0x API key
+  ```
+- [ ] **Stripe Kredi Kartı Abonelikleri (.env):** PRO/Enterprise paket satışlarının banka hesabına aktarılması için:
+  ```env
+  STRIPE_SECRET_KEY="sk_live_..."
+  STRIPE_WEBHOOK_SECRET="whsec_..."
+  STRIPE_PRICE_PRO_MONTHLY="price_..."
+  STRIPE_PRICE_PRO_YEARLY="price_..."
+  ```
 
 ---
-**Tasarım Notu:** Yeni eklenecek tüm özelliklerde `bg-[#19191c]/80 backdrop-blur-xl border border-white/5 shadow-2xl` cam efekti ve Framer Motion geçişleri kullanılması zorunludur.
+**Tasarım Notu:** Yeni eklenecek tüm özelliklerde `#09090b` (zinc-950) koyu zemin ve `white/[0.04]` Ethena cam efekti standarttır.
 
-- [x] TODO: Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine (AI Rebalance live API 404/SSL errors)
-- [x] Landing page hero section'a güzel bir animasyon eklenecek.
-- [ ] Portfolio sayfasındaki sorunlar giderilecek. (Örnek Cüzdan: 0x00000000219ab540356cBB839Cbe05303d7705Fa)
+- [x] Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine
+- [x] Landing page hero section animasyonları
+- [x] Portfolio sayfası USD hesaplamaları & Dust filtreleri (price_service.py)
+- [x] Swap motoru 0x allowanceTarget ve transaction receipt bekletme geliştirmeleri
