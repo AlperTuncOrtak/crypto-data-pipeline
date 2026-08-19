@@ -23,6 +23,8 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
 const Alerts = lazy(() => import("./pages/Alerts"));
 const Swap = lazy(() => import("./pages/Swap"));
+const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
+const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
 const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
@@ -198,6 +200,22 @@ function AppInner() {
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
+              <Route path="/whale" element={<WhaleXRay />} />
+              <Route
+                path="/analysis/ai"
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="AI Technical Analysis"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <AIAnalysis />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
