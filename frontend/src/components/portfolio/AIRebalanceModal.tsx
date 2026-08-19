@@ -69,7 +69,8 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
           throw new Error("Failed to analyze portfolio structure");
         }
       } catch (err: any) {
-        setAiAnalysis(`### 🚨 Analysis Failed\n\nCould not connect to the AI Engine. Please check your network or try again later.\n\n**Error Details:** ${err.message}`);
+        const detail = err.response?.data?.detail || err.message;
+        setAiAnalysis(`### 🚨 Analysis Failed\n\nCould not connect to the AI Engine. Please check your network or try again later.\n\n**Error Details:** ${detail}`);
       } finally {
         setPhase("results");
       }

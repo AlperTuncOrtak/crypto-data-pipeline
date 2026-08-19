@@ -405,7 +405,18 @@ def ai_portfolio_analyze(payload: dict):
     total_pnl = float(payload.get("total_pnl") or 0)
 
     if not holdings:
-        raise HTTPException(status_code=400, detail="No holdings provided")
+        return {
+            "risk_score": 0,
+            "risk_label": "N/A",
+            "diversification_score": 0,
+            "dominant_sector": "None",
+            "summary": "Your portfolio is currently empty. The AI Engine requires assets to perform an analysis.",
+            "recommendations": ["Connect an exchange or add an on-chain wallet to begin tracking your assets."],
+            "strengths": ["Zero market risk exposure."],
+            "risks": ["100% fiat/cash equivalent, missing potential upside."],
+            "best_position": "N/A",
+            "worst_position": "N/A"
+        }
 
     GROQ_KEY = os.getenv("GROQ_API_KEY", "")
     GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
