@@ -18,7 +18,9 @@ import ChartAndWatchlist from "../components/portfolio/ChartAndWatchlist";
 import AddSourceModal from "../components/portfolio/AddSourceModal";
 
 import { usePortfolioData } from "../hooks/usePortfolioData";
-import { apiClient } from "../api/client";
+import { apiClient } from '../api/client';
+import { calcBuyingPower, calcAllocation, calcTax, parseCSV, GuideModal } from '../components/portfolio/PortfolioUtils';
+
 
 export default function Portfolio() {
   const { t } = useTranslation();
@@ -76,6 +78,8 @@ export default function Portfolio() {
   const totalValue = holdings.reduce((sum, h) => sum + (h.value || 0), 0);
   const totalCost = holdings.reduce((sum, h) => sum + (h.cost_basis || 0), 0);
   const totalPnl = totalValue - totalCost;
+  const change24hValue = holdings.reduce((sum, h) => sum + (((h.value || 0) * (h.change_24h || 0)) / 100), 0);
+  const change24hPct = totalValue > 0 ? (change24hValue / (totalValue - change24hValue)) * 100 : 0;
   
   const taxData = useMemo(() => calcTax(trades), [trades]);
   const allocation = useMemo(() => calcAllocation(holdings), [holdings]);
@@ -264,8 +268,8 @@ export default function Portfolio() {
 
               <DashboardCards 
                 totalValue={totalValue}
-                totalPnl={totalPnl}
-                totalCost={totalCost}
+                change24hValue={change24hValue}
+                change24hPct={change24hPct}
                 taxData={taxData}
                 allocation={allocation}
                 buyingPower={buyingPower}
@@ -274,8 +278,8 @@ export default function Portfolio() {
               />
 
               <ChartAndWatchlist 
-                totalPnl={totalPnl}
-                totalCost={totalCost}
+                change24hValue={change24hValue}
+                change24hPct={change24hPct}
                 chartData={chartData}
                 holdings={holdings}
                 sparklines={sparklines}
@@ -314,6 +318,8 @@ export default function Portfolio() {
     </div>
   );
 }
+
+
 
 
 
