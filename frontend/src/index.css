@@ -12,6 +12,7 @@
    Maps CSS vars → Tailwind color utilities
 ───────────────────────────────────────────────────────────── */
 @theme inline {
+  --color-destructive-foreground: oklch(1 0 0);
   /* Surfaces */
   --color-bg-base:      var(--bg-base);
   --color-bg-subtle:    var(--bg-subtle);
@@ -408,3 +409,7 @@ h4 { font-weight: 600; letter-spacing: -0.015em; }
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
+
+:root { --destructive-foreground: oklch(1 0 0); }
+.dark { --destructive-foreground: oklch(1 0 0); }
+
