@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload } from "lucide-react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { EXCHANGE_GUIDES } from "./PortfolioUtils";
+import { EXCHANGE_GUIDES } from "./ExchangeGuides";
 import { apiClient } from "../../api/client";
 import { supabase } from "../../lib/supabase";
 

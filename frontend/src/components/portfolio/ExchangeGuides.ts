@@ -1,0 +1,50 @@
+export const EXCHANGE_GUIDES: Record<string, any> = {
+  binance: {
+    name: "Binance",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png",
+    id: "binance",
+    color: "#F3BA2F",
+    steps: [
+      "Log in to your Binance account",
+      'Click the profile icon in the top right → select "Orders"',
+      'Go to the "Trade History" tab',
+      "Select date range (max 3 months, multiple exports may be needed)",
+      'Click "Export" → select CSV format',
+      "Upload the downloaded file here",
+    ],
+    note: "Binance exports a maximum of 3 months of data. Upload multiple files for longer history.",
+    columns: ["Date", "Pair", "Side", "Price", "Executed", "Amount", "Fee"],
+  },
+  bybit: {
+    name: "Bybit",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png",
+    id: "bybit",
+    color: "#F7A600",
+    steps: [
+      "Log in to your Bybit account",
+      'Click "Assets" → "Transaction History" in the top right',
+      'Select the "Trade" tab',
+      "Set the date range and coin filter",
+      'Click the "Export" button',
+      "Download the CSV file and upload it here",
+    ],
+    note: "Bybit spot and futures trades come in separate files.",
+    columns: ["Time", "Symbol", "Side", "Price", "Qty", "Value", "Fee"],
+  },
+  okx: {
+    name: "OKX",
+    logo: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/311.png",
+    id: "okx",
+    color: "#888",
+    steps: [
+      "Log in to your OKX account",
+      'Select "Trade" → "Order History" from the top menu',
+      'Go to the "Filled Orders" tab',
+      "Select the date range",
+      "Click the export icon in the top right",
+      "Download as CSV and upload it here",
+    ],
+    note: "OKX provides a maximum of 90 days of data.",
+    columns: ["Order Time", "Instrument", "Trade Side"],
+  }
+};
