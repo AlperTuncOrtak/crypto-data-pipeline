@@ -8,6 +8,7 @@ import { LinearBento } from "../components/landing/LinearBento";
 import { LinearSpeed } from "../components/landing/LinearSpeed";
 import { LinearFooter } from "../components/landing/LinearFooter";
 import AnimatedLogo from "../components/layout/AnimatedLogo";
+import { HeroSection } from "../components/blocks/hero-section-1";
 
 export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
   const { user, loading } = useAuth();
@@ -19,6 +20,7 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] selection:bg-white/20 selection:text-[var(--text-main)] font-sans overflow-x-hidden relative">
+      <HeroSection />
       
       {/* 🔴 BACKGROUND NOISE & GRAIN 🔴 */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay"></div>
