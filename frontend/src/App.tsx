@@ -25,16 +25,12 @@ const Alerts = lazy(() => import("./pages/Alerts"));
 const Analysis = lazy(() => import("./pages/Analysis"));
 const Narratives = lazy(() => import("./pages/Narratives"));
 const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
-const TimeMachine = lazy(() => import("./pages/TimeMachine"));
-const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Swap = lazy(() => import("./pages/Swap"));
 const Terminal = lazy(() => import("./pages/Terminal"));
 const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 
 const CoinDetail = lazy(() => import("./pages/CoinDetail"));
-const Heatmap = lazy(() => import("./pages/Heatmap"));
 const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
-const TradingViewAnalyst = lazy(() => import("./pages/TradingViewAnalyst"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Pro = lazy(() => import("./pages/Pro"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
@@ -183,7 +179,6 @@ function AppInner() {
             <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[var(--bg-base)]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
               <Routes>
                 <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/swap" element={<Swap />} />
               {/* Public */}
               <Route
@@ -208,9 +203,7 @@ function AppInner() {
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
-              <Route path="/heatmap" element={<Heatmap />} />
               <Route path="/whale" element={<WhaleXRay />} />
-              <Route path="/timemachine" element={<TimeMachine />} />
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/terminal" element={<Terminal />} />
 
@@ -274,23 +267,7 @@ function AppInner() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/tv-analyst"
-                element={
-                  <ProtectedRoute
-                    requirePro
-                    featureName="TradingView OS Analyst"
-                    onAuthOpen={() => {
-                      setAuthMode("login");
-                      setAuthOpen(true);
-                    }}
-                  >
-                    <TradingViewAnalyst />
-                  </ProtectedRoute>
-                }
-              />
-              
-              <Route
+<Route
                 path="/dashboard/builder"
                 element={
                   <ProtectedRoute
