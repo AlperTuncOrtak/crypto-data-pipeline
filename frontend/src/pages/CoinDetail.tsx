@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
@@ -30,10 +30,10 @@ const RANGES = [
   { label: "ALL", value: "all" },
 ];
 
-// ─── Formatters ─────────────────────────────────────────────
+// â”€â”€â”€ Formatters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmtPrice(n: any) {
   const v = Number(n);
-  if (isNaN(v) || n == null) return "—";
+  if (isNaN(v) || n == null) return "â€”";
   if (v >= 1000) return `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
   if (v >= 1)    return `$${v.toFixed(2)}`;
   if (v >= 0.01) return `$${v.toFixed(4)}`;
@@ -43,7 +43,7 @@ function fmtPrice(n: any) {
 
 function fmtLarge(n: any, prefix = "$") {
   const v = Number(n);
-  if (isNaN(v) || n == null || v === 0) return "—";
+  if (isNaN(v) || n == null || v === 0) return "â€”";
   if (v >= 1e12) return `${prefix}${(v / 1e12).toFixed(2)}T`;
   if (v >= 1e9)  return `${prefix}${(v / 1e9).toFixed(2)}B`;
   if (v >= 1e6)  return `${prefix}${(v / 1e6).toFixed(2)}M`;
@@ -52,12 +52,12 @@ function fmtLarge(n: any, prefix = "$") {
 
 function fmtPct(n: any) {
   const v = Number(n);
-  if (isNaN(v) || n == null) return "—";
+  if (isNaN(v) || n == null) return "â€”";
   return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
 }
 
 function fmtDate(s: any) {
-  if (!s) return "—";
+  if (!s) return "â€”";
   try { return new Date(s).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }); }
   catch { return s; }
 }
@@ -70,7 +70,7 @@ function fmtChartTime(iso: any, range: string) {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-// ─── Sub-components ──────────────────────────────────────────
+// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -94,7 +94,7 @@ function StatRow({ label, value, valueColor }: { label: string; value: string; v
   );
 }
 
-// ─── MAIN ───────────────────────────────────────────────────
+// â”€â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function CoinDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -174,10 +174,10 @@ export default function CoinDetail() {
 
   if (isError || !coin) return (
     <div className="flex flex-col items-center justify-center min-h-[500px] gap-5">
-      <div className="text-6xl drop-shadow-2xl">🔍</div>
+      <div className="text-6xl drop-shadow-2xl">ğŸ”</div>
       <div className="text-2xl font-black text-[var(--text-main)] tracking-tight">Coin not found</div>
       <button onClick={() => navigate("/market")} className="px-6 py-2.5 rounded-full border border-[var(--border-base)] bg-white/5 text-[var(--text-main)] font-bold hover:bg-[var(--border-base)] transition-colors shadow-lg">
-        ← Back to Markets
+        â† Back to Markets
       </button>
     </div>
   );
@@ -222,7 +222,7 @@ export default function CoinDetail() {
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 pt-10">
         
-        {/* ── BACK BUTTON ─────────────────────────────────────────── */}
+        {/* â”€â”€ BACK BUTTON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <button
           onClick={() => navigate(-1)}
           className="group flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors mb-10"
@@ -231,7 +231,7 @@ export default function CoinDetail() {
           Back to Markets
         </button>
 
-        {/* ── HERO HEADER ──────────────────────────────────── */}
+        {/* â”€â”€ HERO HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div 
           initial={{ opacity: 0, y: -20, filter: "blur(10px)" }} 
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} 
@@ -293,13 +293,13 @@ export default function CoinDetail() {
           </div>
         </motion.div>
 
-        {/* ── TWO-COLUMN LAYOUT ─────────────────────────────── */}
+        {/* â”€â”€ TWO-COLUMN LAYOUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div 
           variants={containerVariants} initial="hidden" animate="visible"
           className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start"
         >
 
-          {/* ── LEFT COLUMN ──────────────────────────────────── */}
+          {/* â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="flex flex-col gap-6">
 
             {/* CHART CARD */}
@@ -416,7 +416,7 @@ export default function CoinDetail() {
                       Get real-time AI-powered market sentiment, attack momentum, and advanced price trajectory predictions.
                     </p>
                     <Link to="/pricing" className="relative z-10 px-10 py-4 rounded-full bg-[var(--text-main)] text-[var(--bg-base)] font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_var(--border-base)]">
-                      Upgrade to Pro →
+                      Upgrade to Pro â†’
                     </Link>
                   </div>
                 )}
@@ -435,7 +435,7 @@ export default function CoinDetail() {
             
           </div>
 
-          {/* ── RIGHT SIDEBAR ─────────────────────────────────── */}
+          {/* â”€â”€ RIGHT SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="flex flex-col gap-6">
 
             {/* Market Stats */}
@@ -452,7 +452,7 @@ export default function CoinDetail() {
                 <StatRow label="ATH Date" value={fmtDate(coin.ath_date)} />
                 <StatRow label="All-Time Low" value={fmtPrice(coin.atl)} />
                 <StatRow label="ATL Date" value={fmtDate(coin.atl_date)} />
-                <StatRow label="Market Rank" value={coin.market_cap_rank ? `#${coin.market_cap_rank}` : "—"} />
+                <StatRow label="Market Rank" value={coin.market_cap_rank ? `#${coin.market_cap_rank}` : "â€”"} />
               </div>
             </motion.div>
 
@@ -471,3 +471,4 @@ export default function CoinDetail() {
       </div>
     </div>
   );}
+

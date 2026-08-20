@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
-/* ── inlined from lab/shared.ts ─────────────────────────────────────────── */
+/* â”€â”€ inlined from lab/shared.ts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /** signature expo-out ease used across the site */
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -11,13 +11,13 @@ const EASE = [0.16, 1, 0.3, 1] as const
  *  which is what 21st's guidelines call out. Every other kit here does the same. */
 const SANS = 'inherit' 
 
-/** true inside a snapshot browser — feeds freeze so visual diffs are real */
+/** true inside a snapshot browser â€” feeds freeze so visual diffs are real */
 const isSnapshot = () =>
   typeof navigator !== 'undefined' && /\bChromatic\b/.test(navigator.userAgent)
 
-/* ── inlined from lab/trade/tradeData.ts ────────────────────────────────── */
+/* â”€â”€ inlined from lab/trade/tradeData.ts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/** up / buy — the fixed GREEN. down / sell — a red pulled into the same band. */
+/** up / buy â€” the fixed GREEN. down / sell â€” a red pulled into the same band. */
 const UP = 'var(--positive, #34c28a)'
 const DOWN = 'var(--negative, #D0625F)'
 
@@ -27,11 +27,11 @@ interface Candle {
   l: number
   c: number
   v: number
-  /** epoch ms — labels count forward from the series start */
+  /** epoch ms â€” labels count forward from the series start */
   t: number
 }
 
-/** deterministic PRNG (mulberry32) so every render agrees — no Math.random */
+/** deterministic PRNG (mulberry32) so every render agrees â€” no Math.random */
 function mulberry32(seed: number) {
   let s = seed
   return () => {
@@ -43,7 +43,7 @@ function mulberry32(seed: number) {
   }
 }
 
-/** rally → crash → chop keyframes (progress 0..1 → price), interpolated per candle */
+/** rally â†’ crash â†’ chop keyframes (progress 0..1 â†’ price), interpolated per candle */
 const ARC: Array<[number, number]> = [
   [0, 0.24], [0.1, 0.34], [0.22, 0.6], [0.3, 0.88], [0.36, 1],
   [0.44, 0.68], [0.5, 0.45], [0.56, 0.6], [0.62, 0.33], [0.68, 0.26],
@@ -113,9 +113,9 @@ const fmtStamp = (t: number) =>
     })
     .replace(',', '') + ' UTC'
 
-/* ── inlined from lab/BalanceChartPro.tsx ──────────────────────────────── */
+/* â”€â”€ inlined from lab/BalanceChartPro.tsx â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/** balanceSeries' own axis — distinct from the component's TIMEFRAMES below */
+/** balanceSeries' own axis â€” distinct from the component's TIMEFRAMES below */
 const BAL_TIMEFRAMES = ['1H', '24H', '1W', '1M', '1Y', 'All'] as const
 type BalTimeframe = (typeof BAL_TIMEFRAMES)[number]
 
@@ -143,11 +143,11 @@ function balanceSeries(base: number, tf: BalTimeframe = '24H', changePct?: numbe
   return vals
 }
 
-/* ── the component ──────────────────────────────────────────────────────── */
+/* â”€â”€ the component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/** #64 Candle Chart — a trading terminal's price panel rebuilt in the ink language:
+/** #64 Candle Chart â€” a trading terminal's price panel rebuilt in the ink language:
  *  OHLC candles + a volume strip, a crosshair that reads the exact bar, and a
- *  gliding-thumb timeframe switch. Direction is the only thing that carries hue —
+ *  gliding-thumb timeframe switch. Direction is the only thing that carries hue â€”
  *  every number sits in mono ink. Seeded data, so the tape never disagrees. */
 
 const VB_W = 560
@@ -156,16 +156,16 @@ const AXIS_W = 46
 const VOL_H = 46
 const GAP = 8
 
-/** resize bounds — component width (px) and volume-pane height (viewBox units) */
+/** resize bounds â€” component width (px) and volume-pane height (viewBox units) */
 const MIN_W = 340
 const MAX_W = 920
 const MIN_VOL = 20
 const MAX_VOL = 120
 
 const TIMEFRAMES = ['1D', '5D', '1M', '6M', '1Y'] as const
-/** candles visible per preset — wheel on the date axis scrubs between these */
+/** candles visible per preset â€” wheel on the date axis scrubs between these */
 const TF_COUNT: Record<(typeof TIMEFRAMES)[number], number> = { '1D': 24, '5D': 40, '1M': 60, '6M': 80, '1Y': 96 }
-/** wheel-zoom bounds — visible candle count + price-axis scale factor */
+/** wheel-zoom bounds â€” visible candle count + price-axis scale factor */
 const MIN_VISIBLE = 12
 const Y_SCALE_MIN = 0.4
 const Y_SCALE_MAX = 1.6
@@ -176,22 +176,22 @@ export type CandleChartProps = {
   className?: string
   /** market label after the symbol; null hides it */
   exchange?: string | null
-  /** price ceiling of the seeded series — scales the whole y-axis */
+  /** price ceiling of the seeded series â€” scales the whole y-axis */
   ceil?: number
   /** Pin the series so its LAST CLOSE is this price, and band-scale the axis to
    *  the visible candles instead of running from zero. The fix that lets this
    *  chart sit above an order book without contradicting it: without `mid` the
-   *  demo arc ends wherever the seed lands (~0.41 × ceil) and the 0-based axis
+   *  demo arc ends wherever the seed lands (~0.41 Ã— ceil) and the 0-based axis
    *  prints gridlines no book would recognise. */
   mid?: number
-  /** how the series is drawn — candles, a close line, or OHLC bars */
+  /** how the series is drawn â€” candles, a close line, or OHLC bars */
   kind?: 'candles' | 'line' | 'bars'
   /** price / axis formatters (default: USD) */
   priceFmt?: (n: number) => string
   axisFmt?: (n: number) => string
   /** false = hide the header row (host page provides its own price chrome) */
   chrome?: boolean
-  /** fill: the chart stops being a 600px card and takes the whole pane — the
+  /** fill: the chart stops being a 600px card and takes the whole pane â€” the
    *  viewBox is measured from the container in 1:1 px, so nothing stretches and
    *  the axis type stays at its authored size however wide the pane gets. */
   fill?: boolean
@@ -215,7 +215,7 @@ export default function CandleChart({
   const reduced = useReducedMotion() || isSnapshot()
   const [timeframe, setTimeframe] = useState<(typeof TIMEFRAMES)[number]>('6M')
   const [hover, setHover] = useState<number | null>(null)
-  /* which pane the pointer is in — the tooltip reads OHLC over price, volume over volume */
+  /* which pane the pointer is in â€” the tooltip reads OHLC over price, volume over volume */
   const [zone, setZone] = useState<'price' | 'volume'>('price')
   const svgRef = useRef<SVGSVGElement>(null)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -299,22 +299,22 @@ export default function CandleChart({
   }, [seed, ceil, mid, data])
   const n = candles.length
 
-  /* wheel zoom — visible window (date axis / presets) + price-axis scale (numbers) */
+  /* wheel zoom â€” visible window (date axis / presets) + price-axis scale (numbers) */
   const [visible, setVisible] = useState(TF_COUNT['6M'])
   const [yScale, setYScale] = useState(1)
   const axisZoneRef = useRef<HTMLDivElement>(null)
   const dateAxisRef = useRef<HTMLDivElement>(null)
-  /* vertical drag on the price axis — same gesture as the wheel zoom */
+  /* vertical drag on the price axis â€” same gesture as the wheel zoom */
   const yDrag = useRef<{ startY: number; startS: number } | null>(null)
 
   const view = useMemo(() => candles.slice(n - Math.min(visible, n)), [candles, n, visible])
   const vn = view.length
 
-  const active: Candle = view[Math.min(hover ?? vn - 1, vn - 1)]
-  const change = active.c - active.o
-  const changePct = (change / active.o) * 100
+  const active: Candle = view[Math.min(hover ?? (vn > 0 ? vn - 1 : 0), vn > 0 ? vn - 1 : 0)] || { o: 0, h: 0, l: 0, c: 0, v: 0, t: 0 }
+  const change = (active?.c || 0) - (active?.o || 0)
+  const changePct = active?.o ? (change / active.o) * 100 : 0
   const up = change >= 0
-  const totalPct = ((view[vn - 1].c - view[0].o) / view[0].o) * 100
+  const totalPct = (vn > 0 && view[vn - 1] && view[0] && view[0].o) ? ((view[vn - 1].c - view[0].o) / view[0].o) * 100 : 0
   const totalUp = totalPct >= 0
 
   const plotW = VW - AXIS_W
@@ -343,7 +343,7 @@ export default function CandleChart({
   )
 
   /* native non-passive wheel listeners (React's onWheel is passive, so it can't
-     stop the page from scrolling) — axis column zooms price, date row zooms time */
+     stop the page from scrolling) â€” axis column zooms price, date row zooms time */
   useEffect(() => {
     const axis = axisZoneRef.current
     const dates = dateAxisRef.current
@@ -383,20 +383,20 @@ export default function CandleChart({
       className={`${fill ? 'flex h-full w-full flex-col' : 'w-full max-w-[600px]'} ${className ?? ''}`}
       style={!fill && width !== null ? { width, maxWidth: width } : undefined}
     >
-      {/* header — symbol + price / range switch */}
+      {/* header â€” symbol + price / range switch */}
       {chrome && (
       <div className="flex shrink-0 items-end justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[9px] uppercase tracking-[0.1em] text-foreground/40">{symbol}</span>
-            {exchange && <span className="text-[9px] uppercase tracking-[0.1em] text-foreground/25">· {exchange}</span>}
+            {exchange && <span className="text-[9px] uppercase tracking-[0.1em] text-foreground/25">Â· {exchange}</span>}
           </div>
           <div className="mt-1.5 flex items-baseline gap-2">
             <span className="tabular-nums text-foreground/90" style={{ fontFamily: SANS, fontSize: 24, lineHeight: 1 }}>
               {priceFmt(view[vn - 1].c)}
             </span>
             <span className="tabular-nums text-[12px]" style={{ fontFamily: SANS, color: totalUp ? UP : DOWN }}>
-              {totalUp ? '+' : '−'}
+              {totalUp ? '+' : 'âˆ’'}
               {Math.abs(totalPct).toFixed(2)}%
             </span>
           </div>
@@ -431,7 +431,7 @@ export default function CandleChart({
       </div>
       )}
 
-      {/* chart — OHLC + Chg live in the crosshair tooltip only (no top strip) */}
+      {/* chart â€” OHLC + Chg live in the crosshair tooltip only (no top strip) */}
       <div ref={plotRef} className={`relative mt-3 ${fill ? 'min-h-0 flex-1' : ''}`}>
         <svg
           ref={svgRef}
@@ -470,7 +470,7 @@ export default function CandleChart({
             strokeWidth="1"
           />
 
-          {/* candles — wick + body, direction is the only hue */}
+          {/* candles â€” wick + body, direction is the only hue */}
           <motion.g
             initial={reduced ? undefined : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -542,7 +542,7 @@ export default function CandleChart({
             })}
           </g>
 
-          {/* crosshair — vertical + a magnet read of the hovered close on the price axis */}
+          {/* crosshair â€” vertical + a magnet read of the hovered close on the price axis */}
           {hover !== null && (
             <g pointerEvents="none">
               <line x1={xMid(hover)} x2={xMid(hover)} y1={0} y2={VH} stroke="color-mix(in srgb, var(--foreground) 18%, transparent)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
@@ -558,7 +558,7 @@ export default function CandleChart({
           )}
         </svg>
 
-        {/* price-axis zone — scroll OR drag vertically over the numbers to zoom
+        {/* price-axis zone â€” scroll OR drag vertically over the numbers to zoom
             the price scale (pointer-captured, like the other handles) */}
         <div
           ref={axisZoneRef}
@@ -573,14 +573,14 @@ export default function CandleChart({
             const d = yDrag.current
             if (!d) return
             const h = svgRef.current?.getBoundingClientRect().height || 300
-            /* drag down = zoom out (higher ceiling), drag up = zoom in — matches the wheel */
+            /* drag down = zoom out (higher ceiling), drag up = zoom in â€” matches the wheel */
             setYScale(Math.max(Y_SCALE_MIN, Math.min(Y_SCALE_MAX, d.startS * Math.exp(((e.clientY - d.startY) / h) * 2.2))))
           }}
           onPointerUp={() => (yDrag.current = null)}
           onPointerCancel={() => (yDrag.current = null)}
         />
 
-        {/* left-edge width handle — drag left to grow, right to shrink.
+        {/* left-edge width handle â€” drag left to grow, right to shrink.
             fill mode has no card to widen: the pane owns the width. */}
         {!fill && (
         <div
@@ -622,7 +622,7 @@ export default function CandleChart({
         </div>
         )}
 
-        {/* price/volume divider — drag up for a taller volume pane */}
+        {/* price/volume divider â€” drag up for a taller volume pane */}
         <div
           role="separator"
           aria-orientation="horizontal"
@@ -671,7 +671,7 @@ export default function CandleChart({
               {fmtStamp(active.t)}
             </div>
             {zone === 'volume' ? (
-              /* volume pane read — bar height / tallest visible bar, in relative units */
+              /* volume pane read â€” bar height / tallest visible bar, in relative units */
               <div className="mt-1.5 flex items-center justify-between gap-4">
                 <span className="text-[9px] text-foreground/40">Volume</span>
                 <span className="tabular-nums text-[11px] text-foreground/85" style={{ fontFamily: SANS }}>
@@ -688,11 +688,11 @@ export default function CandleChart({
                     </span>
                   </div>
                 ))}
-                {/* Chg = (Close − Open) / Open — the one hue-carrying number */}
+                {/* Chg = (Close âˆ’ Open) / Open â€” the one hue-carrying number */}
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-[9px] text-foreground/40">Chg</span>
                   <span className="tabular-nums text-[11px]" style={{ fontFamily: SANS, color: up ? UP : DOWN }}>
-                    {up ? '+' : '−'}{Math.abs(changePct).toFixed(2)}%
+                    {up ? '+' : 'âˆ’'}{Math.abs(changePct).toFixed(2)}%
                   </span>
                 </div>
               </div>
@@ -701,7 +701,7 @@ export default function CandleChart({
         )}
       </div>
 
-      {/* date axis — scroll sideways (or vertically) here to change how much chart is visible */}
+      {/* date axis â€” scroll sideways (or vertically) here to change how much chart is visible */}
       <div ref={dateAxisRef} className="mt-2 flex shrink-0 cursor-ew-resize touch-none select-none justify-between border-t border-foreground/[0.04] pr-[46px] pt-2">
         {dateLabels.map((k, i) => (
           <span key={i} className="tabular-nums text-[9px] text-foreground/30" style={{ fontFamily: SANS }}>
@@ -722,3 +722,5 @@ export function Demo() {
 }
 
 export { CandleChart as Component }
+
+
