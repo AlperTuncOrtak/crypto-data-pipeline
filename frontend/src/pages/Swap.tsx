@@ -653,7 +653,7 @@ export default function Swap() {
                   }}
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] font-semibold text-white group-hover:text-[var(--accent)] transition-colors">USDC â†’ {coin.symbol.toUpperCase()}</span>
+                    <span className="text-[13px] font-semibold text-white group-hover:text-[var(--accent)] transition-colors">USDC &rarr; {coin.symbol.toUpperCase()}</span>
                     <span className="text-[10px] font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-1 rounded-[6px]">Trending #{i + 1}</span>
                   </div>
                   <div className="text-[12px] text-white/40 leading-relaxed flex items-start gap-2">
@@ -674,6 +674,7 @@ export default function Swap() {
     </div>
   );
 }
+
 
 
 
