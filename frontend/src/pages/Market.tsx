@@ -1,9 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+﻿import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMarket } from "../hooks/useMarket";
 import { useSparklines } from "../hooks/useSparklines";
 import Sparkline from "../components/market/Sparkline";
-import GasHeatmap from "../components/market/GasHeatmap";
 import { ChevronLeft, ChevronRight, Search, Star, ChevronUp, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -14,7 +13,7 @@ const PAGE_SIZE = 100;
 
 function fmt(n: any) {
   const v = Number(n);
-  if (isNaN(v) || v === 0) return "—";
+  if (isNaN(v) || v === 0) return "â€”";
   if (v >= 1e12) return `$${(v / 1e12).toFixed(2)}T`;
   if (v >= 1e9)  return `$${(v / 1e9).toFixed(2)}B`;
   if (v >= 1e6)  return `$${(v / 1e6).toFixed(2)}M`;
@@ -140,7 +139,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
 
       {getPages().map((p, i) =>
         p === "..." ? (
-          <span key={`e-${i}`} className="w-7 text-center text-[var(--text-muted)] text-xs">…</span>
+          <span key={`e-${i}`} className="w-7 text-center text-[var(--text-muted)] text-xs">â€¦</span>
         ) : (
           <button
             key={p}
@@ -181,7 +180,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
           <div>
             <h1 className="text-4xl font-black tracking-tight">{t("market.title")}</h1>
             <p className="text-sm text-[var(--text-muted)] mt-2 font-medium">
-              {filteredAndSorted.length.toLocaleString()} assets · Page {page}/{totalPages || 1}
+              {filteredAndSorted.length.toLocaleString()} assets Â· Page {page}/{totalPages || 1}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -193,12 +192,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
         </div>
       </FadeIn>
 
-      {/* GAS HEATMAP */}
-      <FadeIn delay={0.1}>
-        <div className="mb-6">
-          <GasHeatmap />
-        </div>
-      </FadeIn>
+      
 
       {/* LIVE MARQUEE TICKER */}
       <FadeIn delay={0.15}>
@@ -324,7 +318,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                   const mins = secs != null ? Math.floor(secs / 60) : null;
                   const live = coin.data_source === "binance" && secs != null && secs < 120;
                   const freshnessColor = live ? "text-[var(--accent)]" : mins != null && mins < 10 ? "text-[var(--accent)]" : mins != null && mins < 60 ? "text-orange-500" : "text-[var(--text-muted)]";
-                  const freshnessLabel = live ? "LIVE" : mins != null && mins < 60 ? `${mins}m` : secs != null ? `${Math.floor((mins ?? 0) / 60)}h` : "—";
+                  const freshnessLabel = live ? "LIVE" : mins != null && mins < 60 ? `${mins}m` : secs != null ? `${Math.floor((mins ?? 0) / 60)}h` : "â€”";
 
                   return (
                     <motion.div
@@ -376,7 +370,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
                       {/* 24h Change */}
                       <div className="text-right">
                         <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-2xl ${isUp ? "bg-green-500/10 text-[var(--accent)]" : "bg-[var(--negative)]/10 text-[var(--negative)]"}`}>
-                          {isUp ? "▲" : "▼"} 
+                          {isUp ? "â–²" : "â–¼"} 
                           <NumberFlow value={Number.isNaN(Number(change)) ? 0 : Math.abs(Number(change))} format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }} />%
                         </span>
                       </div>
@@ -422,4 +416,5 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
     </div>
   );
 }
+
 
