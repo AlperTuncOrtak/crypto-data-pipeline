@@ -1,10 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { X } from 'lucide-react';
 
-// Reusing strength check if needed, or keeping it simple
 function getStrength(pw: string) {
   if (!pw) return { score: 0 };
   let score = 0;
@@ -15,6 +14,48 @@ function getStrength(pw: string) {
   if (/[^A-Za-z0-9]/.test(pw)) score++;
   return { score };
 }
+
+const generateAtlas = () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+  
+  ctx.fillStyle = 'rgba(255,255,255,0)';
+  ctx.fillRect(0, 0, 512, 512);
+  ctx.fillStyle = 'white';
+  
+  // 1. BTC (Top Left)
+  ctx.font = 'bold 120px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('₿', 128, 128);
+
+  // 2. ETH (Top Right)
+  ctx.save();
+  ctx.translate(384, 128);
+  ctx.beginPath();
+  ctx.moveTo(0, -60); ctx.lineTo(35, 0); ctx.lineTo(0, 45); ctx.lineTo(-35, 0); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(0, 55); ctx.lineTo(30, 10); ctx.lineTo(0, 80); ctx.lineTo(-30, 10); ctx.fill();
+  ctx.restore();
+
+  // 3. SOL (Bottom Left)
+  ctx.save();
+  ctx.translate(128, 384);
+  ctx.beginPath();
+  ctx.moveTo(-50, -40); ctx.lineTo(30, -40); ctx.lineTo(50, -15); ctx.lineTo(-30, -15); ctx.fill();
+  ctx.moveTo(30, -5); ctx.lineTo(-50, -5); ctx.lineTo(-30, 20); ctx.lineTo(50, 20); ctx.fill();
+  ctx.moveTo(-50, 30); ctx.lineTo(30, 30); ctx.lineTo(50, 55); ctx.lineTo(-30, 55); ctx.fill();
+  ctx.restore();
+
+  // 4. CN (Bottom Right)
+  ctx.font = 'bold 100px sans-serif';
+  ctx.fillText('CN', 384, 384);
+
+  return canvas;
+};
 
 export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "login" }: any) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,6 +89,9 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
 
   useEffect(() => {
     if (!isOpen) return;
+    
+    // Lazy Ponytail Optimization: Disable WebGL on small screens if desired, but we keep it for now.
+    const isMobile = window.innerWidth < 768;
 
     let active = true;
     let renderer: any;
@@ -67,6 +111,11 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
       scene = new THREE.Scene();
       camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
+      const atlas = generateAtlas();
+      const tex = new THREE.CanvasTexture(atlas);
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+
       const uniforms = {
         u_time: { value: 0 },
         u_resolution: { value: new THREE.Vector2(window.innerWidth * 2, window.innerHeight * 2) },
@@ -79,8 +128,9 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
           new THREE.Vector3(1, 1, 1),
           new THREE.Vector3(1, 1, 1)
         ] },
-        u_total_size: { value: 20.0 },
-        u_dot_size: { value: 6.0 },
+        u_total_size: { value: isMobile ? 36.0 : 48.0 },
+        u_dot_size: { value: isMobile ? 18.0 : 24.0 },
+        u_tex: { value: tex },
         u_reverse: { value: 0 }
       };
 
@@ -105,7 +155,7 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
           uniform float u_total_size;
           uniform float u_dot_size;
           uniform vec2 u_resolution;
-          uniform int u_reverse;
+          uniform sampler2D u_tex;
 
           out vec4 fragColor;
 
@@ -127,8 +177,18 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
               float show_offset = random(st2);
               float rand = random(st2 * floor((u_time / frequency) + show_offset + frequency));
               opacity *= u_opacities[int(rand * 10.0)];
-              opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.x / u_total_size));
-              opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.y / u_total_size));
+
+              vec2 cell_uv = fract(st.xy / u_total_size) * (u_total_size / u_dot_size);
+              float inside_dot = (1.0 - step(u_dot_size / u_total_size, fract(st.x / u_total_size))) *
+                                 (1.0 - step(u_dot_size / u_total_size, fract(st.y / u_total_size)));
+              
+              float coin_index = floor(random(st2 + 2.0) * 4.0);
+              float atlas_x = mod(coin_index, 2.0) * 0.5;
+              float atlas_y = floor(coin_index / 2.0) * 0.5;
+              vec2 final_uv = vec2(atlas_x, atlas_y) + (cell_uv * 0.5);
+              
+              float tex_alpha = texture(u_tex, final_uv).a;
+              opacity *= inside_dot * tex_alpha;
 
               vec3 color = u_colors[int(show_offset * 6.0)];
 
@@ -273,7 +333,7 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
 
   const handleSubmit = isLogin ? handleLogin : handleSignup;
 
-  /* ��� shared button styles ��� */
+  /* ─── shared button styles ─── */
   const socialBtn: React.CSSProperties = {
     width:"100%", padding:"0.65rem", borderRadius:6,
     border:"1px solid #333", background:"transparent", color:"#fff",
@@ -287,7 +347,7 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
     fontSize:"0.875rem", outline:"none",
   };
 
-  /* ��� Google / GitHub / Apple SVGs ��� */
+  /* ─── Google / GitHub / Apple SVGs ─── */
   const GoogleIcon = (
     <svg viewBox="0 0 24 24" style={{width:16,height:16,flexShrink:0}}>
       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
