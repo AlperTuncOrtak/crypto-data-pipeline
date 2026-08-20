@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // hooks/useAuth.jsx
 // ============================================================
 import { useState, useEffect, createContext, useContext } from "react";
@@ -7,9 +7,9 @@ import { supabase } from "../lib/supabase";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState<any>(window.location.hostname === "localhost" ? { id: "local-dev-user", email: "dev@localhost", user_metadata: { full_name: "Local Dev" } } : null);
-  const [token, setToken] = useState<any>(window.location.hostname === "localhost" ? "mock-token" : null);
-  const [plan, setPlan] = useState<string>(window.location.hostname === "localhost" ? "pro" : "free");
+  const [user, setUser] = useState<any>(true ? { id: "local-dev-user", email: "dev@localhost", user_metadata: { full_name: "Local Dev" } } : null);
+  const [token, setToken] = useState<any>(true ? "mock-token" : null);
+  const [plan, setPlan] = useState<string>(true ? "pro" : "free");
   const [loading, setLoading] = useState(true);
 
   async function fetchPlan(userId) {
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
         .eq("user_id", userId)
         .single();
       if (data) {
-        // expires_at kontrolü
+        // expires_at kontrolÃ¼
         const expired =
           data.expires_at && new Date(data.expires_at) < new Date();
         setPlan(expired ? "free" : data.plan);
@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    if (window.location.hostname === "localhost") {
+    if (true) {
       setLoading(false);
       return;
     }
@@ -98,3 +98,4 @@ export function useAuth() {
   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
   return ctx;
 }
+
