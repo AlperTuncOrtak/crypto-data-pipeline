@@ -18,8 +18,8 @@ const isSnapshot = () =>
 /* ── inlined from lab/trade/tradeData.ts ────────────────────────────────── */
 
 /** up / buy — the fixed GREEN. down / sell — a red pulled into the same band. */
-const UP = 'var(--chart-up, #34c28a)'
-const DOWN = 'var(--chart-candle-down, #D0625F)'
+const UP = 'var(--positive, #34c28a)'
+const DOWN = 'var(--negative, #D0625F)'
 
 interface Candle {
   o: number
@@ -195,6 +195,7 @@ export type CandleChartProps = {
    *  viewBox is measured from the container in 1:1 px, so nothing stretches and
    *  the axis type stays at its authored size however wide the pane gets. */
   fill?: boolean
+  data?: { time: number | string; current_price: number }[]
 }
 
 export default function CandleChart({
@@ -209,6 +210,7 @@ export default function CandleChart({
   mid,
   kind = 'candles',
   fill = false,
+  data,
 }: CandleChartProps) {
   const reduced = useReducedMotion() || isSnapshot()
   const [timeframe, setTimeframe] = useState<(typeof TIMEFRAMES)[number]>('6M')
@@ -244,12 +246,42 @@ export default function CandleChart({
   const plotH = VH - volH - GAP
 
   const { candles, maxVolume } = useMemo(() => {
+    if (data && data.length > 0) {
+      // Chunk the line chart data into faux-OHLC candles if there are too many points,
+      // or just map them directly. Let's aim for max 100 candles.
+      const targetCount = Math.min(100, data.length)
+      const chunkSize = Math.max(1, Math.floor(data.length / targetCount))
+      
+      const realCandles: Candle[] = []
+      let s2 = (seed * 2654435761) >>> 0
+      const rnd = () => {
+        s2 = (s2 * 1103515245 + 12345) & 0x7fffffff
+        return s2 / 0x7fffffff
+      }
+
+      for (let i = 0; i < data.length; i += chunkSize) {
+        const chunk = data.slice(i, i + chunkSize)
+        if (chunk.length === 0) continue
+        const o = chunk[0].current_price
+        const c = chunk[chunk.length - 1].current_price
+        let h = Math.max(...chunk.map(d => d.current_price))
+        let l = Math.min(...chunk.map(d => d.current_price))
+        
+        // Add tiny wicks if they are flat
+        if (h === l) {
+           h = o * (1 + rnd() * 0.001)
+           l = o * (1 - rnd() * 0.001)
+        }
+        
+        const t = new Date(chunk[chunk.length - 1].time).getTime()
+        const v = Math.abs(c - o) * 1000 + rnd() * 50000 // Faux volume based on volatility
+        
+        realCandles.push({ o, h, l, c, v, t })
+      }
+      return { candles: realCandles, maxVolume: Math.max(...realCandles.map(k => k.v)) }
+    }
+
     if (mid == null) return makeCandles(seed, 96, ceil)
-    // Pinned mode builds the candles FROM balanceSeries(mid) — the same walk the
-    // balance charts draw and the stats bar's 24h range derives from. One
-    // generator means the chart's journey, the strip's range and the book's mid
-    // cannot disagree. (Scaling the demo arc instead pinned the endpoint but
-    // kept its 2.4x peak — a fall from $157k over a 24h range of $59.9-64.6k.)
     const walk = balanceSeries(mid, '24H')
     let s2 = (seed * 2654435761) >>> 0
     const rnd = () => {
@@ -264,7 +296,7 @@ export default function CandleChart({
       return { o, h, l, c, v: Math.abs(c - o) * 0.4 + rnd() * 14, t: start + i * 6 * 36e5 }
     })
     return { candles, maxVolume: Math.max(...candles.map((k) => k.v)) }
-  }, [seed, ceil, mid])
+  }, [seed, ceil, mid, data])
   const n = candles.length
 
   /* wheel zoom — visible window (date axis / presets) + price-axis scale (numbers) */

@@ -356,7 +356,7 @@ export default function CoinDetail() {
                     <span className="text-sm font-medium">No chart data available for this range</span>
                   </div>
                 ) : chartType === "pro" ? (
-                   <CandleChart symbol={coin.symbol} mid={Number(coin.current_price)} fill={true} chrome={false} />
+                   <CandleChart symbol={coin.symbol} mid={Number(coin.current_price)} data={simpleChartData} fill={true} chrome={false} />
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={simpleChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>

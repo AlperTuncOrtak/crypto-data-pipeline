@@ -449,3 +449,6 @@ h4 { font-weight: 600; letter-spacing: -0.015em; }
 :root { --destructive-foreground: oklch(1 0 0); }
 .dark { --destructive-foreground: oklch(1 0 0); }
 
+
+:root { --foreground: var(--text-main); --surface: var(--bg-elevated); }
+
