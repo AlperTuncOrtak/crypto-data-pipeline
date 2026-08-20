@@ -456,62 +456,6 @@ export default function CoinDetail() {
               </div>
             </motion.div>
 
-            {/* ATH-ATL Range Bar */}
-            {rangePct !== null && (
-              <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl p-6 relative group">
-                 <div className="absolute top-0 right-0 w-40 h-40 bg-[var(--accent)]/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-[var(--accent)]/20 transition-colors duration-700"></div>
-                 <div className="text-base font-black text-[var(--text-main)] mb-5 relative z-10">Price Range (ATL → ATH)</div>
-                 <div className="flex justify-between text-xs text-[var(--text-muted)] font-mono font-bold mb-3 relative z-10 uppercase tracking-widest">
-                   <span>ATL {fmtPrice(coin.atl)}</span>
-                   <span>ATH {fmtPrice(coin.ath)}</span>
-                 </div>
-                 
-                 <div className="relative h-3 rounded-full bg-[var(--bg-base)] border border-[var(--border-subtle)] overflow-hidden shadow-inner relative z-10">
-                   <div 
-                     className="absolute left-0 h-full rounded-full bg-gradient-to-r from-[var(--negative)] via-[var(--warning)] to-[var(--positive)]" 
-                     style={{ width: `${rangePct}%` }}
-                   />
-                   <div 
-                     className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-[var(--text-main)] rounded-full shadow-[0_0_15px_var(--text-muted)] border-4 border-[var(--bg-base)]"
-                     style={{ left: `calc(${rangePct}% - 10px)` }}
-                   />
-                 </div>
-                 
-                 <div className="text-center mt-6 text-sm font-bold text-[var(--text-muted)] bg-[var(--bg-elevated)] py-3 rounded-3xl border border-[var(--border-subtle)] relative z-10 shadow-sm">
-                   <span className="text-[var(--text-main)] font-black text-base mr-1">{rangePct}%</span> above All-Time Low
-                 </div>
-              </motion.div>
-            )}
-
-            {/* Supply Info */}
-            <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl">
-              <div className="p-5 border-b border-[var(--border-base)] bg-[var(--bg-overlay)]">
-                <span className="text-lg font-black text-[var(--text-main)] tracking-tight">Supply Dynamics</span>
-              </div>
-              <div className="p-6">
-                <div className="flex flex-col gap-2">
-                  <StatRow label="Circulating" value={fmtLarge(coin.circulating_supply, "")} />
-                  <StatRow label="Total Supply" value={fmtLarge(coin.total_supply, "")} />
-                  <StatRow label="Max Supply" value={fmtLarge(coin.max_supply, "")} />
-                </div>
-                
-                {coin.circulating_supply && coin.total_supply && Number(coin.total_supply) > 0 && (
-                  <div className="mt-8 bg-[var(--bg-base)] p-5 rounded-[32px] border border-[var(--border-subtle)] shadow-inner">
-                    <div className="flex justify-between items-center text-xs text-[var(--text-muted)] mb-3 uppercase tracking-widest font-bold">
-                      <span>Circulation Progress</span>
-                      <span className="text-[var(--text-main)] text-sm">{((Number(coin.circulating_supply) / Number(coin.total_supply)) * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-[var(--border-subtle)] overflow-hidden">
-                      <div 
-                        className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--positive)] shadow-[0_0_10px_var(--accent-soft)]"
-                        style={{ width: `${Math.min(100, (Number(coin.circulating_supply) / Number(coin.total_supply)) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-
             {/* Tokenomics */}
             <motion.div variants={itemVariants} className="bg-[var(--bg-subtle)]/80 backdrop-blur-xl border border-[var(--border-base)] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
               <div className="p-5 border-b border-[var(--border-base)] bg-[var(--bg-overlay)]">
