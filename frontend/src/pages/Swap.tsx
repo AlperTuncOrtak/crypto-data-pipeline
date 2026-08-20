@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowDownUp, Settings, Loader, Search, ChevronDown, CheckCircle2, 
@@ -246,7 +246,7 @@ export default function Swap() {
       setToToken(newTo);
       if (foundAmt) setAmountIn(newAmt);
 
-      setAiMessage(`✨ Parsed: Swapping ${foundAmt ? newAmt : "amount of"} ${newFrom.symbol} for ${newTo.symbol}`);
+      setAiMessage(`âœ¨ Parsed: Swapping ${foundAmt ? newAmt : "amount of"} ${newFrom.symbol} for ${newTo.symbol}`);
       setIsAiThinking(false);
       setAiCommand("");
       aiInputRef.current?.blur();
@@ -375,6 +375,13 @@ export default function Swap() {
     return data;
   }, [fromToken, toToken]);
 
+  const rangePctChange = useMemo(() => {
+    if(chartData.length < 2) return 0;
+    const first = chartData[0].value;
+    const last = chartData[chartData.length-1].value;
+    return ((last - first) / first) * 100;
+  }, [chartData]);
+
   const gasMultiplier = gasSpeed === "slow" ? 0.8 : gasSpeed === "fast" ? 1.5 : 1;
   const networkCost = (1.42 * gasMultiplier).toFixed(2);
   const isHighImpact = quote && quote.priceImpact > 2.5;
@@ -439,7 +446,7 @@ export default function Swap() {
                   <div className="h-[120px] w-full rounded-[12px] bg-[#09090b]/40 border border-white/[0.04] p-2 flex flex-col">
                     <div className="flex justify-between items-center px-1 mb-1">
                       <span className="text-[11px] text-white/40 font-medium">{fromToken.symbol}/{toToken.symbol} (24H)</span>
-                      <span className="text-[11px] text-emerald-400 font-mono font-semibold">+1.24%</span>
+                      {rangePctChange >= 0 ? <span className="text-[11px] text-emerald-400 font-mono font-semibold">+{rangePctChange.toFixed(2)}%</span> : <span className="text-[11px] text-rose-400 font-mono font-semibold">{rangePctChange.toFixed(2)}%</span>}
                     </div>
                     <div className="flex-1">
                       <ResponsiveContainer width="100%" height="100%">
@@ -568,7 +575,7 @@ export default function Swap() {
                     <div className="flex items-center gap-1.5 text-white font-mono text-[11px]">
                       {quote.route.map((node, i) => (
                         <div key={i} className="flex items-center gap-1.5">
-                          <span className={i % 2 === 1 ? "text-white/40" : "font-semibold"}>{node}</span>{i < quote.route.length - 1 && <span className="text-white/40">›</span>}
+                          <span className={i % 2 === 1 ? "text-white/40" : "font-semibold"}>{node}</span>{i < quote.route.length - 1 && <span className="text-white/40">â€º</span>}
                         </div>
                       ))}
                     </div>
@@ -646,7 +653,7 @@ export default function Swap() {
                   }}
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] font-semibold text-white group-hover:text-[var(--accent)] transition-colors">USDC → {coin.symbol.toUpperCase()}</span>
+                    <span className="text-[13px] font-semibold text-white group-hover:text-[var(--accent)] transition-colors">USDC â†’ {coin.symbol.toUpperCase()}</span>
                     <span className="text-[10px] font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-1 rounded-[6px]">Trending #{i + 1}</span>
                   </div>
                   <div className="text-[12px] text-white/40 leading-relaxed flex items-start gap-2">
@@ -667,6 +674,7 @@ export default function Swap() {
     </div>
   );
 }
+
 
 
 
