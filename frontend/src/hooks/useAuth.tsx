@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // hooks/useAuth.jsx
 // ============================================================
 import { useState, useEffect, createContext, useContext } from "react";
@@ -7,9 +7,9 @@ import { supabase } from "../lib/supabase";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState<any>(true ? { id: "local-dev-user", email: "dev@localhost", user_metadata: { full_name: "Local Dev" } } : null);
-  const [token, setToken] = useState<any>(true ? "mock-token" : null);
-  const [plan, setPlan] = useState<string>(true ? "pro" : "free");
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<any>(null);
+  const [plan, setPlan] = useState<string>("free");
   const [loading, setLoading] = useState(true);
 
   async function fetchPlan(userId) {
@@ -33,10 +33,7 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    if (true) {
-      setLoading(false);
-      return;
-    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setToken(session?.access_token ?? null);
@@ -85,9 +82,9 @@ export function AuthProvider({ children }) {
     isLoggedIn: Boolean(user),
     isPro: (plan === "pro" || plan === "enterprise"),
     isEnterprise: (plan === "enterprise"),
-    displayName: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Local Dev",
+    displayName: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User",
     avatar: user?.user_metadata?.avatar_url || null,
-    email: user?.email || "dev@local.host",
+    email: user?.email || "",
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
