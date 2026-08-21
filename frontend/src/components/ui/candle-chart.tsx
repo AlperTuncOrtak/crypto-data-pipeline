@@ -93,10 +93,26 @@ function makeCandles(seed: number, count = 96, ceil = 3000): CandleSeries {
   }
 }
 
-const fmtUsd = (v: number) =>
-  `$${v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+/**
+ * Bir gecmis kaydindan fiyati okur. Backend uc farkli alan adi kullaniyor
+ * (price / current_price / value); hangisi doluysa onu al.
+ */
+const readPrice = (d: any): number => Number(d?.price ?? d?.current_price ?? d?.value ?? NaN)
 
-const fmtAxis = (v: number) => (v === 0 ? '$0' : `$${Math.round(v).toLocaleString('en-US')}`)
+// Formatlayicilar asla patlamamali: bir gosterim degerinin eksik olmasi
+// tum sayfayi cokerten bir hataya donusmemeli. (Gecmiste tam bu oldu:
+// undefined.toLocaleString() CoinDetail sayfasinin tamamini dusurdu.)
+const fmtUsd = (v: any) => {
+  const n = Number(v)
+  if (!Number.isFinite(n)) return '—'
+  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+const fmtAxis = (v: any) => {
+  const n = Number(v)
+  if (!Number.isFinite(n)) return '—'
+  return n === 0 ? '$0' : `$${Math.round(n).toLocaleString('en-US')}`
+}
 
 const fmtDay = (t: number) =>
   new Date(t).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' })
@@ -195,7 +211,14 @@ export type CandleChartProps = {
    *  viewBox is measured from the container in 1:1 px, so nothing stretches and
    *  the axis type stays at its authored size however wide the pane gets. */
   fill?: boolean
-  data?: { time: number | string; current_price: number }[]
+  /**
+   * Fiyat gecmisi. Alan adi kaynaga gore degisiyor:
+   * /coin/{slug}/history  -> { price, time }
+   * market snapshot'lari  -> { current_price, time }
+   * bazi hook'lar         -> { value, time }
+   * Ucu de kabul ediliyor; okuma icin readPrice() kullan.
+   */
+  data?: { time: number | string; price?: number; current_price?: number; value?: number }[]
 }
 
 export default function CandleChart({
@@ -262,17 +285,25 @@ export default function CandleChart({
       for (let i = 0; i < data.length; i += chunkSize) {
         const chunk = data.slice(i, i + chunkSize)
         if (chunk.length === 0) continue
-        const o = chunk[0].current_price
-        const c = chunk[chunk.length - 1].current_price
-        let h = Math.max(...chunk.map(d => d.current_price))
-        let l = Math.min(...chunk.map(d => d.current_price))
-        
+
+        // Fiyat alani kaynaga gore price / current_price / value olabiliyor.
+        // Eskiden sadece current_price okunuyordu; /coin/{slug}/history
+        // {price, time} donduru icin o ve c undefined, h ve l NaN oluyordu
+        // ve tooltip render edilirken sayfa cokuyordu.
+        const prices = chunk.map(readPrice).filter(Number.isFinite)
+        if (prices.length === 0) continue
+
+        const o = prices[0]
+        const c = prices[prices.length - 1]
+        let h = Math.max(...prices)
+        let l = Math.min(...prices)
+
         // Add tiny wicks if they are flat
         if (h === l) {
            h = o * (1 + rnd() * 0.001)
            l = o * (1 - rnd() * 0.001)
         }
-        
+
         const t = new Date(chunk[chunk.length - 1].time).getTime()
         const v = Math.abs(c - o) * 1000 + rnd() * 50000 // Faux volume based on volatility
         
@@ -396,7 +427,7 @@ export default function CandleChart({
               {priceFmt(view[vn - 1].c)}
             </span>
             <span className="tabular-nums text-[12px]" style={{ fontFamily: SANS, color: totalUp ? UP : DOWN }}>
-              {totalUp ? '+' : 'âˆ’'}
+              {totalUp ? '+' : '\u2212'}
               {Math.abs(totalPct).toFixed(2)}%
             </span>
           </div>
@@ -692,7 +723,7 @@ export default function CandleChart({
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-[9px] text-foreground/40">Chg</span>
                   <span className="tabular-nums text-[11px]" style={{ fontFamily: SANS, color: up ? UP : DOWN }}>
-                    {up ? '+' : 'âˆ’'}{Math.abs(changePct).toFixed(2)}%
+                    {up ? '+' : '\u2212'}{Math.abs(changePct).toFixed(2)}%
                   </span>
                 </div>
               </div>

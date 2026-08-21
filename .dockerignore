@@ -41,8 +41,12 @@ dist/
 test-results/
 
 # --- Sirlar: imaja asla gomulmesin, compose env_file ile veriyor ---
+# NOT: yalin ".env" sadece KOK dizindekini eslestirir. backend/.env gibi
+# ic ice olanlar icin ** gerekiyor — yoksa sirlar imaj katmanina kopyalanir.
 .env
 .env.*
+**/.env
+**/.env.*
 
 # --- OS ---
 .DS_Store

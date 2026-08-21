@@ -1,3 +1,4 @@
+from backend.services.llm_config import GROQ_MODEL
 import os
 import json
 import httpx
@@ -9,7 +10,7 @@ log = logging.getLogger(__name__)
 
 async def generate_market_signals() -> list:
     """
-    Fetches the top 20 coins, passes them to Groq Llama 3.3 70B,
+    Fetches the top 20 coins, passes them to Groq (model llm_config.GROQ_MODEL),
     and returns 3 punchy trading signals.
     Results are cached for 10 minutes.
     """
@@ -74,7 +75,7 @@ ONLY return the JSON array.
                 "Content-Type": "application/json",
             },
             json={
-                "model": "llama-3.3-70b-versatile",
+                "model": GROQ_MODEL,
                 "messages": [
                     {
                         "role": "system",

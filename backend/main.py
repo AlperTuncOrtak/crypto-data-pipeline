@@ -49,6 +49,7 @@ from backend.services.coin_service import (
     get_coin_stats,
 )
 from backend.services.exchange_service import sync_exchange_balance
+from backend.services.llm_config import GROQ_MODEL
 
 class ExchangeSyncRequest(BaseModel):
     exchange_id: str
@@ -571,7 +572,7 @@ ANALYSIS RULES:
                 "Content-Type": "application/json",
             },
             json={
-                "model": "llama-3.3-70b-versatile",
+                "model": GROQ_MODEL,
                 "messages": [
                     {
                         "role": "system",
@@ -741,7 +742,7 @@ def ai_chat(request: Request, payload: dict, user: dict = Depends(verify_token))
                 "https://api.groq.com/openai/v1/chat/completions",
                 headers={"Authorization": f"Bearer {GROQ_KEY}"},
                 json={
-                    "model": "llama-3.3-70b-versatile",
+                    "model": GROQ_MODEL,
                     "messages": messages_for_api,
                     "max_tokens": 1024,
                     "temperature": 0.5,
@@ -835,7 +836,7 @@ def ai_pulse(request: Request, slug: str):
             "https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
             json={
-                "model": "llama-3.3-70b-versatile",
+                "model": GROQ_MODEL,
                 "messages": [{"role": "system", "content": "You are a sharp crypto analyst."}, {"role": "user", "content": prompt}],
                 "max_tokens": 150,
                 "temperature": 0.5,

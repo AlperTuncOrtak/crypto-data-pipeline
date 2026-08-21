@@ -4,7 +4,7 @@
 # Altfins signals + market context → AI commentary
 #
 # Model chain:
-#   1. Groq (Llama 3.3 70B) — free, fast, JSON mode
+#   1. Groq (model: llm_config.GROQ_MODEL) — free, fast, JSON mode
 #   2. Gemini 2.0 Flash      — fallback
 #   3. Static fallback        — if both fail
 #
@@ -16,6 +16,7 @@
 #   - Position-focused: stop-loss / take-profit front and center
 # ============================================================
 
+from backend.services.llm_config import GROQ_MODEL
 import os
 import json
 import asyncio
@@ -639,7 +640,7 @@ def _groq_comment(prompt: str) -> dict | None:
                 "Content-Type": "application/json",
             },
             json={
-                "model": "llama-3.3-70b-versatile",
+                "model": GROQ_MODEL,
                 "messages": [
                     {
                         "role": "system",
@@ -946,7 +947,7 @@ def analyze_coin(
 
 def analyze_portfolio(portfolio_data: dict) -> str:
     """
-    Analyzes the entire user portfolio using Groq (Llama 3.3 70B) and returns a Markdown formatted advice report.
+    Analyzes the entire user portfolio using Groq (llm_config.GROQ_MODEL) and returns a Markdown formatted advice report.
     """
     try:
         import os
@@ -989,7 +990,7 @@ def analyze_portfolio(portfolio_data: dict) -> str:
                 "Content-Type": "application/json",
             },
             json={
-                "model": "llama-3.3-70b-versatile",
+                "model": GROQ_MODEL,
                 "messages": [
                     {
                         "role": "system",

@@ -1,3 +1,4 @@
+from backend.services.llm_config import GROQ_MODEL_FAST
 import asyncio
 import random
 import os
@@ -338,7 +339,7 @@ def analyze_wallet(address: str) -> dict:
                 "Focus on their biggest holding. Do not invent holdings not listed."
             )
             completion = client.chat.completions.create(
-                model="llama3-8b-8192",
+                model=GROQ_MODEL_FAST,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 max_tokens=100,

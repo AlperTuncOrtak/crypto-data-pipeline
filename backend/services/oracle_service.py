@@ -35,6 +35,7 @@
 #   }
 # ============================================================
 
+from backend.services.llm_config import GROQ_MODEL
 import os
 import json
 import logging
@@ -233,7 +234,7 @@ def _ai_analyze(items: list[dict]) -> dict | None:
                     "Content-Type":  "application/json",
                 },
                 json={
-                    "model":    "llama-3.3-70b-versatile",
+                    "model":    GROQ_MODEL,
                     "messages": [
                         {
                             "role":    "system",
