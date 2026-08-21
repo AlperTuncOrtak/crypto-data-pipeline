@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const IconX = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -42,7 +43,7 @@ export default function Footer() {
         {/* Links */}
         <div className="flex items-center flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-[var(--text-muted)]">
           <a href="/docs" className="hover:text-[var(--text-main)] transition-colors">Documentation</a>
-          <a href="https://api.cryptoneko.online/docs" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-main)] transition-colors">API</a>
+          <Link to="/docs" className="hover:text-[var(--text-main)] transition-colors">API</Link>
           <a href="/terms" className="hover:text-[var(--text-main)] transition-colors">Terms of Service</a>
           <a href="/privacy" className="hover:text-[var(--text-main)] transition-colors">Privacy Policy</a>
         </div>

@@ -1051,17 +1051,44 @@ async def api_exchange_sync(
 
 
 @app.get("/market/news")
-async def get_market_news():
+@limiter.limit("30/minute")
+async def get_market_news(request: Request, symbol: str = None):
+    """
+    CryptoCompare haber proxy'si.
+
+    Bu proxy'nin var olma sebebi: CryptoCompare CORS basligi gondermiyor,
+    yani tarayicidan dogrudan cagrilamiyor. Frontend bir sure boyunca yine de
+    dogrudan cagirdi ve her istek CORS'a takildigi icin haber bolumu hep
+    "No recent news found" gosterdi. Frontend artik buraya geliyor.
+
+    symbol verilirse o coin'e ait haberler (CryptoCompare "categories"),
+    verilmezse genel akis doner.
+    """
     import httpx
+
+    url = "https://min-api.cryptocompare.com/data/v2/news/?lang=EN"
+    if symbol:
+        url += f"&categories={symbol.upper()}"
+
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get("https://min-api.cryptocompare.com/data/v2/news/?lang=EN")
+            resp = await client.get(url, timeout=15.0)
             data = resp.json()
-            if data.get("Data"):
-                # Return the latest 5 news items
-                news = [{"id": item["id"], "title": item["title"], "source": item["source_info"]["name"], "url": item["url"], "published_on": item["published_on"]} for item in data["Data"][:5]]
-                return {"ok": True, "news": news}
-            return {"ok": False, "news": []}
+            items = data.get("Data") or []
+            # Bilesenin ihtiyaci olan alanlar: imageurl ve body dahil.
+            news = [
+                {
+                    "id": item.get("id") or item.get("guid"),
+                    "title": item.get("title"),
+                    "body": item.get("body"),
+                    "source": (item.get("source_info") or {}).get("name") or item.get("source"),
+                    "url": item.get("url") or item.get("guid"),
+                    "imageurl": item.get("imageurl"),
+                    "published_on": item.get("published_on"),
+                }
+                for item in items[:5]
+            ]
+            return {"ok": bool(news), "news": news}
     except Exception as e:
         return {"ok": False, "news": [], "error": str(e)}
 

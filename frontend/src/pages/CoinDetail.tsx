@@ -416,7 +416,7 @@ export default function CoinDetail() {
                       Get real-time AI-powered market sentiment, attack momentum, and advanced price trajectory predictions.
                     </p>
                     <Link to="/pricing" className="relative z-10 px-10 py-4 rounded-full bg-[var(--text-main)] text-[var(--bg-base)] font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_var(--border-base)]">
-                      Upgrade to Pro â†’
+                      Upgrade to Pro →
                     </Link>
                   </div>
                 )}

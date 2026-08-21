@@ -1,40 +1,34 @@
 import { useState, useEffect } from "react";
 import { ExternalLink } from "lucide-react";
+import { apiClient } from "../../api/client";
 
 export default function CryptoNews({ symbol }: { symbol?: string }) {
   const [news, setNews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // We use CryptoCompare News API for reliable crypto news
-    const url = symbol 
-      ? `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&categories=${symbol.toUpperCase()}`
-      : 'https://min-api.cryptocompare.com/data/v2/news/?lang=EN';
+    // CryptoCompare CORS basligi gondermiyor; tarayicidan dogrudan cagirmak
+    // her seferinde CORS hatasiyla basarisiz oluyordu ve haber bolumu hep bos
+    // kaliyordu. Backend'deki /market/news proxy'si uzerinden geciyoruz.
+    let cancelled = false;
+    setLoading(true);
 
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.Data && data.Data.length > 0) {
-          // Limit to top 5 news items
-          const formattedNews = data.Data.slice(0, 5).map((item: any) => ({
-            id: item.id || item.guid,
-            url: item.url || item.guid,
-            imageurl: item.imageurl || null,
-            source: item.source_info?.name || item.source,
-            published_on: item.published_on,
-            title: item.title,
-            body: item.body
-          }));
-          setNews(formattedNews);
-        } else {
-          setNews([]);
-        }
-        setLoading(false);
+    apiClient
+      .get("/market/news", { params: symbol ? { symbol } : {} })
+      .then(({ data }) => {
+        if (cancelled) return;
+        setNews(Array.isArray(data?.news) ? data.news : []);
       })
       .catch(err => {
+        if (cancelled) return;
         console.error("Failed to fetch news", err);
-        setLoading(false);
+        setNews([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
+
+    return () => { cancelled = true; };
   }, [symbol]);
 
   if (loading) {
