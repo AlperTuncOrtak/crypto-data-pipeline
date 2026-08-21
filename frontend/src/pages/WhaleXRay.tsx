@@ -4,6 +4,7 @@ import { LayoutGrid, Filter, Search, ChevronDown, Activity, ArrowUpRight, ArrowD
 import ProPaywall from "../components/layout/ProPaywall";
 import { CardSkeleton } from "../components/ui/Skeleton";
 import { useTranslation } from "react-i18next";
+import { apiClient } from "../api/client";
 
 export default function WhaleXRay() {
   const { t } = useTranslation();
@@ -21,30 +22,26 @@ export default function WhaleXRay() {
     setData(null);
     
     try {
-      const apiUrl = import.meta.env.DEV ? "http://localhost:8000" : `https://${window.location.host}`;
-      const res = await fetch(`${apiUrl}/api/whales/analyze/${searchQuery}`);
-      if (!res.ok) throw new Error("API request failed");
-      const result = await res.json();
+      // apiClient VITE_API_URL'i kullanir (api.cryptoneko.online).
+      // Onceden window.location.host'a istek atiliyordu; prod'da bu
+      // www.cryptoneko.online demekti ve istek HER ZAMAN basarisiz olup
+      // asagidaki sabit sahte veriye dusuyordu.
+      const { data: result } = await apiClient.get(
+        `/api/whales/analyze/${searchQuery.trim()}`
+      );
       setData(result);
       setHasResult(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch whale data:", error);
-      // Fallback mock data so UI still works when backend is down
+      // Sahte veriye DUSMUYORUZ — ne oldugunu durustce soyluyoruz.
       setData({
-        address: searchQuery || "0x7a5b...3f9c",
-        assets: [
-          { coin: "ETH", value: "$4,520,000", percentage: 45, color: "bg-[var(--accent)]" },
-          { coin: "USDC", value: "$2,100,000", percentage: 25, color: "bg-[var(--positive)]" },
-          { coin: "PEPE", value: "$1,800,000", percentage: 20, color: "bg-[var(--positive-muted)]" },
-          { coin: "LINK", value: "$900,000", percentage: 10, color: "bg-[var(--accent-hover)]" },
-        ],
-        risk_score: 85,
-        ai_summary: "Aggressive accumulation of memecoins detected in the last 48 hours. High risk tolerance.",
-        transactions: [
-          { type: 'buy', token: 'PEPE', dex: 'Uniswap v3', amount: '14.5B PEPE', time: '2m ago' },
-          { type: 'sell', token: 'ETH', dex: 'Curve', amount: '500 ETH', time: '15m ago' },
-          { type: 'swap', token: 'USDC -> USDT', dex: '1inch', amount: '1.2M USDC', time: '1h ago' },
-        ]
+        address: searchQuery,
+        available: false,
+        reason:
+          error?.response?.data?.detail ||
+          "Could not reach the on-chain data service. Please try again.",
+        assets: [],
+        transactions: [],
       });
       setHasResult(true);
     } finally {
@@ -153,8 +150,28 @@ export default function WhaleXRay() {
             </motion.div>
           )}
 
-          {hasResult && !isSearching && (
-            <motion.div 
+          {/* Zincir verisi alinamadi: sahte portfoy uydurmak yerine nedeni soyle */}
+          {hasResult && !isSearching && data?.available === false && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-[32px] bg-[var(--bg-base)]/80 backdrop-blur-xl border border-[var(--border-subtle)] p-10 text-center"
+            >
+              <ShieldAlert size={28} className="mx-auto mb-4 text-[var(--text-muted)]" />
+              <h3 className="text-[var(--text-main)] font-semibold text-lg mb-2">
+                No on-chain data for this address
+              </h3>
+              <p className="text-[var(--text-muted)] text-sm max-w-md mx-auto">
+                {data?.reason}
+              </p>
+              <p className="text-[var(--text-muted)] text-xs mt-4 opacity-60">
+                Ethereum mainnet only. Check the address and try again.
+              </p>
+            </motion.div>
+          )}
+
+          {hasResult && !isSearching && data?.available !== false && (
+            <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
