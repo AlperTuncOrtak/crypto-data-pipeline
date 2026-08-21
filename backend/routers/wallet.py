@@ -29,12 +29,26 @@ def link_wallet(request: LinkWalletRequest, user: dict = Depends(verify_token)):
     sb = create_client(supabase_url, supabase_service_key)
     
     try:
+        # Cuzdan baska bir kullaniciya bagliysa DOKUNMA.
+        # (Eskiden burada o kayit siliniyordu; bu, saldirganin kurbanin
+        #  adresini "link"leyerek kurbanin cuzdan baglantisini koparmasina
+        #  izin veriyordu. Adres sahipligi imza ile dogrulanmadigi surece
+        #  ilk baglayan kullanicida kalmali.)
+        existing = (
+            sb.table("user_wallets")
+            .select("user_id")
+            .eq("wallet_address", request.wallet_address)
+            .execute()
+        )
+        if existing.data and any(r["user_id"] != user["id"] for r in existing.data):
+            raise HTTPException(
+                status_code=409,
+                detail="This wallet address is already linked to another account.",
+            )
+
         # 1. Her kullaniciya sadece 1 cuzdan (eskiyi sil)
         sb.table("user_wallets").delete().eq("user_id", user["id"]).execute()
-        
-        # Baska kullanici ayni cuzdani eklemisse onu da sil (unique constraint korumasi)
-        sb.table("user_wallets").delete().eq("wallet_address", request.wallet_address).execute()
-        
+
         # 2. Yeni cuzdani ekle
         result = sb.table("user_wallets").insert({
             "user_id": user["id"],
@@ -43,6 +57,9 @@ def link_wallet(request: LinkWalletRequest, user: dict = Depends(verify_token)):
         }).execute()
         
         return {"status": "success", "data": result.data}
+    except HTTPException:
+        # 409 gibi kasitli hatalari 500'e cevirme
+        raise
     except Exception as e:
         print(f"Error linking wallet: {e}")
         raise HTTPException(status_code=500, detail="Internal server error while linking wallet")

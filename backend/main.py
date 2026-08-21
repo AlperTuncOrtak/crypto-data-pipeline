@@ -56,7 +56,19 @@ class ExchangeSyncRequest(BaseModel):
     secret: str
     password: str = None
 
-app = FastAPI(title="Crypto Analytics API", version="2.0.0")
+import os as _os
+
+# Prod'da interaktif API dokumanlarini kapat — tum endpoint yuzeyini
+# disariya listelemenin bir faydasi yok. DEBUG=1 ile lokalde acilir.
+_DEBUG = _os.getenv("DEBUG", "").lower() in ("1", "true", "yes")
+
+app = FastAPI(
+    title="Crypto Analytics API",
+    version="2.0.0",
+    docs_url="/docs" if _DEBUG else None,
+    redoc_url="/redoc" if _DEBUG else None,
+    openapi_url="/openapi.json" if _DEBUG else None,
+)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -64,21 +76,25 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # -----------------------
 # CORS MIDDLEWARE
 # -----------------------
-# Frontend (Vite dev server varsayilan 5173) backend'e istek
-# atabilsin diye CORS aciyoruz. Production'da bu listeyi
-# kendi domain'imize daraltacagiz.
-import os as _os
-
-_ALLOWED_ORIGINS = _os.getenv(
-    "ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-).split(",")
+# Sadece kendi frontend origin'lerimize izin veriyoruz.
+# DIKKAT: allow_credentials=True ile allow_origins=["*"] birlesince
+# Starlette gelen Origin'i aynen yansitir; yani herkese acik hale gelir.
+# Bu yuzden "*" degeri burada bilerek reddediliyor.
+_DEFAULT_ORIGINS = "https://www.cryptoneko.online,https://cryptoneko.online"
+_ALLOWED_ORIGINS = [
+    o.strip()
+    for o in _os.getenv("ALLOWED_ORIGINS", _DEFAULT_ORIGINS).split(",")
+    if o.strip() and o.strip() != "*"
+]
+if _DEBUG:
+    _ALLOWED_ORIGINS += ["http://localhost:5173", "http://127.0.0.1:5173"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 from backend.routers import whale, stripe_router, wallet
@@ -358,15 +374,6 @@ def market_trending():
     return [c for _, c in scored[:6]]
 
 
-@app.get("/market/stats")
-def market_stats():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM latest_prices WHERE current_price > 0")
-    coin_count = cursor.fetchone()[0]
-    cursor.close()
-    conn.close()
-    return {"coin_count": coin_count}
 
 
 @app.get("/ai/analyze/{slug}")
@@ -392,10 +399,14 @@ def ai_analyze(
 
 
 @app.post("/ai/portfolio")
-def ai_portfolio_analyze(payload: dict):
+@limiter.limit("10/minute")
+def ai_portfolio_analyze(request: Request, payload: dict, user: dict = Depends(verify_token)):
     """
     Portfolio AI analizi — Groq birincil, Gemini fallback.
     Body: { holdings: [{symbol, value, pnl_pct, quantity, avg_cost}], total_value, total_pnl }
+
+    Auth zorunlu: bu endpoint her cagrida ucretli LLM API'sine gidiyor,
+    acik birakmak kotanin bedavaya tuketilmesi demek.
     """
     import os, json, httpx
 
@@ -604,7 +615,8 @@ ANALYSIS RULES:
 
 
 @app.post("/ai/chat")
-def ai_chat(payload: dict, user: dict = Depends(verify_token)):
+@limiter.limit("20/minute")
+def ai_chat(request: Request, payload: dict, user: dict = Depends(verify_token)):
     """
     Genel amaçlı AI kripto asistanı. (Streaming)
     Body: { message: str, history?: [{role, content}], context?: {path: str} }
@@ -784,7 +796,11 @@ def ai_chat(payload: dict, user: dict = Depends(verify_token)):
 _pulse_cache = {}
 
 @app.get("/ai/pulse/{slug}")
-def ai_pulse(slug: str):
+@limiter.limit("20/minute")
+def ai_pulse(request: Request, slug: str):
+    # Public kalmasi gerekiyor (coin sayfalarinda anonim kullaniciya da gosteriliyor)
+    # ama slug basina 300sn cache + IP basina rate limit ile sinirlandirildi:
+    # cache'i slug degistirerek asmak isteyen biri limite takilir.
     import time, os, httpx
     from backend.services.coin_service import get_coin_by_slug
     
@@ -1021,10 +1037,14 @@ class BinanceSyncRequest(BaseModel):
     api_secret: str
 
 @app.post("/portfolio/binance-sync")
-async def binance_sync(req: BinanceSyncRequest):
+@limiter.limit("10/minute")
+async def binance_sync(request: Request, req: BinanceSyncRequest, user: dict = Depends(verify_token)):
     """
     Kullanicinin gonderdigi API Key ve Secret ile Binance Spot bakiyelerini okur.
     CORS'u asmak ve secret'i guvenle kullanmak icin backend proxy gorevi gorur.
+
+    Auth zorunlu: aksi halde bu endpoint sunucumuzu Binance'e karsi acik bir
+    proxy'ye cevirir (bizim IP'mizden sinirsiz key denemesi yapilabilir).
     """
     timestamp = int(time.time() * 1000)
     query_string = f"timestamp={timestamp}"
@@ -1071,11 +1091,20 @@ async def binance_sync(req: BinanceSyncRequest):
 # SWAP ENDPOINTS
 # -----------------------
 @app.get("/api/swap/quote")
-async def get_swap_quote(sellToken: str, buyToken: str, sellAmount: str):
+@limiter.limit("30/minute")
+async def get_swap_quote(
+    request: Request,
+    sellToken: str,
+    buyToken: str,
+    sellAmount: str,
+    user: dict = Depends(verify_token),
+):
     """
-    0x API üzerinden swap teklifi alir. 
+    0x API üzerinden swap teklifi alir.
     API Key'i frontend yerine backend'de gizleyerek güvenliği saglar ve
     zorunlu komisyon (fee) parametrelerini ekler.
+
+    Auth zorunlu: her cagri bizim 0x API kotamizdan dusuyor.
     """
     import os
     
@@ -1104,7 +1133,13 @@ async def get_swap_quote(sellToken: str, buyToken: str, sellAmount: str):
             raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/exchanges/sync")
-async def api_exchange_sync(req: ExchangeSyncRequest):
+@limiter.limit("10/minute")
+async def api_exchange_sync(
+    request: Request,
+    req: ExchangeSyncRequest,
+    user: dict = Depends(verify_token),
+):
+    # Auth zorunlu — binance-sync ile ayni gerekce: acik borsa proxy'si olmasin.
     return await sync_exchange_balance(req.exchange_id, req.api_key, req.secret, req.password)
 
 

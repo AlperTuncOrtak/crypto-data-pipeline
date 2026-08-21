@@ -1,9 +1,28 @@
+# --- Secrets ---
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+# Expect scripts: gecmiste duz metin SSH sifresi icerdiler, bir daha commit edilmesin
+*.exp
+
+# --- Python ---
 .venv/
-logs/
+venv/
 __pycache__/
 *.pyc
+logs/
+
+# --- Node ---
 node_modules/
 frontend/node_modules/
+frontend/dist/
+dist/
+
+# --- Test / build ciktilari ---
+frontend/test-results/
+playwright-report/
+
+# --- OS ---
+.DS_Store

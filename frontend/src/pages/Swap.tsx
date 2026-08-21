@@ -12,6 +12,7 @@ import { parseUnits, formatUnits } from "viem";
 import { AreaChart, Area, ResponsiveContainer, YAxis } from "recharts";
 import { TOKENS, UNISWAP_V2_ROUTER, WETH_ADDRESS, UNISWAP_ROUTER_ABI, ERC20_ABI } from "../constants/web3";
 import { useMarket } from "../hooks/useMarket";
+import { apiClient } from "../api/client";
 
 type TxState = "idle" | "confirming" | "pending" | "success";
 type GasSpeed = "slow" | "normal" | "fast";
@@ -39,13 +40,15 @@ export default function Swap() {
   const [toToken, setToToken] = useState(TOKENS[1]);
   const [amountIn, setAmountIn] = useState("");
   const [inputMode, setInputMode] = useState<"CRYPTO" | "FIAT">("CRYPTO");
-  const [quote, setQuote] = useState<{ 
-    amountOut: string; 
-    rate: number; 
+  const [quote, setQuote] = useState<{
+    amountOut: string;
+    rate: number;
     platformFee: string;
     priceImpact: number;
     route: string[];
-    tx?: { to: string, data: string, value: string, allowanceTarget?: string } 
+    /** true ise fiyat gercek bir aggregator'dan degil, yerel tahminden geliyor */
+    isSimulated?: boolean;
+    tx?: { to: string, data: string, value: string, allowanceTarget?: string }
   } | null>(null);
 
   // Settings & UI State
@@ -114,55 +117,60 @@ export default function Swap() {
 
     const fetchQuote = async () => {
       setIsQuoting(true);
-      
-      const API_KEY = import.meta.env.VITE_0X_API_KEY;
-      const FEE_RECIPIENT = import.meta.env.VITE_TREASURY_ADDRESS || "0x0000000000000000000000000000000000000000";
+
       const FEE_PERCENTAGE = import.meta.env.VITE_FEE_PERCENTAGE || "0.005";
-      
-      if (!API_KEY || API_KEY === "YOUR_0X_API_KEY_HERE") {
-        setTimeout(() => {
-          // Mock 0x API pricing
-          const inputUsd = Number(effectiveCryptoAmount) * fromToken.price;
-          const grossAmountOut = inputUsd / toToken.price;
-          const feeAmount = grossAmountOut * Number(FEE_PERCENTAGE);
-          const netAmountOut = grossAmountOut - feeAmount;
-          const rate = netAmountOut / Number(effectiveCryptoAmount);
-          const impact = Math.min((Number(effectiveCryptoAmount) * fromToken.price) / 100000, 15);
-          
-          setQuote({ 
-            amountOut: netAmountOut.toFixed(6), 
-            rate, 
-            platformFee: feeAmount.toFixed(6),
-            priceImpact: impact,
-            route: [fromToken.symbol, "Uniswap V3", toToken.symbol]
-          });
-          setIsQuoting(false);
-        }, 600);
-        return;
-      }
+
+      // Yerel tahmin: gercek aggregator'a ulasilamadiginda gosterilir.
+      // Zincir uzerinde islem yapmaya yetmez (tx datasi yok), sadece
+      // kullaniciya kabaca ne alacagini gostermek icin.
+      const setSimulatedQuote = () => {
+        const inputUsd = Number(effectiveCryptoAmount) * fromToken.price;
+        const grossAmountOut = inputUsd / toToken.price;
+        const feeAmount = grossAmountOut * Number(FEE_PERCENTAGE);
+        const netAmountOut = grossAmountOut - feeAmount;
+        setQuote({
+          amountOut: netAmountOut.toFixed(6),
+          rate: netAmountOut / Number(effectiveCryptoAmount),
+          platformFee: feeAmount.toFixed(6),
+          priceImpact: Math.min((Number(effectiveCryptoAmount) * fromToken.price) / 100000, 15),
+          route: [fromToken.symbol, "Estimate", toToken.symbol],
+          isSimulated: true,
+        });
+      };
 
       try {
-        const response = await fetch(
-          `https://api.0x.org/swap/v1/quote?sellToken=${fromToken.address}&buyToken=${toToken.address}&sellAmount=${parsedAmountIn.toString()}&feeRecipient=${FEE_RECIPIENT}&buyTokenPercentageFee=${FEE_PERCENTAGE}`,
-          { headers: { "0x-api-key": API_KEY } }
-        );
-        const data = await response.json();
-        if (data.buyAmount) {
+        // 0x'e dogrudan tarayicidan gitmiyoruz: API key'i header'a koymak
+        // onu JS bundle'ina gomer ve herkese acar. Backend proxy'si
+        // (/api/swap/quote) key'i sunucuda tutuyor ve komisyon
+        // parametrelerini kendisi ekliyor.
+        const { data } = await apiClient.get("/api/swap/quote", {
+          params: {
+            sellToken: fromToken.address,
+            buyToken: toToken.address,
+            sellAmount: parsedAmountIn.toString(),
+          },
+        });
+
+        if (data?.buyAmount) {
           const outStr = formatUnits(BigInt(data.buyAmount), toToken.decimals);
-          const rate = Number(outStr) / Number(effectiveCryptoAmount);
           const feeStr = formatUnits(BigInt(data.feeInfo?.feeAmount || "0"), toToken.decimals);
-          
-          setQuote({ 
-            amountOut: Number(outStr).toFixed(6), 
-            rate, 
+
+          setQuote({
+            amountOut: Number(outStr).toFixed(6),
+            rate: Number(outStr) / Number(effectiveCryptoAmount),
             platformFee: feeStr,
             priceImpact: Number(data.estimatedPriceImpact || 0.5),
             route: [fromToken.symbol, "0x Aggregator", toToken.symbol],
-            tx: { to: data.to, data: data.data, value: data.value, allowanceTarget: data.allowanceTarget }
+            tx: { to: data.to, data: data.data, value: data.value, allowanceTarget: data.allowanceTarget },
           });
+        } else {
+          setSimulatedQuote();
         }
       } catch (error) {
-        console.error("0x API Quote Error:", error);
+        // 501 = backend'de 0x key tanimli degil, 401 = kullanici giris yapmamis.
+        // Ikisinde de kullaniciya bos ekran yerine etiketli tahmin gosteriyoruz.
+        console.error("Swap quote error:", error);
+        setSimulatedQuote();
       } finally {
         setIsQuoting(false);
       }
@@ -570,12 +578,18 @@ export default function Swap() {
             <AnimatePresence>
               {quote && !isQuoting && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="px-6 py-3 overflow-hidden flex flex-col gap-2 relative z-10">
+                  {quote.isSimulated && (
+                    <div className="flex items-start gap-2 text-[12px] bg-[var(--negative)]/10 border border-[var(--negative)]/30 text-[var(--negative)] p-2 rounded-[8px] mb-1">
+                      <Info size={13} className="shrink-0 mt-[1px]" />
+                      <span>Estimated price only &mdash; no live aggregator quote. This is not an executable route.</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-[12px] bg-[var(--bg-elevated)]/50 p-2 rounded-[8px] mb-1">
                     <span className="text-white/40 flex items-center gap-1"><Activity size={12} /> Route</span>
                     <div className="flex items-center gap-1.5 text-white font-mono text-[11px]">
                       {quote.route.map((node, i) => (
                         <div key={i} className="flex items-center gap-1.5">
-                          <span className={i % 2 === 1 ? "text-white/40" : "font-semibold"}>{node}</span>{i < quote.route.length - 1 && <span className="text-white/40">â€º</span>}
+                          <span className={i % 2 === 1 ? "text-white/40" : "font-semibold"}>{node}</span>{i < quote.route.length - 1 && <span className="text-white/40">&rsaquo;</span>}
                         </div>
                       ))}
                     </div>
