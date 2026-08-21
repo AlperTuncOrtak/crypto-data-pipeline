@@ -8,6 +8,12 @@ from supabase import create_client
 
 router = APIRouter(prefix="/stripe", tags=["Stripe"])
 
+# Eski kurulumda webhook main.py icinde koke ("/webhook") bagliydi.
+# Stripe Dashboard'da hangi URL'in kayitli oldugunu koddan bilemedigimiz icin
+# iki yol da ayni handler'a gidiyor. Dashboard /stripe/webhook'a cevrildikten
+# sonra bu alias kaldirilabilir.
+legacy_router = APIRouter(tags=["Stripe (legacy)"], include_in_schema=False)
+
 # Initialize Stripe with Secret Key (from env)
 # We read it on every request or module load, but reading dynamically ensures it picks up .env changes
 def get_stripe_key():
@@ -16,11 +22,17 @@ def get_stripe_key():
 def get_webhook_secret():
     return os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
-def get_price_id():
-    return os.getenv("STRIPE_PRICE_ID", "")
+def get_price_id(plan: str = "pro", billing: str = "monthly"):
+    """
+    Plan + faturalama donemine gore Stripe price ID'sini bulur.
+    .env'de STRIPE_PRICE_PRO_MONTHLY / STRIPE_PRICE_PRO_YEARLY olarak duruyor.
+    STRIPE_PRICE_ID tek-fiyatli eski kurulum icin geri donus.
+    """
+    key = f"STRIPE_PRICE_{plan.upper()}_{billing.upper()}"
+    return os.getenv(key, "") or os.getenv("STRIPE_PRICE_ID", "")
 
 def get_frontend_url():
-    return os.getenv("FRONTEND_URL", "http://localhost:5173")
+    return os.getenv("FRONTEND_URL", "https://www.cryptoneko.online")
 
 class CheckoutResponse(BaseModel):
     url: str
@@ -36,14 +48,17 @@ def create_checkout_session(request: CheckoutRequest, user: dict = Depends(verif
     We pass the Supabase user ID inside client_reference_id.
     """
     stripe.api_key = get_stripe_key()
-    
-    # In a real app, you would have multiple price IDs based on request.plan and request.billing
-    # For now, we just use the default STRIPE_PRICE_ID
-    price_id = get_price_id()
+
+    price_id = get_price_id(request.plan, request.billing)
     frontend_url = get_frontend_url()
-    
-    if not stripe.api_key or not price_id:
-        raise HTTPException(status_code=500, detail="Stripe configuration is missing")
+
+    if not stripe.api_key:
+        raise HTTPException(status_code=500, detail="Stripe is not configured")
+    if not price_id:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Price not configured: STRIPE_PRICE_{request.plan.upper()}_{request.billing.upper()}",
+        )
 
     try:
         session = stripe.checkout.Session.create(
@@ -60,6 +75,9 @@ def create_checkout_session(request: CheckoutRequest, user: dict = Depends(verif
             allow_promotion_codes=True,
             billing_address_collection="auto",
             metadata={
+                # user_id'yi metadata'ya da yaziyoruz: client_reference_id
+                # bazi event tiplerinde tasinmiyor, metadata tasiniyor.
+                "user_id": user["id"],
                 "plan": request.plan,
                 "billing": request.billing
             }
@@ -70,6 +88,7 @@ def create_checkout_session(request: CheckoutRequest, user: dict = Depends(verif
 
 
 @router.post("/webhook")
+@legacy_router.post("/webhook")
 async def stripe_webhook(request: Request, stripe_signature: str = Header(None)):
     """
     Stripe calls this endpoint securely to notify us of payment success/failure.
@@ -96,30 +115,32 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
     # Handle the event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        
-        user_id = session.get("client_reference_id")
-        customer_id = session.get("customer")
+
+        # user_id her iki yerde de tasiniyor; hangisi doluysa onu kullan.
+        metadata = session.get("metadata") or {}
+        user_id = session.get("client_reference_id") or metadata.get("user_id")
+        plan = metadata.get("plan") or "pro"
         subscription_id = session.get("subscription")
-        
+
         if user_id:
-            _update_user_plan(user_id, "pro", customer_id, subscription_id)
+            _update_user_plan(user_id, plan, subscription_id)
 
     elif event['type'] == 'customer.subscription.deleted':
         subscription = event['data']['object']
-        customer_id = subscription.get("customer")
-        
-        if customer_id:
-            _downgrade_user_by_customer(customer_id)
+        # Bu event'te object'in kendisi abonelik, yani .id = subscription id
+        if subscription.get("id"):
+            _set_plan_by_subscription(subscription["id"], "free")
 
     elif event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
-        customer_id = subscription.get("customer")
+        subscription_id = subscription.get("id")
         status = subscription.get("status")
-        
-        if status in ["canceled", "unpaid", "past_due"]:
-            _downgrade_user_by_customer(customer_id)
-        elif status == "active":
-            _upgrade_user_by_customer(customer_id)
+
+        if subscription_id:
+            if status in ["canceled", "unpaid", "past_due"]:
+                _set_plan_by_subscription(subscription_id, "free")
+            elif status == "active":
+                _set_plan_by_subscription(subscription_id, "pro")
 
     return {"status": "success"}
 
@@ -131,39 +152,31 @@ def _get_supabase_admin():
         return None
     return create_client(supabase_url, supabase_svc_key)
 
-def _update_user_plan(user_id: str, plan: str, customer_id: str, subscription_id: str):
+# DIKKAT: user_plans tablosunda SADECE su kolonlar var:
+#   id, user_id, plan, stripe_sub_id, expires_at, created_at, updated_at
+# Bu fonksiyonlar eskiden stripe_customer_id / stripe_subscription_id'ye
+# yaziyordu; ikisi de tabloda yok, dolayisiyla her webhook sessizce
+# basarisiz oluyordu (odeme alinip kullanici PRO yapilmiyordu).
+
+def _update_user_plan(user_id: str, plan: str, subscription_id: str):
     sb = _get_supabase_admin()
     if not sb: return
-    
-    # 1 year from now by default, or just rely on status if you prefer.
-    # For now we just set an arbitrary future date and rely on Stripe Webhooks to manage it.
+
     from datetime import datetime, timedelta, timezone
+    # Stripe abonelik durumunu webhook'larla yonetiyoruz; expires_at yalnizca
+    # webhook kacarsa devreye giren emniyet siniri.
     future_date = (datetime.now(timezone.utc) + timedelta(days=365)).isoformat()
-    
-    # Upsert the user_plans row
+
     sb.table("user_plans").upsert({
         "user_id": user_id,
         "plan": plan,
-        "stripe_customer_id": customer_id,
-        "stripe_subscription_id": subscription_id,
+        "stripe_sub_id": subscription_id,
         "expires_at": future_date
     }, on_conflict="user_id").execute()
 
-def _downgrade_user_by_customer(customer_id: str):
+def _set_plan_by_subscription(subscription_id: str, plan: str):
+    """Stripe abonelik ID'sinden kullaniciyi bulup planini gunceller."""
     sb = _get_supabase_admin()
     if not sb: return
-    
-    # Find the user by customer_id and set plan to 'free'
-    res = sb.table("user_plans").select("user_id").eq("stripe_customer_id", customer_id).execute()
-    if res.data:
-        for row in res.data:
-            sb.table("user_plans").update({"plan": "free"}).eq("user_id", row["user_id"]).execute()
 
-def _upgrade_user_by_customer(customer_id: str):
-    sb = _get_supabase_admin()
-    if not sb: return
-    
-    res = sb.table("user_plans").select("user_id").eq("stripe_customer_id", customer_id).execute()
-    if res.data:
-        for row in res.data:
-            sb.table("user_plans").update({"plan": "pro"}).eq("user_id", row["user_id"]).execute()
+    sb.table("user_plans").update({"plan": plan}).eq("stripe_sub_id", subscription_id).execute()

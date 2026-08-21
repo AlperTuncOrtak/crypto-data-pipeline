@@ -101,6 +101,9 @@ from backend.routers import whale, stripe_router, wallet
 
 app.include_router(whale.router)
 app.include_router(stripe_router.router)
+# Eski "/webhook" yolu: Stripe Dashboard'daki kayitli URL degistirilene kadar
+# ayni handler'a bagli kalmali, yoksa gelen odeme event'leri 404 alir.
+app.include_router(stripe_router.legacy_router)
 app.include_router(wallet.router)
 
 
@@ -894,44 +897,6 @@ def oracle_feed():
 
 
 # ── STRIPE ────────────────────────────────────────────────────
-@app.post("/create-checkout-session")
-def create_checkout_session(payload: dict, user: dict = Depends(verify_token)):
-    """
-    Stripe Checkout session olusturur, frontend'i oraya yonlendirir.
-    Body: { plan: "pro", billing: "monthly" | "yearly" }
-    """
-    import os, stripe
-
-    stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
-    if not stripe.api_key:
-        raise HTTPException(status_code=500, detail="Stripe not configured")
-
-    plan = payload.get("plan", "pro")
-    billing = payload.get("billing", "monthly")
-
-    # .env'deki price ID'leri:
-    # STRIPE_PRICE_PRO_MONTHLY, STRIPE_PRICE_PRO_YEARLY
-    price_key = f"STRIPE_PRICE_{plan.upper()}_{billing.upper()}"
-    price_id = os.getenv(price_key, "")
-    if not price_id:
-        raise HTTPException(
-            status_code=400, detail=f"Price not configured: {price_key}"
-        )
-
-    frontend_url = os.getenv("FRONTEND_URL", "https://cryptoneko.online")
-
-    session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        line_items=[{"price": price_id, "quantity": 1}],
-        mode="subscription",
-        success_url=f"{frontend_url}/pricing?success=1",
-        cancel_url=f"{frontend_url}/pricing?cancelled=1",
-        customer_email=user.get("email"),
-        metadata={"user_id": user["id"], "plan": plan},
-    )
-    return {"url": session.url}
-
-
 @app.post("/cancel-subscription")
 def cancel_subscription(user: dict = Depends(verify_token)):
     """
@@ -968,65 +933,6 @@ def cancel_subscription(user: dict = Depends(verify_token)):
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.post("/webhook")
-async def stripe_webhook(request: Request):
-    """
-    Stripe webhook — odeme tamamlaninca user_plans tablosuna yazar.
-    Stripe Dashboard'da bu URL'i ekle:
-      https://yourdomain.com/api/webhook
-    Events: checkout.session.completed, customer.subscription.deleted
-    """
-    import os, stripe, json
-    from supabase import create_client
-
-    stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
-    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET", "")
-    supabase_url = os.getenv("VITE_SUPABASE_URL", "")
-    supabase_svc_key = os.getenv("SUPABASE_SERVICE_KEY", "")
-
-    payload = await request.body()
-    sig = request.headers.get("stripe-signature", "")
-
-    try:
-        event = stripe.Webhook.construct_event(payload, sig, webhook_secret)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    sb = create_client(supabase_url, supabase_svc_key)
-
-    if event["type"] == "checkout.session.completed":
-        obj = event["data"]["object"]
-        meta = getattr(obj, "metadata", {}) or {}
-        user_id = getattr(meta, "get", lambda x, y: None)("user_id", None) or getattr(meta, "user_id", None)
-        if not user_id and isinstance(meta, dict):
-            user_id = meta.get("user_id")
-        plan = getattr(meta, "get", lambda x, y: "pro")("plan", "pro") or getattr(meta, "plan", "pro")
-        if not plan and isinstance(meta, dict):
-            plan = meta.get("plan", "pro")
-        
-        sub_id = getattr(obj, "subscription", None)
-
-        if user_id:
-            sb.table("user_plans").upsert(
-                {
-                    "user_id": user_id,
-                    "plan": plan,
-                    "stripe_sub_id": sub_id,
-                    "expires_at": None,
-                }
-            ).execute()
-
-    elif event["type"] == "customer.subscription.deleted":
-        sub_id = getattr(event["data"]["object"], "id", None)
-        if sub_id:
-            # Abonelik iptal — free'ye duşur
-            sb.table("user_plans").update({"plan": "free"}).eq(
-                "stripe_sub_id", sub_id
-            ).execute()
-
-    return {"ok": True}
 
 
 # ---------------------------------------------------------------------------
