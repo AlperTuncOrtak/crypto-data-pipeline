@@ -3,28 +3,44 @@ import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line } from "recharts";
 import DepositModal from "./DepositModal";
 import WithdrawModal from "./WithdrawModal";
+import type { Holding, TaxSummary } from "./PortfolioUtils";
 
 interface DashboardCardsProps {
   totalValue: number;
   change24hValue: number;
   change24hPct: number;
-  allocation: any[];
+  totalPnl: number;
+  totalCost: number;
+  taxData: TaxSummary;
+  allocation: { name: string; value: number; pct: number; color: string }[];
   buyingPower: number;
-  setActiveTab: (tab: string) => void;
-  holdings?: any[];
+  chartData: { time: string; value: number }[];
+  holdings: Holding[];
 }
+
+const usd = (n: number) =>
+  n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function DashboardCards({
   totalValue,
   change24hValue,
   change24hPct,
+  totalPnl,
+  totalCost,
+  taxData,
   allocation,
   buyingPower,
-  setActiveTab,
-  holdings = [],
+  chartData,
+  holdings,
 }: DashboardCardsProps) {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
+
+  const isUp = change24hValue >= 0;
+  const pnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+  // Below ~2 points there is no line to draw, so the card shows nothing rather
+  // than a flat placeholder that implies data we don't have.
+  const hasSparkline = chartData.length >= 2;
 
   return (
     <>
@@ -34,45 +50,48 @@ export default function DashboardCards({
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="text-[12px] font-bold text-white/40 mb-1">Total equity</div>
-            <div className="text-3xl font-black text-white">
-              ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
+            <div className="text-3xl font-black text-white">${usd(totalValue)}</div>
           </div>
-          {/* Mini Sparkline Placeholder */}
           <div className="w-24 h-10 opacity-70">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={[{ v: 10 }, { v: 12 }, { v: 9 }, { v: 15 }, { v: 14 }, { v: 18 }]}>
-                <Line
-                  type="monotone"
-                  dataKey="v"
-                  stroke={change24hValue >= 0 ? "var(--positive)" : "var(--negative)"}
-                  strokeWidth={2}
-                  dot={false}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {hasSparkline && (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke={isUp ? "var(--positive)" : "var(--negative)"}
+                    strokeWidth={2}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
         <div className="flex items-center justify-between text-[11px] font-bold border-t border-white/[0.04] pt-4">
           <div>
             <div className="text-white/40 mb-1">24H Change</div>
-            <div className={change24hValue >= 0 ? "text-emerald-400" : "text-rose-400"}>
-              {change24hValue >= 0 ? "+" : "-"}$
-              {Math.abs(change24hValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <div className={isUp ? "text-emerald-400" : "text-rose-400"}>
+              {isUp ? "+" : "-"}${usd(Math.abs(change24hValue))}
             </div>
           </div>
           <div>
             <div className="text-white/40 mb-1">24H %</div>
-            <div className={change24hValue >= 0 ? "text-emerald-400" : "text-rose-400"}>
-              {change24hValue >= 0 ? "+" : ""}{change24hPct.toFixed(2)}%
+            <div className={isUp ? "text-emerald-400" : "text-rose-400"}>
+              {isUp ? "+" : ""}{change24hPct.toFixed(2)}%
             </div>
           </div>
           <div>
-            <div className="text-white/40 mb-1">Status</div>
-            <div className={change24hValue >= 0 ? "text-emerald-400" : "text-rose-400"}>
-              {change24hValue >= 0 ? "Bullish" : "Bearish"}
-            </div>
+            <div className="text-white/40 mb-1">Unrealized P&L</div>
+            {totalCost > 0 ? (
+              <div className={totalPnl >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                {totalPnl >= 0 ? "+" : "-"}${usd(Math.abs(totalPnl))}
+                <span className="text-white/30 font-medium ml-1">({pnlPct.toFixed(1)}%)</span>
+              </div>
+            ) : (
+              <div className="text-white/30" title="Import trade history to track cost basis">—</div>
+            )}
           </div>
         </div>
       </div>
@@ -80,22 +99,30 @@ export default function DashboardCards({
       {/* Card 2: Allocation */}
       <div className="p-6 rounded-[20px] bg-[#09090b]/40 border border-white/[0.04] backdrop-blur-xl shadow-sm flex flex-col justify-between">
         <div className="text-[12px] font-bold text-white/40 mb-6">Allocation</div>
-        <div className="flex h-3 rounded-full overflow-hidden mb-6">
-          {allocation.map((item, i) => (
-            <div key={i} style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
-          ))}
-        </div>
-        <div className="flex items-center justify-between text-[11px] font-bold">
-          {allocation.slice(0, 4).map((item, i) => (
-            <div key={i} className="flex flex-col items-center">
-              <div className="flex items-center gap-1.5 mb-1">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                <span className="text-white/40">{item.name}</span>
-              </div>
-              <div className="text-white text-[13px]">{item.pct.toFixed(0)}%</div>
+        {allocation.length > 0 ? (
+          <>
+            <div className="flex h-3 rounded-full overflow-hidden mb-6">
+              {allocation.map((item) => (
+                <div key={item.name} style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+              ))}
             </div>
-          ))}
-        </div>
+            <div className="flex items-center justify-between text-[11px] font-bold">
+              {allocation.slice(0, 4).map((item) => (
+                <div key={item.name} className="flex flex-col items-center">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-white/40">{item.name}</span>
+                  </div>
+                  <div className="text-white text-[13px]">{item.pct.toFixed(0)}%</div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center text-[12px] text-white/30 pb-2">
+            Connect a wallet or import trades to see your allocation.
+          </div>
+        )}
       </div>
 
       {/* Card 3: Buying Power */}
@@ -105,8 +132,18 @@ export default function DashboardCards({
         </div>
         <div>
           <div className="text-[12px] font-bold text-white/40 mb-1">Buying power</div>
-          <div className="text-2xl font-black text-white mb-6">
-            ${buyingPower.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <div className="text-2xl font-black text-white mb-2">${usd(buyingPower)}</div>
+          <div className="text-[11px] font-bold text-white/40 mb-6">
+            {taxData.hasData ? (
+              <>
+                Realized {taxData.currentYear}:{" "}
+                <span className={taxData.currentYearRealized >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                  {taxData.currentYearRealized >= 0 ? "+" : "-"}${usd(Math.abs(taxData.currentYearRealized))}
+                </span>
+              </>
+            ) : (
+              <span className="text-white/30">No realized gains recorded yet</span>
+            )}
           </div>
         </div>
         <div className="flex gap-3">
@@ -131,4 +168,3 @@ export default function DashboardCards({
     </>
   );
 }
-

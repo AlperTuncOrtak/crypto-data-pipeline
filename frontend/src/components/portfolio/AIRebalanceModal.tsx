@@ -1,21 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, X, Zap, ArrowRight, ShieldCheck, AlertTriangle } from "lucide-react";
+import { Brain, X } from "lucide-react";
 import { apiClient } from "../../api/client";
 import ReactMarkdown from "react-markdown";
+import type { Holding } from "./PortfolioUtils";
 
 interface AIRebalanceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  holdings: any[]; // User's portfolio
+  holdings: Holding[];
+  totalValue: number;
+  totalPnl: number;
+  /** False when no trade history is imported, so P&L is marked to market. */
+  hasCostBasis: boolean;
 }
 
 type Phase = "scanning" | "results";
 
-export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebalanceModalProps) {
+export default function AIRebalanceModal({
+  isOpen,
+  onClose,
+  holdings,
+  totalValue,
+  totalPnl,
+  hasCostBasis,
+}: AIRebalanceModalProps) {
   const [phase, setPhase] = useState<Phase>("scanning");
   const [scanText, setScanText] = useState("Initializing AI Risk Matrix...");
   const [aiAnalysis, setAiAnalysis] = useState<string>("");
+
+  // Holdings are rebuilt on every market tick. Without this snapshot the
+  // effect re-fired every few seconds and hit the paid LLM endpoint each time.
+  const snapshot = useRef({ holdings, totalValue, totalPnl, hasCostBasis });
+  if (!isOpen) snapshot.current = { holdings, totalValue, totalPnl, hasCostBasis };
 
   useEffect(() => {
     if (!isOpen) {
@@ -25,6 +42,8 @@ export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebala
     }
 
     const runAnalysis = async () => {
+      const { holdings: snap, totalValue: snapValue, totalPnl: snapPnl, hasCostBasis: snapHasCost } =
+        snapshot.current;
       try {
         setScanText("Analyzing your portfolio allocation...");
         
@@ -33,15 +52,15 @@ export default function AIRebalanceModal({ isOpen, onClose, holdings }: AIRebala
         setScanText("Querying Llama 3.3 70B Engine...");
         
         const response = await apiClient.post("/ai/portfolio", {
-          holdings: holdings.map(h => ({
+          holdings: snap.map(h => ({
             symbol: h.symbol,
             value: h.value || 0,
-            pnl_pct: h.change_24h || 0,
+            pnl_pct: snapHasCost ? h.pnl_pct || 0 : 0,
             quantity: h.quantity || 0,
-            avg_cost: (h.value || 0) / (h.quantity || 1)
+            avg_cost: h.avg_cost || 0,
           })),
-          total_value: holdings.reduce((sum, h) => sum + (h.value || 0), 0),
-          total_pnl: 0 // Mocking PnL for now as it's not strictly available in holdings
+          total_value: snapValue,
+          total_pnl: snapHasCost ? snapPnl : 0,
         });
 
         if (response.data && response.data.risk_score) {
@@ -63,6 +82,7 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
 
 **Best Performer:** ${d.best_position}
 **Needs Attention:** ${d.worst_position}
+${snapHasCost ? "" : "\n> _No trade history imported, so profit/loss is unknown. Import a CSV or sync an exchange for P&L-aware analysis._"}
 `;
           setAiAnalysis(md);
         } else {
@@ -77,7 +97,7 @@ ${d.risks.map((r: string) => `- ${r}`).join("\n")}
     };
 
     runAnalysis();
-  }, [isOpen, holdings]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

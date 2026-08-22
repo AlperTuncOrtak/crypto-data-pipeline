@@ -1,15 +1,10 @@
-// @ts-nocheck
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useMarket } from "../hooks/useMarket";
 import { useSparklines } from "../hooks/useSparklines";
-import { useTranslation } from "react-i18next";
-import {
-  Brain,
-  Plus,
-} from "lucide-react";
+import { Brain, Plus } from "lucide-react";
 
 import AIRebalanceModal from "../components/portfolio/AIRebalanceModal";
 import SwapInterface from "../components/portfolio/SwapInterface";
@@ -19,17 +14,36 @@ import AddSourceModal from "../components/portfolio/AddSourceModal";
 
 import { usePortfolioData } from "../hooks/usePortfolioData";
 import { apiClient } from '../api/client';
-import { calcBuyingPower, calcAllocation, calcTax, parseCSV, GuideModal } from '../components/portfolio/PortfolioUtils';
+import { calcBuyingPower, calcAllocation, calcTax, parseCSV } from '../components/portfolio/PortfolioUtils';
 
+type ChartPoint = { time: string; value: number };
+
+/** Ranges offered above the chart. `hours` is what /analysis/history expects. */
+const TIMEFRAMES: { id: string; label: string; hours: () => number }[] = [
+  { id: "1D", label: "Last 24 hours", hours: () => 24 },
+  { id: "1W", label: "Last 7 days", hours: () => 24 * 7 },
+  { id: "1M", label: "Last 30 days", hours: () => 24 * 30 },
+  { id: "6M", label: "Last 6 months", hours: () => 24 * 182 },
+  {
+    id: "YTD",
+    label: "Year to date",
+    hours: () => {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 1);
+      return Math.max(24, Math.ceil((now.getTime() - start.getTime()) / 3_600_000));
+    },
+  },
+  { id: "1Y", label: "Last 12 months", hours: () => 24 * 365 },
+  { id: "All", label: "All time", hours: () => 24 * 365 * 5 },
+];
 
 export default function Portfolio() {
-  const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: marketData } = useMarket(500);
 
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") === "swap" ? "swap" : "overview");
-  
+
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     if (tab === "swap") {
@@ -50,28 +64,43 @@ export default function Portfolio() {
 
   const [isRebalanceOpen, setIsRebalanceOpen] = useState(false);
   const [showAddSource, setShowAddSource] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
-  const [importMsg, setImportMsg] = useState<any>(null);
+  const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  // Parse CSV function
+  // Import feedback shouldn't sit on screen forever.
+  useEffect(() => {
+    if (!importMsg) return;
+    const timer = setTimeout(() => setImportMsg(null), 8000);
+    return () => clearTimeout(timer);
+  }, [importMsg]);
+
   const handleFile = async (file: File) => {
     try {
       const text = await file.text();
-      const { trades: newTrades, count } = parseCSV(text);
+      const { trades: newTrades, count, skipped } = parseCSV(text);
+
       if (user) {
-        const tradesToInsert = newTrades.map((t: any) => ({ ...t, user_id: user.id }));
+        const tradesToInsert = newTrades.map((t) => ({ ...t, user_id: user.id }));
         const { supabase } = await import("../lib/supabase");
-        await supabase.from("trades").insert(tradesToInsert);
-        const { data } = await supabase.from("trades").select("*").eq("user_id", user.id).order("traded_at", { ascending: true });
+        const { error } = await supabase.from("trades").insert(tradesToInsert);
+        if (error) throw new Error(error.message);
+        const { data } = await supabase
+          .from("trades")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("traded_at", { ascending: true });
         if (data) setTrades(data);
       } else {
         const updated = [...trades, ...newTrades];
         setTrades(updated);
         localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
       }
-      setImportMsg({ ok: true, text: `Imported ${count} transactions successfully.` });
+
+      setImportMsg({
+        ok: true,
+        text: `Imported ${count} transaction${count === 1 ? "" : "s"}${skipped > 0 ? ` (${skipped} row${skipped === 1 ? "" : "s"} skipped)` : ""}.`,
+      });
     } catch (e: any) {
-      setImportMsg({ ok: false, text: e.message || "File error" });
+      setImportMsg({ ok: false, text: e?.message || "Could not read the file." });
     }
   };
 
@@ -79,110 +108,113 @@ export default function Portfolio() {
   const totalCost = holdings.reduce((sum, h) => sum + (h.cost_basis || 0), 0);
   const totalPnl = totalValue - totalCost;
   const change24hValue = holdings.reduce((sum, h) => sum + (((h.value || 0) * (h.change_24h || 0)) / 100), 0);
-  const change24hPct = totalValue > 0 ? (change24hValue / (totalValue - change24hValue)) * 100 : 0;
-  
+  const valueYesterday = totalValue - change24hValue;
+  const change24hPct = valueYesterday > 0 ? (change24hValue / valueYesterday) * 100 : 0;
+
   const taxData = useMemo(() => calcTax(trades), [trades]);
   const allocation = useMemo(() => calcAllocation(holdings), [holdings]);
   const buyingPower = useMemo(() => calcBuyingPower(holdings), [holdings]);
 
-  const sparklines = useSparklines(holdings.slice(0, 10).map((h) => h.symbol));
+  const sparklineSymbols = useMemo(
+    () => holdings.slice(0, 10).map((h) => h.symbol),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [holdings.map((h) => h.symbol).join(",")]
+  );
+  const { data: sparklines } = useSparklines(sparklineSymbols);
 
-  const [chartData, setChartData] = useState([]);
-  const [marketNews, setMarketNews] = useState([
-    {
-      id: "1",
-      title: "Bitcoin Surges Past Key Resistance Level",
-      source: "CoinTelegraph",
-      published_on: Math.floor(Date.now() / 1000) - 3600,
-      imageurl: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=024",
-      url: "#"
-    },
-    {
-      id: "2",
-      title: "Ethereum Spot ETFs See Record Inflows",
-      source: "CoinDesk",
-      published_on: Math.floor(Date.now() / 1000) - 7200,
-      imageurl: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
-      url: "#"
-    },
-    {
-      id: "3",
-      title: "Regulatory Clarity Brings Institutional Investors",
-      source: "Bloomberg Crypto",
-      published_on: Math.floor(Date.now() / 1000) - 14400,
-      imageurl: "https://cryptologos.cc/logos/solana-sol-logo.svg?v=024",
-      url: "#"
-    }
-  ]);
-  const [chartTimeframe, setChartTimeframe] = useState('24h');
+  const [timeframe, setTimeframe] = useState("1D");
+  const [chartData, setChartData] = useState<ChartPoint[]>([]);
+  const [isChartLoading, setIsChartLoading] = useState(false);
 
-  // Fetch historical portfolio balance
+  const activeTimeframe = TIMEFRAMES.find((t) => t.id === timeframe) || TIMEFRAMES[0];
+
+  // The holdings array is rebuilt on every market refresh (every few seconds),
+  // so keying the fetch on it directly re-ran this constantly. Key on the
+  // positions themselves, which only change when a balance actually moves.
+  const positionsKey = useMemo(
+    () => holdings.map((h) => `${h.symbol}:${h.quantity}`).sort().join("|"),
+    [holdings]
+  );
+  const holdingsRef = useRef(holdings);
+  holdingsRef.current = holdings;
+
   useEffect(() => {
-    if (holdings.length === 0) {
+    const positions = holdingsRef.current;
+    if (positions.length === 0) {
       setChartData([]);
       return;
     }
-    
+
+    let cancelled = false;
+    const hours = activeTimeframe.hours();
+
     const fetchHistory = async () => {
+      setIsChartLoading(true);
       try {
-        const uniqueSymbols = Array.from(new Set(holdings.map(h => h.symbol)));
-        if (uniqueSymbols.length === 0) return;
-        const qs = uniqueSymbols.map(s => `symbols=${s}`).join('&');
-        
-        // 24 hours historical data
-        const res = await apiClient.get(`/analysis/history?${qs}&hours=24`);
-        if (res.data && Array.isArray(res.data)) {
-          // Group by time
-          const groupedByTime: Record<string, any> = {};
-          res.data.forEach((row: any) => {
-            if (!groupedByTime[row.time]) {
-              groupedByTime[row.time] = {};
-            }
-            groupedByTime[row.time][row.symbol] = row.current_price;
-          });
+        const uniqueSymbols = Array.from(new Set(positions.map((h) => h.symbol)));
+        const qs = uniqueSymbols.map((s) => `symbols=${encodeURIComponent(s)}`).join("&");
 
-          // Sort times chronologically
-          const sortedTimes = Object.keys(groupedByTime).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-          
-          const lastKnownPrice: Record<string, number> = {};
-          
-          const aggregated = sortedTimes.map(timeStr => {
-            const prices = groupedByTime[timeStr];
-            let totalVal = 0;
-            
-            holdings.forEach(h => {
-              const price = prices[h.symbol] || lastKnownPrice[h.symbol] || 0;
-              if (price) {
-                lastKnownPrice[h.symbol] = price;
-              }
-              totalVal += price * h.quantity;
-            });
-            
-            const date = new Date(timeStr);
-            const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const res = await apiClient.get(`/analysis/history?${qs}&hours=${hours}`);
+        if (cancelled) return;
 
-            return {
-              time: formattedTime,
-              fullDate: timeStr,
-              value: totalVal
-            };
-          });
-
-          setChartData(aggregated as any);
+        if (!Array.isArray(res.data)) {
+          setChartData([]);
+          return;
         }
+
+        const groupedByTime: Record<string, Record<string, number>> = {};
+        res.data.forEach((row: any) => {
+          (groupedByTime[row.time] ||= {})[row.symbol] = row.current_price;
+        });
+
+        const sortedTimes = Object.keys(groupedByTime).sort(
+          (a, b) => new Date(a).getTime() - new Date(b).getTime()
+        );
+
+        // Longer ranges need a date on the axis, not a clock time.
+        const showDate = hours > 48;
+        const lastKnownPrice: Record<string, number> = {};
+
+        const aggregated: ChartPoint[] = sortedTimes.map((timeStr) => {
+          const prices = groupedByTime[timeStr];
+          let totalVal = 0;
+
+          positions.forEach((h) => {
+            const price = prices[h.symbol] ?? lastKnownPrice[h.symbol] ?? 0;
+            if (price) lastKnownPrice[h.symbol] = price;
+            totalVal += price * h.quantity;
+          });
+
+          const date = new Date(timeStr);
+          return {
+            time: showDate
+              ? date.toLocaleDateString([], { month: "short", day: "numeric" })
+              : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            value: totalVal,
+          };
+        });
+
+        setChartData(aggregated);
       } catch (err) {
-        console.error("Failed to fetch history for chart:", err);
+        if (!cancelled) {
+          console.error("Failed to fetch portfolio history:", err);
+          setChartData([]);
+        }
+      } finally {
+        if (!cancelled) setIsChartLoading(false);
       }
     };
 
     fetchHistory();
-  }, [holdings]);
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positionsKey, timeframe]);
 
   return (
     <div className="min-h-screen bg-[#09090b] pt-24 pb-32 overflow-x-hidden selection:bg-[var(--accent)]/30 relative font-sans">
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-white/[0.02] rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/[0.02] rounded-full blur-[120px] pointer-events-none" />
-      
+
       <div className="max-w-[1400px] mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
@@ -197,11 +229,11 @@ export default function Portfolio() {
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             {importMsg && (
-              <div className={`px-4 py-2 rounded-3xl text-[12px] font-bold animate-fade-in ${importMsg.ok ? "bg-[var(--positive)]/10 text-[var(--positive)] border border-[var(--positive)]/20" : "bg-[var(--negative)]/10 text-[var(--negative)] border border-[var(--negative)]/20"}`}>
+              <div className={`px-4 py-2 rounded-3xl text-[12px] font-bold animate-fade-in max-w-md ${importMsg.ok ? "bg-[var(--positive)]/10 text-[var(--positive)] border border-[var(--positive)]/20" : "bg-[var(--negative)]/10 text-[var(--negative)] border border-[var(--negative)]/20"}`}>
                 {importMsg.text}
               </div>
             )}
-            
+
             <button
               onClick={() => setIsRebalanceOpen(true)}
               className="flex items-center gap-2 bg-[#09090b]/40 hover:bg-white/[0.02] text-white border border-white/[0.04] hover:border-white/[0.08] font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm group"
@@ -258,40 +290,46 @@ export default function Portfolio() {
                   <p className="text-[13px] text-white/40">High level real-time data from your portfolio</p>
                 </div>
                 <div className="flex bg-[#09090b]/60 rounded-2xl p-1 border border-white/[0.04] mt-4 md:mt-0 backdrop-blur-xl">
-                  {['1D', '1W', '1M', '6M', 'YTD', '1Y', 'All'].map(t => (
-                    <button key={t} className={`px-4 py-1.5 rounded-2xl text-[11px] font-bold transition-all ${t === 'All' ? 'bg-white/[0.04] text-white shadow' : 'text-white/40 hover:text-white'}`}>
-                      {t}
+                  {TIMEFRAMES.map((tf) => (
+                    <button
+                      key={tf.id}
+                      onClick={() => setTimeframe(tf.id)}
+                      title={tf.label}
+                      className={`px-4 py-1.5 rounded-2xl text-[11px] font-bold transition-all ${tf.id === timeframe ? 'bg-white/[0.04] text-white shadow' : 'text-white/40 hover:text-white'}`}
+                    >
+                      {tf.id}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <DashboardCards 
+              <DashboardCards
                 totalValue={totalValue}
                 change24hValue={change24hValue}
                 change24hPct={change24hPct}
+                totalPnl={totalPnl}
+                totalCost={totalCost}
                 taxData={taxData}
                 allocation={allocation}
                 buyingPower={buyingPower}
-                setActiveTab={setActiveTab}
+                chartData={chartData}
                 holdings={holdings}
               />
 
-              <ChartAndWatchlist 
-                change24hValue={change24hValue}
+              <ChartAndWatchlist
                 change24hPct={change24hPct}
                 chartData={chartData}
+                isChartLoading={isChartLoading}
+                timeframeLabel={activeTimeframe.label}
                 holdings={holdings}
-                sparklines={sparklines}
-                marketNews={marketNews}
+                marketData={marketData || []}
+                sparklines={sparklines || {}}
               />
             </motion.div>
           )}
-
-          
         </AnimatePresence>
 
-        <AddSourceModal 
+        <AddSourceModal
           isOpen={showAddSource}
           onClose={() => setShowAddSource(false)}
           user={user}
@@ -304,23 +342,15 @@ export default function Portfolio() {
           setImportMsg={setImportMsg}
         />
 
-        <GuideModal 
-          isOpen={showGuide} 
-          onClose={() => setShowGuide(false)}
-        />
-        
-        <AIRebalanceModal 
-          isOpen={isRebalanceOpen} 
-          onClose={() => setIsRebalanceOpen(false)} 
-          holdings={holdings} 
+        <AIRebalanceModal
+          isOpen={isRebalanceOpen}
+          onClose={() => setIsRebalanceOpen(false)}
+          holdings={holdings}
+          totalValue={totalValue}
+          totalPnl={totalPnl}
+          hasCostBasis={totalCost > 0 && Math.abs(totalPnl) > 0}
         />
       </div>
     </div>
   );
 }
-
-
-
-
-
-

@@ -34,6 +34,7 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
             if eth_balance > 0:
                 formatted_balances.append({
                     "contract_address": "native",
+                    "decimals": 18,
                     "balance": eth_balance,
                     "symbol": "ETH",
                     "usd_value": 0
@@ -85,6 +86,7 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
                     if numeric_balance > 0:
                         formatted_balances.append({
                             "contract_address": contract_address,
+                            "decimals": decimals,
                             "balance": numeric_balance,
                             "symbol": symbol.upper(),
                             "usd_value": 0
