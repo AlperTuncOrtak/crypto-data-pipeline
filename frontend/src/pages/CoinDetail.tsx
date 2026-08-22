@@ -138,33 +138,6 @@ export default function CoinDetail() {
   }, [history, coin?.current_price]);
 
   const chartData = Array.isArray(history) ? history : [];
-  
-  const ohlcData = useMemo(() => {
-    if (!chartData || chartData.length === 0) return [];
-    
-    // Some APIs return {time, price}, some return {time, value}
-    // We will generate deterministic mock OHLC around the closing price
-    return chartData.map((d, i) => {
-      const close = Number(d.price || d.value || 0);
-      const prevClose = i > 0 ? Number(chartData[i-1].price || chartData[i-1].value || close) : close;
-      const open = prevClose;
-      
-      const volatility = close * 0.005; // 0.5% volatility
-      const high = Math.max(open, close) + (Math.random() * volatility);
-      const low = Math.min(open, close) - (Math.random() * volatility);
-      
-      // lightweight-charts needs time in seconds (unix timestamp) or string 'YYYY-MM-DD'
-      const timeInSeconds = Math.floor(new Date(d.time).getTime() / 1000);
-
-      return {
-        time: timeInSeconds,
-        open,
-        high,
-        low,
-        close
-      };
-    });
-  }, [chartData]);
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-[500px]">
