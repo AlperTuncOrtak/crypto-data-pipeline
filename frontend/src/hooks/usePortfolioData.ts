@@ -9,6 +9,14 @@ import { calcHoldings, Trade } from "../components/portfolio/PortfolioUtils";
 const sameAddress = (a?: string | null, b?: string | null) =>
   !!a && !!b && a.toLowerCase() === b.toLowerCase();
 
+/**
+ * Fallback decimals for the tokens we ship canonical addresses for. Matched on
+ * contract address, never on symbol — symbols are trivially spoofed by scam
+ * tokens that land in a wallet uninvited.
+ */
+const decimalsForContract = (contract?: string): number | undefined =>
+  contract ? TOKENS.find((t) => sameAddress(t.address, contract))?.decimals : undefined;
+
 export function usePortfolioData(user: any, marketData: any[]) {
   // --- MANUAL TRADES (CSV import + exchange API sync) ---
   const [trades, setTrades] = useState<Trade[]>(() => {
@@ -153,14 +161,22 @@ export function usePortfolioData(user: any, marketData: any[]) {
         if (res.data?.portfolio?.balances?.length > 0) {
           setAlchemyWallet(res.data.wallet || null);
           setAlchemyHoldings(
-            res.data.portfolio.balances.map((b: any) => ({
-              symbol: b.symbol,
-              quantity: b.balance,
-              source: "Wallet",
+            res.data.portfolio.balances.map((b: any) => {
               // "native" is Alchemy's marker for the chain's own coin (ETH).
-              contract_address: b.contract_address === "native" ? undefined : b.contract_address,
-              decimals: b.decimals ?? 18,
-            }))
+              const isNative = b.contract_address === "native";
+              const contract = isNative ? undefined : b.contract_address;
+              return {
+                symbol: b.symbol,
+                quantity: b.balance,
+                source: "Wallet",
+                contract_address: contract,
+                // Deliberately left undefined when the backend doesn't report
+                // decimals — an assumed 18 would encode a wrong transfer amount
+                // for tokens like USDC. Withdraw treats "unknown" as not
+                // sendable rather than guessing.
+                decimals: isNative ? 18 : b.decimals ?? decimalsForContract(contract),
+              };
+            })
           );
         }
         // ponytail: don't clear alchemyHoldings if backend returns empty —
