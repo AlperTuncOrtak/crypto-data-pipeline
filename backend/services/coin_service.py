@@ -14,6 +14,42 @@ RANGE_TO_INTERVAL = {
 }
 
 
+def get_coin_name_by_symbol(symbol: str) -> str | None:
+    """
+    Sembolden coin adini bul (BTC -> Bitcoin).
+
+    Haber aramasi icin gerekli: RSS basliklarinda "BTC" degil "Bitcoin"
+    geciyor, sadece sembolle arayinca neredeyse hic eslesme cikmiyor.
+    Ayni sembole sahip birden fazla kayit varsa piyasa degeri buyuk olani
+    kazaniyor — "BTC" aramasi bir kopya token'a dusmesin.
+    """
+    if not symbol:
+        return None
+
+    conn = get_connection()
+    try:
+        cursor = conn.cursor(DictCursor)
+        try:
+            cursor.execute(
+                """
+                SELECT c.name
+                FROM coins c
+                LEFT JOIN latest_prices lp ON lp.coin_id = c.id
+                WHERE c.symbol = %s
+                ORDER BY COALESCE(lp.market_cap, 0) DESC
+                LIMIT 1
+                """,
+                (symbol.upper(),),
+            )
+            row = cursor.fetchone()
+        finally:
+            cursor.close()
+    finally:
+        conn.close()
+
+    return row["name"] if row else None
+
+
 def get_coin_by_slug(slug):
     conn = get_connection()
     try:

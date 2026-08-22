@@ -11,7 +11,9 @@
 #   - Decrypt
 # ============================================================
 
+import html
 import logging
+import re
 import feedparser
 import httpx
 from datetime import datetime, timezone, timedelta
@@ -54,6 +56,40 @@ def get_coin_news(coin_name: str, coin_symbol: str, max_results: int = 5) -> lis
     recent = [n for n in all_news if n.get("dt", datetime.now(timezone.utc)) > cutoff]
 
     return recent[:max_results]
+
+
+def get_latest_news(max_results: int = 5) -> list[dict]:
+    """
+    Genel kripto haber akışı — coin filtresi olmadan, en yeniler önce.
+
+    Tüm feed'ler başarısız olursa RuntimeError yükseltir. Bunun sebebi:
+    boş liste "haber yok" demek, oysa kaynak erişilemiyorsa bu bir arıza
+    ve çağıran tarafın bunu kullanıcıya "haber yok" diye göstermemesi gerek.
+    """
+    all_news = []
+    failures = []
+
+    for source_name, feed_url in RSS_FEEDS:
+        try:
+            items = _fetch_feed(feed_url, source_name, None)
+            if not items:
+                failures.append(source_name)
+            all_news.extend(items)
+        except Exception as e:
+            log.warning(f"RSS fetch failed ({source_name}): {e}")
+            failures.append(source_name)
+
+    if not all_news and len(failures) == len(RSS_FEEDS):
+        raise RuntimeError(f"All news feeds unreachable: {', '.join(failures)}")
+
+    all_news.sort(key=lambda x: x.get("timestamp", 0), reverse=True)
+
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=MAX_AGE_HOURS)
+    recent = [n for n in all_news if n.get("dt", datetime.now(timezone.utc)) > cutoff]
+
+    # Son 3 günde hiç haber yoksa yine de en yenileri göster —
+    # boş bir liste döndürmektense eski başlık daha faydalı.
+    return (recent or all_news)[:max_results]
 
 
 def get_news_sentiment(news_items: list[dict]) -> dict:
@@ -123,8 +159,39 @@ def _build_keywords(coin_name: str, coin_symbol: str) -> set[str]:
     return keywords
 
 
-def _fetch_feed(feed_url: str, source_name: str, keywords: set[str]) -> list[dict]:
-    """RSS feed'i çek ve coin ile ilgili haberleri filtrele."""
+def _strip_html(raw: str, limit: int = 300) -> str:
+    """RSS özetleri HTML içeriyor; düz metne çevir ve kısalt."""
+    if not raw:
+        return ""
+    text = re.sub(r"<[^>]+>", " ", raw)
+    text = html.unescape(text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text[:limit].rstrip() + "…" if len(text) > limit else text
+
+
+def _extract_image(entry) -> str | None:
+    """Feed girdisinden bir görsel URL'i çıkar (her feed farklı alan kullanıyor)."""
+    for key in ("media_content", "media_thumbnail"):
+        media = entry.get(key) or []
+        for m in media:
+            url = m.get("url")
+            if url:
+                return url
+    for link in entry.get("links", []) or []:
+        if link.get("rel") == "enclosure" and str(link.get("type", "")).startswith("image"):
+            if link.get("href"):
+                return link["href"]
+    # Bazı feed'ler görseli sadece özet HTML'inin içinde veriyor.
+    match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', entry.get("summary", "") or "")
+    return match.group(1) if match else None
+
+
+def _fetch_feed(feed_url: str, source_name: str, keywords: set[str] | None) -> list[dict]:
+    """
+    RSS feed'i çek ve haberleri döndür.
+
+    keywords None ise filtreleme yapılmaz — genel akış için kullanılıyor.
+    """
     try:
         resp = httpx.get(feed_url, timeout=TIMEOUT, follow_redirects=True)
         resp.raise_for_status()
@@ -139,8 +206,8 @@ def _fetch_feed(feed_url: str, source_name: str, keywords: set[str]) -> list[dic
         summary = entry.get("summary", "")
         text = (title + " " + summary).lower()
 
-        # Keyword match kontrolü
-        if not any(kw in text for kw in keywords):
+        # Keyword match kontrolü (keywords None → filtreleme yok)
+        if keywords is not None and not any(kw in text for kw in keywords):
             continue
 
         # Tarih parse
@@ -165,6 +232,8 @@ def _fetch_feed(feed_url: str, source_name: str, keywords: set[str]) -> list[dic
             "source": source_name,
             "url": entry.get("link", ""),
             "age": age_str,
+            "body": _strip_html(summary),
+            "imageurl": _extract_image(entry),
             "dt": dt or datetime.now(timezone.utc),
             "timestamp": dt.timestamp() if dt else 0,
         })

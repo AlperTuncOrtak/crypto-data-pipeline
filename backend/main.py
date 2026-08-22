@@ -1052,45 +1052,55 @@ async def api_exchange_sync(
 
 @app.get("/market/news")
 @limiter.limit("30/minute")
-async def get_market_news(request: Request, symbol: str = None):
+def get_market_news(request: Request, symbol: str = None):
     """
-    CryptoCompare haber proxy'si.
+    Kripto haber akisi — Cointelegraph / CoinDesk / Decrypt RSS'lerinden.
 
-    Bu proxy'nin var olma sebebi: CryptoCompare CORS basligi gondermiyor,
-    yani tarayicidan dogrudan cagrilamiyor. Frontend bir sure boyunca yine de
-    dogrudan cagirdi ve her istek CORS'a takildigi icin haber bolumu hep
-    "No recent news found" gosterdi. Frontend artik buraya geliyor.
+    Bu endpoint'in var olma sebebi: haber kaynaklari CORS basligi
+    gondermiyor, yani tarayicidan dogrudan cagrilamiyor.
 
-    symbol verilirse o coin'e ait haberler (CryptoCompare "categories"),
-    verilmezse genel akis doner.
+    Eskiden CryptoCompare'e proxy yapiyordu. CryptoCompare (artik CoinDesk
+    Data) API anahtari zorunlu kildi ve anahtar olmadan
+    {"Data":{},"Err":{"message":"API key required"...}} donmeye basladi.
+    Kod bunu `data.get("Data") or []` ile yutuyordu, yani her istek
+    "haber yok" gibi gorunuyordu. Projede zaten anahtar gerektirmeyen
+    RSS tabanli news_service vardi; artik onu kullaniyoruz.
+
+    symbol verilirse o coin'e ait haberler, verilmezse genel akis doner.
     """
-    import httpx
-
-    url = "https://min-api.cryptocompare.com/data/v2/news/?lang=EN"
-    if symbol:
-        url += f"&categories={symbol.upper()}"
+    from backend.services.news_service import get_coin_news, get_latest_news
 
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=15.0)
-            data = resp.json()
-            items = data.get("Data") or []
-            # Bilesenin ihtiyaci olan alanlar: imageurl ve body dahil.
-            news = [
-                {
-                    "id": item.get("id") or item.get("guid"),
-                    "title": item.get("title"),
-                    "body": item.get("body"),
-                    "source": (item.get("source_info") or {}).get("name") or item.get("source"),
-                    "url": item.get("url") or item.get("guid"),
-                    "imageurl": item.get("imageurl"),
-                    "published_on": item.get("published_on"),
-                }
-                for item in items[:5]
-            ]
-            return {"ok": bool(news), "news": news}
+        if symbol:
+            # RSS basliklari sembolu degil ismi kullaniyor (BTC yerine Bitcoin),
+            # o yuzden once ismi cozuyoruz.
+            from backend.services.coin_service import get_coin_name_by_symbol
+
+            coin_name = get_coin_name_by_symbol(symbol) or symbol
+            items = get_coin_news(coin_name, symbol, max_results=5)
+        else:
+            items = get_latest_news(max_results=5)
     except Exception as e:
-        return {"ok": False, "news": [], "error": str(e)}
+        # Kaynaklara ulasilamadi — bunu "haber yok" diye gostermek yanlis olur.
+        print(f"News fetch failed (symbol={symbol}): {e}")
+        return {"ok": False, "news": [], "error": "News sources are unavailable right now."}
+
+    news = [
+        {
+            # RSS'te stabil bir id yok; link tekil oldugu icin onu kullaniyoruz.
+            "id": item.get("url") or item.get("title"),
+            "title": item.get("title"),
+            "body": item.get("body", ""),
+            "source": item.get("source"),
+            "url": item.get("url"),
+            "imageurl": item.get("imageurl"),
+            # Frontend published_on'u saniye cinsinden bekliyor (new Date(x * 1000)).
+            "published_on": int(item["timestamp"]) if item.get("timestamp") else None,
+        }
+        for item in items
+    ]
+
+    return {"ok": True, "news": news}
 
 
 @app.post("/ai/analyze-portfolio")
