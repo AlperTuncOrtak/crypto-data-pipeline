@@ -1,110 +1,36 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import React, { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  Sparkles,
-  Zap,
-  Cloud,
-  ArrowRight,
-  Search,
-  Command,
-  ChevronRight,
-  MessageSquare,
-  Lock,
-  Cpu,
-  Palette,
-  Terminal
-} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, Sparkles, Cpu, Palette, Cloud, Terminal, Search, MessageSquare, Zap, Lock } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cn } from "../lib/utils";
 
-// ── Background Aurora ──────────────────────────────────────────
-const BackgroundAurora = () => {
-  return (
-    <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 }}>
-      <div
-        style={{
-          position: "absolute",
-          top: "10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "800px",
-          height: "600px",
-          background: "radial-gradient(ellipse at center, rgba(255, 51, 102, 0.12) 0%, rgba(139, 92, 246, 0.08) 30%, transparent 70%)",
-          filter: "blur(80px)",
-          borderRadius: "50%"
-        }}
-      />
-      {/* Subtle Grain / Dot pattern overlay */}
-      <div 
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-          opacity: 0.6
-        }}
-      />
-    </div>
-  );
-};
+const BackgroundGlows = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--accent)]/10 blur-[120px] mix-blend-screen" />
+    <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#8B5CF6]/10 blur-[100px] mix-blend-screen" />
+    <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] rounded-full bg-cyan-500/10 blur-[100px] mix-blend-screen" />
+  </div>
+);
 
-// ── Bento Card (Glassmorphic Premium) ───────────────────────────────────
-interface BentoCardProps {
-  icon: any;
-  title: string;
-  desc: string;
-  delay?: number;
-}
-
-const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
-
+const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: any) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        position: "relative",
-        background: "linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(10, 10, 10, 0.4) 100%)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.04)",
-        borderRadius: 20,
-        padding: "32px",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)"
-      }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative flex flex-col p-8 rounded-[32px] bg-white/[0.02] border border-white/[0.04] overflow-hidden hover:bg-white/[0.04] transition-colors duration-500"
     >
-      
-      {/* Subtle top border highlight */}
-      <div style={{ position: "absolute", top: 0, left: 20, right: 20, height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)" }} />
-
-      <div style={{ position: "relative", zIndex: 2 }}>
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 12,
-            background: "linear-gradient(180deg, rgba(40,40,40,1) 0%, rgba(20,20,20,1) 100%)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 20,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)"
-          }}
-        >
-          <Icon size={20} style={{ color: "rgba(255,255,255,0.9)" }} />
+      <div className="absolute top-0 left-5 right-5 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="relative z-10 flex flex-col items-start">
+        <div className="w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/[0.05] flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-[var(--accent)]/10 transition-all duration-500">
+          <Icon size={22} className="text-white/90 group-hover:text-[var(--accent)] transition-colors duration-500" />
         </div>
-        <h3 style={{ fontSize: 18, fontWeight: 500, color: "#fff", marginBottom: 8, letterSpacing: "-0.01em" }}>
+        <h3 className="text-[19px] font-semibold text-white mb-2 tracking-tight">
           {title}
         </h3>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+        <p className="text-[15px] text-white/50 leading-relaxed">
           {desc}
         </p>
       </div>
@@ -112,125 +38,92 @@ const BentoCard = ({ icon: Icon, title, desc, delay = 0 }: BentoCardProps) => {
   );
 };
 
-// ── Raycast-like Command Mockup ──────────────────────
 const HeroMockup = () => {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.98]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [0.95, 1]);
 
   return (
-    <motion.div 
-      style={{ y, scale }}
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="hero-mockup-wrapper"
-    >
-      <div 
-        style={{
-          width: "100%",
-          maxWidth: 720,
-          margin: "0 auto",
-          background: "rgba(18, 18, 18, 0.8)",
-          backdropFilter: "blur(40px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 20,
-          boxShadow: "0 40px 100px -20px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          position: "relative"
-        }}
+    <div ref={containerRef} className="relative w-full max-w-[800px] mx-auto mt-24 mb-12 perspective-[1000px]">
+      <motion.div 
+        style={{ y, scale }}
+        className="relative z-10 rounded-[24px] border border-white/[0.08] bg-black/60 backdrop-blur-3xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden"
       >
-        {/* Mockup Header - Search Bar */}
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 16 }}>
-          <Search size={22} style={{ color: "rgba(255,255,255,0.4)" }} />
-          <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 22, fontWeight: 400, flex: 1, letterSpacing: "-0.02em" }}>
-            Ask CryptoNeko AI...
+        <div className="flex items-center gap-4 px-6 py-5 border-b border-white/[0.06]">
+          <Search size={22} className="text-white/40" />
+          <div className="flex-1 text-[22px] font-normal text-white/90 tracking-tight">
+            Analyze BTC trends...
           </div>
-          <div style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", padding: "4px 8px", borderRadius: 6, fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
-            <Command size={12} /> K
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/[0.08] text-white/60 text-[12px]">
+            <kbd className="font-sans">⌘</kbd> <kbd className="font-sans">K</kbd>
           </div>
         </div>
-        
-        {/* Mockup Content - Command List */}
-        <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 4 }}>
-          <div style={{ padding: "0 12px", color: "rgba(255,255,255,0.3)", fontSize: 12, fontWeight: 500, marginBottom: 4, marginTop: 8 }}>
-            SUGGESTED
+
+        <div className="flex flex-col gap-1 p-3">
+          <div className="px-3 pt-2 pb-1 text-[12px] font-medium text-white/30 uppercase tracking-widest">
+            AI Commands
           </div>
           
-          <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, border: "1px solid rgba(255,255,255,0.02)" }}>
-            <div style={{ background: "linear-gradient(135deg, #ff3366, #ff7733)", padding: 6, borderRadius: 8 }}>
-              <Sparkles size={16} style={{ color: "#fff" }} />
+          <div className="flex items-center gap-4 p-3 rounded-[12px] bg-white/[0.06] border border-white/[0.02]">
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-pink-500 to-orange-500">
+              <Sparkles size={16} className="text-white" />
             </div>
-            <div style={{ color: "#fff", fontSize: 15, fontWeight: 500 }}>Analyze BTC Technicals</div>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
-              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Pro Feature</span>
-              <kbd style={{ background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: 4, fontSize: 12, color: "rgba(255,255,255,0.6)", minWidth: 20, textAlign: "center" }}>↵</kbd>
+            <div className="text-[15px] font-medium text-white">Analyze BTC Technicals</div>
+            <div className="ml-auto flex items-center gap-1.5">
+              <span className="text-[13px] text-[var(--accent)] font-medium">Pro</span>
+              <kbd className="px-1.5 py-0.5 rounded text-[12px] bg-white/10 text-white/60 min-w-[20px] text-center font-sans">↵</kbd>
             </div>
           </div>
 
-          <div style={{ borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, transition: "background 0.2s" }}>
-            <div style={{ background: "rgba(255,255,255,0.1)", padding: 6, borderRadius: 8 }}>
-              <MessageSquare size={16} style={{ color: "rgba(255,255,255,0.8)" }} />
+          <div className="flex items-center gap-4 p-3 rounded-[12px] hover:bg-white/[0.04] transition-colors cursor-pointer">
+            <div className="p-1.5 rounded-lg bg-white/10">
+              <MessageSquare size={16} className="text-white/80" />
             </div>
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, fontWeight: 500 }}>Summarize Market Sentiment</div>
+            <div className="text-[15px] font-medium text-white/60">Summarize Market Sentiment</div>
           </div>
-          
-          <div style={{ borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ background: "rgba(255,255,255,0.1)", padding: 6, borderRadius: 8 }}>
-              <Zap size={16} style={{ color: "rgba(255,255,255,0.8)" }} />
+
+          <div className="flex items-center gap-4 p-3 rounded-[12px] hover:bg-white/[0.04] transition-colors cursor-pointer">
+            <div className="p-1.5 rounded-lg bg-white/10">
+              <Zap size={16} className="text-white/80" />
             </div>
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, fontWeight: 500 }}>Check Whale Alert Anomalies</div>
+            <div className="text-[15px] font-medium text-white/60">Check Whale Alert Anomalies</div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
-// ── Main Page ──────────────────────────────────────────────────
 export default function Pro() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  return (
-    <div
-      style={{
-        position: "relative",
-        background: "#000000",
-        minHeight: "100vh",
-        color: "#ffffff",
-        overflowX: "hidden",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-        paddingBottom: 120
-      }}
-    >
-      <BackgroundAurora />
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto", padding: "0 24px" }}>
+  return (
+    <div className="relative min-h-screen bg-[#020817] text-white selection:bg-[var(--accent)]/30 font-sans overflow-x-hidden">
+      <BackgroundGlows />
+      
+      <div className="relative z-10 max-w-[1000px] mx-auto px-6">
         
-        {/* ── HERO SECTION ── */}
-        <div style={{ paddingTop: 160, paddingBottom: 100, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 14px",
-              borderRadius: 999,
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              marginBottom: 32,
-            }}
+        {/* HERO SECTION */}
+        <div className="pt-40 pb-24 text-center flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] mb-8 backdrop-blur-md"
           >
-            <Sparkles size={14} style={{ color: "rgba(255,255,255,0.8)" }} />
-            <span style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.9)", letterSpacing: "0.02em" }}>
-              {t("pro_page.hero_badge") || "Introducing CryptoNeko Pro"}
+            <Sparkles size={14} className="text-[var(--accent)]" />
+            <span className="text-[13px] font-medium text-white/90 tracking-wide">
+              {t("pro_page.badge") || "Introducing CryptoNeko Pro"}
             </span>
           </motion.div>
 
@@ -238,24 +131,11 @@ export default function Pro() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontSize: "clamp(56px, 7vw, 88px)",
-              fontWeight: 700,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.05,
-              marginBottom: 24,
-              maxWidth: 900
-            }}
+            className="text-[56px] md:text-[80px] font-bold tracking-tight leading-[1.05] mb-6 max-w-[900px]"
           >
             Unlock a new level of
             <br />
-            <span
-              style={{
-                background: "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.4) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
-              }}
-            >
+            <span className="bg-gradient-to-b from-white to-white/40 text-transparent bg-clip-text">
               crypto intelligence.
             </span>
           </motion.h1>
@@ -264,15 +144,7 @@ export default function Pro() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontSize: 21,
-              color: "rgba(255,255,255,0.5)",
-              maxWidth: 580,
-              margin: "0 auto 48px",
-              lineHeight: 1.5,
-              letterSpacing: "-0.01em",
-              fontWeight: 400
-            }}
+            className="text-[21px] text-white/50 max-w-[580px] mx-auto mb-12 leading-relaxed tracking-tight font-normal"
           >
             {t("pro_page.hero_desc") || "Supercharge your workflow with predictive AI, custom themes, and lightning-fast real-time data integrations."}
           </motion.p>
@@ -281,88 +153,44 @@ export default function Pro() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            style={{ display: "flex", alignItems: "center", gap: 16 }}
+            className="flex items-center gap-4"
           >
             <button
               onClick={() => navigate("/pricing")}
-              style={{
-                padding: "14px 28px",
-                borderRadius: 999,
-                background: "#ffffff",
-                color: "#000000",
-                fontWeight: 600,
-                fontSize: 15,
-                border: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 8px 20px -8px rgba(255,255,255,0.4)"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.03)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-              }}
+              className="group flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-black font-semibold text-[15px] hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_0_0_1px_rgba(255,255,255,0.1),0_8px_20px_-8px_rgba(255,255,255,0.4)]"
             >
-              Get Pro <ArrowRight size={16} />
+              Get Pro <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <button
               onClick={() => navigate("/pricing")}
-              style={{
-                padding: "14px 28px",
-                borderRadius: 999,
-                background: "rgba(255,255,255,0.03)",
-                color: "#ffffff",
-                fontWeight: 500,
-                fontSize: 15,
-                border: "1px solid rgba(255,255,255,0.1)",
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-              }}
+              className="px-7 py-3.5 rounded-full bg-white/[0.03] text-white font-medium text-[15px] border border-white/10 hover:bg-white/[0.08] transition-colors"
             >
               View Pricing
             </button>
           </motion.div>
         </div>
 
-        {/* ── HERO MOCKUP ── */}
+        {/* HERO MOCKUP */}
         <HeroMockup />
 
-        {/* ── BENTO GRID FEATURES ── */}
-        <div style={{ marginTop: 200 }}>
+        {/* BENTO GRID FEATURES */}
+        <div className="mt-[200px]">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            style={{ textAlign: "center", marginBottom: 80 }}
+            className="text-center mb-20"
           >
-            <h2 style={{ fontSize: 44, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 16 }}>
+            <h2 className="text-[44px] font-bold tracking-tight mb-4">
               Everything you need.
             </h2>
-            <p style={{ fontSize: 20, color: "rgba(255,255,255,0.4)" }}>
+            <p className="text-[20px] text-white/40">
               Powerful features engineered for professional traders.
             </p>
           </motion.div>
 
-          <div 
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: 24,
-              maxWidth: 900,
-              margin: "0 auto"
-            }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px] mx-auto">
             <BentoCard
               icon={Cpu}
               title={t("pro_page.feature_ai_title") || "Advanced AI"}
@@ -390,53 +218,30 @@ export default function Pro() {
           </div>
         </div>
 
-        {/* ── BOTTOM CTA ── */}
+        {/* BOTTOM CTA */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            marginTop: 200,
-            marginBottom: 80,
-            textAlign: "center",
-            padding: "100px 40px",
-            background: "linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%)",
-            borderTop: "1px solid rgba(255,255,255,0.04)",
-            borderRadius: 32,
-            position: "relative",
-            overflow: "hidden"
-          }}
+          className="relative mt-[200px] mb-20 text-center px-10 py-[100px] rounded-[32px] bg-gradient-to-b from-white/[0.02] to-transparent border-t border-white/[0.04] overflow-hidden"
         >
-          {/* subtle glow in CTA */}
-          <div style={{ position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)", width: 600, height: 300, background: "radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
+          {/* Subtle glow in CTA */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[radial-gradient(circle,rgba(255,255,255,0.05),transparent_70%)] blur-[60px] pointer-events-none" />
           
-          <div style={{ width: 64, height: 64, margin: "0 auto 32px", background: "linear-gradient(180deg, rgba(40,40,40,1), rgba(20,20,20,1))", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.5)" }}>
-             <Lock size={28} style={{ color: "rgba(255,255,255,0.9)" }} />
+          <div className="w-16 h-16 mx-auto mb-8 rounded-2xl bg-gradient-to-b from-[#282828] to-[#141414] border border-white/[0.08] flex items-center justify-center shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+             <Lock size={28} className="text-white/90" />
           </div>
 
-          <h2 style={{ fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 16 }}>
+          <h2 className="text-[40px] font-bold tracking-tight mb-4">
             Ready to become a Pro?
           </h2>
-          <p style={{ fontSize: 18, color: "rgba(255,255,255,0.4)", marginBottom: 40, maxWidth: 500, margin: "0 auto 40px" }}>
+          <p className="text-[18px] text-white/40 max-w-[500px] mx-auto mb-10">
             Join thousands of traders leveraging our tools.
           </p>
           <button
             onClick={() => navigate("/pricing")}
-            style={{
-              padding: "14px 32px",
-              borderRadius: 999,
-              background: "#ffffff",
-              color: "#000000",
-              fontWeight: 600,
-              fontSize: 15,
-              border: "none",
-              cursor: "pointer",
-              transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-              boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 8px 20px -8px rgba(255,255,255,0.4)"
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            className="px-8 py-3.5 rounded-full bg-white text-black font-semibold text-[15px] hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_0_0_1px_rgba(255,255,255,0.1),0_8px_20px_-8px_rgba(255,255,255,0.4)]"
           >
             Start Your Free Trial
           </button>
@@ -446,5 +251,3 @@ export default function Pro() {
     </div>
   );
 }
-
-

@@ -1,234 +1,113 @@
-// ============================================================
-// components/ui/ProtectedRoute.jsx
-// ============================================================
-// Pro gerektiren sayfalar için route guard.
-// Login değilse → AuthModal aç
-// Login ama Free → Pricing sayfasına yönlendir
-// Pro ise → içeriği göster
-// ============================================================
-
+﻿import React, { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Crown, Lock, ArrowRight, Zap } from "lucide-react";
+import { Crown, Lock, ArrowRight, Zap, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "../../lib/utils";
 
 export default function ProtectedRoute({
   children,
   requirePro = false,
   featureName = "this feature",
   onAuthOpen,
+}: {
+  children: React.ReactNode;
+  requirePro?: boolean;
+  featureName?: string;
+  onAuthOpen?: () => void;
 }) {
   const { isLoggedIn, isPro, isEnterprise, loading } = useAuth();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // loading bitince göster (flash önle)
-    if (!loading) setTimeout(() => setShow(true), 50);
+    if (!loading) {
+      const timer = setTimeout(() => setShow(true), 50);
+      return () => clearTimeout(timer);
+    }
   }, [loading]);
 
-  if (loading || !show)
+  if (loading || !show) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: 300,
-        }}
-      >
-        <div
-          style={{
-            width: 32,
-            height: 32,
-            border: "2px solid var(--border)",
-            borderTopColor: "var(--accent)",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-          }}
-        />
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <div className="flex items-center justify-center min-h-[300px] w-full">
+        <Loader2 className="w-8 h-8 text-[var(--accent)] animate-spin" />
       </div>
     );
+  }
 
-  // Login gerektiriyor
-  if (!isLoggedIn)
+  // Not Logged In
+  if (!isLoggedIn) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 400,
-          gap: 20,
-          textAlign: "center",
-          padding: "0 24px",
-        }}
-      >
-        <div
-          style={{
-            width: 72,
-            height: 72,
-            borderRadius: 24,
-            background: "var(--accent-soft)",
-            border: "1px solid var(--accent-soft)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-6 text-center px-6">
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-20 h-20 rounded-3xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center"
         >
-          <Lock size={28} style={{ color: "var(--accent)" }} />
-        </div>
-        <div>
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-            Sign in to continue
-          </h2>
-          <p
-            style={{ fontSize: 14, color: "var(--text-muted)", maxWidth: 340 }}
-          >
+          <Lock size={32} className="text-[var(--accent)]" />
+        </motion.div>
+        
+        <div className="space-y-2 max-w-sm">
+          <h2 className="text-2xl font-bold tracking-tight text-[var(--text-main)]">Sign in to continue</h2>
+          <p className="text-sm text-[var(--text-muted)]">
             Create a free account to access {featureName}.
           </p>
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <button
-            onClick={onAuthOpen}
-            style={{
-              padding: "11px 24px",
-              borderRadius: 12,
-              background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
-              color: "#111",
-              fontWeight: 700,
-              fontSize: 14,
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              boxShadow: "none",
-            }}
-          >
-            Sign In <ArrowRight size={15} />
-          </button>
-        </div>
+
+        <button
+          onClick={onAuthOpen}
+          className="group flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--accent)] text-[#020817] font-bold hover:bg-[var(--accent-hover)] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+        >
+          Sign In <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
     );
+  }
 
-  // Pro gerektiriyor ama free plan
-  if (requirePro && !isPro && !isEnterprise)
+  // Logged in, but Pro required and user is not Pro
+  if (requirePro && !isPro && !isEnterprise) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 400,
-          gap: 20,
-          textAlign: "center",
-          padding: "0 24px",
-        }}
-      >
-        {/* Blur preview arkada */}
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: 900,
-            overflow: "hidden",
-            borderRadius: 16,
-            maxHeight: 300,
-          }}
-        >
-          <div
-            style={{
-              filter: "blur(6px)",
-              opacity: 0.4,
-              pointerEvents: "none",
-              userSelect: "none",
-            }}
-          >
+      <div className="relative flex flex-col items-center justify-center min-h-[500px] w-full px-4 group">
+        
+        {/* Blurred Content Background */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden rounded-2xl select-none pointer-events-none">
+          <div className="w-full h-full filter blur-md opacity-30 group-hover:opacity-40 transition-opacity duration-500">
             {children}
           </div>
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(to bottom, transparent 0%, var(--bg-base) 80%)",
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)] via-[var(--bg-base)]/80 to-transparent" />
         </div>
 
-        {/* Pro lock card */}
-        <div
-          style={{
-            background:
-              "linear-gradient(135deg, var(--accent-soft), var(--accent-soft))",
-            border: "1px solid var(--accent-soft)",
-            borderRadius: 20,
-            padding: "32px 40px",
-            maxWidth: 480,
-            width: "100%",
-          }}
+        {/* Pro Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 w-full max-w-md p-8 rounded-[24px] border border-[var(--accent)]/20 bg-black/40 backdrop-blur-2xl shadow-[0_0_80px_rgba(99,102,241,0.1),inset_0_0_40px_rgba(99,102,241,0.05)] text-center"
         >
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 18,
-              background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 16px",
-            }}
-          >
-            <Crown size={24} color="#111" />
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-32 h-32 bg-[var(--accent)]/20 blur-3xl rounded-full pointer-events-none" />
+          
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+            <Crown size={28} className="text-[#020817]" />
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
-            Pro Feature
+          
+          <h2 className="text-2xl font-black text-[var(--text-main)] tracking-tight mb-3">
+            PRO Feature
           </h2>
-          <p
-            style={{
-              fontSize: 14,
-              color: "var(--text-muted)",
-              marginBottom: 24,
-              lineHeight: 1.6,
-            }}
-          >
-            {featureName} is available on the Pro plan. Upgrade to unlock
-            advanced analytics, AI signals, alerts, and more.
+          
+          <p className="text-[15px] text-[var(--text-muted)] leading-relaxed mb-8">
+            {featureName} is available on the Pro plan. Upgrade to unlock advanced analytics, AI signals, alerts, and more.
           </p>
 
-          {/* Feature bullets */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              marginBottom: 24,
-              textAlign: "left",
-            }}
-          >
+          <div className="flex flex-col gap-3 mb-8 text-left">
             {[
               "Portfolio tracker with unlimited trades",
-              "Multi-exchange CSV import & FIFO tax report",
-              "AI portfolio analysis (risk score, rebalance)",
-              "Altfins AI signals (150+ indicators)",
+              "Multi-exchange CSV import & tax reports",
+              "AI portfolio analysis & signals",
+              "Whale X-Ray on-chain tracking",
               "Custom price & volume alerts",
-              "Volume anomaly detection",
-              "Unlimited watchlist",
             ].map((f) => (
-              <div
-                key={f}
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
-              >
-                <Zap
-                  size={12}
-                  style={{ color: "var(--accent)", flexShrink: 0 }}
-                />
-                <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+              <div key={f} className="flex items-start gap-3">
+                <Zap size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {f}
                 </span>
               </div>
@@ -237,39 +116,19 @@ export default function ProtectedRoute({
 
           <button
             onClick={() => navigate("/pricing")}
-            style={{
-              width: "100%",
-              padding: "13px",
-              borderRadius: 12,
-              background: "linear-gradient(135deg, var(--accent), #8B5CF6)",
-              color: "#111",
-              fontWeight: 700,
-              fontSize: 14,
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              boxShadow: "none",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-1px)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
+            className="group/btn flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-[var(--accent)] text-[#020817] font-bold text-[0.95rem] hover:bg-[var(--accent-hover)] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_rgba(99,102,241,0.3)]"
           >
-            <Crown size={15} /> Upgrade to Pro
+            <Crown size={18} className="group-hover/btn:-rotate-12 transition-transform" /> 
+            Upgrade to Pro
           </button>
-          <div
-            style={{ marginTop: 12, fontSize: 12, color: "var(--text-muted)" }}
-          >
-            Starting at $10/month · Cancel anytime
-          </div>
-        </div>
+          
+          <p className="mt-4 text-xs font-medium text-[var(--text-muted)]">
+            Starting at $10/month • Cancel anytime
+          </p>
+        </motion.div>
       </div>
     );
+  }
 
-  return children;
+  return <>{children}</>;
 }

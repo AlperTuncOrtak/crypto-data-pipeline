@@ -200,7 +200,21 @@ function AppInner() {
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
-              <Route path="/whale" element={<WhaleXRay />} />
+              <Route 
+                path="/whale" 
+                element={
+                  <ProtectedRoute
+                    requirePro
+                    featureName="Whale X-Ray"
+                    onAuthOpen={() => {
+                      setAuthMode("login");
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <WhaleXRay />
+                  </ProtectedRoute>
+                } 
+              />
               <Route
                 path="/analysis/ai"
                 element={

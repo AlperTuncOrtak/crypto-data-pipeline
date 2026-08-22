@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LayoutGrid, Filter, Search, ChevronDown, Activity, ArrowUpRight, ArrowDownRight, Wallet, Eye, AlertTriangle, CheckCircle2, TrendingUp, Layers, ShieldAlert, ExternalLink } from "lucide-react";
-import ProPaywall from "../components/layout/ProPaywall";
 import { CardSkeleton } from "../components/ui/Skeleton";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../api/client";
@@ -68,7 +67,6 @@ export default function WhaleXRay() {
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">
-        <ProPaywall featureName="Whale X-Ray">
           
         {/* Header & Search Bar */}
         <div className="flex flex-col items-center justify-center mb-16 text-center">
@@ -273,10 +271,8 @@ export default function WhaleXRay() {
             </motion.div>
           )}
         </AnimatePresence>
-        </ProPaywall>
 
       </div>
     </div>
   );
 }
-
