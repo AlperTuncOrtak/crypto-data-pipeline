@@ -33,7 +33,7 @@ const RANGES = [
 // â”€â”€â”€ Formatters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmtPrice(n: any) {
   const v = Number(n);
-  if (isNaN(v) || n == null) return "â€”";
+  if (isNaN(v) || n == null) return "-";
   if (v >= 1000) return `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
   if (v >= 1)    return `$${v.toFixed(2)}`;
   if (v >= 0.01) return `$${v.toFixed(4)}`;
@@ -43,7 +43,7 @@ function fmtPrice(n: any) {
 
 function fmtLarge(n: any, prefix = "$") {
   const v = Number(n);
-  if (isNaN(v) || n == null || v === 0) return "â€”";
+  if (isNaN(v) || n == null || v === 0) return "-";
   if (v >= 1e12) return `${prefix}${(v / 1e12).toFixed(2)}T`;
   if (v >= 1e9)  return `${prefix}${(v / 1e9).toFixed(2)}B`;
   if (v >= 1e6)  return `${prefix}${(v / 1e6).toFixed(2)}M`;
@@ -52,18 +52,18 @@ function fmtLarge(n: any, prefix = "$") {
 
 function fmtPct(n: any) {
   const v = Number(n);
-  if (isNaN(v) || n == null) return "â€”";
+  if (isNaN(v) || n == null) return "-";
   return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
 }
 
 function fmtDate(s: any) {
-  if (!s) return "â€”";
+  if (!s) return "-";
   try { return new Date(s).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }); }
   catch { return s; }
 }
 
 function fmtChartTime(iso: any, range: string) {
-  if (!iso) return "";
+  if (!iso) return "-";
   const d = new Date(iso);
   const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   if (range === "1h" || range === "24h") return time;
