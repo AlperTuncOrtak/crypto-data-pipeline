@@ -169,6 +169,26 @@ def _strip_html(raw: str, limit: int = 300) -> str:
     return text[:limit].rstrip() + "…" if len(text) > limit else text
 
 
+def _entry_description(entry) -> str:
+    """
+    Girdinin ham aciklamasini dondur.
+
+    Feed'ler farkli alan kullaniyor: Cointelegraph ve Decrypt `summary`
+    veriyor, CoinDesk ise `summary`'yi bos birakip bazen `content` dolduruyor.
+    Ikisini de deneyip ilk dolu olani aliyoruz.
+    """
+    summary = entry.get("summary") or ""
+    if summary.strip():
+        return summary
+
+    for block in entry.get("content", []) or []:
+        value = (block.get("value") or "").strip()
+        if value:
+            return value
+
+    return ""
+
+
 def _extract_image(entry) -> str | None:
     """Feed girdisinden bir görsel URL'i çıkar (her feed farklı alan kullanıyor)."""
     for key in ("media_content", "media_thumbnail"):
@@ -182,7 +202,7 @@ def _extract_image(entry) -> str | None:
             if link.get("href"):
                 return link["href"]
     # Bazı feed'ler görseli sadece özet HTML'inin içinde veriyor.
-    match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', entry.get("summary", "") or "")
+    match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', _entry_description(entry))
     return match.group(1) if match else None
 
 
@@ -203,7 +223,7 @@ def _fetch_feed(feed_url: str, source_name: str, keywords: set[str] | None) -> l
     results = []
     for entry in feed.entries[:30]:  # son 30 habere bak
         title = entry.get("title", "")
-        summary = entry.get("summary", "")
+        summary = _entry_description(entry)
         text = (title + " " + summary).lower()
 
         # Keyword match kontrolü (keywords None → filtreleme yok)
