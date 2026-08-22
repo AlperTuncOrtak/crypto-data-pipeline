@@ -25,8 +25,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from backend.redis_client import REDIS_URL
 
-limiter = Limiter(key_func=get_remote_address)
+if REDIS_URL:
+    limiter = Limiter(key_func=get_remote_address, storage_uri=REDIS_URL)
+else:
+    limiter = Limiter(key_func=get_remote_address)
 
 from shared.db import get_connection
 from backend.services.market_service import (
@@ -797,21 +801,19 @@ def ai_chat(request: Request, payload: dict, user: dict = Depends(verify_token))
 
     raise HTTPException(status_code=500, detail="All AI models failed")
 
-_pulse_cache = {}
+from backend.redis_client import cache_get, cache_set
 
 @app.get("/ai/pulse/{slug}")
 @limiter.limit("20/minute")
 def ai_pulse(request: Request, slug: str):
-    # Public kalmasi gerekiyor (coin sayfalarinda anonim kullaniciya da gosteriliyor)
-    # ama slug basina 300sn cache + IP basina rate limit ile sinirlandirildi:
-    # cache'i slug degistirerek asmak isteyen biri limite takilir.
+    # Public kalmasi gerekiyor ama Redis uzerinden distributed cache + IP rate limit ile sinirlandirildi
     import time, os, httpx
     from backend.services.coin_service import get_coin_by_slug
     
-    now = time.time()
-    cached = _pulse_cache.get(slug)
-    if cached and now - cached[0] < 300:
-        return {"pulse": cached[1]}
+    cache_key = f"pulse:{slug}"
+    cached_pulse = cache_get(cache_key)
+    if cached_pulse:
+        return {"pulse": cached_pulse}
         
     coin = get_coin_by_slug(slug)
     if not coin:
@@ -863,7 +865,7 @@ def ai_pulse(request: Request, slug: str):
     if not reply:
         raise HTTPException(status_code=500, detail="AI failed")
         
-    _pulse_cache[slug] = (now, reply)
+    cache_set(cache_key, reply, ttl_seconds=300)
     return {"pulse": reply}
 
 
