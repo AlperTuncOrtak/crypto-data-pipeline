@@ -62,10 +62,7 @@ export function LinearFooter({ onAuthOpen }: { onAuthOpen?: (mode: string) => vo
           transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
           className="flex flex-col items-center text-center mb-32 relative"
         >
-          <h2 
-            className="text-5xl md:text-[5rem] font-medium tracking-tight text-white mb-6 leading-[1.05]"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-5xl md:text-[5rem] font-medium tracking-tight text-white mb-6 leading-[1.05]">
             The frontier awaits.
           </h2>
           <p className="text-white/50 text-[17px] md:text-[19px] mb-10 max-w-2xl leading-relaxed">

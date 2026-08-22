@@ -109,7 +109,6 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.95, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           className="text-[3.2rem] sm:text-[4.5rem] lg:text-[5.5rem] leading-[1.05] tracking-[-0.03em] font-black text-[var(--text-main)] mb-6"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Algorithmic Crypto
           <br />

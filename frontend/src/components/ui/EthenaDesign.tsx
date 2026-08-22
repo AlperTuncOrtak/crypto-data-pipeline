@@ -87,7 +87,6 @@ export function SectionHeader({ badge, title, subtitle }: SectionHeaderProps) {
         viewport={{ once: true }}
         transition={{ delay: 0.1 }}
         className="text-3xl md:text-4xl lg:text-[42px] font-medium tracking-tight text-white mb-5 leading-tight"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
       >
         {title}
       </motion.h2>
