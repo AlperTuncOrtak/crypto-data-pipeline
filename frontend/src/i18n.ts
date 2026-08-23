@@ -32,4 +32,16 @@ i18n
     }
   });
 
+// CSS `text-transform: uppercase` follows the document language. Without this
+// Turkish text uppercased with English rules: "maliyet" became "MALIYET"
+// instead of "MALİYET", because the dotted i only maps to İ under tr rules.
+const applyDocumentLanguage = (lng: string) => {
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = lng.split("-")[0];
+  }
+};
+
+applyDocumentLanguage(i18n.language || "en");
+i18n.on("languageChanged", applyDocumentLanguage);
+
 export default i18n;

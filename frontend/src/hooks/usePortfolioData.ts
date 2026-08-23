@@ -6,6 +6,14 @@ import { supabase } from "../lib/supabase";
 import { apiClient } from "../api/client";
 import { calcHoldings, Trade } from "../components/portfolio/PortfolioUtils";
 
+// Mirrors the chains configured in main.tsx and backend/services/alchemy_service.py.
+const CHAIN_KEYS: Record<number, string> = {
+  1: "ethereum", 42161: "arbitrum", 8453: "base", 10: "optimism", 137: "polygon",
+};
+const CHAIN_NAMES: Record<number, string> = {
+  1: "Ethereum", 42161: "Arbitrum", 8453: "Base", 10: "Optimism", 137: "Polygon",
+};
+
 const sameAddress = (a?: string | null, b?: string | null) =>
   !!a && !!b && a.toLowerCase() === b.toLowerCase();
 
@@ -50,7 +58,7 @@ export function usePortfolioData(user: any, marketData: any[]) {
   const isFetchingWallet = false;
 
   // --- LIVE WALLET BALANCES (WAGMI) ---
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { data: ethBalance } = useBalance({ address });
   const [web3Holdings, setWeb3Holdings] = useState<any[]>([]);
 
@@ -62,6 +70,9 @@ export function usePortfolioData(user: any, marketData: any[]) {
         abi: ERC20_ABI,
         functionName: "balanceOf",
         args: [address],
+        // Pinned per contract: TOKENS holds Ethereum mainnet addresses, and
+        // reading them against another chain returns a different token or zero.
+        chainId: 1,
       })),
     [erc20Tokens, address]
   );
@@ -85,10 +96,14 @@ export function usePortfolioData(user: any, marketData: any[]) {
       if (amount > 0) {
         newHoldings.push({
           source: "Wallet",
-          symbol: "ETH",
+          symbol: ethBalance.symbol || "ETH",
           quantity: amount,
           contract_address: undefined,
           decimals: 18,
+          // wagmi reads the chain the wallet is currently connected to.
+          chain_id: chainId,
+          chain: CHAIN_KEYS[chainId as number] || "ethereum",
+          chain_name: CHAIN_NAMES[chainId as number] || "Ethereum",
           withdrawable: true,
         });
       }
@@ -106,6 +121,10 @@ export function usePortfolioData(user: any, marketData: any[]) {
               quantity: amount,
               contract_address: token.address,
               decimals: token.decimals,
+              // The TOKENS list holds Ethereum mainnet addresses.
+              chain_id: 1,
+              chain: "ethereum",
+              chain_name: "Ethereum",
               withdrawable: true,
             });
           }
@@ -114,7 +133,7 @@ export function usePortfolioData(user: any, marketData: any[]) {
     }
 
     setWeb3Holdings(newHoldings);
-  }, [isConnected, address, ethBalance, tokenBalances, erc20Tokens]);
+  }, [isConnected, address, chainId, ethBalance, tokenBalances, erc20Tokens]);
 
   // --- BINANCE (read-only balance sync) ---
   // ponytail: API keys are NOT persisted any more. They used to sit in
@@ -169,6 +188,9 @@ export function usePortfolioData(user: any, marketData: any[]) {
                 symbol: b.symbol,
                 quantity: b.balance,
                 source: "Wallet",
+                chain: b.chain || "ethereum",
+                chain_name: b.chain_name || "Ethereum",
+                chain_id: b.chain_id || 1,
                 contract_address: contract,
                 // Deliberately left undefined when the backend doesn't report
                 // decimals — an assumed 18 would encode a wrong transfer amount

@@ -88,11 +88,25 @@ export interface Holding {
   change_24h: number;
   sources: string[];
   has_wallet_balance: boolean;
-  /** Only set for on-chain assets. `undefined` on a wallet asset means native coin. */
+  /**
+   * The same symbol can sit on several chains at once (USDC on Base and on
+   * Ethereum are different tokens with different contracts). The table shows
+   * one aggregated row, but anything that moves funds must act on a specific
+   * chain, so the per-chain split is kept here.
+   */
+  chain_balances: ChainBalance[];
+  /** True when at least one chain balance can be signed for. */
+  withdrawable: boolean;
+}
+
+export interface ChainBalance {
+  chain: string;
+  chain_name: string;
+  chain_id: number;
+  quantity: number;
+  /** Undefined means the chain's native coin. */
   contract_address?: string;
   decimals?: number;
-  /** True when this balance lives in a wallet we can actually sign transactions for. */
-  withdrawable: boolean;
 }
 
 /**
@@ -208,31 +222,42 @@ export function calcHoldings(
   type Agg = {
     walletQty: number;
     sources: Set<string>;
-    contract_address?: string;
-    decimals?: number;
-    withdrawable: boolean;
+    chains: ChainBalance[];
   };
   const bySymbol: Record<string, Agg> = {};
 
   const blank = (): Agg => ({
     walletQty: 0,
     sources: new Set<string>(),
-    withdrawable: false,
+    chains: [],
   });
 
   for (const wh of walletHoldings || []) {
     if (!wh?.symbol) continue;
     const sym = String(wh.symbol).toUpperCase();
+    const qty = Number(wh.quantity) || 0;
     const agg = (bySymbol[sym] ||= blank());
-    agg.walletQty += Number(wh.quantity) || 0;
+    agg.walletQty += qty;
     agg.sources.add(wh.source || "Wallet");
 
     // Chain metadata only comes from on-chain sources; an exchange balance
     // must never inherit it, otherwise it would look withdrawable.
-    if (wh.withdrawable) {
-      agg.withdrawable = true;
-      if (wh.contract_address) agg.contract_address = wh.contract_address;
-      if (wh.decimals !== undefined && wh.decimals !== null) agg.decimals = Number(wh.decimals);
+    if (wh.withdrawable && wh.chain_id) {
+      const existing = agg.chains.find(
+        (c) => c.chain_id === wh.chain_id && (c.contract_address || null) === (wh.contract_address || null)
+      );
+      if (existing) {
+        existing.quantity += qty;
+      } else {
+        agg.chains.push({
+          chain: wh.chain || "ethereum",
+          chain_name: wh.chain_name || "Ethereum",
+          chain_id: Number(wh.chain_id),
+          quantity: qty,
+          contract_address: wh.contract_address || undefined,
+          decimals: wh.decimals === undefined || wh.decimals === null ? undefined : Number(wh.decimals),
+        });
+      }
     }
   }
 
@@ -277,9 +302,12 @@ export function calcHoldings(
       change_24h: market.change24h || 0,
       sources: Array.from(agg.sources),
       has_wallet_balance: walletQty > 0,
-      contract_address: agg.contract_address,
-      decimals: agg.decimals,
-      withdrawable: agg.withdrawable && walletQty > 0,
+      chain_balances: agg.chains.sort((a, b) => b.quantity - a.quantity),
+      // Native coins have no contract; tokens without known decimals cannot be
+      // encoded correctly, so they are deliberately not withdrawable.
+      withdrawable: agg.chains.some(
+        (c) => c.quantity > 0 && (!c.contract_address || c.decimals !== undefined)
+      ),
     });
   }
 

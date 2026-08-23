@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowDown, ArrowUp, Wallet, Building2, FileText } from "lucide-react";
 import type { Holding } from "./PortfolioUtils";
 import { COIN_COLORS, CHART_COLORS } from "./PortfolioUtils";
@@ -15,9 +16,10 @@ const GRID = "grid-cols-[2fr_1.1fr_1.2fr_1fr_1.1fr_1.3fr_0.9fr]";
 
 /** Where a position came from. Wallet balances are on-chain; the rest are not. */
 function SourceBadge({ source }: { source: string }) {
+  const { t } = useTranslation();
   const map: Record<string, { icon: typeof Wallet; label: string }> = {
-    Wallet: { icon: Wallet, label: "Wallet" },
-    Trades: { icon: FileText, label: "Imported" },
+    Wallet: { icon: Wallet, label: t("portfolio.holdings.badge_wallet") },
+    Trades: { icon: FileText, label: t("portfolio.holdings.badge_imported") },
   };
   const entry = map[source] || { icon: Building2, label: source };
   const Icon = entry.icon;
@@ -36,6 +38,7 @@ const qty = (n: number) =>
   n.toLocaleString(undefined, { maximumFractionDigits: n < 1 ? 8 : 4 });
 
 export default function HoldingsTable({ holdings, totalValue, isLoading = false }: HoldingsTableProps) {
+  const { t } = useTranslation();
   const [sortKey, setSortKey] = useState<SortKey>("value");
   const [asc, setAsc] = useState(false);
 
@@ -91,13 +94,13 @@ export default function HoldingsTable({ holdings, totalValue, isLoading = false 
     <div className="rounded-[20px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] overflow-hidden">
       <div className="flex items-baseline justify-between px-6 py-5 border-b border-[var(--border-subtle)]">
         <div>
-          <h3 className="text-[15px] font-bold text-[var(--text-main)]">Holdings</h3>
+          <h3 className="text-[15px] font-bold text-[var(--text-main)]">{t("portfolio.holdings.title")}</h3>
           <p className="text-[12px] text-[var(--text-muted)] mt-0.5">
-            {holdings.length} asset{holdings.length === 1 ? "" : "s"} across your connected sources
+            {t("portfolio.holdings.subtitle", { count: holdings.length })}
           </p>
         </div>
         <div className="text-right">
-          <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Total</div>
+          <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{t("portfolio.holdings.total")}</div>
           <div className="text-[15px] font-black text-[var(--text-main)] tabular-nums">${money(totalValue)}</div>
         </div>
       </div>
@@ -113,22 +116,22 @@ export default function HoldingsTable({ holdings, totalValue, isLoading = false 
           <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] flex items-center justify-center">
             <Wallet size={20} className="text-[var(--text-faint)]" />
           </div>
-          <p className="text-[14px] font-bold text-[var(--text-main)] mb-1">No assets yet</p>
+          <p className="text-[14px] font-bold text-[var(--text-main)] mb-1">{t("portfolio.holdings.empty_title")}</p>
           <p className="text-[13px] text-[var(--text-muted)]">
-            Connect a wallet, sync an exchange, or import a CSV to see your positions here.
+            {t("portfolio.holdings.empty_desc")}
           </p>
         </div>
       ) : (
         <div className="w-full overflow-x-auto custom-scrollbar">
           <div className="min-w-[880px]">
             <div className={`grid ${GRID} gap-3 px-6 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-base)]/40 items-center`}>
-              <TH label="Asset" k="symbol" align="left" />
-              <TH label="Quantity" k="quantity" />
-              <TH label="Avg cost / Price" k="current_price" />
-              <TH label="24h" k="change_24h" />
-              <TH label="Value" k="value" />
-              <TH label="Unrealized P&L" k="pnl" />
-              <TH label="Weight" k="weight" />
+              <TH label={t("portfolio.holdings.asset")} k="symbol" align="left" />
+              <TH label={t("portfolio.holdings.quantity")} k="quantity" />
+              <TH label={t("portfolio.holdings.avg_price")} k="current_price" />
+              <TH label={t("portfolio.holdings.change_24h")} k="change_24h" />
+              <TH label={t("portfolio.holdings.value")} k="value" />
+              <TH label={t("portfolio.holdings.pnl")} k="pnl" />
+              <TH label={t("portfolio.holdings.weight")} k="weight" />
             </div>
 
             {rows.map((h) => {
@@ -160,10 +163,29 @@ export default function HoldingsTable({ holdings, totalValue, isLoading = false 
                     )}
                     <div className="min-w-0">
                       <div className="text-[13px] font-bold text-[var(--text-main)] truncate">{h.symbol}</div>
-                      <div className="flex items-center gap-1 mt-0.5">
+                      <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                         {h.sources.slice(0, 2).map((s) => (
                           <SourceBadge key={s} source={s} />
                         ))}
+                        {/* The same symbol can sit on several chains; showing
+                            which ones is the whole point of reading them all. */}
+                        {h.chain_balances.slice(0, 3).map((c) => (
+                          <span
+                            key={`${c.chain_id}-${c.contract_address || "native"}`}
+                            title={`${c.quantity} ${h.symbol} on ${c.chain_name}`}
+                            // Chain names are proper nouns — no uppercase
+                            // transform, which would render "Arbitrum" as
+                            // "ARBİTRUM" under Turkish casing rules.
+                            className="px-1.5 py-0.5 rounded-md bg-[var(--accent-muted)] border border-[var(--accent-border)] text-[9px] font-bold tracking-wider text-[var(--accent)] whitespace-nowrap"
+                          >
+                            {c.chain_name}
+                          </span>
+                        ))}
+                        {h.chain_balances.length > 3 && (
+                          <span className="text-[9px] font-bold text-[var(--text-faint)]">
+                            +{h.chain_balances.length - 3}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -178,8 +200,10 @@ export default function HoldingsTable({ holdings, totalValue, isLoading = false 
                     <div className="text-[13px] font-medium text-[var(--text-main)]">
                       ${money(h.current_price, h.current_price < 1 ? 6 : 2)}
                     </div>
-                    <div className="text-[11px] text-[var(--text-muted)]" title={hasCost ? "Average cost from imported trades" : "No purchase history — marked to market"}>
-                      {hasCost ? `avg $${money(h.avg_cost, h.avg_cost < 1 ? 6 : 2)}` : "no cost basis"}
+                    <div className="text-[11px] text-[var(--text-muted)]" title={hasCost ? t("portfolio.holdings.cost_tooltip") : t("portfolio.holdings.no_cost_tooltip")}>
+                      {hasCost
+                        ? t("portfolio.holdings.avg", { price: `$${money(h.avg_cost, h.avg_cost < 1 ? 6 : 2)}` })
+                        : t("portfolio.holdings.no_cost_basis")}
                     </div>
                   </div>
 
@@ -231,8 +255,7 @@ export default function HoldingsTable({ holdings, totalValue, isLoading = false 
       {rows.some((h) => h.cost_basis > 0 && h.trade_quantity === 0) && (
         <div className="px-6 py-3 border-t border-[var(--border-subtle)] bg-[var(--bg-base)]/40">
           <p className="text-[11px] text-[var(--text-muted)]">
-            Wallet balances have no purchase history, so they are valued at the current price and show no
-            profit or loss. Import your trades to track real cost basis.
+            {t("portfolio.holdings.wallet_note")}
           </p>
         </div>
       )}

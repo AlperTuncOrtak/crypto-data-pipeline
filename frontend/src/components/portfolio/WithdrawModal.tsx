@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, ShieldAlert, CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 import { useAccount, useSendTransaction, useWriteContract } from "wagmi";
 import { parseEther, parseUnits, isAddress } from "viem";
-import type { Holding } from "./PortfolioUtils";
+import type { Holding, ChainBalance } from "./PortfolioUtils";
 
 interface WithdrawModalProps {
   isOpen: boolean;
@@ -24,11 +25,30 @@ const ERC20_TRANSFER_ABI = [
   },
 ] as const;
 
+const EXPLORERS: Record<number, string> = {
+  1: "https://etherscan.io",
+  42161: "https://arbiscan.io",
+  8453: "https://basescan.org",
+  10: "https://optimistic.etherscan.io",
+  137: "https://polygonscan.com",
+};
+
+/** One sendable balance: a symbol on one specific chain. */
+interface SendOption {
+  key: string;
+  symbol: string;
+  balance: ChainBalance;
+}
+
+const optionKey = (symbol: string, c: ChainBalance) =>
+  `${symbol}:${c.chain_id}:${c.contract_address || "native"}`;
+
 export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawModalProps) {
-  const { isConnected } = useAccount();
+  const { t } = useTranslation();
+  const { isConnected, chainId: connectedChainId } = useAccount();
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
-  const [selectedSymbol, setSelectedSymbol] = useState("");
+  const [selectedKey, setSelectedKey] = useState("");
 
   const { sendTransactionAsync, isPending: isSendingNative } = useSendTransaction();
   const { writeContractAsync, isPending: isSendingERC20 } = useWriteContract();
@@ -36,38 +56,44 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [txChainId, setTxChainId] = useState<number>(1);
 
   const isPending = isSendingNative || isSendingERC20;
 
-  // Only assets that actually sit in the connected wallet can be signed for.
-  // Exchange balances and trade-derived positions are not on-chain here, and
-  // the amount available to send is the wallet slice, not the total position.
-  const availableAssets = useMemo(
-    () => holdings.filter((h) => h.withdrawable && h.wallet_quantity > 0),
-    [holdings]
-  );
+  // A balance is sendable only if it is on a known chain and we can encode the
+  // amount: native coins always, tokens only with a contract AND decimals.
+  // The same symbol on two chains is two separate options — sending Base USDC
+  // as if it were Ethereum USDC would target the wrong contract entirely.
+  const options: SendOption[] = useMemo(() => {
+    const out: SendOption[] = [];
+    for (const h of holdings) {
+      for (const c of h.chain_balances || []) {
+        if (c.quantity <= 0) continue;
+        const signable = !c.contract_address || c.decimals !== undefined;
+        if (!signable) continue;
+        out.push({ key: optionKey(h.symbol, c), symbol: h.symbol, balance: c });
+      }
+    }
+    return out.sort((a, b) => b.balance.quantity - a.balance.quantity);
+  }, [holdings]);
 
-  const selectedAsset = availableAssets.find((a) => a.symbol === selectedSymbol) || null;
-  const maxAmount = selectedAsset?.wallet_quantity ?? 0;
+  const selected = options.find((o) => o.key === selectedKey) || null;
+  const maxAmount = selected?.balance.quantity ?? 0;
 
   const parsedAmount = parseFloat(amount);
   const amountIsValid = isFinite(parsedAmount) && parsedAmount > 0;
   const amountExceedsBalance = amountIsValid && parsedAmount > maxAmount;
   const recipientIsValid = isAddress(recipient.trim());
-
-  // A token with no contract address is only sendable if it IS the native coin.
-  // Anything else would silently become a native transfer, so it stays blocked.
-  const isNative = selectedAsset?.symbol === "ETH" && !selectedAsset?.contract_address;
-  const canSignSelected =
-    !!selectedAsset && (isNative || (!!selectedAsset.contract_address && selectedAsset.decimals !== undefined));
+  const isNative = !!selected && !selected.balance.contract_address;
+  const needsChainSwitch = !!selected && connectedChainId !== selected.balance.chain_id;
 
   const canSubmit =
-    canSignSelected && recipientIsValid && amountIsValid && !amountExceedsBalance && !isPending;
+    !!selected && recipientIsValid && amountIsValid && !amountExceedsBalance && !isPending;
 
   const resetForm = () => {
     setRecipient("");
     setAmount("");
-    setSelectedSymbol("");
+    setSelectedKey("");
     setStatus("idle");
     setErrorMsg("");
     setTxHash(null);
@@ -79,10 +105,11 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
   };
 
   const handleWithdraw = async () => {
-    if (!selectedAsset || !canSubmit) return;
+    if (!selected || !canSubmit) return;
 
     setStatus("idle");
     setErrorMsg("");
+    const { chain_id, contract_address, decimals } = selected.balance;
 
     try {
       let hash: string;
@@ -91,26 +118,30 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
         hash = await sendTransactionAsync({
           to: recipient.trim() as `0x${string}`,
           value: parseEther(amount),
+          // Naming the chain makes wagmi prompt a switch instead of
+          // silently broadcasting on whatever chain happens to be active.
+          chainId: chain_id,
         });
-      } else if (selectedAsset.contract_address && selectedAsset.decimals !== undefined) {
+      } else if (contract_address && decimals !== undefined) {
         hash = await writeContractAsync({
           abi: ERC20_TRANSFER_ABI,
-          address: selectedAsset.contract_address as `0x${string}`,
+          address: contract_address as `0x${string}`,
           functionName: "transfer",
-          args: [recipient.trim() as `0x${string}`, parseUnits(amount, selectedAsset.decimals)],
-          // Left undefined so wagmi uses the currently connected account/chain.
+          args: [recipient.trim() as `0x${string}`, parseUnits(amount, decimals)],
+          chainId: chain_id,
           account: undefined,
           chain: undefined,
         });
       } else {
-        // Unreachable while canSubmit gates the button, but this is the branch
-        // that used to fall through to a native ETH transfer. Fail loudly.
+        // Unreachable while `options` filters these out, but this is the branch
+        // that used to fall through to a native transfer. Fail loudly.
         throw new Error(
-          `Missing contract details for ${selectedAsset.symbol}. This token cannot be sent from here.`
+          `Missing contract details for ${selected.symbol}. This token cannot be sent from here.`
         );
       }
 
       setTxHash(hash);
+      setTxChainId(chain_id);
       setStatus("success");
     } catch (err: any) {
       console.error(err);
@@ -120,7 +151,7 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
   };
 
   const setMaxAmount = () => {
-    if (selectedAsset) setAmount(String(maxAmount));
+    if (selected) setAmount(String(maxAmount));
   };
 
   return (
@@ -142,8 +173,8 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-[var(--border-base)]">
               <div>
-                <h3 className="text-xl font-bold text-[var(--text-main)]">Withdraw Crypto</h3>
-                <p className="text-xs text-[var(--text-muted)] mt-1">Send funds to another address</p>
+                <h3 className="text-xl font-bold text-[var(--text-main)]">{t("portfolio.withdraw.title")}</h3>
+                <p className="text-xs text-[var(--text-muted)] mt-1">{t("portfolio.withdraw.subtitle")}</p>
               </div>
               <button
                 onClick={handleClose}
@@ -159,19 +190,19 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                   <div className="w-16 h-16 bg-[var(--negative-muted)] text-[var(--negative)] flex items-center justify-center rounded-full mx-auto mb-4">
                     <ShieldAlert size={32} />
                   </div>
-                  <h4 className="text-[var(--text-main)] font-bold mb-2">Wallet Disconnected</h4>
-                  <p className="text-[var(--text-muted)] text-sm">Please connect your Web3 wallet to withdraw funds.</p>
+                  <h4 className="text-[var(--text-main)] font-bold mb-2">{t("portfolio.withdraw.disconnected_title")}</h4>
+                  <p className="text-[var(--text-muted)] text-sm">{t("portfolio.withdraw.disconnected_desc")}</p>
                 </div>
               ) : status === "success" ? (
                 <div className="text-center py-10">
                   <div className="w-16 h-16 bg-[var(--positive-muted)] text-[var(--positive)] flex items-center justify-center rounded-full mx-auto mb-4">
                     <CheckCircle2 size={32} />
                   </div>
-                  <h4 className="text-[var(--text-main)] font-bold mb-2">Transaction Sent!</h4>
-                  <p className="text-[var(--text-muted)] text-sm mb-4">Your withdrawal is being processed on the blockchain.</p>
+                  <h4 className="text-[var(--text-main)] font-bold mb-2">{t("portfolio.withdraw.sent_title")}</h4>
+                  <p className="text-[var(--text-muted)] text-sm mb-4">{t("portfolio.withdraw.sent_desc")}</p>
                   {txHash && (
                     <a
-                      href={`https://etherscan.io/tx/${txHash}`}
+                      href={`${EXPLORERS[txChainId] || EXPLORERS[1]}/tx/${txHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[var(--text-main)] hover:text-[var(--text-main)] mb-6 font-mono"
@@ -183,51 +214,50 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                     onClick={handleClose}
                     className="w-full bg-[var(--bg-overlay)] border border-[var(--border-base)] text-[var(--text-main)] font-bold py-3 rounded-xl hover:bg-[var(--bg-elevated)] transition-all"
                   >
-                    Done
+                    {t("portfolio.withdraw.done")}
                   </button>
                 </div>
-              ) : availableAssets.length === 0 ? (
+              ) : options.length === 0 ? (
                 <div className="text-center py-10">
                   <div className="w-16 h-16 bg-[var(--bg-overlay)] text-[var(--text-muted)] flex items-center justify-center rounded-full mx-auto mb-4">
                     <ShieldAlert size={32} />
                   </div>
-                  <h4 className="text-[var(--text-main)] font-bold mb-2">Nothing to withdraw</h4>
+                  <h4 className="text-[var(--text-main)] font-bold mb-2">{t("portfolio.withdraw.nothing_title")}</h4>
                   <p className="text-[var(--text-muted)] text-sm">
-                    Only balances held in the connected wallet can be sent from here. Exchange and
-                    imported positions have to be withdrawn from the exchange itself.
+                    {t("portfolio.withdraw.nothing_desc")}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-5">
                   {/* Asset Selection */}
                   <div>
-                    <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Select Asset</label>
+                    <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">{t("portfolio.withdraw.select_asset")}</label>
                     <select
-                      value={selectedSymbol}
+                      value={selectedKey}
                       onChange={(e) => {
-                        setSelectedSymbol(e.target.value);
+                        setSelectedKey(e.target.value);
                         setAmount("");
                         setErrorMsg("");
                       }}
                       className="w-full bg-[var(--bg-overlay)] border border-[var(--border-base)] rounded-xl p-3.5 text-sm text-[var(--text-main)] focus:outline-none focus:border-[var(--accent)] transition-colors appearance-none"
                     >
-                      <option value="" disabled>Select a token...</option>
-                      {availableAssets.map((asset) => (
-                        <option key={asset.symbol} value={asset.symbol}>
-                          {asset.symbol} — Bal: {asset.wallet_quantity.toFixed(6)}
+                      <option value="" disabled>{t("portfolio.withdraw.select_placeholder")}</option>
+                      {options.map((o) => (
+                        <option key={o.key} value={o.key}>
+                          {o.symbol} · {o.balance.chain_name} — {o.balance.quantity.toFixed(6)}
                         </option>
                       ))}
                     </select>
-                    {selectedAsset && !canSignSelected && (
-                      <p className="text-[11px] text-amber-400 mt-2">
-                        Contract details for {selectedAsset.symbol} are unavailable, so it can't be sent from here.
+                    {needsChainSwitch && (
+                      <p className="text-[11px] text-[var(--warning)] mt-2">
+                        {t("portfolio.withdraw.chain_switch", { chain: selected?.balance.chain_name })}
                       </p>
                     )}
                   </div>
 
                   {/* Recipient Address */}
                   <div>
-                    <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Send to Address</label>
+                    <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">{t("portfolio.withdraw.recipient")}</label>
                     <input
                       type="text"
                       placeholder="0x..."
@@ -240,20 +270,20 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                       }`}
                     />
                     {recipient && !recipientIsValid && (
-                      <p className="text-[11px] text-[var(--negative)] mt-2">Not a valid EVM address.</p>
+                      <p className="text-[11px] text-[var(--negative)] mt-2">{t("portfolio.withdraw.invalid_address")}</p>
                     )}
                   </div>
 
                   {/* Amount */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Amount</label>
-                      {selectedAsset && (
+                      <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t("portfolio.withdraw.amount")}</label>
+                      {selected && (
                         <button
                           onClick={setMaxAmount}
                           className="text-[10px] bg-[var(--bg-overlay)] text-[var(--text-main)] px-2 py-0.5 rounded uppercase font-bold hover:bg-[var(--bg-elevated)]"
                         >
-                          Max
+                          {t("portfolio.withdraw.max")}
                         </button>
                       )}
                     </div>
@@ -270,17 +300,21 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                         }`}
                       />
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">
-                        {selectedAsset?.symbol}
+                        {selected?.symbol}
                       </div>
                     </div>
                     {amountExceedsBalance && (
                       <p className="text-[11px] text-[var(--negative)] mt-2">
-                        Exceeds your wallet balance of {maxAmount.toFixed(6)} {selectedAsset?.symbol}.
+                        {t("portfolio.withdraw.exceeds", {
+                          chain: selected?.balance.chain_name,
+                          max: maxAmount.toFixed(6),
+                          symbol: selected?.symbol,
+                        })}
                       </p>
                     )}
-                    {selectedAsset && isNative && (
+                    {selected && isNative && (
                       <p className="text-[11px] text-[var(--text-muted)] mt-2">
-                        Leave some ETH behind to cover the gas fee.
+                        {t("portfolio.withdraw.gas_hint", { symbol: selected?.symbol })}
                       </p>
                     )}
                   </div>
@@ -298,11 +332,14 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                   >
                     {isPending ? (
                       <>
-                        <Loader2 size={18} className="animate-spin" /> Confirm in Wallet...
+                        <Loader2 size={18} className="animate-spin" /> {t("portfolio.withdraw.confirm_wallet")}
                       </>
                     ) : (
                       <>
-                        <Send size={18} /> Withdraw {selectedAsset ? selectedAsset.symbol : ""}
+                        <Send size={18} />{" "}
+                        {t("portfolio.withdraw.submit", {
+                          asset: selected ? `${selected.symbol} · ${selected.balance.chain_name}` : "",
+                        })}
                       </>
                     )}
                   </button>

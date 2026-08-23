@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Download, Scale, Info } from "lucide-react";
 import type { TaxSummary, Disposal } from "./PortfolioUtils";
 
@@ -13,9 +14,9 @@ const money = (n: number) =>
 
 const signed = (n: number) => `${n >= 0 ? "+" : "-"}$${money(n)}`;
 
-const shortDate = (iso: string) => {
+const shortDate = (iso: string, locale: string) => {
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? "—" : d.toLocaleDateString(undefined, { year: "2-digit", month: "short", day: "2-digit" });
+  return isNaN(d.getTime()) ? "—" : d.toLocaleDateString(locale, { year: "2-digit", month: "short", day: "2-digit" });
 };
 
 /** RFC-4180-ish quoting so symbols or dates containing a comma can't shift columns. */
@@ -60,6 +61,7 @@ function StatCard({
 }
 
 export default function TaxReport({ taxData }: TaxReportProps) {
+  const { t, i18n } = useTranslation();
   const years = taxData.byYear.map((y) => y.year);
   const [year, setYear] = useState<number | "all">(years[0] ?? "all");
 
@@ -98,10 +100,9 @@ export default function TaxReport({ taxData }: TaxReportProps) {
         <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] flex items-center justify-center">
           <Scale size={20} className="text-[var(--text-faint)]" />
         </div>
-        <p className="text-[14px] font-bold text-[var(--text-main)] mb-1">No realized gains yet</p>
+        <p className="text-[14px] font-bold text-[var(--text-main)] mb-1">{t("portfolio.tax.empty_title")}</p>
         <p className="text-[13px] text-[var(--text-muted)] max-w-md mx-auto">
-          A gain is realized when you sell. Import trade history that includes sells and this report will
-          match each disposal against the lots you bought, oldest first.
+          {t("portfolio.tax.empty_desc")}
         </p>
       </div>
     );
@@ -112,9 +113,9 @@ export default function TaxReport({ taxData }: TaxReportProps) {
       <div className="rounded-[20px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-5 border-b border-[var(--border-subtle)]">
           <div>
-            <h3 className="text-[15px] font-bold text-[var(--text-main)]">Realized gains</h3>
+            <h3 className="text-[15px] font-bold text-[var(--text-main)]">{t("portfolio.tax.title")}</h3>
             <p className="text-[12px] text-[var(--text-muted)] mt-0.5">
-              FIFO lot matching · {taxData.disposalCount} disposal{taxData.disposalCount === 1 ? "" : "s"} on record
+              {t("portfolio.tax.subtitle", { count: taxData.disposalCount })}
             </p>
           </div>
 
@@ -138,7 +139,7 @@ export default function TaxReport({ taxData }: TaxReportProps) {
                     year === "all" ? "bg-[var(--bg-overlay)] text-[var(--text-main)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-main)]"
                   }`}
                 >
-                  All
+                  {t("portfolio.tax.all")}
                 </button>
               )}
             </div>
@@ -148,24 +149,24 @@ export default function TaxReport({ taxData }: TaxReportProps) {
               className="flex items-center gap-2 px-4 py-2 rounded-2xl text-[12px] font-bold bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors"
             >
               <Download size={14} />
-              Export CSV
+              {t("portfolio.tax.export")}
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
-          <StatCard label="Proceeds" value={`$${money(totals.proceeds)}`} sub="Total sale value" />
-          <StatCard label="Cost basis" value={`$${money(totals.cost)}`} sub="What you paid for it" />
+          <StatCard label={t("portfolio.tax.proceeds")} value={`$${money(totals.proceeds)}`} sub={t("portfolio.tax.proceeds_hint")} />
+          <StatCard label={t("portfolio.tax.cost_basis")} value={`$${money(totals.cost)}`} sub={t("portfolio.tax.cost_hint")} />
           <StatCard
-            label="Net gain / loss"
+            label={t("portfolio.tax.net")}
             value={signed(totals.gain)}
             tone={totals.gain >= 0 ? "positive" : "negative"}
-            sub={year === "all" ? "All years" : `Tax year ${year}`}
+            sub={year === "all" ? t("portfolio.tax.net_all") : t("portfolio.tax.net_year", { year })}
           />
           <StatCard
-            label="Short / long term"
+            label={t("portfolio.tax.term_split")}
             value={`${signed(totals.shortTerm)} · ${signed(totals.longTerm)}`}
-            sub="Split at 365 days held"
+            sub={t("portfolio.tax.term_hint")}
           />
         </div>
       </div>
@@ -175,9 +176,10 @@ export default function TaxReport({ taxData }: TaxReportProps) {
           <div className="min-w-[860px]">
             <div className={`grid ${GRID} gap-3 px-6 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-base)]/40 items-center`}>
               {[
-                { l: "Asset", a: "left" }, { l: "Acquired", a: "left" }, { l: "Sold", a: "left" },
-                { l: "Term", a: "left" }, { l: "Proceeds", a: "right" }, { l: "Cost", a: "right" },
-                { l: "Gain / loss", a: "right" },
+                { l: t("portfolio.tax.asset"), a: "left" }, { l: t("portfolio.tax.acquired"), a: "left" },
+                { l: t("portfolio.tax.sold"), a: "left" }, { l: t("portfolio.tax.term"), a: "left" },
+                { l: t("portfolio.tax.proceeds"), a: "right" }, { l: t("portfolio.tax.cost_basis"), a: "right" },
+                { l: t("portfolio.tax.gain"), a: "right" },
               ].map(({ l, a }) => (
                 <div key={l} className={`text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)] ${a === "right" ? "text-right" : ""}`}>
                   {l}
@@ -196,8 +198,8 @@ export default function TaxReport({ taxData }: TaxReportProps) {
                     {d.quantity.toLocaleString(undefined, { maximumFractionDigits: 8 })}
                   </div>
                 </div>
-                <div className="text-[12px] text-[var(--text-muted)] tabular-nums">{shortDate(d.acquired)}</div>
-                <div className="text-[12px] text-[var(--text-muted)] tabular-nums">{shortDate(d.sold)}</div>
+                <div className="text-[12px] text-[var(--text-muted)] tabular-nums">{shortDate(d.acquired, i18n.language)}</div>
+                <div className="text-[12px] text-[var(--text-muted)] tabular-nums">{shortDate(d.sold, i18n.language)}</div>
                 <div>
                   <span
                     className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
@@ -205,9 +207,9 @@ export default function TaxReport({ taxData }: TaxReportProps) {
                         ? "bg-[var(--accent-muted)] text-[var(--accent)]"
                         : "bg-[var(--bg-overlay)] text-[var(--text-muted)]"
                     }`}
-                    title={`${d.holdingDays} days held`}
+                    title={t("portfolio.tax.days_held", { count: d.holdingDays })}
                   >
-                    {d.longTerm ? "Long" : "Short"}
+                    {d.longTerm ? t("portfolio.tax.long") : t("portfolio.tax.short")}
                   </span>
                 </div>
                 <div className="text-right text-[13px] font-medium text-[var(--text-main)] tabular-nums">${money(d.proceeds)}</div>
@@ -223,9 +225,7 @@ export default function TaxReport({ taxData }: TaxReportProps) {
         <div className="flex items-start gap-2.5 px-6 py-4 border-t border-[var(--border-subtle)] bg-[var(--bg-base)]/40">
           <Info size={14} className="text-[var(--text-faint)] shrink-0 mt-0.5" />
           <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-            Calculated with first-in-first-out lot matching and a 365-day long-term threshold. Rules differ by
-            country — some require average cost, some treat crypto-to-crypto swaps as disposals, and fees are
-            not included here. Use this as a working record, not as a filed return or tax advice.
+            {t("portfolio.tax.disclaimer")}
           </p>
         </div>
       </div>

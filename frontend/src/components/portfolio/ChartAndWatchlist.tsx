@@ -1,14 +1,16 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartTooltip, LineChart, Line } from "recharts";
 import type { Holding } from "./PortfolioUtils";
 
 type TabId = "holdings" | "trending" | "gainers";
 
-const TABS: { id: TabId; label: string }[] = [
-  { id: "holdings", label: "Holdings" },
-  { id: "trending", label: "Trending" },
-  { id: "gainers", label: "Top Gainers" },
-];
+const TABS: TabId[] = ["holdings", "trending", "gainers"];
+const TAB_KEYS: Record<TabId, string> = {
+  holdings: "portfolio.watchlist.holdings",
+  trending: "portfolio.watchlist.trending",
+  gainers: "portfolio.watchlist.gainers",
+};
 
 interface ChartAndWatchlistProps {
   change24hPct: number;
@@ -38,6 +40,7 @@ export default function ChartAndWatchlist({
   marketData,
   sparklines,
 }: ChartAndWatchlistProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabId>("holdings");
 
   // The two benchmark figures used to be hardcoded. They now come from the
@@ -80,10 +83,9 @@ export default function ChartAndWatchlist({
     }));
   }, [activeTab, holdings, marketData]);
 
-  const emptyTabMessage =
-    activeTab === "holdings"
-      ? "No assets yet — connect a wallet or import your trades."
-      : "Market data is unavailable right now.";
+  const emptyTabMessage = t(
+    activeTab === "holdings" ? "portfolio.watchlist.empty_holdings" : "portfolio.watchlist.empty_market"
+  );
 
   return (
     <>
@@ -93,20 +95,18 @@ export default function ChartAndWatchlist({
         <div className="lg:col-span-2 p-6 rounded-[20px] bg-[var(--bg-subtle)] backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl">
           <div className="flex flex-wrap justify-between items-start gap-4 mb-8">
             <div>
-              <h3 className="text-[15px] font-bold text-[var(--text-main)]">Portfolio value</h3>
+              <h3 className="text-[15px] font-bold text-[var(--text-main)]">{t("portfolio.chart.title")}</h3>
               {/* The reconstruction prices today's quantities at past prices, so it
                   is not what the portfolio was actually worth. Say so rather than
                   letting the line imply a history the user did not have. */}
               <p className="text-[11px] text-[var(--text-faint)] mt-0.5">
-                {chartSource === "snapshots"
-                  ? "From recorded portfolio history"
-                  : "Estimated — your current holdings priced at past rates"}
+                {t(chartSource === "snapshots" ? "portfolio.chart.from_snapshots" : "portfolio.chart.estimated")}
               </p>
             </div>
             <div className="flex gap-6">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-[var(--positive)] rounded-full"></div> Portfolio (24H)
+                  <div className="w-2 h-2 bg-[var(--positive)] rounded-full"></div> {t("portfolio.chart.portfolio_24h")}
                 </span>
                 <span className={`text-[13px] font-black ${change24hPct >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {change24hPct >= 0 ? "+" : ""}{change24hPct.toFixed(2)}%
@@ -114,7 +114,7 @@ export default function ChartAndWatchlist({
               </div>
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div> BTC (24H)
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div> {t("portfolio.chart.btc_24h")}
                 </span>
                 <span className={`text-[13px] font-black ${btcChange === null ? "text-[var(--text-faint)]" : btcChange >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {btcChange === null ? "—" : `${btcChange >= 0 ? "+" : ""}${btcChange.toFixed(2)}%`}
@@ -122,7 +122,7 @@ export default function ChartAndWatchlist({
               </div>
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div> ETH (24H)
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div> {t("portfolio.chart.eth_24h")}
                 </span>
                 <span className={`text-[13px] font-black ${ethChange === null ? "text-[var(--text-faint)]" : ethChange >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {ethChange === null ? "—" : `${ethChange >= 0 ? "+" : ""}${ethChange.toFixed(2)}%`}
@@ -159,7 +159,7 @@ export default function ChartAndWatchlist({
                   <RechartTooltip
                     contentStyle={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-base)', borderRadius: '12px' }}
                     itemStyle={{ color: 'var(--text-main)', fontSize: '12px', fontWeight: 'bold' }}
-                    formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'Portfolio Value']}
+                    formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), t("portfolio.chart.tooltip_value")]}
                     labelFormatter={(label) => `${timeframeLabel} · ${label}`}
                   />
                   <Area type="monotone" dataKey="value" stroke="var(--positive)" strokeWidth={3} fill="url(#colorValue)" />
@@ -167,11 +167,9 @@ export default function ChartAndWatchlist({
               </ResponsiveContainer>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--text-muted)] border border-dashed border-[var(--border-subtle)] rounded-[12px] bg-[var(--bg-overlay)] text-center px-6">
-                <span className="text-[14px] font-bold">No Historical Data</span>
+                <span className="text-[14px] font-bold">{t("portfolio.chart.no_data")}</span>
                 <span className="text-[12px]">
-                  {holdings.length === 0
-                    ? "Connect a wallet or import trades to start tracking."
-                    : "Not enough price history for this range yet."}
+                  {t(holdings.length === 0 ? "portfolio.chart.no_data_connect" : "portfolio.chart.no_data_range")}
                 </span>
               </div>
             )}
@@ -183,15 +181,15 @@ export default function ChartAndWatchlist({
           <div className="relative z-10 flex gap-4 mb-6 border-b border-[var(--border-subtle)] pb-3">
             {TABS.map((tab) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                key={tab}
+                onClick={() => setActiveTab(tab)}
                 className={`relative z-20 text-[12px] font-bold pb-3 -mb-[13px] cursor-pointer transition-colors ${
-                  activeTab === tab.id
-                    ? "text-[var(--text-main)] border-b-2 border-white"
+                  activeTab === tab
+                    ? "text-[var(--text-main)] border-b-2 border-[var(--text-main)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-main)]"
                 }`}
               >
-                {tab.label}
+                {t(TAB_KEYS[tab])}
               </button>
             ))}
           </div>

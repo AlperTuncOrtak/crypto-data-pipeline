@@ -1,117 +1,156 @@
 import os
 import httpx
-from typing import List, Dict, Any
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Dict, List
+
 from backend.services.price_service import get_live_prices_sync
 
-def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
-    '''
-    Fetches the ERC20 token balances and native ETH balance for a given wallet address using Alchemy API.
-    '''
-    alchemy_api_key = os.getenv("ALCHEMY_API_KEY", "")
-    
-    if not alchemy_api_key:
-        return {"balances": [], "total_usd": 0, "error": "ALCHEMY_API_KEY is not configured"}
-        
-    base_url = f"https://eth-mainnet.g.alchemy.com/v2/{alchemy_api_key}"
-    headers = {"accept": "application/json", "content-type": "application/json"}
-    formatted_balances = []
-    
-    try:
-        # 1. Native ETH Balance
-        eth_payload = {
-            "id": 1,
-            "jsonrpc": "2.0",
-            "method": "eth_getBalance",
-            "params": [wallet_address, "latest"]
-        }
-        eth_resp = httpx.post(base_url, json=eth_payload, headers=headers, timeout=10.0)
-        eth_resp.raise_for_status()
-        eth_data = eth_resp.json()
-        
-        raw_eth = eth_data.get("result", "0x0")
+# ------------------------------------------------------------------
+# Desteklenen aglar.
+#
+# Bu liste frontend'in wagmi yapilandirmasiyla (src/main.tsx) ve Deposit
+# modalinin kullaniciya verdigi sozle ayni olmali. Onceden burada sadece
+# eth-mainnet vardi; kullaniciyi 5 aga para yatirmaya davet edip tek agi
+# saymak, Base'e USDC gonderen birinin bakiyesinin hic gorunmemesi
+# demekti.
+# ------------------------------------------------------------------
+CHAINS = [
+    {"key": "ethereum", "name": "Ethereum", "chain_id": 1,     "subdomain": "eth-mainnet",     "native": "ETH"},
+    {"key": "arbitrum", "name": "Arbitrum", "chain_id": 42161, "subdomain": "arb-mainnet",     "native": "ETH"},
+    {"key": "base",     "name": "Base",     "chain_id": 8453,  "subdomain": "base-mainnet",    "native": "ETH"},
+    {"key": "optimism", "name": "Optimism", "chain_id": 10,    "subdomain": "opt-mainnet",     "native": "ETH"},
+    {"key": "polygon",  "name": "Polygon",  "chain_id": 137,   "subdomain": "polygon-mainnet", "native": "POL"},
+]
+
+# Zincir basina okunacak token ustu. Sinirsiz birakmak, spam airdrop'la
+# dolu bir cuzdanda yuzlerce metadata cagrisi demek. Sinir asilirsa
+# yanitta `truncated` ile bildiriliyor — sessizce kesmiyoruz.
+MAX_TOKENS_PER_CHAIN = 25
+
+HEADERS = {"accept": "application/json", "content-type": "application/json"}
+RPC_TIMEOUT = 12.0
+META_TIMEOUT = 6.0
+
+
+def _rpc(client: httpx.Client, url: str, method: str, params: list, timeout: float) -> Any:
+    resp = client.post(
+        url,
+        json={"id": 1, "jsonrpc": "2.0", "method": method, "params": params},
+        headers=HEADERS,
+        timeout=timeout,
+    )
+    resp.raise_for_status()
+    return resp.json().get("result")
+
+
+def _fetch_chain(wallet_address: str, chain: dict, api_key: str) -> Dict[str, Any]:
+    """Tek bir agdaki native + ERC20 bakiyelerini dondurur."""
+    url = f"https://{chain['subdomain']}.g.alchemy.com/v2/{api_key}"
+    balances: List[dict] = []
+    truncated = False
+
+    with httpx.Client() as client:
+        # 1. Native coin
         try:
-            eth_balance = int(raw_eth, 16) / (10**18)
-            if eth_balance > 0:
-                formatted_balances.append({
+            raw = _rpc(client, url, "eth_getBalance", [wallet_address, "latest"], RPC_TIMEOUT)
+            amount = int(raw, 16) / (10 ** 18)
+            if amount > 0:
+                balances.append({
                     "contract_address": "native",
                     "decimals": 18,
-                    "balance": eth_balance,
-                    "symbol": "ETH",
-                    "usd_value": 0
+                    "balance": amount,
+                    "symbol": chain["native"],
+                    "chain": chain["key"],
+                    "chain_name": chain["name"],
+                    "chain_id": chain["chain_id"],
+                    "usd_value": 0,
                 })
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[alchemy] native balance failed on {chain['key']}: {e}")
 
+        # 2. ERC20 bakiyeleri
         try:
-            # 2. Token Balances
-            balance_payload = {
-                "id": 1,
-                "jsonrpc": "2.0",
-                "method": "alchemy_getTokenBalances",
-                "params": [wallet_address, "erc20"]
-            }
-            
-            resp = httpx.post(base_url, json=balance_payload, headers=headers, timeout=10.0)
-            resp.raise_for_status()
-            
-            data = resp.json()
-            token_balances = data.get("result", {}).get("tokenBalances", [])
-            
-            non_zero_balances = [
-                tb for tb in token_balances 
-                if tb.get("tokenBalance") != "0x0" and tb.get("tokenBalance") != "0x0000000000000000000000000000000000000000000000000000000000000000"
+            result = _rpc(client, url, "alchemy_getTokenBalances", [wallet_address, "erc20"], RPC_TIMEOUT)
+            token_balances = (result or {}).get("tokenBalances", [])
+            non_zero = [
+                tb for tb in token_balances
+                if tb.get("tokenBalance") and int(tb["tokenBalance"], 16) > 0
             ]
-            
-            # 3. Fetch Metadata for each token
-            for tb in non_zero_balances[:10]: # Top 10 token for MVP
-                contract_address = tb.get("contractAddress")
-                raw_balance = tb.get("tokenBalance")
-                
-                meta_payload = {
-                    "id": 1,
-                    "jsonrpc": "2.0",
-                    "method": "alchemy_getTokenMetadata",
-                    "params": [contract_address]
-                }
-                
+
+            if len(non_zero) > MAX_TOKENS_PER_CHAIN:
+                truncated = True
+                non_zero = non_zero[:MAX_TOKENS_PER_CHAIN]
+
+            for tb in non_zero:
+                contract = tb.get("contractAddress")
                 try:
-                    meta_resp = httpx.post(base_url, json=meta_payload, headers=headers, timeout=5.0)
-                    meta_data = meta_resp.json().get("result", {})
-                    
-                    decimals = meta_data.get("decimals") or 18
-                    symbol = meta_data.get("symbol") or "TKN"
-                    
-                    numeric_balance = int(raw_balance, 16) / (10**decimals)
-                    
-                    if numeric_balance > 0:
-                        formatted_balances.append({
-                            "contract_address": contract_address,
+                    meta = _rpc(client, url, "alchemy_getTokenMetadata", [contract], META_TIMEOUT) or {}
+                    decimals = meta.get("decimals")
+                    if decimals is None:
+                        decimals = 18
+                    symbol = (meta.get("symbol") or "").upper()
+                    if not symbol:
+                        # Isimsiz token neredeyse her zaman spam; fiyatlayamayiz.
+                        continue
+
+                    amount = int(tb["tokenBalance"], 16) / (10 ** decimals)
+                    if amount > 0:
+                        balances.append({
+                            "contract_address": contract,
                             "decimals": decimals,
-                            "balance": numeric_balance,
-                            "symbol": symbol.upper(),
-                            "usd_value": 0
+                            "balance": amount,
+                            "symbol": symbol,
+                            "chain": chain["key"],
+                            "chain_name": chain["name"],
+                            "chain_id": chain["chain_id"],
+                            "usd_value": 0,
                         })
                 except Exception as e:
-                    print(f"Metadata error for {contract_address}: {e}")
-        except Exception as token_err:
-            print(f"Token balance fetch error for {wallet_address}: {token_err}")
-            
-        # --- NEW: USD Price Calculation ---
-        symbols = [b["symbol"] for b in formatted_balances]
-        prices = get_live_prices_sync(symbols)
-        
-        total_usd = 0
-        for b in formatted_balances:
-            sym = b["symbol"]
-            price = prices.get(sym, 0)
-            b["usd_value"] = b["balance"] * price
-            total_usd += b["usd_value"]
-            
-        return {
-            "balances": formatted_balances,
-            "total_usd": total_usd
-        }
-        
-    except Exception as e:
-        return {"balances": [], "total_usd": 0, "error": str(e)}
+                    print(f"[alchemy] metadata failed for {contract} on {chain['key']}: {e}")
+        except Exception as e:
+            print(f"[alchemy] token balances failed on {chain['key']}: {e}")
 
+    return {"chain": chain["key"], "balances": balances, "truncated": truncated}
+
+
+def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
+    """
+    Cuzdanin desteklenen tum aglardaki bakiyelerini toplar.
+
+    Aglar paralel cekiliyor: sirayla gidilse 5 ag x (2 RPC + N metadata)
+    cagrisi istegi saniyelerce bekletirdi.
+    """
+    api_key = os.getenv("ALCHEMY_API_KEY", "")
+    if not api_key:
+        return {"balances": [], "total_usd": 0, "chains": [], "error": "ALCHEMY_API_KEY is not configured"}
+
+    try:
+        with ThreadPoolExecutor(max_workers=len(CHAINS)) as pool:
+            results = list(pool.map(lambda c: _fetch_chain(wallet_address, c, api_key), CHAINS))
+    except Exception as e:
+        return {"balances": [], "total_usd": 0, "chains": [], "error": str(e)}
+
+    balances: List[dict] = []
+    truncated_chains: List[str] = []
+    for r in results:
+        balances.extend(r["balances"])
+        if r["truncated"]:
+            truncated_chains.append(r["chain"])
+
+    # Fiyatlar sembol bazli; ayni sembol farkli aglarda ayni fiyattan.
+    prices = get_live_prices_sync([b["symbol"] for b in balances])
+
+    total_usd = 0.0
+    for b in balances:
+        price = prices.get(b["symbol"], 0)
+        b["usd_value"] = b["balance"] * price
+        total_usd += b["usd_value"]
+
+    balances.sort(key=lambda b: b["usd_value"], reverse=True)
+
+    return {
+        "balances": balances,
+        "total_usd": total_usd,
+        "chains": [c["key"] for c in CHAINS],
+        "truncated_chains": truncated_chains,
+    }

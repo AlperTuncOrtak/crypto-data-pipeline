@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain, X, ShieldAlert, Layers, Target, Coins, TrendingUp, TrendingDown,
@@ -112,8 +113,9 @@ function InsightList({
 export default function AIRebalanceModal({
   isOpen, onClose, holdings, totalValue, totalPnl, hasCostBasis, taxData,
 }: AIRebalanceModalProps) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<"scanning" | "results" | "error">("scanning");
-  const [scanText, setScanText] = useState("Reading your positions…");
+  const [scanText, setScanText] = useState("");
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [runId, setRunId] = useState(0);
@@ -137,7 +139,7 @@ export default function AIRebalanceModal({
     const run = async () => {
       setPhase("scanning");
       try {
-        setScanText("Measuring concentration and sector exposure…");
+        setScanText(t("portfolio.ai.scanning"));
         const response = await apiClient.post("/ai/portfolio", {
           holdings: snap.holdings.map((h) => ({
             symbol: h.symbol,
@@ -157,7 +159,7 @@ export default function AIRebalanceModal({
         setPhase("results");
       } catch (err: any) {
         if (cancelled) return;
-        setErrorMsg(err?.response?.data?.detail || err?.message || "Could not reach the analysis engine.");
+        setErrorMsg(err?.response?.data?.detail || err?.message || t("portfolio.ai.error_generic"));
         setPhase("error");
       }
     };
@@ -184,9 +186,9 @@ export default function AIRebalanceModal({
               <Brain className="text-[var(--accent)]" size={19} />
             </div>
             <div>
-              <h2 className="text-[16px] font-bold text-[var(--text-main)]">Portfolio Analysis</h2>
+              <h2 className="text-[16px] font-bold text-[var(--text-main)]">{t("portfolio.ai.title")}</h2>
               <p className="text-[11px] text-[var(--text-muted)]">
-                Metrics calculated from your positions · commentary by AI
+                {t("portfolio.ai.subtitle")}
               </p>
             </div>
           </div>
@@ -194,7 +196,7 @@ export default function AIRebalanceModal({
             {phase === "results" && (
               <button
                 onClick={() => setRunId((n) => n + 1)}
-                title="Run again"
+                title={t("portfolio.ai.rerun")}
                 className="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] bg-[var(--bg-overlay)] rounded-xl transition-colors"
               >
                 <RefreshCw size={16} />
@@ -228,14 +230,14 @@ export default function AIRebalanceModal({
                   <WifiOff className="text-[var(--negative)]" size={24} />
                 </div>
                 <div>
-                  <h3 className="text-[15px] font-bold text-[var(--text-main)] mb-1">Analysis unavailable</h3>
+                  <h3 className="text-[15px] font-bold text-[var(--text-main)] mb-1">{t("portfolio.ai.unavailable_title")}</h3>
                   <p className="text-[13px] text-[var(--text-muted)] max-w-sm">{errorMsg}</p>
                 </div>
                 <button
                   onClick={() => setRunId((n) => n + 1)}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[13px] font-bold bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors"
                 >
-                  <RefreshCw size={14} /> Try again
+                  <RefreshCw size={14} /> {t("portfolio.ai.retry")}
                 </button>
               </motion.div>
             )}
@@ -244,7 +246,7 @@ export default function AIRebalanceModal({
               <motion.div key="results" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="p-6 space-y-6">
                 {analysis.empty ? (
                   <div className="py-16 text-center">
-                    <p className="text-[14px] font-bold text-[var(--text-main)] mb-2">Nothing to analyse yet</p>
+                    <p className="text-[14px] font-bold text-[var(--text-main)] mb-2">{t("portfolio.ai.empty_title")}</p>
                     <p className="text-[13px] text-[var(--text-muted)] max-w-md mx-auto">{analysis.summary}</p>
                   </div>
                 ) : (
@@ -252,31 +254,34 @@ export default function AIRebalanceModal({
                     {/* Scores */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <ScoreMeter
-                        label="Risk"
+                        label={t("portfolio.ai.risk")}
                         score={analysis.risk_score}
                         color={toneForRisk(analysis.risk_score)}
-                        caption={`${analysis.risk_label} — from concentration, memecoin and altcoin weight, offset by your stablecoin buffer.`}
+                        caption={t("portfolio.ai.risk_caption", { label: analysis.risk_label })}
                       />
                       <ScoreMeter
-                        label="Diversification"
+                        label={t("portfolio.ai.diversification")}
                         score={analysis.diversification_score}
                         color={toneForDiversification(analysis.diversification_score)}
-                        caption={`Based on ${analysis.effective_positions.toFixed(2)} effective positions across ${sectorEntries.length} sector${sectorEntries.length === 1 ? "" : "s"}.`}
+                        caption={t("portfolio.ai.div_caption", {
+                          positions: analysis.effective_positions.toFixed(2),
+                          sectors: sectorEntries.length,
+                        })}
                       />
                     </div>
 
                     {/* Metric tiles */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                      <MetricTile icon={Target} label="Largest position" value={`${analysis.concentration_pct.toFixed(1)}%`} hint="of total value" />
-                      <MetricTile icon={Layers} label="Effective positions" value={analysis.effective_positions.toFixed(2)} hint={`from ${analysis.position_count} holdings`} />
-                      <MetricTile icon={Coins} label="Stablecoin buffer" value={`${analysis.stablecoin_pct.toFixed(1)}%`} hint="dry powder" />
-                      <MetricTile icon={ShieldAlert} label="Correlation risk" value={analysis.correlation_risk.toUpperCase()} hint="vs. the crypto market" />
+                      <MetricTile icon={Target} label={t("portfolio.ai.largest")} value={`${analysis.concentration_pct.toFixed(1)}%`} hint={t("portfolio.ai.largest_hint")} />
+                      <MetricTile icon={Layers} label={t("portfolio.ai.effective")} value={analysis.effective_positions.toFixed(2)} hint={t("portfolio.ai.effective_hint", { count: analysis.position_count })} />
+                      <MetricTile icon={Coins} label={t("portfolio.ai.buffer")} value={`${analysis.stablecoin_pct.toFixed(1)}%`} hint={t("portfolio.ai.buffer_hint")} />
+                      <MetricTile icon={ShieldAlert} label={t("portfolio.ai.correlation")} value={analysis.correlation_risk.toUpperCase()} hint={t("portfolio.ai.correlation_hint")} />
                     </div>
 
                     {/* Sector breakdown */}
                     {sectorEntries.length > 0 && (
                       <div>
-                        <h4 className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-main)] mb-3">Sector exposure</h4>
+                        <h4 className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-main)] mb-3">{t("portfolio.ai.sectors")}</h4>
                         <div className="flex h-2.5 rounded-full overflow-hidden mb-3">
                           {sectorEntries.map(([name, pct], i) => (
                             <div
@@ -308,11 +313,11 @@ export default function AIRebalanceModal({
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <InsightList title="Strengths" items={analysis.strengths} icon={CheckCircle2} color="var(--positive)" />
-                          <InsightList title="Risks" items={analysis.risks} icon={AlertTriangle} color="var(--negative)" />
+                          <InsightList title={t("portfolio.ai.strengths")} items={analysis.strengths} icon={CheckCircle2} color="var(--positive)" />
+                          <InsightList title={t("portfolio.ai.risks")} items={analysis.risks} icon={AlertTriangle} color="var(--negative)" />
                         </div>
 
-                        <InsightList title="Recommendations" items={analysis.recommendations} icon={Lightbulb} color="var(--accent)" />
+                        <InsightList title={t("portfolio.ai.recommendations")} items={analysis.recommendations} icon={Lightbulb} color="var(--accent)" />
 
                         {(analysis.best_position || analysis.worst_position) && (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -320,7 +325,7 @@ export default function AIRebalanceModal({
                               <div className="flex gap-3 p-4 rounded-[14px] bg-[var(--positive-muted)] border border-[var(--positive)]/20">
                                 <TrendingUp size={16} className="text-[var(--positive)] shrink-0 mt-0.5" />
                                 <div>
-                                  <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--positive)] mb-1">Best position</div>
+                                  <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--positive)] mb-1">{t("portfolio.ai.best")}</div>
                                   <p className="text-[12.5px] text-[var(--text-main)] leading-snug">{analysis.best_position}</p>
                                 </div>
                               </div>
@@ -329,7 +334,7 @@ export default function AIRebalanceModal({
                               <div className="flex gap-3 p-4 rounded-[14px] bg-[var(--negative-muted)] border border-[var(--negative)]/20">
                                 <TrendingDown size={16} className="text-[var(--negative)] shrink-0 mt-0.5" />
                                 <div>
-                                  <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--negative)] mb-1">Needs attention</div>
+                                  <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--negative)] mb-1">{t("portfolio.ai.worst")}</div>
                                   <p className="text-[12.5px] text-[var(--text-main)] leading-snug">{analysis.worst_position}</p>
                                 </div>
                               </div>
@@ -341,16 +346,14 @@ export default function AIRebalanceModal({
                       <div className="flex gap-3 p-4 rounded-[14px] bg-[var(--warning-muted)] border border-[var(--warning)]/20">
                         <AlertTriangle size={16} className="text-[var(--warning)] shrink-0 mt-0.5" />
                         <p className="text-[12.5px] text-[var(--text-main)] leading-relaxed">
-                          The AI commentary engine is unreachable right now, so only the calculated metrics are
-                          shown above. Those are computed from your own positions and are unaffected.
+                          {t("portfolio.ai.llm_down")}
                         </p>
                       </div>
                     )}
 
                     {!hasCostBasis && (
                       <p className="text-[11px] text-[var(--text-faint)] leading-relaxed border-t border-[var(--border-subtle)] pt-4">
-                        No trade history imported, so profit and loss is unknown and was excluded from this
-                        analysis. Import a CSV or sync an exchange for P&amp;L-aware advice.
+                        {t("portfolio.ai.no_cost_basis")}
                       </p>
                     )}
                   </>

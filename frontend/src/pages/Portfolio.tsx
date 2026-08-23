@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { useMarket } from "../hooks/useMarket";
 import { useSparklines } from "../hooks/useSparklines";
@@ -21,43 +22,37 @@ import { calcBuyingPower, calcAllocation, calcTax, parseCSV } from '../component
 
 type ChartPoint = { time: string; value: number };
 
-const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "holdings", label: "Holdings" },
-  { id: "transactions", label: "Transactions" },
-  { id: "tax", label: "Tax" },
-  { id: "swap", label: "Swap" },
-] as const;
+const TABS = ["overview", "holdings", "transactions", "tax", "swap"] as const;
 
-type TabId = (typeof TABS)[number]["id"];
+type TabId = (typeof TABS)[number];
 
 /** Ranges offered above the chart. `hours` is what /analysis/history expects. */
-const TIMEFRAMES: { id: string; label: string; hours: () => number }[] = [
-  { id: "1D", label: "Last 24 hours", hours: () => 24 },
-  { id: "1W", label: "Last 7 days", hours: () => 24 * 7 },
-  { id: "1M", label: "Last 30 days", hours: () => 24 * 30 },
-  { id: "6M", label: "Last 6 months", hours: () => 24 * 182 },
+const TIMEFRAMES: { id: string; hours: () => number }[] = [
+  { id: "1D", hours: () => 24 },
+  { id: "1W", hours: () => 24 * 7 },
+  { id: "1M", hours: () => 24 * 30 },
+  { id: "6M", hours: () => 24 * 182 },
   {
     id: "YTD",
-    label: "Year to date",
     hours: () => {
       const now = new Date();
       const start = new Date(now.getFullYear(), 0, 1);
       return Math.max(24, Math.ceil((now.getTime() - start.getTime()) / 3_600_000));
     },
   },
-  { id: "1Y", label: "Last 12 months", hours: () => 24 * 365 },
-  { id: "All", label: "All time", hours: () => 24 * 365 * 5 },
+  { id: "1Y", hours: () => 24 * 365 },
+  { id: "All", hours: () => 24 * 365 * 5 },
 ];
 
 export default function Portfolio() {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: marketData } = useMarket(500);
 
   const initialTab = (searchParams.get("tab") || "overview") as TabId;
   const [activeTab, setActiveTab] = useState<TabId>(
-    TABS.some((t) => t.id === initialTab) ? initialTab : "overview"
+    TABS.includes(initialTab as any) ? initialTab : "overview"
   );
 
   const handleTabChange = (tab: TabId) => {
@@ -109,10 +104,12 @@ export default function Portfolio() {
 
       setImportMsg({
         ok: true,
-        text: `Imported ${count} transaction${count === 1 ? "" : "s"}${skipped > 0 ? ` (${skipped} row${skipped === 1 ? "" : "s"} skipped)` : ""}.`,
+        text: skipped > 0
+          ? t("portfolio.import.success_skipped", { count, skipped })
+          : t("portfolio.import.success", { count }),
       });
     } catch (e: any) {
-      setImportMsg({ ok: false, text: e?.message || "Could not read the file." });
+      setImportMsg({ ok: false, text: e?.message || t("portfolio.import.error") });
     }
   };
 
@@ -193,8 +190,8 @@ export default function Portfolio() {
     const axisLabel = (iso: string) => {
       const d = new Date(iso);
       return showDateAxis
-        ? d.toLocaleDateString([], { month: "short", day: "numeric" })
-        : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        ? d.toLocaleDateString(i18n.language, { month: "short", day: "numeric" })
+        : d.toLocaleTimeString(i18n.language, { hour: "2-digit", minute: "2-digit" });
     };
 
     const fetchHistory = async () => {
@@ -286,11 +283,11 @@ export default function Portfolio() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-main)] tracking-tight mb-3 flex items-center gap-3">
-              Portfolio
+              {t("portfolio.title")}
               {totalValue > 100000 && <span className="text-2xl">🐳</span>}
             </h1>
             <p className="text-[var(--text-muted)] text-[15px] font-medium max-w-xl">
-              Track your crypto wealth across exchanges and wallets in real-time.
+              {t("portfolio.subtitle")}
             </p>
           </div>
 
@@ -306,35 +303,35 @@ export default function Portfolio() {
               className="flex items-center gap-2 bg-[var(--bg-subtle)] hover:bg-[var(--bg-overlay)] text-[var(--text-main)] border border-[var(--border-subtle)] hover:border-[var(--border-base)] font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm group"
             >
               <Brain size={16} className="group-hover:scale-110 transition-transform text-[var(--accent)]" />
-              AI Analysis
+              {t("portfolio.ai_button")}
             </button>
             <button
               onClick={() => setShowAddSource(true)}
               className="flex items-center gap-2 bg-[var(--text-main)] hover:opacity-90 text-[var(--bg-base)] font-bold py-2.5 px-5 rounded-3xl text-[13px] transition-all shadow-sm hover:-translate-y-0.5"
             >
               <Plus size={16} strokeWidth={3} />
-              Add Source
+              {t("portfolio.add_source")}
             </button>
           </div>
         </div>
 
         <div className="flex overflow-x-auto custom-scrollbar gap-1 mb-8 p-1 bg-[var(--bg-subtle)] border border-[var(--border-subtle)] rounded-2xl w-fit backdrop-blur-xl">
           {TABS.map((tab) => {
-            const count = tabCount[tab.id];
+            const count = tabCount[tab];
             return (
               <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
+                key={tab}
+                onClick={() => handleTabChange(tab)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-3xl text-[13px] font-bold whitespace-nowrap transition-all duration-300 ${
-                  activeTab === tab.id
+                  activeTab === tab
                     ? "bg-[var(--bg-overlay)] text-[var(--text-main)] shadow-sm border border-[var(--border-subtle)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-overlay)]/50 border border-transparent"
                 }`}
               >
-                {tab.label}
+                {t(`portfolio.tabs.${tab}`)}
                 {count !== undefined && count > 0 && (
                   <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${
-                    activeTab === tab.id ? "bg-[var(--accent-muted)] text-[var(--accent)]" : "bg-[var(--bg-base)] text-[var(--text-faint)]"
+                    activeTab === tab ? "bg-[var(--accent-muted)] text-[var(--accent)]" : "bg-[var(--bg-base)] text-[var(--text-faint)]"
                   }`}>
                     {count}
                   </span>
@@ -379,15 +376,15 @@ export default function Portfolio() {
             >
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
                 <div>
-                  <h2 className="text-xl font-semibold text-[var(--text-main)] mb-1">Overview</h2>
-                  <p className="text-[13px] text-[var(--text-muted)]">High level real-time data from your portfolio</p>
+                  <h2 className="text-xl font-semibold text-[var(--text-main)] mb-1">{t("portfolio.overview.title")}</h2>
+                  <p className="text-[13px] text-[var(--text-muted)]">{t("portfolio.overview.subtitle")}</p>
                 </div>
                 <div className="flex bg-[var(--bg-subtle)] rounded-2xl p-1 border border-[var(--border-subtle)] mt-4 md:mt-0 backdrop-blur-xl">
                   {TIMEFRAMES.map((tf) => (
                     <button
                       key={tf.id}
                       onClick={() => setTimeframe(tf.id)}
-                      title={tf.label}
+                      title={t(`portfolio.timeframes.${tf.id}`)}
                       className={`px-4 py-1.5 rounded-2xl text-[11px] font-bold transition-all ${tf.id === timeframe ? 'bg-[var(--bg-overlay)] text-[var(--text-main)] shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                     >
                       {tf.id}
@@ -413,7 +410,7 @@ export default function Portfolio() {
                 change24hPct={change24hPct}
                 chartData={chartData}
                 isChartLoading={isChartLoading}
-                timeframeLabel={activeTimeframe.label}
+                timeframeLabel={t(`portfolio.timeframes.${activeTimeframe.id}`)}
                 chartSource={chartSource}
                 holdings={holdings}
                 marketData={marketData || []}

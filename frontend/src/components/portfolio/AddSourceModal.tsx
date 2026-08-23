@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload } from "lucide-react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -31,6 +32,7 @@ export default function AddSourceModal({
   handleFile,
   setImportMsg,
 }: AddSourceModalProps) {
+  const { t } = useTranslation();
   const [connectingExchange, setConnectingExchange] = useState<any>(null);
   const [oauthStep, setOauthStep] = useState(0);
   const [apiKey, setApiKey] = useState("");
@@ -62,8 +64,8 @@ export default function AddSourceModal({
             >
               <div className="flex items-center justify-between p-6 border-b border-[var(--border-subtle)]">
                 <div>
-                  <h3 className="text-xl font-black text-[var(--text-main)]">Connect Portfolio</h3>
-                  <p className="text-sm text-[var(--text-muted)] mt-1">Link your wallets and exchanges securely.</p>
+                  <h3 className="text-xl font-black text-[var(--text-main)]">{t("portfolio.add_source_modal.title")}</h3>
+                  <p className="text-sm text-[var(--text-muted)] mt-1">{t("portfolio.add_source_modal.subtitle")}</p>
                 </div>
                 <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors bg-white/5 hover:bg-[var(--border-base)] p-2 rounded-full">
                   <X size={20} />
@@ -71,7 +73,7 @@ export default function AddSourceModal({
               </div>
               
               <div className="p-6">
-                <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4">Web3 & Exchanges</p>
+                <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4">{t("portfolio.add_source_modal.section_web3")}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                   <ConnectButton.Custom>
                     {({ account, chain, openAccountModal, openConnectModal, authenticationStatus, mounted }) => {
@@ -89,7 +91,7 @@ export default function AddSourceModal({
                         >
                           <span className="text-2xl">🦊</span>
                           <span className={`text-[11px] font-semibold ${connected ? "text-purple-400" : "text-[var(--text-muted)] group-hover:text-[var(--text-main)]"}`}>
-                            {connected ? "Connected" : "Web3 Wallet"}
+                            {connected ? t("portfolio.add_source_modal.connected") : t("portfolio.add_source_modal.wallet")}
                           </span>
                         </button>
                       );
@@ -114,7 +116,7 @@ export default function AddSourceModal({
                       >
                         <img src={ex.logo} alt={ex.name} className="w-8 h-8 rounded-full object-contain" />
                         <span className={`text-[11px] font-semibold ${isConnected ? "text-[var(--positive)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-main)]"}`}>
-                          {isConnected ? "Synced" : ex.name}
+                          {isConnected ? t("portfolio.add_source_modal.synced") : ex.name}
                         </span>
                       </button>
                     );
@@ -123,14 +125,14 @@ export default function AddSourceModal({
 
                 <div className="grid grid-cols-1 gap-6">
                   <div>
-                    <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3">CSV Import</p>
+                    <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3">{t("portfolio.add_source_modal.csv_section")}</p>
                     <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); onClose(); }} />
                     <button 
                       onClick={() => fileRef.current?.click()}
                       className="w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[var(--border-base)] rounded-3xl p-4 hover:border-[var(--positive)]/50 hover:bg-[var(--positive)]/5 transition-all text-[var(--text-muted)] hover:text-[var(--text-main)] cursor-pointer"
                     >
                       <Upload size={20} />
-                      <span className="text-[12px] font-semibold">Upload CSV</span>
+                      <span className="text-[12px] font-semibold">{t("portfolio.add_source_modal.upload_csv")}</span>
                     </button>
                   </div>
                 </div>
@@ -175,40 +177,40 @@ export default function AddSourceModal({
                     <div className="flex items-center gap-4 mb-6">
                       <img src={connectingExchange.logo} alt={connectingExchange.name} className="w-12 h-12 rounded-full object-contain" />
                       <div>
-                        <h3 className="text-xl font-black text-[var(--text-main)]">API Connection</h3>
-                        <p className="text-xs text-[var(--text-muted)]">Read-Only access for {connectingExchange.name}</p>
+                        <h3 className="text-xl font-black text-[var(--text-main)]">{t("portfolio.add_source_modal.api_title")}</h3>
+                        <p className="text-xs text-[var(--text-muted)]">{t("portfolio.add_source_modal.api_readonly", { exchange: connectingExchange.name })}</p>
                       </div>
                     </div>
 
                     <div className="space-y-4 mb-8">
                       <div>
-                        <label className="block text-xs font-bold text-[var(--text-muted)] mb-1 uppercase tracking-wider">API Key</label>
+                        <label className="block text-xs font-bold text-[var(--text-muted)] mb-1 uppercase tracking-wider">{t("portfolio.add_source_modal.api_key")}</label>
                         <input
                           type="text"
                           value={apiKey}
                           onChange={(e) => setApiKey(e.target.value)}
                           className="w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl px-4 py-3 text-sm text-[var(--text-main)] placeholder-gray-600 focus:outline-none focus:border-[var(--accent)] transition-colors"
-                          placeholder="Enter your API Key"
+                          placeholder={t("portfolio.add_source_modal.api_key_ph")}
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-[var(--text-muted)] mb-1 uppercase tracking-wider">API Secret</label>
+                        <label className="block text-xs font-bold text-[var(--text-muted)] mb-1 uppercase tracking-wider">{t("portfolio.add_source_modal.api_secret")}</label>
                         <input
                           type="password"
                           value={apiSecret}
                           onChange={(e) => setApiSecret(e.target.value)}
                           className="w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl px-4 py-3 text-sm text-[var(--text-main)] placeholder-gray-600 focus:outline-none focus:border-[var(--accent)] transition-colors"
-                          placeholder="Enter your API Secret"
+                          placeholder={t("portfolio.add_source_modal.api_secret_ph")}
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-[var(--text-muted)] mb-1 uppercase tracking-wider">Passphrase <span className="text-gray-600 normal-case">(Optional)</span></label>
+                        <label className="block text-xs font-bold text-[var(--text-muted)] mb-1 uppercase tracking-wider">{t("portfolio.add_source_modal.passphrase")} <span className="text-[var(--text-faint)] normal-case">{t("portfolio.add_source_modal.passphrase_optional")}</span></label>
                         <input
                           type="password"
                           value={apiPassphrase}
                           onChange={(e) => setApiPassphrase(e.target.value)}
                           className="w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-3xl px-4 py-3 text-sm text-[var(--text-main)] placeholder-gray-600 focus:outline-none focus:border-[var(--accent)] transition-colors"
-                          placeholder="Passphrase (if applicable)"
+                          placeholder={t("portfolio.add_source_modal.passphrase_ph")}
                         />
                       </div>
                     </div>
@@ -248,14 +250,14 @@ export default function AddSourceModal({
                               setTrades(updated);
                               localStorage.setItem("crypto_neko_trades", JSON.stringify(updated));
                             }
-                            setImportMsg({ ok: true, text: `Successfully synced ${fetchedHoldings.length} assets from ${connectingExchange.name}!` });
+                            setImportMsg({ ok: true, text: t("portfolio.add_source_modal.synced_msg", { count: fetchedHoldings.length, exchange: connectingExchange.name }) });
                           } else {
-                            setImportMsg({ ok: true, text: `Connected successfully, but no assets found in ${connectingExchange.name}.` });
+                            setImportMsg({ ok: true, text: t("portfolio.add_source_modal.synced_empty", { exchange: connectingExchange.name }) });
                           }
                           setOauthStep(0);
                           setConnectingExchange(null);
                         } catch (err: any) {
-                          alert(err.response?.data?.detail || "Failed to connect to exchange.");
+                          alert(err.response?.data?.detail || t("portfolio.add_source_modal.sync_failed"));
                           setOauthStep(4);
                         } finally {
                           setIsConnecting(false);
@@ -267,7 +269,7 @@ export default function AddSourceModal({
                       disabled={isConnecting || !apiKey || !apiSecret}
                       className="w-full bg-[var(--accent)] text-[var(--text-main)] font-bold py-3.5 rounded-3xl hover:brightness-110 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {isConnecting ? "Connecting..." : "Sync Real Portfolio"}
+                      {isConnecting ? t("portfolio.add_source_modal.connecting") : t("portfolio.add_source_modal.sync")}
                     </button>
                   </div>
                 </>
@@ -275,8 +277,8 @@ export default function AddSourceModal({
               {oauthStep === 5 && (
                 <div className="p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
                   <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mb-6" />
-                  <h3 className="text-xl font-bold text-[var(--text-main)] mb-2">Connecting API...</h3>
-                  <p className="text-[var(--text-muted)] text-sm">Authenticating and fetching real balances from {connectingExchange?.name}</p>
+                  <h3 className="text-xl font-bold text-[var(--text-main)] mb-2">{t("portfolio.add_source_modal.connecting_title")}</h3>
+                  <p className="text-[var(--text-muted)] text-sm">{t("portfolio.add_source_modal.connecting_desc", { exchange: connectingExchange?.name })}</p>
                 </div>
               )}
             </motion.div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line } from "recharts";
 import DepositModal from "./DepositModal";
@@ -33,6 +34,7 @@ export default function DashboardCards({
   chartData,
   holdings,
 }: DashboardCardsProps) {
+  const { t } = useTranslation();
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
 
@@ -49,7 +51,7 @@ export default function DashboardCards({
       <div className="p-6 rounded-[20px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] backdrop-blur-xl shadow-sm flex flex-col justify-between">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <div className="text-[12px] font-bold text-[var(--text-muted)] mb-1">Total equity</div>
+            <div className="text-[12px] font-bold text-[var(--text-muted)] mb-1">{t("portfolio.cards.total_equity")}</div>
             <div className="text-3xl font-black text-[var(--text-main)]">${usd(totalValue)}</div>
           </div>
           <div className="w-24 h-10 opacity-70">
@@ -71,26 +73,26 @@ export default function DashboardCards({
         </div>
         <div className="flex items-center justify-between text-[11px] font-bold border-t border-[var(--border-subtle)] pt-4">
           <div>
-            <div className="text-[var(--text-muted)] mb-1">24H Change</div>
+            <div className="text-[var(--text-muted)] mb-1">{t("portfolio.cards.change_24h")}</div>
             <div className={isUp ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
               {isUp ? "+" : "-"}${usd(Math.abs(change24hValue))}
             </div>
           </div>
           <div>
-            <div className="text-[var(--text-muted)] mb-1">24H %</div>
+            <div className="text-[var(--text-muted)] mb-1">{t("portfolio.cards.change_24h_pct")}</div>
             <div className={isUp ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
               {isUp ? "+" : ""}{change24hPct.toFixed(2)}%
             </div>
           </div>
           <div>
-            <div className="text-[var(--text-muted)] mb-1">Unrealized P&L</div>
+            <div className="text-[var(--text-muted)] mb-1">{t("portfolio.cards.unrealized_pnl")}</div>
             {totalCost > 0 ? (
               <div className={totalPnl >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
                 {totalPnl >= 0 ? "+" : "-"}${usd(Math.abs(totalPnl))}
                 <span className="text-[var(--text-faint)] font-medium ml-1">({pnlPct.toFixed(1)}%)</span>
               </div>
             ) : (
-              <div className="text-[var(--text-faint)]" title="Import trade history to track cost basis">—</div>
+              <div className="text-[var(--text-faint)]" title={t("portfolio.cards.unrealized_hint")}>—</div>
             )}
           </div>
         </div>
@@ -98,7 +100,7 @@ export default function DashboardCards({
 
       {/* Card 2: Allocation */}
       <div className="p-6 rounded-[20px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] backdrop-blur-xl shadow-sm flex flex-col justify-between">
-        <div className="text-[12px] font-bold text-[var(--text-muted)] mb-6">Allocation</div>
+        <div className="text-[12px] font-bold text-[var(--text-muted)] mb-6">{t("portfolio.cards.allocation")}</div>
         {allocation.length > 0 ? (
           <>
             <div className="flex h-3 rounded-full overflow-hidden mb-6">
@@ -120,7 +122,7 @@ export default function DashboardCards({
           </>
         ) : (
           <div className="flex-1 flex items-center text-[12px] text-[var(--text-faint)] pb-2">
-            Connect a wallet or import trades to see your allocation.
+            {t("portfolio.cards.allocation_empty")}
           </div>
         )}
       </div>
@@ -128,21 +130,21 @@ export default function DashboardCards({
       {/* Card 3: Buying Power */}
       <div className="p-6 rounded-[20px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] backdrop-blur-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
         <div className="absolute top-0 right-0 bg-[var(--accent-muted)] border-b border-l border-[var(--border-subtle)] text-[9px] font-black px-3 py-1 rounded-bl-lg text-[var(--text-main)]">
-          Stablecoins
+          {t("portfolio.cards.stablecoins")}
         </div>
         <div>
-          <div className="text-[12px] font-bold text-[var(--text-muted)] mb-1">Buying power</div>
+          <div className="text-[12px] font-bold text-[var(--text-muted)] mb-1">{t("portfolio.cards.buying_power")}</div>
           <div className="text-2xl font-black text-[var(--text-main)] mb-2">${usd(buyingPower)}</div>
           <div className="text-[11px] font-bold text-[var(--text-muted)] mb-6">
             {taxData.hasData ? (
               <>
-                Realized {taxData.currentYear}:{" "}
+                {t("portfolio.cards.realized_year", { year: taxData.currentYear })}{" "}
                 <span className={taxData.currentYearRealized >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}>
                   {taxData.currentYearRealized >= 0 ? "+" : "-"}${usd(Math.abs(taxData.currentYearRealized))}
                 </span>
               </>
             ) : (
-              <span className="text-[var(--text-faint)]">No realized gains recorded yet</span>
+              <span className="text-[var(--text-faint)]">{t("portfolio.cards.no_realized")}</span>
             )}
           </div>
         </div>
@@ -151,13 +153,13 @@ export default function DashboardCards({
             onClick={() => setIsDepositOpen(true)}
             className="flex-1 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-[var(--text-main)] font-bold py-2.5 rounded-3xl text-[13px] transition-all flex items-center justify-center gap-2"
           >
-            <ArrowUpRight size={16} /> Deposit
+            <ArrowUpRight size={16} /> {t("portfolio.cards.deposit")}
           </button>
           <button
             onClick={() => setIsWithdrawOpen(true)}
             className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-base)] hover:bg-[var(--bg-elevated)] text-[var(--text-main)] font-bold py-2.5 rounded-3xl text-[13px] transition-all flex items-center justify-center gap-2"
           >
-            <ArrowDownRight size={16} /> Withdraw
+            <ArrowDownRight size={16} /> {t("portfolio.cards.withdraw")}
           </button>
         </div>
       </div>
