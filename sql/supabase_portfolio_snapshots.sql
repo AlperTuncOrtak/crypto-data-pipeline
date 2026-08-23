@@ -10,10 +10,17 @@
 -- Gercek gecmis ancak kaydedilerek elde edilir. Bu tablo, kullanici
 -- portfoyunu her acisinda (saatte en fazla bir kez) toplam degerini
 -- yaziyor. Zamanla dogru bir zaman serisi birikiyor.
+--
+-- NOT: id icin gen_random_uuid() kullaniliyor, uuid_generate_v4() degil.
+-- Ikincisi "uuid-ossp" eklentisi gerektiriyor ve yeni Supabase
+-- projelerinde acik gelmiyor; eklenti yoksa CREATE TABLE hata verip
+-- tablo hic olusmuyor. gen_random_uuid() PostgreSQL 13+ ile yerlesik.
+--
+-- Bu script bastan sona tekrar calistirilabilir (idempotent).
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.portfolio_snapshots (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     captured_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     total_value NUMERIC(24, 8) NOT NULL,
@@ -29,14 +36,31 @@ CREATE INDEX IF NOT EXISTS idx_portfolio_snapshots_user_time
 -- ── Row Level Security ──────────────────────────────────────
 ALTER TABLE public.portfolio_snapshots ENABLE ROW LEVEL SECURITY;
 
+-- Politikalar CREATE POLICY ile idempotent degil; tekrar calistirilabilsin
+-- diye once dusuruluyor.
+DROP POLICY IF EXISTS "Users can view their own snapshots" ON public.portfolio_snapshots;
 CREATE POLICY "Users can view their own snapshots"
 ON public.portfolio_snapshots FOR SELECT
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own snapshots" ON public.portfolio_snapshots;
 CREATE POLICY "Users can insert their own snapshots"
 ON public.portfolio_snapshots FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own snapshots" ON public.portfolio_snapshots;
 CREATE POLICY "Users can delete their own snapshots"
 ON public.portfolio_snapshots FOR DELETE
 USING (auth.uid() = user_id);
+
+-- PostgREST tablo listesini onbellekte tutuyor. Yeni tablo bazen
+-- "Could not find the table in the schema cache" (PGRST205) ile
+-- gorunmuyor; bu satir onbellegi hemen yeniliyor.
+NOTIFY pgrst, 'reload schema';
+
+-- ── Dogrulama ───────────────────────────────────────────────
+-- Asagidaki sorgu 1 satir donerse tablo hazir demektir.
+SELECT table_name, column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'public' AND table_name = 'portfolio_snapshots'
+ORDER BY ordinal_position;
