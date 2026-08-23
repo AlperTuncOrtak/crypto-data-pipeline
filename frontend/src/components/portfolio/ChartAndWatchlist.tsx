@@ -88,31 +88,31 @@ export default function ChartAndWatchlist({
       {/* MIDDLE ROW: Chart & Watchlist */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Portfolio value chart */}
-        <div className="lg:col-span-2 p-6 rounded-[20px] bg-[#09090b]/40 backdrop-blur-xl border border-white/[0.04] shadow-xl">
+        <div className="lg:col-span-2 p-6 rounded-[20px] bg-[var(--bg-subtle)] backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl">
           <div className="flex flex-wrap justify-between items-start gap-4 mb-8">
-            <h3 className="text-[15px] font-bold text-white">Portfolio value</h3>
+            <h3 className="text-[15px] font-bold text-[var(--text-main)]">Portfolio value</h3>
             <div className="flex gap-6">
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white/40 mb-1 flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div> Portfolio (24H)
+                <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
+                  <div className="w-2 h-2 bg-[var(--positive)] rounded-full"></div> Portfolio (24H)
                 </span>
-                <span className={`text-[13px] font-black ${change24hPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className={`text-[13px] font-black ${change24hPct >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {change24hPct >= 0 ? "+" : ""}{change24hPct.toFixed(2)}%
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white/40 mb-1 flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div> BTC (24H)
                 </span>
-                <span className={`text-[13px] font-black ${btcChange === null ? "text-white/30" : btcChange >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className={`text-[13px] font-black ${btcChange === null ? "text-[var(--text-faint)]" : btcChange >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {btcChange === null ? "—" : `${btcChange >= 0 ? "+" : ""}${btcChange.toFixed(2)}%`}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white/40 mb-1 flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div> ETH (24H)
                 </span>
-                <span className={`text-[13px] font-black ${ethChange === null ? "text-white/30" : ethChange >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className={`text-[13px] font-black ${ethChange === null ? "text-[var(--text-faint)]" : ethChange >= 0 ? "text-[var(--positive)]" : "text-[var(--negative)]"}`}>
                   {ethChange === null ? "—" : `${ethChange >= 0 ? "+" : ""}${ethChange.toFixed(2)}%`}
                 </span>
               </div>
@@ -120,7 +120,7 @@ export default function ChartAndWatchlist({
           </div>
           <div className="h-[260px] w-full relative" style={{ touchAction: 'pan-y' }}>
             {isChartLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center text-white/40">
+              <div className="absolute inset-0 flex items-center justify-center text-[var(--text-muted)]">
                 <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
               </div>
             ) : chartData && chartData.length > 0 ? (
@@ -132,10 +132,10 @@ export default function ChartAndWatchlist({
                       <stop offset="95%" stopColor="var(--positive)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2d31" vertical={false} />
-                  <XAxis dataKey="time" stroke="#4a4d51" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} minTickGap={24} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-base)" vertical={false} />
+                  <XAxis dataKey="time" stroke="var(--text-faint)" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} minTickGap={24} />
                   <YAxis
-                    stroke="#4a4d51"
+                    stroke="var(--text-faint)"
                     fontSize={10}
                     domain={['auto', 'auto']}
                     tickFormatter={(val: number) =>
@@ -145,8 +145,8 @@ export default function ChartAndWatchlist({
                     tickLine={false}
                   />
                   <RechartTooltip
-                    contentStyle={{ backgroundColor: '#1a1d21', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-base)', borderRadius: '12px' }}
+                    itemStyle={{ color: 'var(--text-main)', fontSize: '12px', fontWeight: 'bold' }}
                     formatter={(value: number) => ['$' + value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'Portfolio Value']}
                     labelFormatter={(label) => `${timeframeLabel} · ${label}`}
                   />
@@ -154,7 +154,7 @@ export default function ChartAndWatchlist({
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white/40 border border-dashed border-white/[0.04] rounded-[12px] bg-white/[0.02] text-center px-6">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--text-muted)] border border-dashed border-[var(--border-subtle)] rounded-[12px] bg-[var(--bg-overlay)] text-center px-6">
                 <span className="text-[14px] font-bold">No Historical Data</span>
                 <span className="text-[12px]">
                   {holdings.length === 0
@@ -167,16 +167,16 @@ export default function ChartAndWatchlist({
         </div>
 
         {/* Watchlist Grid */}
-        <div className="p-6 rounded-[20px] bg-[#09090b]/40 backdrop-blur-xl border border-white/[0.04] shadow-xl flex flex-col">
-          <div className="relative z-10 flex gap-4 mb-6 border-b border-white/[0.04] pb-3">
+        <div className="p-6 rounded-[20px] bg-[var(--bg-subtle)] backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl flex flex-col">
+          <div className="relative z-10 flex gap-4 mb-6 border-b border-[var(--border-subtle)] pb-3">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative z-20 text-[12px] font-bold pb-3 -mb-[13px] cursor-pointer transition-colors ${
                   activeTab === tab.id
-                    ? "text-white border-b-2 border-white"
-                    : "text-white/40 hover:text-white"
+                    ? "text-[var(--text-main)] border-b-2 border-white"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-main)]"
                 }`}
               >
                 {tab.label}
@@ -185,13 +185,13 @@ export default function ChartAndWatchlist({
           </div>
 
           {tiles.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center text-center text-[12px] text-white/30 px-4">
+            <div className="flex-1 flex items-center justify-center text-center text-[12px] text-[var(--text-faint)] px-4">
               {emptyTabMessage}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 flex-1">
               {tiles.map((asset) => (
-                <div key={asset.symbol} className="bg-white/[0.02] rounded-3xl p-3 flex flex-col justify-between border border-white/[0.04] hover:border-white/[0.08] transition-colors group">
+                <div key={asset.symbol} className="bg-[var(--bg-overlay)] rounded-3xl p-3 flex flex-col justify-between border border-[var(--border-subtle)] hover:border-[var(--border-base)] transition-colors group">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <img
@@ -200,15 +200,15 @@ export default function ChartAndWatchlist({
                         alt={asset.symbol}
                         onError={(e: any) => { e.target.style.visibility = "hidden"; }}
                       />
-                      <span className="text-[11px] font-bold text-white truncate">{asset.symbol}</span>
+                      <span className="text-[11px] font-bold text-[var(--text-main)] truncate">{asset.symbol}</span>
                     </div>
-                    <div className="text-[15px] font-black text-white">
+                    <div className="text-[15px] font-black text-[var(--text-main)]">
                       ${asset.price.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: asset.price < 1 ? 6 : 2,
                       })}
                     </div>
-                    <div className={`text-[10px] font-bold ${asset.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    <div className={`text-[10px] font-bold ${asset.change >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}>
                       {asset.change >= 0 ? '+' : ''}{asset.change.toFixed(2)}%
                     </div>
                   </div>

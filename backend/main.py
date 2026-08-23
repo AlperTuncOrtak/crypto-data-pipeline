@@ -406,185 +406,244 @@ def ai_analyze(
     )
 
 
+# Sektor haritasi — deterministik metrikler ve prompt icin ortak kaynak.
+PORTFOLIO_SECTORS = {
+    "BTC": "Store of Value",
+    "ETH": "Layer 1", "SOL": "Layer 1", "ADA": "Layer 1", "AVAX": "Layer 1",
+    "NEAR": "Layer 1", "APT": "Layer 1", "SUI": "Layer 1", "TON": "Layer 1",
+    "DOT": "Layer 0", "ATOM": "Layer 0",
+    "MATIC": "Layer 2", "ARB": "Layer 2", "OP": "Layer 2", "IMX": "Layer 2", "STRK": "Layer 2",
+    "BNB": "Exchange Token", "OKB": "Exchange Token", "CRO": "Exchange Token",
+    "XRP": "Payments", "LTC": "Payments", "BCH": "Payments", "XLM": "Payments",
+    "LINK": "Oracle", "PYTH": "Oracle",
+    "UNI": "DeFi", "AAVE": "DeFi", "MKR": "DeFi", "CRV": "DeFi", "LDO": "DeFi", "SNX": "DeFi",
+    "DOGE": "Meme", "SHIB": "Meme", "PEPE": "Meme", "WIF": "Meme", "BONK": "Meme", "FLOKI": "Meme",
+    "FIL": "Storage", "AR": "Storage",
+    "ICP": "Web3", "GRT": "Web3", "RENDER": "Web3",
+    "VET": "Enterprise",
+    "USDT": "Stablecoin", "USDC": "Stablecoin", "DAI": "Stablecoin",
+    "BUSD": "Stablecoin", "TUSD": "Stablecoin", "FDUSD": "Stablecoin", "USDP": "Stablecoin",
+}
+
+STABLE_SYMBOLS = {k for k, v in PORTFOLIO_SECTORS.items() if v == "Stablecoin"}
+
+
+def _portfolio_metrics(holdings: list, total_value: float) -> dict:
+    """
+    Portfoy risk metriklerini deterministik hesapla.
+
+    Bunlar bilerek LLM'e birakilmiyor: dil modelleri aritmetikte guvenilmez ve
+    "risk skoru 7" gibi bir sayiyi uydurmasi, kullanicinin gercek sandigi bir
+    rakam uretmesi demek. Model sadece bu sayilari YORUMLUYOR.
+    """
+    total = max(total_value, 1e-9)
+
+    positions = []
+    for h in holdings:
+        value = float(h.get("value") or 0)
+        if value <= 0:
+            continue
+        symbol = str(h.get("symbol", "")).upper()
+        positions.append({
+            "symbol": symbol,
+            "value": value,
+            "weight": value / total * 100,
+            "sector": PORTFOLIO_SECTORS.get(symbol, "Other"),
+            "pnl_pct": float(h.get("pnl_pct") or 0),
+        })
+
+    positions.sort(key=lambda p: p["value"], reverse=True)
+
+    def share(predicate) -> float:
+        return sum(p["weight"] for p in positions if predicate(p))
+
+    stable_pct = share(lambda p: p["symbol"] in STABLE_SYMBOLS)
+    meme_pct = share(lambda p: p["sector"] == "Meme")
+    btc_pct = share(lambda p: p["symbol"] == "BTC")
+    eth_pct = share(lambda p: p["symbol"] == "ETH")
+    # Blue chip ve stable disi her sey; volatilitenin asil kaynagi.
+    alt_pct = share(lambda p: p["symbol"] not in STABLE_SYMBOLS and p["symbol"] not in ("BTC", "ETH"))
+    top_pct = positions[0]["weight"] if positions else 0.0
+
+    # Herfindahl-Hirschman yogunlasma endeksi. 1/HHI = "kac esit agirlikli
+    # pozisyona denk" — 3 coin'in %90'i tek coin'deyse bu 1'e yaklasir.
+    hhi = sum((p["weight"] / 100) ** 2 for p in positions)
+    effective_positions = (1 / hhi) if hhi > 0 else 0
+
+    sectors: dict = {}
+    for p in positions:
+        sectors[p["sector"]] = sectors.get(p["sector"], 0) + p["weight"]
+    sector_breakdown = {k: round(v, 1) for k, v in sorted(sectors.items(), key=lambda kv: -kv[1])}
+    dominant_sector = next(iter(sector_breakdown), "None")
+
+    # Cesitlendirme: hem kac etkin pozisyon var, hem kac farkli sektor.
+    # Olcekler 1'den basliyor: tek pozisyonlu / tek sektorlu bir portfoy
+    # cesitlendirmeden sifir puan almali. Oranlari dogrudan bolersek
+    # (eff/6) tek coin'e bile kismi puan verip 3/10 gibi yaniltici bir
+    # skor uretiyordu.
+    non_stable_sectors = len([k for k in sectors if k != "Stablecoin"])
+    pos_component = min(max(effective_positions - 1, 0) / 5, 1)
+    sector_component = min(max(non_stable_sectors - 1, 0) / 3, 1)
+    div_raw = 0.6 * pos_component + 0.4 * sector_component
+    diversification_score = max(1, min(10, round(1 + div_raw * 9)))
+
+    # Risk: yogunlasma + meme + altcoin agirligi, stablecoin tamponuyla dusuyor.
+    risk_raw = (
+        (top_pct / 100) * 3
+        + (meme_pct / 100) * 3
+        + (alt_pct / 100) * 2
+        - (stable_pct / 100) * 2
+        + (1 if len(positions) < 3 else 0)
+    )
+    risk_score = max(1, min(10, round(risk_raw)))
+    risk_label = (
+        "Low" if risk_score <= 3 else
+        "Medium" if risk_score <= 5 else
+        "High" if risk_score <= 7 else
+        "Very High"
+    )
+
+    # Kripto varliklarin cogu BTC ile yuksek korelasyonlu; asil dengeleyici stablecoin.
+    # Esikler bilerek dusuk: portfoyun yarisi tek bir volatil varliktaysa
+    # bunu "dusuk korelasyon riski" diye etiketlemek gercegi hafifletir.
+    non_stable = 100 - stable_pct
+    correlation_risk = "high" if non_stable >= 70 else "medium" if non_stable >= 40 else "low"
+
+    return {
+        "risk_score": risk_score,
+        "risk_label": risk_label,
+        "diversification_score": diversification_score,
+        "dominant_sector": dominant_sector,
+        "sector_breakdown": sector_breakdown,
+        "correlation_risk": correlation_risk,
+        "concentration_pct": round(top_pct, 1),
+        "effective_positions": round(effective_positions, 2),
+        "stablecoin_pct": round(stable_pct, 1),
+        "meme_pct": round(meme_pct, 1),
+        "btc_pct": round(btc_pct, 1),
+        "eth_pct": round(eth_pct, 1),
+        "altcoin_pct": round(alt_pct, 1),
+        "position_count": len(positions),
+        "positions": positions,
+    }
+
+
 @app.post("/ai/portfolio")
 @limiter.limit("10/minute")
 def ai_portfolio_analyze(request: Request, payload: dict, user: dict = Depends(verify_token)):
     """
-    Portfolio AI analizi — Groq birincil, Gemini fallback.
-    Body: { holdings: [{symbol, value, pnl_pct, quantity, avg_cost}], total_value, total_pnl }
+    Portfoy analizi — sayilar deterministik, yorum LLM'den (Groq → Gemini).
 
-    Auth zorunlu: bu endpoint her cagrida ucretli LLM API'sine gidiyor,
-    acik birakmak kotanin bedavaya tuketilmesi demek.
+    Body: { holdings: [{symbol, value, pnl_pct, quantity, avg_cost}],
+            total_value, total_pnl, has_cost_basis?, realized_ytd? }
+
+    Auth zorunlu: her cagri ucretli LLM API'sine gidiyor.
     """
     import os, json, httpx
 
     holdings = payload.get("holdings", [])
     total_value = float(payload.get("total_value") or 0)
     total_pnl = float(payload.get("total_pnl") or 0)
+    has_cost_basis = bool(payload.get("has_cost_basis"))
+    realized_ytd = payload.get("realized_ytd")
 
-    if not holdings:
+    if not holdings or total_value <= 0:
         return {
+            "ai_available": False,
+            "empty": True,
             "risk_score": 0,
             "risk_label": "N/A",
             "diversification_score": 0,
             "dominant_sector": "None",
-            "summary": "Your portfolio is currently empty. The AI Engine requires assets to perform an analysis.",
-            "recommendations": ["Connect an exchange or add an on-chain wallet to begin tracking your assets."],
-            "strengths": ["Zero market risk exposure."],
-            "risks": ["100% fiat/cash equivalent, missing potential upside."],
-            "best_position": "N/A",
-            "worst_position": "N/A"
+            "sector_breakdown": {},
+            "correlation_risk": "low",
+            "concentration_pct": 0,
+            "effective_positions": 0,
+            "stablecoin_pct": 0,
+            "position_count": 0,
+            "summary": "There is nothing to analyse yet. Connect a wallet, sync an exchange, or import a CSV and the engine will assess concentration, sector exposure and risk.",
+            "recommendations": ["Connect an on-chain wallet or exchange to begin tracking your assets."],
+            "strengths": [],
+            "risks": [],
+            "best_position": None,
+            "worst_position": None,
         }
+
+    m = _portfolio_metrics(holdings, total_value)
+    positions = m.pop("positions")
 
     GROQ_KEY = os.getenv("GROQ_API_KEY", "")
     GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
 
-    if not GROQ_KEY and not GEMINI_KEY:
-        raise HTTPException(status_code=500, detail="No AI API key configured")
-
-    total_pnl_pct = (total_pnl / max(total_value, 1)) * 100
-    top_holding = holdings[0] if holdings else {}
-    top_pct = float(top_holding.get("value", 0)) / max(total_value, 1) * 100
-
-    # Sektör eşleştirme (basit keyword bazlı)
-    SECTORS = {
-        "BTC": "Store of Value",
-        "ETH": "Layer 1",
-        "SOL": "Layer 1",
-        "BNB": "Exchange Token",
-        "XRP": "Payments",
-        "ADA": "Layer 1",
-        "AVAX": "Layer 1",
-        "DOT": "Layer 0",
-        "MATIC": "Layer 2",
-        "LINK": "Oracle",
-        "UNI": "DeFi",
-        "AAVE": "DeFi",
-        "MKR": "DeFi",
-        "DOGE": "Meme",
-        "SHIB": "Meme",
-        "PEPE": "Meme",
-        "WIF": "Meme",
-        "LTC": "Payments",
-        "BCH": "Payments",
-        "XLM": "Payments",
-        "ATOM": "Layer 0",
-        "NEAR": "Layer 1",
-        "APT": "Layer 1",
-        "ARB": "Layer 2",
-        "OP": "Layer 2",
-        "IMX": "Layer 2",
-        "FIL": "Storage",
-        "ICP": "Web3",
-        "VET": "Enterprise",
-    }
+    total_pnl_pct = (total_pnl / max(total_value, 1e-9)) * 100
+    best = max(positions, key=lambda p: p["pnl_pct"], default=None) if has_cost_basis else None
+    worst = min(positions, key=lambda p: p["pnl_pct"], default=None) if has_cost_basis else None
 
     holdings_text = "\n".join(
-        [
-            f"- {h['symbol']} ({SECTORS.get(h['symbol'], 'Other')}): "
-            f"${float(h.get('value') or 0):.2f} "
-            f"({float(h.get('value') or 0)/max(total_value,1)*100:.1f}% of portfolio), "
-            f"P&L: {float(h.get('pnl_pct') or 0):+.2f}%, "
-            f"Qty: {float(h.get('quantity') or 0):.4f}, "
-            f"Avg Cost: ${float(h.get('avg_cost') or 0):.4f}"
-            for h in holdings[:12]
-        ]
+        f"- {p['symbol']} ({p['sector']}): ${p['value']:.2f}, {p['weight']:.1f}% of portfolio"
+        + (f", P&L {p['pnl_pct']:+.2f}%" if has_cost_basis else "")
+        for p in positions[:12]
     )
 
-    # Korelasyon uyarısı
-    btc_pct = (
-        sum(float(h.get("value") or 0) for h in holdings if h["symbol"] == "BTC")
-        / max(total_value, 1)
-        * 100
+    pnl_line = (
+        f"Unrealized P&L: ${total_pnl:+.2f} ({total_pnl_pct:+.1f}%)"
+        if has_cost_basis
+        else "Unrealized P&L: unknown — no trade history imported, holdings are marked to market."
     )
-    layer1_pct = (
-        sum(
-            float(h.get("value") or 0)
-            for h in holdings
-            if SECTORS.get(h["symbol"]) == "Layer 1"
-        )
-        / max(total_value, 1)
-        * 100
-    )
-    meme_pct = (
-        sum(
-            float(h.get("value") or 0)
-            for h in holdings
-            if SECTORS.get(h["symbol"]) == "Meme"
-        )
-        / max(total_value, 1)
-        * 100
-    )
+    realized_line = f"\nRealized gains this year: ${float(realized_ytd):+.2f}" if realized_ytd is not None else ""
 
-    # En riskli pozisyonlar
-    best = max(holdings, key=lambda h: float(h.get("pnl_pct") or 0), default={})
-    worst = min(holdings, key=lambda h: float(h.get("pnl_pct") or 0), default={})
+    prompt = f"""You are a professional crypto portfolio risk analyst.
 
-    prompt = f"""You are a professional crypto portfolio risk analyst with 10+ years experience.
-Analyze this portfolio deeply and respond ONLY with valid JSON (no markdown, no code fences):
+The metrics below are ALREADY CALCULATED and correct. Do NOT recalculate or contradict them.
+Your job is interpretation and advice, not arithmetic.
 
-{{
-  "risk_score": <1-10 integer>,
-  "risk_label": "<Low|Medium|High|Very High>",
-  "summary": "<3-4 sentences. Cover: total return %, top holding concentration, sector exposure, biggest risk. Use specific numbers.>",
-  "strengths": ["<specific strength with numbers>", "<strength 2>", "<strength 3>"],
-  "risks": ["<specific risk with numbers>", "<risk 2>", "<risk 3>"],
-  "recommendations": [
-    "<actionable rec with specific % or coin name>",
-    "<rec 2>",
-    "<rec 3>"
-  ],
-  "dominant_sector": "<most represented sector>",
-  "diversification_score": <1-10 integer>,
-  "best_position": "<symbol of best performing position and why to consider taking profit>",
-  "worst_position": "<symbol of worst performing position and what to do>",
-  "correlation_risk": "<low|medium|high — how correlated are the holdings to BTC>",
-  "sector_breakdown": {{
-    "<sector name>": <percentage as integer>
-  }}
-}}
+PORTFOLIO
+Total value: ${total_value:.2f}
+{pnl_line}{realized_line}
+Positions: {m['position_count']}
 
-PORTFOLIO DATA:
-Total Value: ${total_value:.2f}
-Total P&L: ${total_pnl:+.2f} ({total_pnl_pct:+.1f}% return)
-Number of holdings: {len(holdings)}
-BTC allocation: {btc_pct:.1f}%
-Layer 1 exposure: {layer1_pct:.1f}%
-Meme coin exposure: {meme_pct:.1f}%
-Best performer: {best.get('symbol','?')} at {float(best.get('pnl_pct',0)):+.1f}%
-Worst performer: {worst.get('symbol','?')} at {float(worst.get('pnl_pct',0)):+.1f}%
+CALCULATED METRICS
+Risk score: {m['risk_score']}/10 ({m['risk_label']})
+Diversification score: {m['diversification_score']}/10
+Largest position: {m['concentration_pct']:.1f}% of the portfolio
+Effective positions (1/HHI): {m['effective_positions']:.2f} — equivalent number of equally weighted holdings
+Stablecoin buffer: {m['stablecoin_pct']:.1f}%
+BTC: {m['btc_pct']:.1f}% | ETH: {m['eth_pct']:.1f}% | Other alts: {m['altcoin_pct']:.1f}% | Memecoins: {m['meme_pct']:.1f}%
+Correlation risk: {m['correlation_risk']}
+Dominant sector: {m['dominant_sector']}
+Sector breakdown: {json.dumps(m['sector_breakdown'])}
 
-HOLDINGS (with sector):
+HOLDINGS
 {holdings_text}
 
-ANALYSIS RULES:
-- risk_score: 1=very safe (pure BTC/ETH), 10=extremely risky (all memes/micro caps)
-  Consider: concentration (top holding %), meme exposure, volatility, sector diversity
-- diversification_score: 1=single coin, 10=perfectly spread across 5+ uncorrelated sectors
-- correlation_risk: if >50% BTC → high, >30% → medium, else low
-- best_position: the one with highest P&L — when to take profit?
-- worst_position: the one with worst P&L — cut or hold?
-- Be brutally honest but constructive
-- All percentages in sector_breakdown should sum to ~100
-- English only"""
+Respond ONLY with valid JSON, no markdown fences:
+{{
+  "summary": "<3-4 sentences interpreting the metrics above. Reference the actual numbers. Say plainly what kind of portfolio this is and what would hurt it most.>",
+  "strengths": ["<specific, tied to a number above>", "<second>", "<third if warranted>"],
+  "risks": ["<specific, tied to a number above>", "<second>", "<third if warranted>"],
+  "recommendations": ["<concrete action with a target % or asset>", "<second>", "<third>"],
+  "best_position": "<symbol — one short sentence on what to do with it, or null>",
+  "worst_position": "<symbol — one short sentence on what to do with it, or null>"
+}}
+
+RULES
+- Never invent numbers that contradict the calculated metrics.
+- A tiny portfolio (under $100) is normal for someone starting out — do not lecture about position sizing being 'too small to matter'; focus on structure instead.
+- If P&L is unknown, do not speculate about profit or loss; recommend importing trade history instead.
+- Be direct and concrete. No filler, no disclaimers about being an AI.
+- English only."""
 
     def try_groq():
         resp = httpx.post(
             "https://api.groq.com/openai/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {GROQ_KEY}",
-                "Content-Type": "application/json",
-            },
+            headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
             json={
                 "model": GROQ_MODEL,
                 "messages": [
-                    {
-                        "role": "system",
-                        "content": "You are a professional crypto portfolio risk analyst. Always respond with valid JSON only, no markdown, no explanation outside JSON.",
-                    },
+                    {"role": "system", "content": "You are a professional crypto portfolio risk analyst. Respond with valid JSON only."},
                     {"role": "user", "content": prompt},
                 ],
-                "max_tokens": 1000,
+                "max_tokens": 1200,
                 "temperature": 0.3,
                 "response_format": {"type": "json_object"},
             },
@@ -603,23 +662,45 @@ ANALYSIS RULES:
             text = text.replace(fence, "")
         return json.loads(text.strip())
 
-    result = None
-    if GROQ_KEY:
+    narrative = None
+    for attempt in (try_groq if GROQ_KEY else None, try_gemini if GEMINI_KEY else None):
+        if attempt is None or narrative is not None:
+            continue
         try:
-            result = try_groq()
-        except Exception:
-            pass
-
-    if result is None and GEMINI_KEY:
-        try:
-            result = try_gemini()
+            narrative = attempt()
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"AI error: {str(e)}")
+            print(f"Portfolio AI attempt failed: {e}")
 
-    if result is None:
-        raise HTTPException(status_code=500, detail="All AI models failed")
+    # LLM erisilemese bile hesaplanan metrikler gecerli. Eskiden burada 500
+    # atiliyordu ve kullanici hicbir sey goremiyordu; artik sayilar donuyor,
+    # sadece yorum eksik kaliyor ve bunu ai_available ile bildiriyoruz.
+    if narrative is None:
+        return {
+            **m,
+            "ai_available": False,
+            "summary": None,
+            "strengths": [],
+            "risks": [],
+            "recommendations": [],
+            "best_position": best["symbol"] if best else None,
+            "worst_position": worst["symbol"] if worst else None,
+        }
 
-    return result
+    def as_list(v):
+        if isinstance(v, list):
+            return [str(x) for x in v if x]
+        return [str(v)] if v else []
+
+    return {
+        **m,
+        "ai_available": True,
+        "summary": narrative.get("summary"),
+        "strengths": as_list(narrative.get("strengths")),
+        "risks": as_list(narrative.get("risks")),
+        "recommendations": as_list(narrative.get("recommendations")),
+        "best_position": narrative.get("best_position") or (best["symbol"] if best else None),
+        "worst_position": narrative.get("worst_position") or (worst["symbol"] if worst else None),
+    }
 
 
 @app.post("/ai/chat")

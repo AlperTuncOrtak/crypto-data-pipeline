@@ -102,9 +102,25 @@ export interface Holding {
  * what was realized on the way out. Both the portfolio P&L and the tax report
  * are derived from this, so they can never disagree with each other.
  */
-function fifoLots(trades: Trade[]) {
-  const lots: { qty: number; price: number }[] = [];
-  const realized: { year: number; proceeds: number; cost: number; gain: number }[] = [];
+export interface Disposal {
+  symbol: string;
+  acquired: string;
+  sold: string;
+  quantity: number;
+  proceeds: number;
+  cost: number;
+  gain: number;
+  /** Held over a year — the usual long-term threshold. */
+  longTerm: boolean;
+  holdingDays: number;
+  year: number;
+}
+
+const DAY_MS = 86_400_000;
+
+function fifoLots(trades: Trade[], symbol = "") {
+  const lots: { qty: number; price: number; date: string }[] = [];
+  const disposals: Disposal[] = [];
 
   const sorted = trades
     .slice()
@@ -119,32 +135,47 @@ function fifoLots(trades: Trade[]) {
 
     if (side === "sell") {
       let remaining = qty;
-      let cost = 0;
+      // Each buy lot consumed by this sell becomes its own disposal line —
+      // that is how a tax report has to read, because lots bought at
+      // different times can fall on different sides of the long-term cutoff.
       while (remaining > 0 && lots.length > 0) {
         const lot = lots[0];
         const take = Math.min(lot.qty, remaining);
-        cost += take * lot.price;
+        const proceeds = take * price;
+        const cost = take * lot.price;
+        const holdingDays = Math.max(
+          0,
+          Math.floor((new Date(t.traded_at).getTime() - new Date(lot.date).getTime()) / DAY_MS)
+        );
+
+        disposals.push({
+          symbol,
+          acquired: lot.date,
+          sold: t.traded_at,
+          quantity: take,
+          proceeds,
+          cost,
+          gain: proceeds - cost,
+          longTerm: holdingDays > 365,
+          holdingDays,
+          year: new Date(t.traded_at).getFullYear(),
+        });
+
         lot.qty -= take;
         remaining -= take;
         if (lot.qty <= 1e-12) lots.shift();
       }
       // A sell with no matching buys (e.g. partial CSV history) has no known
-      // cost basis. Count the proceeds but not a phantom gain.
-      const matchedQty = qty - remaining;
-      if (matchedQty > 0) {
-        const proceeds = matchedQty * price;
-        const year = new Date(t.traded_at).getFullYear();
-        realized.push({ year, proceeds, cost, gain: proceeds - cost });
-      }
+      // cost basis, so it produces no disposal rather than a phantom gain.
     } else {
-      lots.push({ qty, price });
+      lots.push({ qty, price, date: t.traded_at });
     }
   }
 
   const openQty = lots.reduce((sum, l) => sum + l.qty, 0);
   const openCost = lots.reduce((sum, l) => sum + l.qty * l.price, 0);
 
-  return { openQty, openCost, realized };
+  return { openQty, openCost, disposals };
 }
 
 function groupTradesBySymbol(trades: Trade[]) {
@@ -278,48 +309,75 @@ export const calcAllocation = (holdings: Holding[]) => {
 };
 
 // ── Tax / realized P&L ────────────────────────────────────────
+export interface TaxYear {
+  year: number;
+  proceeds: number;
+  cost: number;
+  gain: number;
+  shortTermGain: number;
+  longTermGain: number;
+  disposalCount: number;
+}
+
 export interface TaxSummary {
   hasData: boolean;
   totalRealized: number;
   currentYear: number;
   currentYearRealized: number;
   currentYearProceeds: number;
-  byYear: { year: number; proceeds: number; cost: number; gain: number }[];
+  byYear: TaxYear[];
+  disposals: Disposal[];
   disposalCount: number;
 }
 
 /**
- * Realized gains per calendar year, FIFO. This is a reporting aid, not tax
- * advice — jurisdictions differ on lot matching and holding periods.
+ * Realized gains per calendar year using FIFO lot matching.
+ *
+ * This is a reporting aid, not tax advice — jurisdictions differ on lot
+ * matching rules, holding-period thresholds and what counts as a disposal.
  */
 export function calcTax(trades: Trade[] = []): TaxSummary {
   const currentYear = new Date().getFullYear();
-  const byYearMap: Record<number, { year: number; proceeds: number; cost: number; gain: number }> = {};
-  let disposalCount = 0;
+  const byYearMap: Record<number, TaxYear> = {};
+  const disposals: Disposal[] = [];
 
   const tradesBySymbol = groupTradesBySymbol(trades);
   for (const sym of Object.keys(tradesBySymbol)) {
-    const { realized } = fifoLots(tradesBySymbol[sym]);
-    for (const r of realized) {
-      const entry = (byYearMap[r.year] ||= { year: r.year, proceeds: 0, cost: 0, gain: 0 });
-      entry.proceeds += r.proceeds;
-      entry.cost += r.cost;
-      entry.gain += r.gain;
-      disposalCount++;
-    }
+    disposals.push(...fifoLots(tradesBySymbol[sym], sym).disposals);
   }
+
+  for (const d of disposals) {
+    const entry = (byYearMap[d.year] ||= {
+      year: d.year,
+      proceeds: 0,
+      cost: 0,
+      gain: 0,
+      shortTermGain: 0,
+      longTermGain: 0,
+      disposalCount: 0,
+    });
+    entry.proceeds += d.proceeds;
+    entry.cost += d.cost;
+    entry.gain += d.gain;
+    entry.disposalCount++;
+    if (d.longTerm) entry.longTermGain += d.gain;
+    else entry.shortTermGain += d.gain;
+  }
+
+  disposals.sort((a, b) => new Date(b.sold).getTime() - new Date(a.sold).getTime());
 
   const byYear = Object.values(byYearMap).sort((a, b) => b.year - a.year);
   const thisYear = byYearMap[currentYear];
 
   return {
-    hasData: disposalCount > 0,
+    hasData: disposals.length > 0,
     totalRealized: byYear.reduce((sum, y) => sum + y.gain, 0),
     currentYear,
     currentYearRealized: thisYear?.gain || 0,
     currentYearProceeds: thisYear?.proceeds || 0,
     byYear,
-    disposalCount,
+    disposals,
+    disposalCount: disposals.length,
   };
 }
 

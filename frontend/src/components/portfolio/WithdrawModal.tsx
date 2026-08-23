@@ -137,17 +137,17 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-full max-w-md bg-[#0A0A0A] border border-white/[0.08] rounded-2xl shadow-2xl relative overflow-hidden flex flex-col"
+            className="w-full max-w-md bg-[var(--bg-subtle)] border border-[var(--border-base)] rounded-2xl shadow-2xl relative overflow-hidden flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--border-base)]">
               <div>
-                <h3 className="text-xl font-bold text-zinc-100">Withdraw Crypto</h3>
-                <p className="text-xs text-zinc-400 mt-1">Send funds to another address</p>
+                <h3 className="text-xl font-bold text-[var(--text-main)]">Withdraw Crypto</h3>
+                <p className="text-xs text-[var(--text-muted)] mt-1">Send funds to another address</p>
               </div>
               <button
                 onClick={handleClose}
-                className="text-zinc-400 hover:text-zinc-100 transition-colors bg-white/5 hover:bg-white/10 p-2 rounded-full"
+                className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors bg-[var(--bg-overlay)] hover:bg-[var(--bg-elevated)] p-2 rounded-full"
               >
                 <X size={20} />
               </button>
@@ -156,43 +156,43 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
             <div className="p-6">
               {!isConnected ? (
                 <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-red-500/10 text-red-400 flex items-center justify-center rounded-full mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[var(--negative-muted)] text-[var(--negative)] flex items-center justify-center rounded-full mx-auto mb-4">
                     <ShieldAlert size={32} />
                   </div>
-                  <h4 className="text-zinc-100 font-bold mb-2">Wallet Disconnected</h4>
-                  <p className="text-zinc-400 text-sm">Please connect your Web3 wallet to withdraw funds.</p>
+                  <h4 className="text-[var(--text-main)] font-bold mb-2">Wallet Disconnected</h4>
+                  <p className="text-[var(--text-muted)] text-sm">Please connect your Web3 wallet to withdraw funds.</p>
                 </div>
               ) : status === "success" ? (
                 <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 flex items-center justify-center rounded-full mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[var(--positive-muted)] text-[var(--positive)] flex items-center justify-center rounded-full mx-auto mb-4">
                     <CheckCircle2 size={32} />
                   </div>
-                  <h4 className="text-zinc-100 font-bold mb-2">Transaction Sent!</h4>
-                  <p className="text-zinc-400 text-sm mb-4">Your withdrawal is being processed on the blockchain.</p>
+                  <h4 className="text-[var(--text-main)] font-bold mb-2">Transaction Sent!</h4>
+                  <p className="text-[var(--text-muted)] text-sm mb-4">Your withdrawal is being processed on the blockchain.</p>
                   {txHash && (
                     <a
                       href={`https://etherscan.io/tx/${txHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-[12px] font-bold text-zinc-300 hover:text-white mb-6 font-mono"
+                      className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[var(--text-main)] hover:text-[var(--text-main)] mb-6 font-mono"
                     >
                       {txHash.slice(0, 10)}…{txHash.slice(-8)} <ExternalLink size={12} />
                     </a>
                   )}
                   <button
                     onClick={handleClose}
-                    className="w-full bg-white/5 border border-white/[0.08] text-zinc-100 font-bold py-3 rounded-xl hover:bg-white/10 transition-all"
+                    className="w-full bg-[var(--bg-overlay)] border border-[var(--border-base)] text-[var(--text-main)] font-bold py-3 rounded-xl hover:bg-[var(--bg-elevated)] transition-all"
                   >
                     Done
                   </button>
                 </div>
               ) : availableAssets.length === 0 ? (
                 <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-zinc-500/10 text-zinc-400 flex items-center justify-center rounded-full mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[var(--bg-overlay)] text-[var(--text-muted)] flex items-center justify-center rounded-full mx-auto mb-4">
                     <ShieldAlert size={32} />
                   </div>
-                  <h4 className="text-zinc-100 font-bold mb-2">Nothing to withdraw</h4>
-                  <p className="text-zinc-400 text-sm">
+                  <h4 className="text-[var(--text-main)] font-bold mb-2">Nothing to withdraw</h4>
+                  <p className="text-[var(--text-muted)] text-sm">
                     Only balances held in the connected wallet can be sent from here. Exchange and
                     imported positions have to be withdrawn from the exchange itself.
                   </p>
@@ -201,7 +201,7 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                 <div className="space-y-5">
                   {/* Asset Selection */}
                   <div>
-                    <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Select Asset</label>
+                    <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Select Asset</label>
                     <select
                       value={selectedSymbol}
                       onChange={(e) => {
@@ -209,7 +209,7 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                         setAmount("");
                         setErrorMsg("");
                       }}
-                      className="w-full bg-zinc-900/50 border border-white/[0.08] rounded-xl p-3.5 text-sm text-zinc-100 focus:outline-none focus:border-zinc-500 transition-colors appearance-none"
+                      className="w-full bg-[var(--bg-overlay)] border border-[var(--border-base)] rounded-xl p-3.5 text-sm text-[var(--text-main)] focus:outline-none focus:border-[var(--accent)] transition-colors appearance-none"
                     >
                       <option value="" disabled>Select a token...</option>
                       {availableAssets.map((asset) => (
@@ -227,31 +227,31 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
 
                   {/* Recipient Address */}
                   <div>
-                    <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Send to Address</label>
+                    <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Send to Address</label>
                     <input
                       type="text"
                       placeholder="0x..."
                       value={recipient}
                       onChange={(e) => setRecipient(e.target.value)}
-                      className={`w-full bg-zinc-900/50 border rounded-xl p-3.5 text-[13px] font-mono text-zinc-100 placeholder-zinc-600 focus:outline-none transition-colors ${
+                      className={`w-full bg-[var(--bg-overlay)] border rounded-xl p-3.5 text-[13px] font-mono text-[var(--text-main)] placeholder-[var(--text-faint)] focus:outline-none transition-colors ${
                         recipient && !recipientIsValid
                           ? "border-red-500/50 focus:border-red-500"
-                          : "border-white/[0.08] focus:border-zinc-500"
+                          : "border-[var(--border-base)] focus:border-[var(--accent)]"
                       }`}
                     />
                     {recipient && !recipientIsValid && (
-                      <p className="text-[11px] text-red-400 mt-2">Not a valid EVM address.</p>
+                      <p className="text-[11px] text-[var(--negative)] mt-2">Not a valid EVM address.</p>
                     )}
                   </div>
 
                   {/* Amount */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Amount</label>
+                      <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Amount</label>
                       {selectedAsset && (
                         <button
                           onClick={setMaxAmount}
-                          className="text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded uppercase font-bold hover:bg-zinc-700"
+                          className="text-[10px] bg-[var(--bg-overlay)] text-[var(--text-main)] px-2 py-0.5 rounded uppercase font-bold hover:bg-[var(--bg-elevated)]"
                         >
                           Max
                         </button>
@@ -263,30 +263,30 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                         placeholder="0.00"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className={`w-full bg-zinc-900/50 border rounded-xl p-3.5 text-lg font-mono text-zinc-100 placeholder-zinc-600 focus:outline-none transition-colors ${
+                        className={`w-full bg-[var(--bg-overlay)] border rounded-xl p-3.5 text-lg font-mono text-[var(--text-main)] placeholder-[var(--text-faint)] focus:outline-none transition-colors ${
                           amountExceedsBalance
                             ? "border-red-500/50 focus:border-red-500"
-                            : "border-white/[0.08] focus:border-zinc-500"
+                            : "border-[var(--border-base)] focus:border-[var(--accent)]"
                         }`}
                       />
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">
                         {selectedAsset?.symbol}
                       </div>
                     </div>
                     {amountExceedsBalance && (
-                      <p className="text-[11px] text-red-400 mt-2">
+                      <p className="text-[11px] text-[var(--negative)] mt-2">
                         Exceeds your wallet balance of {maxAmount.toFixed(6)} {selectedAsset?.symbol}.
                       </p>
                     )}
                     {selectedAsset && isNative && (
-                      <p className="text-[11px] text-zinc-500 mt-2">
+                      <p className="text-[11px] text-[var(--text-muted)] mt-2">
                         Leave some ETH behind to cover the gas fee.
                       </p>
                     )}
                   </div>
 
                   {errorMsg && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-3 rounded-xl">
+                    <div className="bg-[var(--negative-muted)] border border-[var(--negative)]/20 text-[var(--negative)] text-xs p-3 rounded-xl">
                       {errorMsg}
                     </div>
                   )}
@@ -294,7 +294,7 @@ export default function WithdrawModal({ isOpen, onClose, holdings }: WithdrawMod
                   <button
                     onClick={handleWithdraw}
                     disabled={!canSubmit}
-                    className="w-full bg-zinc-100 text-[#0A0A0A] font-bold py-3.5 rounded-xl hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                    className="w-full bg-[var(--text-main)] text-[var(--bg-base)] font-bold py-3.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                   >
                     {isPending ? (
                       <>
