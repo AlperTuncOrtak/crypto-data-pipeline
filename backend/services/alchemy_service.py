@@ -48,6 +48,11 @@ def _fetch_chain(wallet_address: str, chain: dict, api_key: str) -> Dict[str, An
     url = f"https://{chain['subdomain']}.g.alchemy.com/v2/{api_key}"
     balances: List[dict] = []
     truncated = False
+    # Alchemy'de her ag app bazinda ayri ayri aciliyor. Kapali bir agda
+    # anahtar 403 doner — bu gecici bir hata degil, yapilandirma eksigi.
+    # Ayirt etmezsek her istekte 4 ag icin ayni hata loga basiliyor ve
+    # kullanici neden bakiye gormedigini asla ogrenemiyor.
+    forbidden = False
 
     with httpx.Client() as client:
         # 1. Native coin
@@ -65,10 +70,18 @@ def _fetch_chain(wallet_address: str, chain: dict, api_key: str) -> Dict[str, An
                     "chain_id": chain["chain_id"],
                     "usd_value": 0,
                 })
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code in (401, 403):
+                forbidden = True
+            else:
+                print(f"[alchemy] native balance failed on {chain['key']}: {e}")
         except Exception as e:
             print(f"[alchemy] native balance failed on {chain['key']}: {e}")
 
         # 2. ERC20 bakiyeleri
+        if forbidden:
+            return {"chain": chain["key"], "balances": [], "truncated": False, "forbidden": True}
+
         try:
             result = _rpc(client, url, "alchemy_getTokenBalances", [wallet_address, "erc20"], RPC_TIMEOUT)
             token_balances = (result or {}).get("tokenBalances", [])
@@ -107,10 +120,15 @@ def _fetch_chain(wallet_address: str, chain: dict, api_key: str) -> Dict[str, An
                         })
                 except Exception as e:
                     print(f"[alchemy] metadata failed for {contract} on {chain['key']}: {e}")
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code in (401, 403):
+                forbidden = True
+            else:
+                print(f"[alchemy] token balances failed on {chain['key']}: {e}")
         except Exception as e:
             print(f"[alchemy] token balances failed on {chain['key']}: {e}")
 
-    return {"chain": chain["key"], "balances": balances, "truncated": truncated}
+    return {"chain": chain["key"], "balances": balances, "truncated": truncated, "forbidden": forbidden}
 
 
 def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
@@ -132,10 +150,21 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
 
     balances: List[dict] = []
     truncated_chains: List[str] = []
+    unavailable_chains: List[str] = []
     for r in results:
         balances.extend(r["balances"])
         if r["truncated"]:
             truncated_chains.append(r["chain"])
+        if r.get("forbidden"):
+            unavailable_chains.append(r["chain"])
+
+    if unavailable_chains:
+        # Tek satir, istek basina bir kez — her ag icin ayri stack degil.
+        print(
+            "[alchemy] API key has no access to: "
+            + ", ".join(unavailable_chains)
+            + " — enable these networks for the app in the Alchemy dashboard"
+        )
 
     # Fiyatlar sembol bazli; ayni sembol farkli aglarda ayni fiyattan.
     prices = get_live_prices_sync([b["symbol"] for b in balances])
@@ -153,4 +182,7 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
         "total_usd": total_usd,
         "chains": [c["key"] for c in CHAINS],
         "truncated_chains": truncated_chains,
+        # Frontend bunu kullaniciya "su aglar yapilandirilmamis" diye
+        # gosterebilir; sessizce eksik bakiye gostermekten iyidir.
+        "unavailable_chains": unavailable_chains,
     }
