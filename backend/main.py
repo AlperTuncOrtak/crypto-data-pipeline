@@ -628,6 +628,8 @@ Respond ONLY with valid JSON, no markdown fences:
 
 RULES
 - Never invent numbers that contradict the calculated metrics.
+- Per-holding P&L figures are PERCENTAGES. Never render them with a currency
+  symbol; "+55.47%" must never be written as "+$55.47".
 - A tiny portfolio (under $100) is normal for someone starting out — do not lecture about position sizing being 'too small to matter'; focus on structure instead.
 - If P&L is unknown, do not speculate about profit or loss; recommend importing trade history instead.
 - Be direct and concrete. No filler, no disclaimers about being an AI.
