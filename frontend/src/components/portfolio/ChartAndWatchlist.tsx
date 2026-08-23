@@ -15,6 +15,7 @@ interface ChartAndWatchlistProps {
   chartData: { time: string; value: number }[];
   isChartLoading: boolean;
   timeframeLabel: string;
+  chartSource: "snapshots" | "reconstructed";
   holdings: Holding[];
   marketData: any[];
   sparklines: Record<string, { price: number; time: string }[]>;
@@ -32,6 +33,7 @@ export default function ChartAndWatchlist({
   chartData,
   isChartLoading,
   timeframeLabel,
+  chartSource,
   holdings,
   marketData,
   sparklines,
@@ -90,7 +92,17 @@ export default function ChartAndWatchlist({
         {/* Portfolio value chart */}
         <div className="lg:col-span-2 p-6 rounded-[20px] bg-[var(--bg-subtle)] backdrop-blur-xl border border-[var(--border-subtle)] shadow-xl">
           <div className="flex flex-wrap justify-between items-start gap-4 mb-8">
-            <h3 className="text-[15px] font-bold text-[var(--text-main)]">Portfolio value</h3>
+            <div>
+              <h3 className="text-[15px] font-bold text-[var(--text-main)]">Portfolio value</h3>
+              {/* The reconstruction prices today's quantities at past prices, so it
+                  is not what the portfolio was actually worth. Say so rather than
+                  letting the line imply a history the user did not have. */}
+              <p className="text-[11px] text-[var(--text-faint)] mt-0.5">
+                {chartSource === "snapshots"
+                  ? "From recorded portfolio history"
+                  : "Estimated — your current holdings priced at past rates"}
+              </p>
+            </div>
             <div className="flex gap-6">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-[var(--text-muted)] mb-1 flex items-center gap-1.5">

@@ -137,6 +137,10 @@ export default function Portfolio() {
   const [timeframe, setTimeframe] = useState("1D");
   const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [isChartLoading, setIsChartLoading] = useState(false);
+  // "snapshots" = what the portfolio was actually worth, recorded over time.
+  // "reconstructed" = today's quantities priced at past prices, which is only
+  // an approximation and must be labelled as one.
+  const [chartSource, setChartSource] = useState<"snapshots" | "reconstructed">("reconstructed");
 
   const activeTimeframe = TIMEFRAMES.find((t) => t.id === timeframe) || TIMEFRAMES[0];
 
@@ -150,6 +154,31 @@ export default function Portfolio() {
   const holdingsRef = useRef(holdings);
   holdingsRef.current = holdings;
 
+  // Record what the portfolio is worth right now so the chart can eventually
+  // be drawn from real history instead of an approximation. The backend keeps
+  // at most one row per hour, so posting on load is cheap.
+  const snapshotPosted = useRef(false);
+  useEffect(() => {
+    if (!user || snapshotPosted.current) return;
+    const positions = holdingsRef.current;
+    if (positions.length === 0 || totalValue <= 0) return;
+
+    snapshotPosted.current = true;
+    apiClient
+      .post("/portfolio/snapshot", {
+        total_value: totalValue,
+        holdings: positions.map((h) => ({
+          symbol: h.symbol,
+          quantity: h.quantity,
+          value: h.value,
+        })),
+      })
+      .catch(() => {
+        // A missed snapshot costs one data point; never surface it.
+        snapshotPosted.current = false;
+      });
+  }, [user, totalValue]);
+
   useEffect(() => {
     const positions = holdingsRef.current;
     if (positions.length === 0) {
@@ -160,9 +189,37 @@ export default function Portfolio() {
     let cancelled = false;
     const hours = activeTimeframe.hours();
 
+    const showDateAxis = hours > 48;
+    const axisLabel = (iso: string) => {
+      const d = new Date(iso);
+      return showDateAxis
+        ? d.toLocaleDateString([], { month: "short", day: "numeric" })
+        : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    };
+
     const fetchHistory = async () => {
       setIsChartLoading(true);
       try {
+        // Real recorded history wins whenever there is enough of it.
+        if (user) {
+          try {
+            const days = Math.max(1, Math.ceil(hours / 24));
+            const snapRes = await apiClient.get(`/portfolio/snapshots?days=${days}`);
+            const snaps = snapRes.data?.snapshots || [];
+            if (!cancelled && snaps.length >= 2) {
+              setChartData(
+                snaps.map((s: any) => ({ time: axisLabel(s.time), value: Number(s.value) }))
+              );
+              setChartSource("snapshots");
+              return;
+            }
+          } catch {
+            // Fall through to the approximation below.
+          }
+        }
+        if (cancelled) return;
+        setChartSource("reconstructed");
+
         const uniqueSymbols = Array.from(new Set(positions.map((h) => h.symbol)));
         const qs = uniqueSymbols.map((s) => `symbols=${encodeURIComponent(s)}`).join("&");
 
@@ -183,8 +240,6 @@ export default function Portfolio() {
           (a, b) => new Date(a).getTime() - new Date(b).getTime()
         );
 
-        // Longer ranges need a date on the axis, not a clock time.
-        const showDate = hours > 48;
         const lastKnownPrice: Record<string, number> = {};
 
         const aggregated: ChartPoint[] = sortedTimes.map((timeStr) => {
@@ -197,13 +252,7 @@ export default function Portfolio() {
             totalVal += price * h.quantity;
           });
 
-          const date = new Date(timeStr);
-          return {
-            time: showDate
-              ? date.toLocaleDateString([], { month: "short", day: "numeric" })
-              : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            value: totalVal,
-          };
+          return { time: axisLabel(timeStr), value: totalVal };
         });
 
         setChartData(aggregated);
@@ -220,7 +269,7 @@ export default function Portfolio() {
     fetchHistory();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positionsKey, timeframe]);
+  }, [positionsKey, timeframe, user]);
 
   const tabCount: Partial<Record<TabId, number>> = {
     holdings: holdings.length,
@@ -365,6 +414,7 @@ export default function Portfolio() {
                 chartData={chartData}
                 isChartLoading={isChartLoading}
                 timeframeLabel={activeTimeframe.label}
+                chartSource={chartSource}
                 holdings={holdings}
                 marketData={marketData || []}
                 sparklines={sparklines || {}}

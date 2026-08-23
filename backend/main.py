@@ -1026,6 +1026,122 @@ class BinanceSyncRequest(BaseModel):
     api_key: str
     api_secret: str
 
+# ── Portfoy anlik goruntuleri ────────────────────────────────
+# Grafik eskiden gecmis fiyatlari BUGUNKU miktarlarla carpiyordu, yani
+# gercek gecmisi degil "bugunku varliklarim o gun ne ederdi"yi ciziyordu.
+# Gercek gecmis ancak kaydedilerek olusur; asagisi o kaydi tutuyor.
+
+SNAPSHOT_MIN_INTERVAL_MINUTES = 60
+# Uydurma/bozuk bir toplamin gecmise yazilmasini engelleyen ust sinir.
+SNAPSHOT_MAX_VALUE = 1e12
+
+
+def _snapshot_client():
+    # Bu modulde `os` yalnizca `_os` takma adiyla import edilmis; duz `os`
+    # modul seviyesinde tanimli degil.
+    import os
+    from supabase import create_client
+
+    url = os.getenv("VITE_SUPABASE_URL", "")
+    key = os.getenv("SUPABASE_SERVICE_KEY", "")
+    if not url or not key:
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+    return create_client(url, key)
+
+
+@app.post("/portfolio/snapshot")
+@limiter.limit("30/minute")
+def portfolio_snapshot_write(request: Request, payload: dict, user: dict = Depends(verify_token)):
+    """
+    Portfoyun o anki toplam degerini kaydeder.
+
+    Saatte bir kayittan fazlasi yazilmaz: sayfa her acildiginda satir
+    eklemek grafigi ziplatir ve tabloyu sisirir.
+    """
+    from datetime import datetime, timezone, timedelta
+
+    try:
+        total_value = float(payload.get("total_value"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="total_value must be a number")
+
+    if not (total_value == total_value) or total_value in (float("inf"), float("-inf")):
+        raise HTTPException(status_code=400, detail="total_value must be finite")
+    if total_value < 0 or total_value > SNAPSHOT_MAX_VALUE:
+        raise HTTPException(status_code=400, detail="total_value out of range")
+
+    holdings = payload.get("holdings") or []
+    if not isinstance(holdings, list):
+        raise HTTPException(status_code=400, detail="holdings must be a list")
+
+    # Sadece ihtiyac duyulan alanlari sakla; istemciden gelen her seyi degil.
+    slim = [
+        {
+            "symbol": str(h.get("symbol", ""))[:20],
+            "quantity": float(h.get("quantity") or 0),
+            "value": float(h.get("value") or 0),
+        }
+        for h in holdings[:100]
+        if isinstance(h, dict) and h.get("symbol")
+    ]
+
+    sb = _snapshot_client()
+    now = datetime.now(timezone.utc)
+
+    latest = (
+        sb.table("portfolio_snapshots")
+        .select("captured_at")
+        .eq("user_id", user["id"])
+        .order("captured_at", desc=True)
+        .limit(1)
+        .execute()
+    )
+
+    if latest.data:
+        last_at = datetime.fromisoformat(str(latest.data[0]["captured_at"]).replace("Z", "+00:00"))
+        if now - last_at < timedelta(minutes=SNAPSHOT_MIN_INTERVAL_MINUTES):
+            return {"ok": True, "written": False, "reason": "throttled"}
+
+    sb.table("portfolio_snapshots").insert(
+        {
+            "user_id": user["id"],
+            "total_value": total_value,
+            "holdings": slim,
+            "captured_at": now.isoformat(),
+        }
+    ).execute()
+
+    return {"ok": True, "written": True, "captured_at": now.isoformat()}
+
+
+@app.get("/portfolio/snapshots")
+@limiter.limit("60/minute")
+def portfolio_snapshot_read(request: Request, days: int = 30, user: dict = Depends(verify_token)):
+    """Kaydedilmis portfoy degerleri — eskiden yeniye."""
+    from datetime import datetime, timezone, timedelta
+
+    days = max(1, min(days, 1825))
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+
+    sb = _snapshot_client()
+    result = (
+        sb.table("portfolio_snapshots")
+        .select("captured_at,total_value")
+        .eq("user_id", user["id"])
+        .gte("captured_at", since)
+        .order("captured_at", desc=False)
+        .limit(2000)
+        .execute()
+    )
+
+    return {
+        "snapshots": [
+            {"time": r["captured_at"], "value": float(r["total_value"])}
+            for r in (result.data or [])
+        ]
+    }
+
+
 @app.post("/portfolio/binance-sync")
 @limiter.limit("10/minute")
 async def binance_sync(request: Request, req: BinanceSyncRequest, user: dict = Depends(verify_token)):
