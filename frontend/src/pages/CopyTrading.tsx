@@ -16,11 +16,19 @@ import { toast } from "sonner";
 
 type Holding = { symbol: string; chain: string; usd_value: number };
 
+type Stats = {
+  concentration: number | null;
+  stable_pct: number | null;
+  chain_count: number;
+};
+
 type Leader = {
   id: number;
   address: string;
   label: string;
   note: string | null;
+  style: string | null;
+  stats: Stats | null;
   available: boolean;
   reason: string | null;
   total_usd: number | null;
@@ -39,6 +47,73 @@ const usd = (n: number) =>
 
 const shortAddress = (a: string) => `${a.slice(0, 6)}...${a.slice(-4)}`;
 
+/**
+ * Kullanici bir KISI degil bir TARZ secsin diye. Etiketler elle veriliyor;
+ * otomatik siniflandirma islem gecmisi olmadan tahmin olurdu.
+ */
+const STYLES: Record<
+  string,
+  { icon: string; label: string; blurb: string; className: string }
+> = {
+  calm: {
+    icon: "🐢",
+    label: "Calm",
+    blurb: "Mostly holds major coins, trades rarely",
+    className: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  },
+  active: {
+    icon: "⚡",
+    label: "Active",
+    blurb: "Trades often, moderate risk",
+    className: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  },
+  aggressive: {
+    icon: "🎲",
+    label: "Aggressive",
+    blurb: "Buys small altcoins, high risk",
+    className: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+  },
+};
+
+const WELCOME_KEY = "cryptoneko_copy_welcome_seen";
+
+/**
+ * Rozetler yalnizca elimizdeki bakiye verisinden turetiliyor. Performans
+ * ya da kar iddiasi YOK — o rakam olculmeden yazilirsa uydurma olur.
+ */
+function riskBadges(stats: Stats | null) {
+  if (!stats) return [];
+  const out: { text: string; tone: "warn" | "calm" | "plain" }[] = [];
+
+  if (stats.concentration !== null) {
+    const pct = Math.round(stats.concentration * 100);
+    out.push({
+      text: `${pct}% in one coin`,
+      tone: pct >= 80 ? "warn" : "plain",
+    });
+  }
+  if (stats.stable_pct !== null && stats.stable_pct >= 0.2) {
+    out.push({
+      text: `${Math.round(stats.stable_pct * 100)}% stablecoins`,
+      tone: "calm",
+    });
+  }
+  if (stats.chain_count > 0) {
+    out.push({
+      text: `${stats.chain_count} chain${stats.chain_count > 1 ? "s" : ""}`,
+      tone: "plain",
+    });
+  }
+  return out;
+}
+
+const BADGE_TONE = {
+  warn: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+  calm: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  plain:
+    "bg-[var(--bg-base)] text-[var(--text-muted)] border-[var(--border-subtle)]",
+};
+
 export default function CopyTrading() {
   const { isLoggedIn } = useAuth();
   const [leaders, setLeaders] = useState<Leader[]>([]);
@@ -49,6 +124,19 @@ export default function CopyTrading() {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ address: "", label: "" });
   const [adding, setAdding] = useState(false);
+  const [styleFilter, setStyleFilter] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(
+    () => !localStorage.getItem(WELCOME_KEY),
+  );
+
+  const dismissWelcome = () => {
+    localStorage.setItem(WELCOME_KEY, "1");
+    setShowWelcome(false);
+  };
+
+  const shown = styleFilter
+    ? leaders.filter((l) => l.style === styleFilter)
+    : leaders;
 
   const load = useCallback(async () => {
     try {
@@ -154,6 +242,58 @@ export default function CopyTrading() {
           </p>
         </div>
 
+        {/* Acemi karsilamasi. Bir kez gosterilir; uzun rehber degil, uc cumle:
+            kimseyi aramana gerek yok, tarz sec, risk gercek. */}
+        {showWelcome && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 rounded-2xl border border-[var(--border-base)] bg-[var(--bg-elevated)]/70 backdrop-blur-xl p-6"
+          >
+            <h3 className="text-lg font-bold mb-4">New here? 30 seconds.</h3>
+            <div className="grid sm:grid-cols-3 gap-4 mb-5">
+              {[
+                {
+                  n: "1",
+                  t: "You don't have to find anyone",
+                  d: "We track these wallets and vet the list. Hunting for whale addresses yourself is the risky part — skip it.",
+                },
+                {
+                  n: "2",
+                  t: "Pick a style, not a person",
+                  d: "Calm, Active or Aggressive. The badges on each card describe how that wallet actually holds its money right now.",
+                },
+                {
+                  n: "3",
+                  t: "Nothing happens yet",
+                  d: "Following just saves your choice. No trade is placed and your wallet is never touched.",
+                },
+              ].map((s) => (
+                <div key={s.n}>
+                  <div className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-[11px] font-bold flex items-center justify-center mb-2">
+                    {s.n}
+                  </div>
+                  <div className="font-semibold text-[13px] mb-1">{s.t}</div>
+                  <p className="text-[12px] leading-relaxed text-[var(--text-muted)]">
+                    {s.d}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-[var(--text-muted)] mb-4">
+              Copying someone can lose money. Past holdings say nothing about
+              future results, and most people who copy traders do not profit.
+              Never commit more than you can afford to lose.
+            </p>
+            <button
+              onClick={dismissWelcome}
+              className="h-9 px-5 rounded-lg text-[13px] font-semibold bg-[var(--accent)] text-white hover:opacity-90 transition-all"
+            >
+              Got it
+            </button>
+          </motion.div>
+        )}
+
         {/* Faz 1 durustluk banner'i — burada islem YOK, kullanici bunu bilmeli */}
         <div className="mb-8 flex items-start gap-3 rounded-xl border border-[var(--border-base)] bg-[var(--bg-elevated)]/60 backdrop-blur-xl p-4">
           <Info size={18} className="text-[var(--accent)] shrink-0 mt-0.5" />
@@ -168,11 +308,45 @@ export default function CopyTrading() {
         </div>
 
         {/* Add own whale */}
+        {/* Tarz filtresi. Liste zaten tam geliyor, filtre istemci tarafinda —
+            birkac lider icin ayri endpoint acmaya deger degil. */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          <button
+            onClick={() => setStyleFilter(null)}
+            className={`h-8 px-3 rounded-lg text-[12px] font-medium border transition-all ${
+              styleFilter === null
+                ? "bg-[var(--bg-elevated)] text-[var(--text-main)] border-[var(--border-base)]"
+                : "text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-elevated)]/50"
+            }`}
+          >
+            All
+          </button>
+          {Object.entries(STYLES).map(([key, s]) => (
+            <button
+              key={key}
+              onClick={() => setStyleFilter(styleFilter === key ? null : key)}
+              title={s.blurb}
+              className={`h-8 px-3 rounded-lg text-[12px] font-medium border transition-all ${
+                styleFilter === key
+                  ? s.className
+                  : "text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-elevated)]/50"
+              }`}
+            >
+              {s.icon} {s.label}
+            </button>
+          ))}
+        </div>
+        {styleFilter && STYLES[styleFilter] && (
+          <p className="text-[12px] text-[var(--text-muted)] mb-4 -mt-2">
+            {STYLES[styleFilter].blurb}.
+          </p>
+        )}
+
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">
             Whales{" "}
             <span className="text-[var(--text-muted)] font-normal text-sm">
-              ({leaders.length})
+              ({shown.length})
             </span>
           </h2>
           <button
@@ -188,27 +362,72 @@ export default function CopyTrading() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             onSubmit={addLeader}
-            className="mb-6 flex flex-col sm:flex-row gap-2 rounded-xl border border-[var(--border-base)] bg-[var(--bg-elevated)]/60 backdrop-blur-xl p-3"
+            className="mb-6 rounded-xl border border-[var(--border-base)] bg-[var(--bg-elevated)]/60 backdrop-blur-xl p-4"
           >
-            <input
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              placeholder="0x wallet address"
-              className="flex-1 h-10 px-3 rounded-lg bg-[var(--bg-base)] border border-[var(--border-base)] text-[13px] outline-none focus:border-[var(--accent)]"
-            />
-            <input
-              value={form.label}
-              onChange={(e) => setForm({ ...form, label: e.target.value })}
-              placeholder="Name (optional)"
-              className="sm:w-48 h-10 px-3 rounded-lg bg-[var(--bg-base)] border border-[var(--border-base)] text-[13px] outline-none focus:border-[var(--accent)]"
-            />
-            <button
-              type="submit"
-              disabled={adding || !form.address.trim()}
-              className="h-10 px-5 rounded-lg text-[13px] font-semibold bg-[var(--accent)] text-white disabled:opacity-40 transition-all"
-            >
-              {adding ? <Loader2 size={15} className="animate-spin" /> : "Add"}
-            </button>
+            {/* Rehber sadece BURADA — ana sayfada dursa acemiyi balina
+                avina yollardi, oysa liste tam da bunu gereksiz kilmak icin var. */}
+            <div className="mb-4 text-[12px] leading-relaxed text-[var(--text-muted)]">
+              <p className="text-[var(--text-main)] font-semibold mb-2">
+                Before you paste an address
+              </p>
+              <ul className="space-y-1 mb-3 list-disc list-inside">
+                <li>Check it has a real history, not a wallet made last week.</li>
+                <li>
+                  Look at what it holds. Mostly unknown microcaps means you will
+                  be copying into tokens you cannot sell.
+                </li>
+                <li>
+                  A big balance is not a good track record — a wallet can be
+                  large and still lose money.
+                </li>
+                <li>Wallets that only receive and never sell are not traders.</li>
+              </ul>
+              <p className="mb-1.5">Where people look these up:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ["Arkham", "https://intel.arkm.com"],
+                  ["DeBank", "https://debank.com"],
+                  ["Etherscan", "https://etherscan.io"],
+                  ["Nansen", "https://app.nansen.ai"],
+                ].map(([name, href]) => (
+                  <a
+                    key={name}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-[var(--bg-base)] border border-[var(--border-subtle)] hover:text-[var(--accent)] transition-colors"
+                  >
+                    {name} <ExternalLink size={10} />
+                  </a>
+                ))}
+              </div>
+              <p className="mt-3 text-[11px]">
+                Not sure what any of this means? Then this form is not for you —
+                pick from the list above instead, that is what it is for.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                placeholder="0x wallet address"
+                className="flex-1 h-10 px-3 rounded-lg bg-[var(--bg-base)] border border-[var(--border-base)] text-[13px] outline-none focus:border-[var(--accent)]"
+              />
+              <input
+                value={form.label}
+                onChange={(e) => setForm({ ...form, label: e.target.value })}
+                placeholder="Name (optional)"
+                className="sm:w-48 h-10 px-3 rounded-lg bg-[var(--bg-base)] border border-[var(--border-base)] text-[13px] outline-none focus:border-[var(--accent)]"
+              />
+              <button
+                type="submit"
+                disabled={adding || !form.address.trim()}
+                className="h-10 px-5 rounded-lg text-[13px] font-semibold bg-[var(--accent)] text-white disabled:opacity-40 transition-all"
+              >
+                {adding ? <Loader2 size={15} className="animate-spin" /> : "Add"}
+              </button>
+            </div>
           </motion.form>
         )}
 
@@ -226,16 +445,20 @@ export default function CopyTrading() {
           </div>
         )}
 
-        {!loading && !error && leaders.length === 0 && (
+        {!loading && !error && shown.length === 0 && (
           <div className="text-center py-20 text-[var(--text-muted)]">
             <Wallet size={32} className="mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No whales on the list yet.</p>
+            <p className="text-sm">
+              {styleFilter
+                ? "No whales with this style yet. Try another one."
+                : "No whales on the list yet."}
+            </p>
           </div>
         )}
 
         {/* Leader cards */}
         <div className="grid gap-3">
-          {leaders.map((l, i) => (
+          {shown.map((l, i) => (
             <motion.div
               key={l.id}
               initial={{ opacity: 0, y: 12 }}
@@ -249,7 +472,17 @@ export default function CopyTrading() {
                   {l.label.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <div className="font-semibold truncate">{l.label}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold truncate">{l.label}</span>
+                    {l.style && STYLES[l.style] && (
+                      <span
+                        title={STYLES[l.style].blurb}
+                        className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-md border font-medium ${STYLES[l.style].className}`}
+                      >
+                        {STYLES[l.style].icon} {STYLES[l.style].label}
+                      </span>
+                    )}
+                  </div>
                   <a
                     href={`https://etherscan.io/address/${l.address}`}
                     target="_blank"
@@ -282,6 +515,20 @@ export default function CopyTrading() {
                         </span>
                       ))}
                     </div>
+                    {/* Risk rozetleri: sadece bakiyeden turetilmis, kar
+                        iddiasi yok. Performans Faz 2 olcumu ile gelecek. */}
+                    {riskBadges(l.stats).length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {riskBadges(l.stats).map((b) => (
+                          <span
+                            key={b.text}
+                            className={`text-[10px] px-2 py-0.5 rounded-md border font-medium ${BADGE_TONE[b.tone]}`}
+                          >
+                            {b.text}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="flex items-center gap-2 text-[12px] text-[var(--text-muted)]">

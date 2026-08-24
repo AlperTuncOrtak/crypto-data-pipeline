@@ -53,6 +53,32 @@ TOP_HOLDINGS_COUNT = 5
 MIN_ALLOCATION_USD = 10
 MAX_ALLOCATION_USD = 100_000
 
+# Elle etiketlenen tarzlar. Otomatik siniflandirma, Faz 2'nin islem
+# gecmisi olmadan tahminden ibaret olurdu — o yuzden elle.
+STYLES = ("calm", "active", "aggressive")
+
+# Stabilcoin sayilan semboller. exchange_service.py icinde de benzer bir
+# liste var; oradaki fonksiyon ici bir degisken, disari acilmiyor.
+STABLECOINS = {"USDT", "USDC", "BUSD", "DAI", "FDUSD", "TUSD", "USDE", "USDS", "PYUSD"}
+
+
+def _stats(priced: list, total_usd: float) -> dict:
+    """
+    Acemi kullaniciya "bu cuzdan ne kadar riskli" sorusunun cevabini veren
+    uc rozet. Hepsi elimizdeki bakiye verisinden turetiliyor; performans
+    veya kar iddiasi ICERMEZ, o rakam Faz 2'nin olcumu olmadan uydurma olur.
+    """
+    if total_usd <= 0 or not priced:
+        return {"concentration": None, "stable_pct": None, "chain_count": 0}
+
+    stable_usd = sum(b["usd_value"] for b in priced if b["symbol"] in STABLECOINS)
+    return {
+        # En buyuk pozisyonun toplama orani: 1'e yakinsa tek karta oynuyor.
+        "concentration": round(priced[0]["usd_value"] / total_usd, 3),
+        "stable_pct": round(stable_usd / total_usd, 3),
+        "chain_count": len({b["chain"] for b in priced}),
+    }
+
 
 def _snapshot(address: str) -> dict:
     """Bir adresin anlik portfoy goruntusunu Alchemy'den ceker."""
@@ -60,7 +86,9 @@ def _snapshot(address: str) -> dict:
     if portfolio.get("error"):
         return {"error": portfolio["error"][:255]}
 
+    # get_wallet_balances usd_value'ya gore sirali donuyor, priced[0] en buyuk.
     priced = [b for b in portfolio.get("balances", []) if (b.get("usd_value") or 0) > 0]
+    total_usd = round(portfolio.get("total_usd") or 0, 2)
     top = [
         {
             "symbol": b["symbol"],
@@ -69,7 +97,11 @@ def _snapshot(address: str) -> dict:
         }
         for b in priced[:TOP_HOLDINGS_COUNT]
     ]
-    return {"total_usd": round(portfolio.get("total_usd") or 0, 2), "top_holdings": top}
+    return {
+        "total_usd": total_usd,
+        "top_holdings": top,
+        "stats": _stats(priced, total_usd),
+    }
 
 
 def _refresh(cursor, leader_id: int, address: str) -> None:
@@ -85,17 +117,26 @@ def _refresh(cursor, leader_id: int, address: str) -> None:
         return
     cursor.execute(
         """UPDATE whale_leaders
-           SET last_total_usd = %s, last_top_holdings = %s,
+           SET last_total_usd = %s, last_top_holdings = %s, last_stats = %s,
                last_synced_at = NOW(), last_sync_error = NULL
            WHERE id = %s""",
-        (snap["total_usd"], json.dumps(snap["top_holdings"]), leader_id),
+        (
+            snap["total_usd"],
+            json.dumps(snap["top_holdings"]),
+            json.dumps(snap["stats"]),
+            leader_id,
+        ),
     )
 
 
+def _json_col(value):
+    """MySQL surucusu JSON kolonunu bazen str, bazen parse edilmis doner."""
+    return json.loads(value) if isinstance(value, str) else value
+
+
 def _format(row: dict, following: dict) -> dict:
-    holdings = row.get("last_top_holdings")
-    if isinstance(holdings, str):
-        holdings = json.loads(holdings)
+    holdings = _json_col(row.get("last_top_holdings"))
+    stats = _json_col(row.get("last_stats"))
 
     follow = following.get(row["id"])
     return {
@@ -103,6 +144,8 @@ def _format(row: dict, following: dict) -> dict:
         "address": row["address"],
         "label": row["label"],
         "note": row["note"],
+        "style": row.get("style"),
+        "stats": stats or None,
         # Veri gelmediyse durustce soyluyoruz — sahte rakam yok.
         "available": row["last_sync_error"] is None and row["last_total_usd"] is not None,
         "reason": row["last_sync_error"],
@@ -283,5 +326,25 @@ if __name__ == "__main__":
     assert out["available"] is True and out["total_usd"] == 1234.5
     assert out["top_holdings"][0]["symbol"] == "ETH"
     assert out["is_following"] is False and out["allocation_usd"] is None
+    assert out["style"] is None and out["stats"] is None, "eksik kolonlar patlamamali"
+
+    # Rozetler. priced listesi usd_value'ya gore sirali geliyor.
+    priced = [
+        {"symbol": "ETH", "chain": "ethereum", "usd_value": 700.0},
+        {"symbol": "USDC", "chain": "base", "usd_value": 200.0},
+        {"symbol": "LINK", "chain": "base", "usd_value": 100.0},
+    ]
+    s = _stats(priced, 1000.0)
+    assert s["concentration"] == 0.7, s
+    assert s["stable_pct"] == 0.2, s
+    assert s["chain_count"] == 2, s  # base iki kez sayilmamali
+
+    # Bos/degersiz cuzdan: sifira bolme yok, rozet yerine None.
+    assert _stats([], 0)["concentration"] is None
+    assert _stats(priced, 0)["chain_count"] == 0
+
+    # Tek pozisyonluk cuzdan tam yogunlasma gostermeli.
+    solo = [{"symbol": "PEPE", "chain": "ethereum", "usd_value": 500.0}]
+    assert _stats(solo, 500.0) == {"concentration": 1.0, "stable_pct": 0.0, "chain_count": 1}
 
     print("copy_service self-check OK")
