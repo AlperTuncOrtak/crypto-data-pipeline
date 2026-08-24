@@ -429,6 +429,28 @@ PORTFOLIO_SECTORS = {
 STABLE_SYMBOLS = {k for k, v in PORTFOLIO_SECTORS.items() if v == "Stablecoin"}
 
 
+def _parse_ts(value) -> "datetime":
+    """
+    Supabase timestamp'ini datetime'a cevir.
+
+    Postgres kesirli saniyedeki sondaki sifirlari atiyor, yani
+    "…:41.60065+00:00" gibi 5 haneli degerler geliyor. Python 3.10'un
+    fromisoformat'i sadece 3 veya 6 hane kabul edip ValueError atiyor
+    (3.11+ esnek). Hane sayisini 6'ya tamamliyoruz.
+    """
+    import re
+    from datetime import datetime
+
+    text = str(value).replace("Z", "+00:00")
+    text = re.sub(
+        r"\.(\d{1,6})",
+        lambda m: "." + m.group(1).ljust(6, "0"),
+        text,
+        count=1,
+    )
+    return datetime.fromisoformat(text)
+
+
 def _portfolio_history(user_id: str, days: int = 90):
     """
     Kaydedilmis portfoy degerlerinden performans ozeti.
@@ -471,8 +493,8 @@ def _portfolio_history(user_id: str, days: int = 90):
         if peak > 0:
             max_drawdown = max(max_drawdown, (peak - v) / peak * 100)
 
-    start = datetime.fromisoformat(str(rows[0]["captured_at"]).replace("Z", "+00:00"))
-    end = datetime.fromisoformat(str(rows[-1]["captured_at"]).replace("Z", "+00:00"))
+    start = _parse_ts(rows[0]["captured_at"])
+    end = _parse_ts(rows[-1]["captured_at"])
     hours = max((end - start).total_seconds() / 3600, 0)
 
     return {
@@ -1222,7 +1244,7 @@ def portfolio_snapshot_write(request: Request, payload: dict, user: dict = Depen
     )
 
     if latest.data:
-        last_at = datetime.fromisoformat(str(latest.data[0]["captured_at"]).replace("Z", "+00:00"))
+        last_at = _parse_ts(latest.data[0]["captured_at"])
         if now - last_at < timedelta(minutes=SNAPSHOT_MIN_INTERVAL_MINUTES):
             return {"ok": True, "written": False, "reason": "throttled"}
 
