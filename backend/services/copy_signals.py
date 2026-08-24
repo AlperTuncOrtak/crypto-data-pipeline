@@ -66,34 +66,76 @@ def _rpc_transfers(url: str, params: dict) -> list:
     return (body.get("result") or {}).get("transfers", [])
 
 
+# "internal" her agda desteklenmiyor; desteklemeyende istek hata donuyor.
+# Hangi zincirde reddedildigini hatirlayip bir daha istemiyoruz.
+_NO_INTERNAL: set = set()
+
+
+def _categories(chain_key: str) -> list:
+    """
+    Takas sonucu gelen native ETH "internal" transfer olarak gorunur —
+    istenmezse WETH cozulup ETH alan her takasin gelen bacagi gorunmez olur.
+    """
+    if chain_key in _NO_INTERNAL:
+        return ["external", "erc20"]
+    return ["external", "internal", "erc20"]
+
+
+def _transfers_or_retry(url: str, chain_key: str, params: dict) -> list:
+    try:
+        return _rpc_transfers(url, {**params, "category": _categories(chain_key)})
+    except Exception as e:
+        if chain_key in _NO_INTERNAL or "categor" not in str(e).lower():
+            raise
+        logger.info("%s: internal kategorisi desteklenmiyor, onsuz devam", chain_key)
+        _NO_INTERNAL.add(chain_key)
+        return _rpc_transfers(url, {**params, "category": _categories(chain_key)})
+
+
 def _fetch_chain_transfers(address: str, chain: dict, api_key: str, from_block: int | None) -> list:
     """
-    Cuzdanin bir zincirdeki giden+gelen transferleri. from_block None ise
-    ilk tarama: en yeniden geriye dogru kucuk bir pencere aliyoruz, yoksa
-    cuzdanin tum tarihcesini backfill etmeye kalkardik.
+    Cuzdanin bir zincirdeki giden+gelen transferleri.
+
+    Iki yonu ayri ayri "son N kayit" diye cekmek yanlisti: gelen tarafi
+    spam'le dolu bir cuzdanda 500 gelen kayit son birkac gunu kapsarken
+    500 giden kayit aylara yayiliyor, dolayisiyla bir takasin iki bacagi
+    hicbir zaman ayni pencereye dusmuyordu. Cozum: iki yon de AYNI blok
+    araligindan okunuyor. Ilk taramada araligi giden transferler belirler
+    (spam'in az oldugu, anlamli taraf).
     """
     url = f"https://{chain['subdomain']}.g.alchemy.com/v2/{api_key}"
-    seeding = from_block is None
+    base = {"withMetadata": True, "excludeZeroValue": True}
+    tagged = []
 
-    base = {
-        "category": ["external", "erc20"],
-        "withMetadata": True,
-        "excludeZeroValue": True,
-        "order": "desc" if seeding else "asc",
-        "maxCount": hex(SEED_TRANSFERS if seeding else MAX_TRANSFERS),
-    }
-    if not seeding:
-        base["fromBlock"] = hex(from_block + 1)
+    try:
+        if from_block is None:
+            outs = _transfers_or_retry(url, chain["key"], {
+                **base, "fromAddress": address,
+                "order": "desc", "maxCount": hex(SEED_TRANSFERS),
+            })
+            if not outs:
+                return []
+            start = min(int(t.get("blockNum", "0x0"), 16) for t in outs)
+            ins = _transfers_or_retry(url, chain["key"], {
+                **base, "toAddress": address, "fromBlock": hex(start),
+                "order": "desc", "maxCount": hex(MAX_TRANSFERS),
+            })
+        else:
+            window = {
+                **base, "fromBlock": hex(from_block + 1),
+                "order": "asc", "maxCount": hex(MAX_TRANSFERS),
+            }
+            outs = _transfers_or_retry(url, chain["key"], {**window, "fromAddress": address})
+            ins = _transfers_or_retry(url, chain["key"], {**window, "toAddress": address})
+    except Exception as e:
+        logger.warning("transfer fetch failed %s: %s", chain["key"], e)
+        return []
 
-    out = []
-    for direction, key in (("out", "fromAddress"), ("in", "toAddress")):
-        try:
-            for t in _rpc_transfers(url, {**base, key: address}):
-                t["_direction"] = direction
-                out.append(t)
-        except Exception as e:
-            logger.warning("transfer fetch failed %s/%s: %s", chain["key"], direction, e)
-    return out
+    for direction, rows in (("out", outs), ("in", ins)):
+        for t in rows:
+            t["_direction"] = direction
+            tagged.append(t)
+    return tagged
 
 
 def _leg_usd(leg: dict, prices: dict) -> float:
