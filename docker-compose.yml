@@ -73,6 +73,25 @@ services:
     depends_on:
       - mysql
 
+  copy_signals_worker:
+    build: .
+    container_name: crypto_copy_signals
+    restart: always
+    command: python src/copy_signals_worker.py
+    env_file:
+      - ./backend/.env
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=12345678
+      - DB_NAME=crypto_analysis
+      - REDIS_URL=redis://redis:6379/0
+      - DAEMON_MODE=1
+      - COPY_SCAN_INTERVAL=300
+    depends_on:
+      - mysql
+      - redis
+
   caddy:
     image: caddy:2-alpine
     container_name: caddy

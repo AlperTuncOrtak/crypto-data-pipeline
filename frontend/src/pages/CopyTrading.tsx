@@ -282,8 +282,7 @@ export default function CopyTrading() {
             </div>
             <p className="text-[11px] text-[var(--text-muted)] mb-4">
               Copying someone can lose money. Past holdings say nothing about
-              future results, and most people who copy traders do not profit.
-              Never commit more than you can afford to lose.
+              future results. Never commit more than you can afford to lose.
             </p>
             <button
               onClick={dismissWelcome}
