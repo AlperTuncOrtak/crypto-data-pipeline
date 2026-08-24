@@ -1,10 +1,12 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { LiFiWidget, type WidgetConfig } from "@lifi/widget";
 import type { StaticToken } from "@lifi/sdk";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import AITradeInsights from "../../components/market/AITradeInsights";
 import { useTheme } from "../../hooks/useTheme";
+import { useTranslation } from "react-i18next";
+import { Trash2 } from "lucide-react";
 
 // Must match the chains configured in main.tsx. The widget runs on the app's
 // own wagmi connection, so offering a chain wagmi cannot switch to would leave
@@ -72,6 +74,26 @@ const FEATURED_TOKENS: StaticToken[] = [
   { chainId: 137, address: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6", symbol: "WBTC", decimals: 8, name: "WBTC" },
 ];
 
+/**
+ * Where the widget persists in-flight swaps (zustand persist, no keyPrefix set
+ * so the default prefix applies).
+ *
+ * A swap that never gets signed stays "Signature required" forever: the
+ * widget only offers its own delete button once a route reaches Failed, so a
+ * pending one cannot be dismissed from inside the widget at all.
+ */
+const ROUTES_STORAGE_KEY = "li.fi-widget-routes";
+
+const hasStoredRoutes = () => {
+  try {
+    const raw = localStorage.getItem(ROUTES_STORAGE_KEY);
+    if (!raw) return false;
+    return Object.keys(JSON.parse(raw)?.state?.routes || {}).length > 0;
+  } catch {
+    return false;
+  }
+};
+
 const ACCENT_COLORS: Record<string, string> = {
   purple: "#6366f1",
   emerald: "#10b981",
@@ -83,7 +105,18 @@ const ACCENT_COLORS: Record<string, string> = {
 
 export default function SwapInterface() {
   const { theme, accent } = useTheme();
+  const { t } = useTranslation();
   const { openConnectModal } = useConnectModal();
+  const [stuckSwaps, setStuckSwaps] = useState(hasStoredRoutes);
+  // Remounting drops the widget's in-memory copy; clearing storage alone
+  // would leave the stuck row on screen until a reload.
+  const [widgetKey, setWidgetKey] = useState(0);
+
+  const clearStuckSwaps = useCallback(() => {
+    localStorage.removeItem(ROUTES_STORAGE_KEY);
+    setStuckSwaps(false);
+    setWidgetKey((k) => k + 1);
+  }, []);
   const isLight = theme === "light";
   const currentAccent = ACCENT_COLORS[accent] || "#6366f1";
 
@@ -123,14 +156,25 @@ export default function SwapInterface() {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col md:flex-row justify-center gap-6 mt-8 max-w-5xl mx-auto w-full pb-32 relative"
       >
-        <div className="relative w-full max-w-[420px] rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-[var(--border-subtle)]">
+        <div className="w-full max-w-[420px] flex flex-col gap-3">
+          {stuckSwaps && (
+            <button
+              onClick={clearStuckSwaps}
+              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl text-[12px] font-bold text-[var(--text-muted)] bg-[var(--bg-subtle)] border border-[var(--border-base)] hover:text-[var(--text-main)] hover:border-[var(--border-strong)] transition-colors"
+            >
+              <Trash2 size={13} />
+              {t("portfolio.swap.clear_stuck")}
+            </button>
+          )}
+        <div className="relative w-full rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-[var(--border-subtle)]">
           {/* The widget mounts its own <Routes> into the host router (it checks
               useInRouterContext and only falls back to MemoryRouter when there
               is none). Its home path is '/', so the route that renders this
               component must be a splat — see App.tsx "/portfolio/*". Without
               it the widget matched /portfolio against its own routes and
               rendered its 404 page. */}
-          <LiFiWidget integrator="crypto-data-pipeline" config={widgetConfig} />
+          <LiFiWidget key={widgetKey} integrator="crypto-data-pipeline" config={widgetConfig} />
+        </div>
         </div>
 
         {/* Market Signals */}

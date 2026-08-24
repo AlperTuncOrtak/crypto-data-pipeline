@@ -426,6 +426,9 @@
       "synced_msg": "{{exchange}} borsasından {{count}} varlık başarıyla senkronize edildi!",
       "synced_empty": "Bağlantı başarılı ama {{exchange}} üzerinde varlık bulunamadı.",
       "sync_failed": "Borsaya bağlanılamadı."
+    },
+    "swap": {
+      "clear_stuck": "Takılı takasları temizle (yerel takas geçmişini de siler)"
     }
   },
   "market": {

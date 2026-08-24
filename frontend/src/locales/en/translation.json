@@ -426,6 +426,9 @@
       "synced_msg": "Successfully synced {{count}} assets from {{exchange}}!",
       "synced_empty": "Connected successfully, but no assets found in {{exchange}}.",
       "sync_failed": "Failed to connect to exchange."
+    },
+    "swap": {
+      "clear_stuck": "Clear stuck swaps (also clears local swap history)"
     }
   },
   "market": {
