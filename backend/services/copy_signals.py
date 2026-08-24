@@ -37,9 +37,16 @@ MIN_SIGNAL_USD = 1_000
 MAX_SIGNALS_PER_DAY = 12
 
 # Tarama basina zincir basina cekilecek transfer ustu.
-MAX_TRANSFERS = 100
+#
+# Neden bu kadar yuksek: maxCount sunucu tarafinda uygulaniyor, yani
+# spam'i sonradan elemek pencereyi genisletmiyor. Vitalik'in cuzdaninda
+# 25'lik pencerenin HER IKI YONU de spam'di — sahte token'lar giden
+# transfer de taklit ediyor ('Vitalik', '<3', '$ ETH77Go.com') — ve gercek
+# takas hic aralaga girmiyordu. Cursor ilerledikten sonra bu tavan zaten
+# devreye girmiyor, sadece yeni bloklar donuyor.
+MAX_TRANSFERS = 1000
 # Ilk taramada gecmise ne kadar bakilacagi — cursor yokken.
-SEED_TRANSFERS = 25
+SEED_TRANSFERS = 500
 
 RPC_TIMEOUT = 20.0
 
@@ -122,6 +129,20 @@ def _classify(out_leg: dict, in_leg: dict, prices: dict) -> tuple | None:
 def _contract_of(leg: dict) -> str:
     raw = (leg.get("rawContract") or {}).get("address")
     return (raw or "native").lower()
+
+
+def _drop_spam(transfers: list, chain_id: int, canonical: set) -> list:
+    """
+    Kanonik olmayan kontratlari eslestirmeden ONCE atar.
+    Spam token'lar hem gelen hem giden transferi taklit ediyor; bunlar
+    listede kalirsa gercek takasin bacaklari yanlis eslesiyor ve "en buyuk
+    bacak" secimi sahte bir 10^9 birimlik transferi seciyordu.
+    """
+    return [
+        t for t in transfers
+        if _contract_of(t) == "native"
+        or (chain_id, _contract_of(t)) in canonical
+    ]
 
 
 def _detect_swaps(transfers: list, prices: dict) -> list:
@@ -215,12 +236,15 @@ def scan_leader(conn, leader: dict, api_key: str, canonical: set) -> dict:
 
     for chain in CHAINS:
         from_block = blocks.get(chain["key"])
-        transfers = _fetch_chain_transfers(
-            leader["address"], chain, api_key, from_block
-        )
-        if not transfers:
+        raw = _fetch_chain_transfers(leader["address"], chain, api_key, from_block)
+        if not raw:
             continue
 
+        # Imlec HAM veriden hesaplaniyor: spam de olsa o bloklar tarandi,
+        # yoksa her turda ayni spam bloklari tekrar cekilir.
+        max_block = max(int(t.get("blockNum", "0x0"), 16) for t in raw)
+
+        transfers = _drop_spam(raw, chain["chain_id"], canonical)
         symbols = {(t.get("asset") or "").upper() for t in transfers}
         prices = get_live_prices_sync([s for s in symbols if s])
 
@@ -251,11 +275,7 @@ def scan_leader(conn, leader: dict, api_key: str, canonical: set) -> dict:
                 if status == "accepted":
                     accepted_today += 1
 
-        # Imleci en yuksek goruldugu bloga tasi — swap uretmeyen transferler
-        # de sayilmali, yoksa her turda ayni bloklar tekrar taranir.
-        blocks[chain["key"]] = max(
-            int(t.get("blockNum", "0x0"), 16) for t in transfers
-        )
+        blocks[chain["key"]] = max_block
 
     cursor.execute(
         "UPDATE whale_leaders SET last_scanned_blocks = %s WHERE id = %s",
@@ -345,5 +365,16 @@ if __name__ == "__main__":
 
     assert _parse_ts("2026-08-24T12:00:00.000Z").hour == 12
     assert _parse_ts(None) is None
+
+    # Spam eleme: sahte token eslestirmeden once dusmeli, yoksa "en buyuk
+    # bacak" secimi 10^9 birimlik sahte transferi seciyor.
+    real = leg("out", "ETH", 3.0)
+    spam = leg("out", "SCAM", 1e9, "0xspam")
+    kept = _drop_spam([real, spam, leg("in", "PEPE", 1e9, "0xpepe")], 1, {(1, "0xpepe")})
+    assert len(kept) == 2, kept
+    assert all((t.get("asset") or "") != "SCAM" for t in kept)
+    # Spam bacagi kalirsa yon yanlis cikardi; elendiginde dogru ALIM uretiliyor.
+    swaps = _detect_swaps(kept, P)
+    assert swaps[0]["side"] == "BUY" and swaps[0]["symbol"] == "PEPE"
 
     print("copy_signals self-check OK")
