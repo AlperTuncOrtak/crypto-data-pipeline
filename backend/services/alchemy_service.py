@@ -1,8 +1,9 @@
 import os
 import re
+import time
 import httpx
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set, Tuple
 
 from backend.services.price_service import get_live_prices_sync
 
@@ -36,6 +37,69 @@ TICKER_RE = re.compile(r"^[A-Z0-9]{1,12}$")
 HEADERS = {"accept": "application/json", "content-type": "application/json"}
 RPC_TIMEOUT = 12.0
 META_TIMEOUT = 6.0
+
+# ------------------------------------------------------------------
+# Kanonik token listesi.
+#
+# Bakiyeleri SEMBOLE gore fiyatlamak, ticker'ini calan spam token'i
+# gercek token sanmak demek. Vitalik'in cuzdaninda "BTC" sembollu sahte
+# bir kontrat (0x006492...) gercek BTC fiyatiyla carpilip 5.2 milyar
+# dolar, "NOT" sembollu bir digeri 10^55 dolar goruluyordu. TICKER_RE
+# sadece URL/emoji iceren sembolleri eliyor; gercek bir ticker'i birebir
+# kopyalayan klonu ayirt edemez.
+#
+# Ayirt eden sey kontrat adresi. LI.FI'nin /v1/tokens yaniti her token
+# icin `coinKey` tasiyor: bu alan kanonik kayitta sembole esit, klonlarda
+# bos. Ayni teknik frontend'de swap token seciciyi duzeltmek icin zaten
+# kullaniliyor (SwapInterface.tsx FEATURED_TOKENS).
+# ------------------------------------------------------------------
+_LIFI_TOKENS_URL = "https://li.quest/v1/tokens?chains=" + ",".join(
+    str(c["chain_id"]) for c in CHAINS
+)
+_CANONICAL_TTL = 6 * 3600
+# ponytail: surec ici cache — container yeniden basladiginda ilk istek
+# listeyi tekrar cekiyor. Cok worker'da paylasim gerekirse Redis'e tasi.
+_canonical_cache: Tuple[float, Set[Tuple[int, str]]] = (0.0, set())
+
+
+def _is_canonical(balance: dict, canonical: Set[Tuple[int, str]]) -> bool:
+    """Native coin her zaman gercek; ERC-20 icin kontrat listede olmali."""
+    if balance["contract_address"] == "native":
+        return True
+    return (balance["chain_id"], balance["contract_address"].lower()) in canonical
+
+
+def _canonical_tokens() -> Tuple[Set[Tuple[int, str]], bool]:
+    """
+    (chain_id, kontrat_adresi) kumesi doner. Ikinci deger: liste
+    tazelenemedi mi — o zaman fiyatlama eksik kalir ve bunu cagirana
+    soyluyoruz, sessizce yanlis toplam uretmiyoruz.
+    """
+    global _canonical_cache
+    fetched_at, cached = _canonical_cache
+    if cached and time.time() - fetched_at < _CANONICAL_TTL:
+        return cached, False
+
+    try:
+        resp = httpx.get(_LIFI_TOKENS_URL, timeout=20.0)
+        resp.raise_for_status()
+        canonical = {
+            (int(chain_id), t["address"].lower())
+            for chain_id, tokens in (resp.json().get("tokens") or {}).items()
+            for t in tokens
+            if t.get("address") and (t.get("coinKey") or "") == (t.get("symbol") or "")
+        }
+        if canonical:
+            _canonical_cache = (time.time(), canonical)
+            return canonical, False
+        print("[alchemy] canonical token list came back empty")
+    except Exception as e:
+        print(f"[alchemy] canonical token list fetch failed: {e}")
+
+    # Liste alinamadi: elde bayat liste varsa onunla devam. O da yoksa
+    # sadece native coinler fiyatlanir. Eksik gostermek, sahte milyar
+    # dolar gostermekten iyidir.
+    return cached, True
 
 
 def _rpc(client: httpx.Client, url: str, method: str, params: list, timeout: float) -> Any:
@@ -174,8 +238,18 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
     # Fiyatlar sembol bazli; ayni sembol farkli aglarda ayni fiyattan.
     prices = get_live_prices_sync([b["symbol"] for b in balances])
 
+    canonical, pricing_degraded = _canonical_tokens()
+
     total_usd = 0.0
+    unpriced = 0
     for b in balances:
+        # Kontrat kanonik degilse fiyatlamiyoruz: sembolu gercek token'la
+        # ayni olan klonlar toplami milyarlarca dolar sisiriyordu.
+        if not _is_canonical(b, canonical):
+            b["usd_value"] = 0
+            b["unpriced"] = True
+            unpriced += 1
+            continue
         price = prices.get(b["symbol"], 0)
         b["usd_value"] = b["balance"] * price
         total_usd += b["usd_value"]
@@ -190,6 +264,10 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
         # Frontend bunu kullaniciya "su aglar yapilandirilmamis" diye
         # gosterebilir; sessizce eksik bakiye gostermekten iyidir.
         "unavailable_chains": unavailable_chains,
+        # Kanonik olmadigi icin fiyatlanmayan token sayisi — cogu spam.
+        "unpriced_tokens": unpriced,
+        # True ise kanonik liste cekilemedi, toplam eksik olabilir.
+        "pricing_degraded": pricing_degraded,
     }
 
 
@@ -200,3 +278,23 @@ if __name__ == "__main__":
     assert not any(TICKER_RE.match(x.strip().upper()) for x in spam), "spam passed the filter"
     assert all(TICKER_RE.match(x) for x in real), "real ticker rejected"
     print("symbol filter OK")
+
+    # Kanonik kontrat filtresi. Adresler canli veriden alindi: asagidaki
+    # iki sahte kontrat gercek ticker'i kullaniyor ve eski kodda toplama
+    # 5.2 milyar + 249 milyon dolar ekliyordu.
+    fake_btc = {"contract_address": "0x006492d0102F0cc252aaf8683DE85a0177941B59",
+                "chain_id": 1, "symbol": "BTC"}
+    fake_eth = {"contract_address": "0x001075b96b0505d14E0e2F338d79b32c7d875b3b",
+                "chain_id": 8453, "symbol": "ETH"}
+    real_wbtc = {"contract_address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+                 "chain_id": 1, "symbol": "WBTC"}
+    native = {"contract_address": "native", "chain_id": 1, "symbol": "ETH"}
+
+    canon = {(1, "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599")}
+    assert not _is_canonical(fake_btc, canon), "sahte BTC fiyatlandi"
+    assert not _is_canonical(fake_eth, canon), "sahte ETH fiyatlandi"
+    assert _is_canonical(real_wbtc, canon), "gercek WBTC elendi"
+    assert _is_canonical(native, canon), "native coin elendi"
+    # Liste bos gelirse (LI.FI erisilemez) sadece native fiyatlanmali.
+    assert _is_canonical(native, set()) and not _is_canonical(real_wbtc, set())
+    print("canonical contract filter OK")
