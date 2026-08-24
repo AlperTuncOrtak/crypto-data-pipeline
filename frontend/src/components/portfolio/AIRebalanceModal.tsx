@@ -29,6 +29,8 @@ interface Analysis {
   dominant_sector: string;
   sector_breakdown: Record<string, number>;
   correlation_risk: string;
+  correlation_value: number | null;
+  correlation_source: "measured" | "estimated";
   concentration_pct: number;
   effective_positions: number;
   stablecoin_pct: number;
@@ -275,7 +277,20 @@ export default function AIRebalanceModal({
                       <MetricTile icon={Target} label={t("portfolio.ai.largest")} value={`${analysis.concentration_pct.toFixed(1)}%`} hint={t("portfolio.ai.largest_hint")} />
                       <MetricTile icon={Layers} label={t("portfolio.ai.effective")} value={analysis.effective_positions.toFixed(2)} hint={t("portfolio.ai.effective_hint", { count: analysis.position_count })} />
                       <MetricTile icon={Coins} label={t("portfolio.ai.buffer")} value={`${analysis.stablecoin_pct.toFixed(1)}%`} hint={t("portfolio.ai.buffer_hint")} />
-                      <MetricTile icon={ShieldAlert} label={t("portfolio.ai.correlation")} value={analysis.correlation_risk.toUpperCase()} hint={t("portfolio.ai.correlation_hint")} />
+                      <MetricTile
+                        icon={ShieldAlert}
+                        label={t("portfolio.ai.correlation")}
+                        value={
+                          analysis.correlation_source === "measured" && analysis.correlation_value !== null
+                            ? analysis.correlation_value.toFixed(2)
+                            : analysis.correlation_risk.toUpperCase()
+                        }
+                        hint={t(
+                          analysis.correlation_source === "measured"
+                            ? "portfolio.ai.correlation_measured"
+                            : "portfolio.ai.correlation_estimated"
+                        )}
+                      />
                     </div>
 
                     {/* Sector breakdown */}

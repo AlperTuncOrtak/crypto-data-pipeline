@@ -428,6 +428,45 @@ PORTFOLIO_SECTORS = {
 STABLE_SYMBOLS = {k for k, v in PORTFOLIO_SECTORS.items() if v == "Stablecoin"}
 
 
+def _measured_correlation(positions: list):
+    """
+    Portfoyun agirlikli ortalama ikili korelasyonu — gercek fiyat gecmisinden.
+
+    Onceden bu "stablecoin disi oran > %70 ise high" seklinde tahmin ediliyordu,
+    yani iki L1 mi yoksa birbiriyle alakasiz iki sektor mu tuttugunu ayirt
+    edemiyordu. get_correlation_matrix zaten price_history uzerinden Pearson
+    hesapliyordu ve hic kullanilmiyordu.
+
+    Yeterli veri yoksa None doner; cagiran taraf tahmine geri duser.
+    """
+    volatile = [p for p in positions if p["symbol"] not in STABLE_SYMBOLS]
+    if len(volatile) < 2:
+        return None
+
+    try:
+        # 7 gun: 24 saat cok az bucket birakiyor ve korelasyon zipliyor.
+        pairs = get_correlation_matrix([p["symbol"] for p in volatile], hours=168)
+    except Exception as e:
+        print(f"[ai] correlation lookup failed: {e}")
+        return None
+
+    if not pairs:
+        return None
+
+    weights = {p["symbol"]: p["weight"] for p in volatile}
+    num = den = 0.0
+    for row in pairs:
+        a, b = row["symbol_a"], row["symbol_b"]
+        # Matris her ciftin iki yonunu ve kosegeni de veriyor; birini al.
+        if a >= b:
+            continue
+        w = weights.get(a, 0) * weights.get(b, 0)
+        num += w * row["correlation"]
+        den += w
+
+    return round(num / den, 3) if den > 0 else None
+
+
 def _portfolio_metrics(holdings: list, total_value: float) -> dict:
     """
     Portfoy risk metriklerini deterministik hesapla.
@@ -504,10 +543,18 @@ def _portfolio_metrics(holdings: list, total_value: float) -> dict:
     )
 
     # Kripto varliklarin cogu BTC ile yuksek korelasyonlu; asil dengeleyici stablecoin.
-    # Esikler bilerek dusuk: portfoyun yarisi tek bir volatil varliktaysa
-    # bunu "dusuk korelasyon riski" diye etiketlemek gercegi hafifletir.
-    non_stable = 100 - stable_pct
-    correlation_risk = "high" if non_stable >= 70 else "medium" if non_stable >= 40 else "low"
+    measured = _measured_correlation(positions)
+    if measured is not None:
+        correlation_value = measured
+        correlation_source = "measured"
+        correlation_risk = "high" if measured >= 0.7 else "medium" if measured >= 0.4 else "low"
+    else:
+        # Esikler bilerek dusuk: portfoyun yarisi tek bir volatil varliktaysa
+        # bunu "dusuk korelasyon riski" diye etiketlemek gercegi hafifletir.
+        non_stable = 100 - stable_pct
+        correlation_value = None
+        correlation_source = "estimated"
+        correlation_risk = "high" if non_stable >= 70 else "medium" if non_stable >= 40 else "low"
 
     return {
         "risk_score": risk_score,
@@ -516,6 +563,8 @@ def _portfolio_metrics(holdings: list, total_value: float) -> dict:
         "dominant_sector": dominant_sector,
         "sector_breakdown": sector_breakdown,
         "correlation_risk": correlation_risk,
+        "correlation_value": correlation_value,
+        "correlation_source": correlation_source,
         "concentration_pct": round(top_pct, 1),
         "effective_positions": round(effective_positions, 2),
         "stablecoin_pct": round(stable_pct, 1),
@@ -591,6 +640,11 @@ def ai_portfolio_analyze(request: Request, payload: dict, user: dict = Depends(v
         else "Unrealized P&L: unknown — no trade history imported, holdings are marked to market."
     )
     realized_line = f"\nRealized gains this year: ${float(realized_ytd):+.2f}" if realized_ytd is not None else ""
+    corr_line = (
+        f" (measured: average pairwise correlation {m['correlation_value']:.2f} over the last 7 days)"
+        if m["correlation_source"] == "measured"
+        else " (estimated from stablecoin share — not enough price history to measure)"
+    )
 
     prompt = f"""You are a professional crypto portfolio risk analyst.
 
@@ -609,7 +663,7 @@ Largest position: {m['concentration_pct']:.1f}% of the portfolio
 Effective positions (1/HHI): {m['effective_positions']:.2f} — equivalent number of equally weighted holdings
 Stablecoin buffer: {m['stablecoin_pct']:.1f}%
 BTC: {m['btc_pct']:.1f}% | ETH: {m['eth_pct']:.1f}% | Other alts: {m['altcoin_pct']:.1f}% | Memecoins: {m['meme_pct']:.1f}%
-Correlation risk: {m['correlation_risk']}
+Correlation risk: {m['correlation_risk']}{corr_line}
 Dominant sector: {m['dominant_sector']}
 Sector breakdown: {json.dumps(m['sector_breakdown'])}
 

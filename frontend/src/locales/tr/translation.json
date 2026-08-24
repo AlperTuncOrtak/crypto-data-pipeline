@@ -362,7 +362,9 @@
       "retry": "Tekrar dene",
       "llm_down": "AI yorum motoruna şu an ulaşılamıyor, bu yüzden yalnızca hesaplanan metrikler gösteriliyor. Bunlar kendi pozisyonlarından hesaplandı ve etkilenmedi.",
       "no_cost_basis": "İşlem geçmişi içe aktarılmadığı için kâr/zarar bilinmiyor ve bu analize dahil edilmedi. K/Z farkındalıklı öneri için CSV yükle veya borsa senkronize et.",
-      "error_generic": "Analiz motoruna ulaşılamadı."
+      "error_generic": "Analiz motoruna ulaşılamadı.",
+      "correlation_measured": "ölçüldü, 7g ortalama ikili",
+      "correlation_estimated": "tahmini — yeterli fiyat geçmişi yok"
     },
     "withdraw": {
       "title": "Kripto Çek",

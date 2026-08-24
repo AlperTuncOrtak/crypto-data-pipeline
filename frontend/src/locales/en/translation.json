@@ -362,7 +362,9 @@
       "retry": "Try again",
       "llm_down": "The AI commentary engine is unreachable right now, so only the calculated metrics are shown above. Those are computed from your own positions and are unaffected.",
       "no_cost_basis": "No trade history imported, so profit and loss is unknown and was excluded from this analysis. Import a CSV or sync an exchange for P&L-aware advice.",
-      "error_generic": "Could not reach the analysis engine."
+      "error_generic": "Could not reach the analysis engine.",
+      "correlation_measured": "measured, 7d average pair",
+      "correlation_estimated": "estimated — not enough price history"
     },
     "withdraw": {
       "title": "Withdraw Crypto",
