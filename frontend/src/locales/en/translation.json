@@ -364,7 +364,11 @@
       "no_cost_basis": "No trade history imported, so profit and loss is unknown and was excluded from this analysis. Import a CSV or sync an exchange for P&L-aware advice.",
       "error_generic": "Could not reach the analysis engine.",
       "correlation_measured": "measured, 7d average pair",
-      "correlation_estimated": "estimated — not enough price history"
+      "correlation_estimated": "estimated — not enough price history",
+      "tracked": "Since tracking",
+      "tracked_hint": "over {{hours}}h of recorded history",
+      "drawdown": "Max drawdown",
+      "drawdown_hint": "worst peak-to-trough drop"
     },
     "withdraw": {
       "title": "Withdraw Crypto",

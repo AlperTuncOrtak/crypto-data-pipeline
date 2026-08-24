@@ -429,6 +429,62 @@ PORTFOLIO_SECTORS = {
 STABLE_SYMBOLS = {k for k, v in PORTFOLIO_SECTORS.items() if v == "Stablecoin"}
 
 
+def _portfolio_history(user_id: str, days: int = 90):
+    """
+    Kaydedilmis portfoy degerlerinden performans ozeti.
+
+    Analiz bugune kadar anlik fotograf goruyordu: portfoyun zaman icinde ne
+    yaptigini bilmeden "riskini azalt" diyordu. portfolio_snapshots artik
+    doluyor, o yuzden gecmisi de veriyoruz.
+
+    En az iki nokta yoksa None doner — tek olcumden performans cikarilmaz.
+    """
+    from datetime import datetime, timezone, timedelta
+
+    try:
+        sb = _snapshot_client()
+        since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        rows = (
+            sb.table("portfolio_snapshots")
+            .select("captured_at,total_value")
+            .eq("user_id", user_id)
+            .gte("captured_at", since)
+            .order("captured_at", desc=False)
+            .limit(2000)
+            .execute()
+        ).data or []
+    except Exception as e:
+        print(f"[ai] snapshot history lookup failed: {e}")
+        return None
+
+    values = [float(r["total_value"]) for r in rows if r.get("total_value") is not None]
+    if len(values) < 2:
+        return None
+
+    first, last = values[0], values[-1]
+
+    # En buyuk tepe-dip dususu: riskin gecmiste fiilen ne kadar acidigi.
+    peak = values[0]
+    max_drawdown = 0.0
+    for v in values:
+        peak = max(peak, v)
+        if peak > 0:
+            max_drawdown = max(max_drawdown, (peak - v) / peak * 100)
+
+    start = datetime.fromisoformat(str(rows[0]["captured_at"]).replace("Z", "+00:00"))
+    end = datetime.fromisoformat(str(rows[-1]["captured_at"]).replace("Z", "+00:00"))
+    hours = max((end - start).total_seconds() / 3600, 0)
+
+    return {
+        "points": len(values),
+        "hours_tracked": round(hours, 1),
+        "change_pct": round((last - first) / first * 100, 2) if first > 0 else 0.0,
+        "max_drawdown_pct": round(max_drawdown, 2),
+        "first_value": round(first, 2),
+        "last_value": round(last, 2),
+    }
+
+
 def _measured_correlation(positions: list):
     """
     Portfoyun agirlikli ortalama ikili korelasyonu — gercek fiyat gecmisinden.
@@ -621,6 +677,7 @@ def ai_portfolio_analyze(request: Request, payload: dict, user: dict = Depends(v
 
     m = _portfolio_metrics(holdings, total_value)
     positions = m.pop("positions")
+    m["history"] = _portfolio_history(user["id"])
 
     GROQ_KEY = os.getenv("GROQ_API_KEY", "")
     GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
@@ -641,6 +698,16 @@ def ai_portfolio_analyze(request: Request, payload: dict, user: dict = Depends(v
         else "Unrealized P&L: unknown — no trade history imported, holdings are marked to market."
     )
     realized_line = f"\nRealized gains this year: ${float(realized_ytd):+.2f}" if realized_ytd is not None else ""
+    h = m.get("history")
+    history_line = (
+        "\nTracked history: {points} recorded snapshots over {hours:.0f}h — value moved "
+        "{change:+.2f}% (${first:.2f} -> ${last:.2f}), worst peak-to-trough drop {dd:.2f}%.".format(
+            points=h["points"], hours=h["hours_tracked"], change=h["change_pct"],
+            first=h["first_value"], last=h["last_value"], dd=h["max_drawdown_pct"],
+        )
+        if h
+        else "\nTracked history: none yet — this is the first look at the portfolio, so say nothing about past performance."
+    )
     corr_line = (
         f" (measured: average pairwise correlation {m['correlation_value']:.2f} over the last 7 days)"
         if m["correlation_source"] == "measured"
@@ -655,7 +722,7 @@ Your job is interpretation and advice, not arithmetic.
 PORTFOLIO
 Total value: ${total_value:.2f}
 {pnl_line}{realized_line}
-Positions: {m['position_count']}
+Positions: {m['position_count']}{history_line}
 
 CALCULATED METRICS
 Risk score: {m['risk_score']}/10 ({m['risk_label']})

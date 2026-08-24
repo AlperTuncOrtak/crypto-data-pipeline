@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain, X, ShieldAlert, Layers, Target, Coins, TrendingUp, TrendingDown,
-  CheckCircle2, AlertTriangle, Lightbulb, RefreshCw, WifiOff,
+  CheckCircle2, AlertTriangle, Lightbulb, RefreshCw, WifiOff, Activity, TrendingDown as Drawdown,
 } from "lucide-react";
 import { apiClient } from "../../api/client";
 import type { Holding, TaxSummary } from "./PortfolioUtils";
@@ -35,6 +35,13 @@ interface Analysis {
   effective_positions: number;
   stablecoin_pct: number;
   position_count: number;
+  /** Null until at least two snapshots have been recorded. */
+  history: {
+    points: number;
+    hours_tracked: number;
+    change_pct: number;
+    max_drawdown_pct: number;
+  } | null;
   summary: string | null;
   strengths: string[];
   risks: string[];
@@ -291,6 +298,23 @@ export default function AIRebalanceModal({
                             : "portfolio.ai.correlation_estimated"
                         )}
                       />
+                      {/* Only once snapshots exist — one reading is not a track record. */}
+                      {analysis.history && (
+                        <>
+                          <MetricTile
+                            icon={Activity}
+                            label={t("portfolio.ai.tracked")}
+                            value={`${analysis.history.change_pct >= 0 ? "+" : ""}${analysis.history.change_pct.toFixed(2)}%`}
+                            hint={t("portfolio.ai.tracked_hint", { hours: Math.round(analysis.history.hours_tracked) })}
+                          />
+                          <MetricTile
+                            icon={Drawdown}
+                            label={t("portfolio.ai.drawdown")}
+                            value={`-${analysis.history.max_drawdown_pct.toFixed(2)}%`}
+                            hint={t("portfolio.ai.drawdown_hint")}
+                          />
+                        </>
+                      )}
                     </div>
 
                     {/* Sector breakdown */}

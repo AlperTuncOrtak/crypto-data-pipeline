@@ -364,7 +364,11 @@
       "no_cost_basis": "İşlem geçmişi içe aktarılmadığı için kâr/zarar bilinmiyor ve bu analize dahil edilmedi. K/Z farkındalıklı öneri için CSV yükle veya borsa senkronize et.",
       "error_generic": "Analiz motoruna ulaşılamadı.",
       "correlation_measured": "ölçüldü, 7g ortalama ikili",
-      "correlation_estimated": "tahmini — yeterli fiyat geçmişi yok"
+      "correlation_estimated": "tahmini — yeterli fiyat geçmişi yok",
+      "tracked": "Takip başlangıcından",
+      "tracked_hint": "{{hours}} saatlik kayıtlı geçmişte",
+      "drawdown": "En büyük düşüş",
+      "drawdown_hint": "tepeden dibe en kötü kayıp"
     },
     "withdraw": {
       "title": "Kripto Çek",
