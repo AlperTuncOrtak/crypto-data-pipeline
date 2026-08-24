@@ -61,6 +61,12 @@ export default function SwapInterface() {
         className="flex flex-col md:flex-row justify-center gap-6 mt-8 max-w-5xl mx-auto w-full pb-32 relative"
       >
         <div className="relative w-full max-w-[420px] rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-[var(--border-subtle)]">
+          {/* The widget mounts its own <Routes> into the host router (it checks
+              useInRouterContext and only falls back to MemoryRouter when there
+              is none). Its home path is '/', so the route that renders this
+              component must be a splat — see App.tsx "/portfolio/*". Without
+              it the widget matched /portfolio against its own routes and
+              rendered its 404 page. */}
           <LiFiWidget integrator="crypto-data-pipeline" config={widgetConfig} />
         </div>
 

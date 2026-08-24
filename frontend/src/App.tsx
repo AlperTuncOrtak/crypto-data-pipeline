@@ -292,7 +292,10 @@ function AppInner() {
                 }
               />
               <Route
-                path="/portfolio"
+                // Splat: the LI.FI swap widget mounts its own <Routes> into
+                // this router and its home path is '/'. A non-splat parent
+                // leaves nothing for it to match, so it rendered its 404.
+                path="/portfolio/*"
                 element={
                   <ProtectedRoute
                     requirePro
