@@ -102,7 +102,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-from backend.routers import whale, stripe_router, wallet
+from backend.routers import whale, stripe_router, wallet, copy
 
 app.include_router(whale.router)
 app.include_router(stripe_router.router)
@@ -110,6 +110,7 @@ app.include_router(stripe_router.router)
 # ayni handler'a bagli kalmali, yoksa gelen odeme event'leri 404 alir.
 app.include_router(stripe_router.legacy_router)
 app.include_router(wallet.router)
+app.include_router(copy.router)
 
 
 # -----------------------

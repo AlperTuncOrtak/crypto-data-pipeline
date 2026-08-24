@@ -24,6 +24,7 @@ const Market = lazy(() => import("./pages/Market"));
 const Alerts = lazy(() => import("./pages/Alerts"));
 const Swap = lazy(() => import("./pages/Swap"));
 const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
+const CopyTrading = lazy(() => import("./pages/CopyTrading"));
 const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
 const WidgetBuilder = lazy(() => import("./pages/WidgetBuilder"));
 
@@ -200,6 +201,8 @@ function AppInner() {
                 }
               />
               <Route path="/coin/:slug" element={<CoinDetail />} />
+              {/* Copy Trading Faz 1: liste herkese acik, "Follow" giris ister */}
+              <Route path="/copy" element={<CopyTrading />} />
               <Route 
                 path="/whale" 
                 element={

@@ -46,6 +46,7 @@ const mainNavSections = [
       { name: 'Market Data', path: '/market', icon: BarChart2 },
       { name: 'AI Analysis', path: '/analysis/ai', icon: Brain },
       { name: 'Whale X-Ray', path: '/whale', icon: Activity },
+      { name: 'Copy Trading', path: '/copy', icon: Users },
     ]
   }
 ];
