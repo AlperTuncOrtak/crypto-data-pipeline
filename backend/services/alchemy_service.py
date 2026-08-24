@@ -1,4 +1,5 @@
 import os
+import re
 import httpx
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List
@@ -26,6 +27,11 @@ CHAINS = [
 # dolu bir cuzdanda yuzlerce metadata cagrisi demek. Sinir asilirsa
 # yanitta `truncated` ile bildiriliyor — sessizce kesmiyoruz.
 MAX_TOKENS_PER_CHAIN = 25
+
+# Gercek ticker'lar harf/rakam ve kisa. L2'lerde phishing airdrop'lari
+# sembol alanina URL ve emoji koyuyor ("WWW.BADRP.CO ✅") — portfoy tablosunda
+# oltalama linki gostermemek icin bunlari eliyoruz.
+TICKER_RE = re.compile(r"^[A-Z0-9]{1,12}$")
 
 HEADERS = {"accept": "application/json", "content-type": "application/json"}
 RPC_TIMEOUT = 12.0
@@ -101,9 +107,8 @@ def _fetch_chain(wallet_address: str, chain: dict, api_key: str) -> Dict[str, An
                     decimals = meta.get("decimals")
                     if decimals is None:
                         decimals = 18
-                    symbol = (meta.get("symbol") or "").upper()
-                    if not symbol:
-                        # Isimsiz token neredeyse her zaman spam; fiyatlayamayiz.
+                    symbol = (meta.get("symbol") or "").strip().upper()
+                    if not TICKER_RE.match(symbol):
                         continue
 
                     amount = int(tb["tokenBalance"], 16) / (10 ** decimals)
@@ -186,3 +191,12 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
         # gosterebilir; sessizce eksik bakiye gostermekten iyidir.
         "unavailable_chains": unavailable_chains,
     }
+
+
+if __name__ == "__main__":
+    # ponytail: sembol filtresi tek kontrol noktasi, testi de tek satirlik.
+    spam = ["WWW.BADRP.CO ✅", "WWW.TCARD.LAT 🟢", "", "CLAIM-REWARDS.XYZ", "A" * 13]
+    real = ["ETH", "USDC", "WBTC", "PEPE", "1INCH", "POL"]
+    assert not any(TICKER_RE.match(x.strip().upper()) for x in spam), "spam passed the filter"
+    assert all(TICKER_RE.match(x) for x in real), "real ticker rejected"
+    print("symbol filter OK")
