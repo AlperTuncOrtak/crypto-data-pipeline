@@ -92,7 +92,14 @@ def _transfers_or_retry(url: str, chain_key: str, params: dict) -> list:
         return _rpc_transfers(url, {**params, "category": _categories(chain_key)})
 
 
-def _fetch_chain_transfers(address: str, chain: dict, api_key: str, from_block: int | None) -> list:
+def _fetch_chain_transfers(
+    address: str,
+    chain: dict,
+    api_key: str,
+    from_block: int | None,
+    seed_count: int = SEED_TRANSFERS,
+    max_count: int = MAX_TRANSFERS,
+) -> list:
     """
     Cuzdanin bir zincirdeki giden+gelen transferleri.
 
@@ -111,19 +118,19 @@ def _fetch_chain_transfers(address: str, chain: dict, api_key: str, from_block: 
         if from_block is None:
             outs = _transfers_or_retry(url, chain["key"], {
                 **base, "fromAddress": address,
-                "order": "desc", "maxCount": hex(SEED_TRANSFERS),
+                "order": "desc", "maxCount": hex(seed_count),
             })
             if not outs:
                 return []
             start = min(int(t.get("blockNum", "0x0"), 16) for t in outs)
             ins = _transfers_or_retry(url, chain["key"], {
                 **base, "toAddress": address, "fromBlock": hex(start),
-                "order": "desc", "maxCount": hex(MAX_TRANSFERS),
+                "order": "desc", "maxCount": hex(max_count),
             })
         else:
             window = {
                 **base, "fromBlock": hex(from_block + 1),
-                "order": "asc", "maxCount": hex(MAX_TRANSFERS),
+                "order": "asc", "maxCount": hex(max_count),
             }
             outs = _transfers_or_retry(url, chain["key"], {**window, "fromAddress": address})
             ins = _transfers_or_retry(url, chain["key"], {**window, "toAddress": address})
