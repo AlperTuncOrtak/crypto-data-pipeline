@@ -70,6 +70,10 @@ MIN_SWAPS = 3                # bu kadar takas yoksa trader degil
 MAX_SWAPS = 150              # bu kadar cok takas = bot/MEV, kopyalanamaz
 MIN_DISTINCT_TOKENS = 2      # tek tokenli cuzdan cesitlendirme sunmaz
 MIN_VOLUME_USD = 2_000
+# Tum gecmiste bundan fazla gidis-donus = arbitraj/MEV botu. Yuksek
+# isabetle binlerce kucuk islem kopyalanabilir bir strateji degil;
+# takipci her birinde gas oder, bot ise mikro farklardan kazanir.
+BOT_ROUND_TRIPS = 300
 
 HTTP_TIMEOUT = 20.0
 
@@ -229,6 +233,7 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
             continue
         print(f"\n{addr}")
         found = False
+        passed, blocking = [], []
         for chain in chains:
             row = screen(addr, chain, api_key, canonical)
             if not row:
@@ -238,8 +243,13 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
             verdict = f"ELENDI ({reason})" if reason else "GECTI"
             print(f"  {chain['key']:<10} {row['swaps']:>3} takas  {row['tokens']} token  "
                   f"al/sat {row['buys']}/{row['sells']}  ${row['volume']:>12,.0f}  {verdict}")
-            if not reason:
-                rows.append(row)
+            if reason:
+                # Bot olmak cuzdanin ozelligi, agin degil. Bir agda bot
+                # gorunen cuzdan diger agda "temiz" cikinca aday sayilamaz.
+                if reason == "bot/MEV":
+                    blocking.append(f"{chain['key']}: {reason}")
+            else:
+                passed.append(row)
         if not found:
             print("  hicbir agda takas bulunamadi")
             continue
@@ -257,6 +267,20 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
         if pnl["unmatched_sells"]:
             print(f"       ({pnl['unmatched_sells']} satisin alisini gormedik — "
                   "borsadan/kopruden gelmis, hesaba katilmadi)")
+
+        # Gidis-donus sayisi, pencereye bagli takas sayisindan cok daha iyi
+        # bir bot gostergesi: tum gecmisi kapsiyor. Yuksek isabetle binlerce
+        # kucuk islem arbitraj botunun imzasi, kopyalanabilir bir strateji degil.
+        if pnl["round_trips"] > BOT_ROUND_TRIPS:
+            blocking.append(f"gecmiste {pnl['round_trips']} gidis-donus")
+
+        if blocking:
+            print(f"  >>> ADAY DEGIL: {', '.join(blocking)}")
+        elif passed:
+            rows.extend(passed)
+            print("  >>> ADAY")
+        else:
+            print("  >>> ADAY DEGIL: hicbir agda kriterleri gecmedi")
     return rows
 
 
