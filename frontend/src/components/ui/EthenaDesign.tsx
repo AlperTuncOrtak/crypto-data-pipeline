@@ -37,15 +37,21 @@ export function BaseGlassCard({
     };
   };
 
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+      variants={itemVariants}
       onClick={onClick}
-      whileHover={hoverEffect ? { y: -2, borderColor: "rgba(255,255,255,0.12)" } : undefined}
-      className={`relative overflow-hidden rounded-[20px] bg-[#09090b]/80 border border-white/[0.06] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all ${hoverEffect ? "cursor-pointer hover:border-white/[0.12]" : ""} ${className}`}
+      whileHover={{ scale: 1.02, y: -2, borderColor: "rgba(99,102,241,0.4)", boxShadow: "0 0 20px rgba(99,102,241,0.15), 0 8px 32px rgba(0,0,0,0.4)" }}
+      className={`relative overflow-hidden rounded-[20px] bg-[#09090b]/80 border border-white/[0.06] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all ${hoverEffect ? "cursor-pointer" : ""} ${className}`}
     >
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-0 opacity-70" />
       <div className="absolute inset-0 z-0 pointer-events-none" style={getGlowStyle()} />
@@ -147,9 +153,23 @@ export function MetricStrip({ items }: { items: MetricItem[] }) {
 // 4. BentoGridWrapper
 // ─────────────────────────────────────────────────────────────────────────────
 export function BentoGridWrapper({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
   return (
-    <div className={`w-full max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-5 px-4 md:px-6 relative z-10 ${className}`}>
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-40px" }}
+      className={`w-full max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-5 px-4 md:px-6 relative z-10 ${className}`}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }

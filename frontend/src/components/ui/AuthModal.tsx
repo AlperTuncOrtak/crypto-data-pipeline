@@ -19,6 +19,7 @@ function getStrength(pw: string) {
 export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "login" }: any) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLogin, setIsLogin] = useState(initialMode === "login");
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 768 : false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,6 +48,12 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
   }, [isOpen, onClose]);
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) return;
 
     let active = true;
@@ -58,7 +65,7 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
     let animationId: number;
 
     const initThree = (THREE: any) => {
-      if (!canvasRef.current || !active) return;
+      if (!canvasRef.current || !active || isMobile) return;
       const canvas = canvasRef.current;
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
       renderer.setPixelRatio(window.devicePixelRatio);
@@ -305,11 +312,15 @@ export default function AuthModern({ isOpen, onClose, onLogin, initialMode = "lo
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#000",color:"#fff",fontFamily:"'Inter',-apple-system,sans-serif"}}>
-      {/* WebGL Dot canvas */}
-      <canvas ref={canvasRef} style={{position:"absolute",inset:0,zIndex:0}}/>
+      {/* WebGL Dot canvas or static background for mobile */}
+      {!isMobile ? (
+        <canvas ref={canvasRef} style={{position:"absolute",inset:0,zIndex:0}}/>
+      ) : (
+        <div style={{position:"absolute",inset:0,zIndex:0,background:"radial-gradient(circle at top right, rgba(99,102,241,0.1), transparent), radial-gradient(circle at bottom left, rgba(139,92,246,0.1), transparent), #000"}}/>
+      )}
 
       {/* Vignette */}
-      <div style={{position:"absolute",inset:0,zIndex:1,background:"radial-gradient(circle at center,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0) 100%)",pointerEvents:"none"}}/>
+      <div style={{position:"absolute",inset:0,zIndex:1,background:"radial-gradient(circle at center,rgba(0,0,0,0) 0%,rgba(0,0,0,0.85) 100%)",pointerEvents:"none"}}/>
 
       {/* Modal card */}
       <div style={{position:"relative",zIndex:2,background:"#121212",borderRadius:12,padding:"2rem",width:"100%",maxWidth:400,boxShadow:"0 10px 40px rgba(0,0,0,0.8)",display:"flex",flexDirection:"column",alignItems:"center",border:"1px solid #222"}}>

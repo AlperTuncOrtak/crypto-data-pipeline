@@ -73,22 +73,23 @@ export function LinearSpeed() {
         >
           <div className="flex flex-col gap-4">
             {SHORTCUTS.map((s) => (
-              <div key={s.label} className="group flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-[16px] bg-[#0a0a0f] border border-white/5 hover:border-white/10 transition-all duration-300 shadow-xl">
+              <motion.div 
+                key={s.label} 
+                whileHover={{ scale: 1.02, borderColor: "rgba(99,102,241,0.4)", boxShadow: "0 0 20px rgba(99,102,241,0.15), 0 8px 32px rgba(0,0,0,0.4)" }}
+                className="group flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-[16px] bg-[#0a0a0f] border border-white/5 transition-all duration-300 shadow-xl cursor-default"
+              >
                 <div className="flex items-center gap-2 shrink-0">
-                  {s.keys.map((k, ki) => (
-                    <kbd
-                      key={ki}
-                      className="min-w-[36px] h-9 px-3 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg shadow-md text-[13px] font-medium text-white font-mono tracking-tight"
-                    >
+                  {s.keys.map((k, i) => (
+                    <span key={i} className="flex items-center justify-center min-w-[32px] h-8 px-2 rounded-lg bg-white/5 border border-white/10 text-[12px] font-bold text-white shadow-[0_2px_0_rgba(255,255,255,0.05)]">
                       {k}
-                    </kbd>
+                    </span>
                   ))}
                 </div>
-                <div>
-                  <div className="text-[15px] font-bold text-white mb-1 tracking-tight">{s.label}</div>
+                <div className="flex flex-col gap-1.5">
+                  <div className="text-[15px] font-bold text-white tracking-tight">{s.label}</div>
                   <div className="text-[14px] text-white/50 leading-relaxed">{s.desc}</div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
