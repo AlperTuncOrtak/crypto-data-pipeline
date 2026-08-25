@@ -406,7 +406,11 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
                   f"${pnl['pnl_usd']:,.0f} "
                   f"({pct * 100:+.1f}% yatirilan sermayeye gore)")
         else:
+            # Olcemedigimiz bir cuzdani "aday" saymak, kanit yoklugunu
+            # uygunluk kanitina cevirmek olur. Projenin butun mantigi bunun
+            # tersi: olcemiyorsak listeye girmez.
             print("  KAR: olculemedi — tam gidis-donus yok")
+            blocking.append("kar olculemedi")
         if pnl["unmatched_sells"]:
             print(f"       ({pnl['unmatched_sells']} satisin alisini gormedik — "
                   "borsadan/kopruden gelmis, hesaba katilmadi)")

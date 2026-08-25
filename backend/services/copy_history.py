@@ -139,7 +139,9 @@ def realized_pnl(swaps: list) -> dict:
             span = datetime.fromisoformat(str(stamps[-1])[:19]) - datetime.fromisoformat(
                 str(stamps[0])[:19]
             )
-            months = max(span.days / 30.0, 1 / 30.0)
+            # .days tam sayiya yuvarliyor: 20 saatlik gecmis 0 gun cikip
+            # tabana dusuyor ve orani sisiriyordu. Saniyeyle olcuyoruz.
+            months = max(span.total_seconds() / 86400 / 30.0, 1 / 30.0)
         except ValueError:
             months = None
 
