@@ -54,8 +54,15 @@ BAIT_TOKENS = {
 }
 
 DISCOVERY_TRANSFERS = 1000   # yem token basina cekilecek transfer
-SCREEN_SEED = 100            # aday basina giden transfer penceresi
-SCREEN_MAX = 200             # aday basina gelen transfer penceresi
+SCREEN_SEED = 300            # aday basina giden transfer penceresi
+SCREEN_MAX = 600             # aday basina gelen transfer penceresi
+
+# Kesifte bundan fazla gorunen adres altyapidir: router, havuz, borsa
+# sicak cuzdani. Normal bir kullanici 1-3 kez gorunur, bir router yuzlerce.
+# Sabit "ilk 10'u atla" yetmiyordu — 642 adresin cok daha fazlasi altyapiydi.
+MAX_APPEARANCES = 5
+# Kontrat kontrolu ucuz (tek RPC) ama sonsuz degil.
+CONTRACT_CHECK_CAP = 400
 
 # --- Elemeler. Hepsi olculebilir, hicbiri kalite yargisi degil. -----
 MIN_SWAPS = 3                # bu kadar takas yoksa trader degil
@@ -126,6 +133,9 @@ def screen(address: str, chain: dict, api_key: str, canonical: set) -> dict | No
     if not swaps:
         return None
 
+    # DIKKAT: bu gun sayisi cuzdanin omru degil, ORNEKLEMIN kapsadigi
+    # araliktir. Pencere adet sinirli oldugu icin cok aktif bir cuzdanda
+    # tek gune sikisabilir; bu yuzden siralamada belirleyici degil.
     days = {s["occurred_at"][:10] for s in swaps if s.get("occurred_at")}
     return {
         "address": address,
@@ -133,7 +143,7 @@ def screen(address: str, chain: dict, api_key: str, canonical: set) -> dict | No
         "swaps": len(swaps),
         "tokens": len({s["symbol"] for s in swaps}),
         "volume": sum(s["usd_value"] for s in swaps),
-        "active_days": len(days),
+        "sample_days": len(days),
         "buys": sum(1 for s in swaps if s["side"] == "BUY"),
         "sells": sum(1 for s in swaps if s["side"] == "SELL"),
     }
@@ -159,12 +169,14 @@ def scan_chain(chain: dict, api_key: str, canonical: set, limit: int) -> list:
     seen = discover(chain, api_key)
     print(f"  {len(seen)} benzersiz adres gorundu")
 
-    # Cok sik gorunenler router/havuz olma egiliminde; ortadan basliyoruz.
-    ranked = [a for a, _ in seen.most_common()][10 : 10 + limit * 4]
+    # Sik gorunen = altyapi. Frekansa gore eliyoruz; sabit sayida "ilk N"
+    # atmak yetmiyordu, adres havuzunun cogunlugu router/havuz cikiyordu.
+    pool_addrs = [a for a, n in seen.items() if n <= MAX_APPEARANCES][:CONTRACT_CHECK_CAP]
+    print(f"  {len(pool_addrs)} adres altyapi olmayan aday (frekans <= {MAX_APPEARANCES})")
 
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        flags = list(pool.map(lambda a: is_contract(a, chain, api_key), ranked))
-    eoas = [a for a, c in zip(ranked, flags) if not c][:limit]
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        flags = list(pool.map(lambda a: is_contract(a, chain, api_key), pool_addrs))
+    eoas = [a for a, c in zip(pool_addrs, flags) if not c][:limit]
     print(f"  {len(eoas)} EOA taraniyor (kontratlar elendi)...")
 
     rows = []
@@ -183,7 +195,7 @@ def scan_chain(chain: dict, api_key: str, canonical: set, limit: int) -> list:
 
     if dropped:
         print("  elenenler: " + ", ".join(f"{v} {k}" for k, v in dropped.items()))
-    keep.sort(key=lambda r: (r["active_days"], r["swaps"]), reverse=True)
+    keep.sort(key=lambda r: (r["volume"], r["swaps"]), reverse=True)
     return keep
 
 
@@ -217,16 +229,16 @@ def main():
     print("\n" + "=" * 78)
     print("ADAYLAR — olculebilir aktiflik. Kalite iddiasi YOK, secim senin.")
     print("=" * 78)
-    print(f"{'adres':<44}{'ag':<10}{'takas':>6}{'token':>6}{'gun':>5}{'hacim':>12}")
+    print(f"{'adres':<44}{'ag':<10}{'takas':>6}{'token':>6}{'al/sat':>8}{'hacim':>12}")
     for r in everything:
         print(f"{r['address']:<44}{r['chain']:<10}{r['swaps']:>6}{r['tokens']:>6}"
-              f"{r['active_days']:>5}{r['volume']:>12,.0f}")
+              f"{r['buys']:>4}/{r['sells']:<3}{r['volume']:>12,.0f}")
 
     print("\n--- Begendiklerini eklemek icin (tarzi sen doldur) ---")
     for r in everything[:15]:
         print(f"INSERT INTO whale_leaders (address, label, note, style, sort_order) VALUES "
               f"('{r['address']}', '{r['address'][:8]}', "
-              f"'{r['chain']}: {r['swaps']} takas / {r['active_days']} gun', "
+              f"'{r['chain']}: {r['swaps']} takas, {r['tokens']} token', "
               f"'active', 50);")
 
 
