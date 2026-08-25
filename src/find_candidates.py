@@ -357,16 +357,35 @@ def main():
     print("\n" + "=" * 78)
     print("ADAYLAR — olculebilir aktiflik. Kalite iddiasi YOK, secim senin.")
     print("=" * 78)
-    print(f"{'adres':<44}{'ag':<10}{'takas':>6}{'token':>6}{'al/sat':>8}{'hacim':>12}")
+    # Cuzdan bazinda topluyoruz. Ayni adres bes agda da gecerse bes satir
+    # basmak, dort agli taramada ciktiyi okunmaz yapiyor — ve adres
+    # tabloda zaten UNIQUE, bes INSERT'in dordu bosa gider.
+    merged: dict = {}
     for r in everything:
-        print(f"{r['address']:<44}{r['chain']:<10}{r['swaps']:>6}{r['tokens']:>6}"
-              f"{r['buys']:>4}/{r['sells']:<3}{r['volume']:>12,.0f}")
+        m = merged.setdefault(r["address"], {
+            "address": r["address"], "chains": [], "swaps": 0,
+            "tokens": 0, "volume": 0.0, "buys": 0, "sells": 0,
+        })
+        m["chains"].append(r["chain"])
+        m["swaps"] += r["swaps"]
+        m["tokens"] = max(m["tokens"], r["tokens"])
+        m["volume"] += r["volume"]
+        m["buys"] += r["buys"]
+        m["sells"] += r["sells"]
+
+    rows = sorted(merged.values(), key=lambda m: m["volume"], reverse=True)
+
+    print(f"{'adres':<44}{'ag':>3}{'takas':>7}{'token':>6}{'al/sat':>9}{'hacim':>14}")
+    for m in rows:
+        print(f"{m['address']:<44}{len(m['chains']):>3}{m['swaps']:>7}{m['tokens']:>6}"
+              f"{m['buys']:>5}/{m['sells']:<3}{m['volume']:>14,.0f}")
+    print("\n('ag' = kac agda kriterleri gecti, 'token' = en cesitli agdaki token sayisi)")
 
     print("\n--- Begendiklerini eklemek icin (tarzi sen doldur) ---")
-    for r in everything[:15]:
+    for m in rows[:15]:
         print(f"INSERT INTO whale_leaders (address, label, note, style, sort_order) VALUES "
-              f"('{r['address']}', '{r['address'][:8]}', "
-              f"'{r['chain']}: {r['swaps']} takas, {r['tokens']} token', "
+              f"('{m['address']}', '{m['address'][:8]}', "
+              f"'{'/'.join(m['chains'])}: {m['swaps']} takas, {m['tokens']} token', "
               f"'active', 50);")
 
 
