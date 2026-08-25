@@ -58,10 +58,11 @@ DISCOVERY_TRANSFERS = 1000   # yem token basina cekilecek transfer
 SCREEN_SEED = 300            # aday basina giden transfer penceresi
 SCREEN_MAX = 600             # aday basina gelen transfer penceresi
 
-# Kesifte bundan fazla gorunen adres altyapidir: router, havuz, borsa
-# sicak cuzdani. Normal bir kullanici 1-3 kez gorunur, bir router yuzlerce.
-# Sabit "ilk 10'u atla" yetmiyordu — 642 adresin cok daha fazlasi altyapiydi.
-MAX_APPEARANCES = 5
+# Bu kadar cok gorunen adres DEX altyapisi adayi. Normal kullanici 1-3
+# kez gorunur, bir router yuzlerce. Bunlari ELEMIYORUZ — fener olarak
+# kullaniyoruz, takas yapanlar onlarla temas edenlerdir.
+HOT_MIN_APPEARANCES = 15
+HOT_CHECK_CAP = 60
 # Kontrat kontrolu ucuz (tek RPC) ama sonsuz degil.
 CONTRACT_CHECK_CAP = 400
 
@@ -82,17 +83,12 @@ def _url(chain: dict, api_key: str) -> str:
     return f"https://{chain['subdomain']}.g.alchemy.com/v2/{api_key}"
 
 
-def discover(chain: dict, api_key: str) -> tuple:
-    """
-    Yem tokenlerin son transferlerinde gecen adresleri sayar.
+ZERO = "0x0000000000000000000000000000000000000000"
 
-    Iki sayac tutuluyor: toplam gorunme (altyapiyi elemek icin) ve GONDEREN
-    olarak gorunme. Takas yapan taraf token GONDERIR; sadece alan adresler
-    maas, borsa cekimi, airdrop olabilir. Ilk turda 40 adresin 37'si hic
-    takas yapmamisti, cunku ayrim yoktu.
-    """
-    seen: Counter = Counter()
-    sent: Counter = Counter()
+
+def _bait_transfers(chain: dict, api_key: str) -> list:
+    """Yem tokenlerin son transferleri — (gonderen, alan) ciftleri."""
+    pairs = []
     for token in BAIT_TOKENS.get(chain["key"], []):
         try:
             transfers = _rpc_transfers(_url(chain, api_key), {
@@ -107,13 +103,57 @@ def discover(chain: dict, api_key: str) -> tuple:
             print(f"  ! {chain['key']} kesif hatasi: {e}")
             continue
         for t in transfers:
-            for side in ("from", "to"):
-                addr = (t.get(side) or "").lower()
-                if addr and addr != "0x0000000000000000000000000000000000000000":
-                    seen[addr] += 1
-                    if side == "from":
-                        sent[addr] += 1
-    return seen, sent
+            frm, to = (t.get("from") or "").lower(), (t.get("to") or "").lower()
+            if frm and to and frm != ZERO and to != ZERO:
+                pairs.append((frm, to))
+    return pairs
+
+
+def discover(chain: dict, api_key: str) -> Counter:
+    """
+    Takas yapan cuzdanlari, DEX altyapisiyla temas ederek bulur.
+
+    Onceki yaklasim USDC transferlerinde gorunen HERKESI topluyordu; maas
+    alani, borsadan cekeni, airdrop alani da. 50 adresin 46'si hic takas
+    yapmamisti.
+
+    Ayirt edici ozellik su: takas yapan kisi tokeni bir DEX havuzuna/
+    router'ina GONDERIR. O kontratlarin adresleri zaten elimizdeydi —
+    "cok sik goruluyor, demek ki altyapi" diye ATTIGIMIZ adreslerdi.
+    Cope atmak yerine fener olarak kullaniyoruz: once sik gorunen
+    KONTRATLARI buluyoruz (DEX altyapisi), sonra onlarla islem yapan
+    EOA'lari topluyoruz. Kac farkli DEX kontratina dokundugu da siralama
+    olcusu — cok DEX = gercek trader, tek DEX = tek seferlik kullanici.
+
+    Doner: EOA -> dokundugu farkli DEX kontrati sayisi.
+    """
+    pairs = _bait_transfers(chain, api_key)
+    if not pairs:
+        return Counter()
+
+    freq: Counter = Counter()
+    for frm, to in pairs:
+        freq[frm] += 1
+        freq[to] += 1
+
+    # Sik gorunen adresler altyapi ADAYI; kontrat olanlar gercekten oyle.
+    hot = [a for a, n in freq.items() if n >= HOT_MIN_APPEARANCES][:HOT_CHECK_CAP]
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        flags = list(pool.map(lambda a: is_contract(a, chain, api_key), hot))
+    dex = {a for a, c in zip(hot, flags) if c}
+    print(f"  {len(dex)} DEX kontrati tespit edildi (fener)")
+    if not dex:
+        return Counter()
+
+    # Bu kontratlarla islem yapan adresler — takas yapanlar burada.
+    partners: dict = defaultdict(set)
+    for frm, to in pairs:
+        if to in dex and frm not in dex:
+            partners[frm].add(to)
+        elif frm in dex and to not in dex:
+            partners[to].add(frm)
+
+    return Counter({addr: len(hits) for addr, hits in partners.items()})
 
 
 def is_contract(address: str, chain: dict, api_key: str) -> bool:
@@ -181,17 +221,14 @@ def disqualify(row: dict) -> str | None:
 
 def scan_chain(chain: dict, api_key: str, canonical: set, limit: int) -> list:
     print(f"\n[{chain['key']}] kesif...")
-    seen, sent = discover(chain, api_key)
-    print(f"  {len(seen)} benzersiz adres gorundu")
-
-    # Sik gorunen = altyapi. Frekansa gore eliyoruz; sabit sayida "ilk N"
-    # atmak yetmiyordu, adres havuzunun cogunlugu router/havuz cikiyordu.
-    # Kalanlari gonderme sayisina gore siraliyoruz: takas yapan gonderir.
-    pool_addrs = sorted(
-        (a for a, n in seen.items() if n <= MAX_APPEARANCES),
-        key=lambda a: sent[a], reverse=True,
-    )[:CONTRACT_CHECK_CAP]
-    print(f"  {len(pool_addrs)} adres altyapi olmayan aday (frekans <= {MAX_APPEARANCES})")
+    partners = discover(chain, api_key)
+    if not partners:
+        print("  DEX temasi bulunamadi")
+        return []
+    # Cok farkli DEX kontratina dokunan once: tek DEX'e dokunan bir kez
+    # takas yapmis olabilir, bes DEX'e dokunan duzenli trader.
+    pool_addrs = [a for a, _ in partners.most_common(CONTRACT_CHECK_CAP)]
+    print(f"  {len(partners)} adres DEX ile islem yapmis")
 
     with ThreadPoolExecutor(max_workers=10) as pool:
         flags = list(pool.map(lambda a: is_contract(a, chain, api_key), pool_addrs))
