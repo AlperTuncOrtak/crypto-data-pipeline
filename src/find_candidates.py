@@ -54,7 +54,27 @@ BAIT_TOKENS = {
                 "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"],
 }
 
-DISCOVERY_TRANSFERS = 1000   # yem token basina cekilecek transfer
+# --- Zaman dilimli kesif ---------------------------------------------
+#
+# Son 1000 transferi PES PESE almak, Base gibi yogun bir agda birkac
+# DAKIKALIK pencere demekti. Herhangi bir bes dakikada DEX'te kim islem
+# yapiyor? Insan trader haftada birkac kez islem yapar, o pencerede olma
+# ihtimali sifira yakin; bot her blokta oradadir. Yani dar pencere bot
+# filtresi degil, bot miknatisiydi — taranan 129 cuzdanin hepsi ya bot ya
+# bostu.
+#
+# Cozum: ayni veri hacmini 30 GUNE serpistirmek. Toplam satir sayisi
+# benzer, zaman kapsami binlerce kat genis.
+DISCOVERY_DAYS = 30
+DISCOVERY_SLICES = 24        # 30 gune yayilmis ince pencere sayisi
+SLICE_TRANSFERS = 250        # dilim basina, yem token basina
+
+# Bir adres dilimlerin bu kadar cogunda gorunuyorsa bot: insan trader
+# 24 dilimin 1-3'unde cikar, bot neredeyse hepsinde. Taramadan ONCE
+# eledigi icin bedava — ve kafadan konulmus gidis-donus esiginden cok
+# daha saglam bir olcu.
+MAX_SLICE_PRESENCE = 6
+
 SCREEN_SEED = 300            # aday basina giden transfer penceresi
 SCREEN_MAX = 600             # aday basina gelen transfer penceresi
 
@@ -86,26 +106,80 @@ def _url(chain: dict, api_key: str) -> str:
 ZERO = "0x0000000000000000000000000000000000000000"
 
 
+def _rpc(chain: dict, api_key: str, method: str, params: list):
+    resp = httpx.post(_url(chain, api_key), json={
+        "id": 1, "jsonrpc": "2.0", "method": method, "params": params,
+    }, timeout=HTTP_TIMEOUT)
+    return resp.json().get("result")
+
+
+def _slices(chain: dict, api_key: str) -> list:
+    """
+    Son DISCOVERY_DAYS gune yayilmis blok araliklari.
+
+    Saniye/blok degeri sabit yazilmiyor: aglar arasinda 0.25s ile 12s
+    arasinda degisiyor ve zamanla kayiyor. Iki blogun zaman damgasindan
+    olcuyoruz — iki RPC, ve kendini kalibre ediyor.
+    """
+    latest_hex = _rpc(chain, api_key, "eth_blockNumber", [])
+    if not latest_hex:
+        return []
+    latest = int(latest_hex, 16)
+    probe = max(latest - 100_000, 1)
+
+    def ts(block: int):
+        blk = _rpc(chain, api_key, "eth_getBlockByNumber", [hex(block), False])
+        return int(blk["timestamp"], 16) if blk and blk.get("timestamp") else None
+
+    t_new, t_old = ts(latest), ts(probe)
+    if not t_new or not t_old or t_new <= t_old:
+        return []
+
+    sec_per_block = (t_new - t_old) / (latest - probe)
+    span_blocks = int(DISCOVERY_DAYS * 86400 / sec_per_block)
+    step = max(span_blocks // DISCOVERY_SLICES, 1)
+    print(f"  ~{sec_per_block:.2f}s/blok, {DISCOVERY_DAYS} gun = {span_blocks:,} blok")
+
+    out = []
+    for i in range(DISCOVERY_SLICES):
+        hi = latest - i * step
+        lo = max(hi - step // 8, 1)  # dilimin kendisi ince, aralik genis
+        if lo < hi:
+            out.append((lo, hi))
+    return out
+
+
 def _bait_transfers(chain: dict, api_key: str) -> list:
-    """Yem tokenlerin son transferleri — (gonderen, alan) ciftleri."""
+    """
+    Yem tokenlerin transferleri, 30 gune yayilmis dilimlerden.
+    Doner: (gonderen, alan, dilim_no) uclusu.
+    """
+    windows = _slices(chain, api_key)
+    if not windows:
+        print(f"  ! {chain['key']}: blok araligi hesaplanamadi")
+        return []
+
     pairs = []
-    for token in BAIT_TOKENS.get(chain["key"], []):
-        try:
-            transfers = _rpc_transfers(_url(chain, api_key), {
-                "contractAddresses": [token],
-                "category": ["erc20"],
-                "withMetadata": False,
-                "excludeZeroValue": True,
-                "order": "desc",
-                "maxCount": hex(DISCOVERY_TRANSFERS),
-            })
-        except Exception as e:
-            print(f"  ! {chain['key']} kesif hatasi: {e}")
-            continue
-        for t in transfers:
-            frm, to = (t.get("from") or "").lower(), (t.get("to") or "").lower()
-            if frm and to and frm != ZERO and to != ZERO:
-                pairs.append((frm, to))
+    for idx, (lo, hi) in enumerate(windows):
+        for token in BAIT_TOKENS.get(chain["key"], []):
+            try:
+                transfers = _rpc_transfers(_url(chain, api_key), {
+                    "contractAddresses": [token],
+                    "category": ["erc20"],
+                    "withMetadata": False,
+                    "excludeZeroValue": True,
+                    "fromBlock": hex(lo),
+                    "toBlock": hex(hi),
+                    "order": "desc",
+                    "maxCount": hex(SLICE_TRANSFERS),
+                })
+            except Exception as e:
+                print(f"  ! {chain['key']} dilim {idx} hatasi: {e}")
+                continue
+            for t in transfers:
+                frm, to = (t.get("from") or "").lower(), (t.get("to") or "").lower()
+                if frm and to and frm != ZERO and to != ZERO:
+                    pairs.append((frm, to, idx))
     return pairs
 
 
@@ -132,7 +206,7 @@ def discover(chain: dict, api_key: str) -> Counter:
         return Counter()
 
     freq: Counter = Counter()
-    for frm, to in pairs:
+    for frm, to, _ in pairs:
         freq[frm] += 1
         freq[to] += 1
 
@@ -147,13 +221,30 @@ def discover(chain: dict, api_key: str) -> Counter:
 
     # Bu kontratlarla islem yapan adresler — takas yapanlar burada.
     partners: dict = defaultdict(set)
-    for frm, to in pairs:
+    slices_seen: dict = defaultdict(set)
+    for frm, to, slice_idx in pairs:
         if to in dex and frm not in dex:
             partners[frm].add(to)
+            slices_seen[frm].add(slice_idx)
         elif frm in dex and to not in dex:
             partners[to].add(frm)
+            slices_seen[to].add(slice_idx)
 
-    return Counter({addr: len(hits) for addr, hits in partners.items()})
+    # Dilim varligina gore bot elemesi. 30 gune yayilmis 24 dilimin
+    # cogunda gorunmek insan davranisi degil; taramadan once eliyoruz,
+    # her elenen adres tasarruf edilmis RPC demek.
+    humans = {a: hits for a, hits in partners.items()
+              if len(slices_seen[a]) <= MAX_SLICE_PRESENCE}
+    bots = len(partners) - len(humans)
+    print(f"  {len(partners)} adres DEX ile islem yapmis, {bots} tanesi "
+          f"{MAX_SLICE_PRESENCE}+ dilimde (bot) elendi")
+
+    # Siralama: cok farkli DEX'e dokunan once. Dilim sayisi da katkida —
+    # iki farkli gunde islem yapan, tek gunde yapandan daha duzenli.
+    return Counter({
+        addr: len(hits) * 10 + len(slices_seen[addr])
+        for addr, hits in humans.items()
+    })
 
 
 def is_contract(address: str, chain: dict, api_key: str) -> bool:
