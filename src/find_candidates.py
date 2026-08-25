@@ -68,7 +68,7 @@ CONTRACT_CHECK_CAP = 400
 MIN_SWAPS = 3                # bu kadar takas yoksa trader degil
 MAX_SWAPS = 150              # bu kadar cok takas = bot/MEV, kopyalanamaz
 MIN_DISTINCT_TOKENS = 2      # tek tokenli cuzdan cesitlendirme sunmaz
-MIN_VOLUME_USD = 5_000
+MIN_VOLUME_USD = 2_000
 
 HTTP_TIMEOUT = 20.0
 
@@ -77,9 +77,17 @@ def _url(chain: dict, api_key: str) -> str:
     return f"https://{chain['subdomain']}.g.alchemy.com/v2/{api_key}"
 
 
-def discover(chain: dict, api_key: str) -> Counter:
-    """Yem tokenlerin son transferlerinde gecen adresleri sikliga gore sayar."""
+def discover(chain: dict, api_key: str) -> tuple:
+    """
+    Yem tokenlerin son transferlerinde gecen adresleri sayar.
+
+    Iki sayac tutuluyor: toplam gorunme (altyapiyi elemek icin) ve GONDEREN
+    olarak gorunme. Takas yapan taraf token GONDERIR; sadece alan adresler
+    maas, borsa cekimi, airdrop olabilir. Ilk turda 40 adresin 37'si hic
+    takas yapmamisti, cunku ayrim yoktu.
+    """
     seen: Counter = Counter()
+    sent: Counter = Counter()
     for token in BAIT_TOKENS.get(chain["key"], []):
         try:
             transfers = _rpc_transfers(_url(chain, api_key), {
@@ -98,7 +106,9 @@ def discover(chain: dict, api_key: str) -> Counter:
                 addr = (t.get(side) or "").lower()
                 if addr and addr != "0x0000000000000000000000000000000000000000":
                     seen[addr] += 1
-    return seen
+                    if side == "from":
+                        sent[addr] += 1
+    return seen, sent
 
 
 def is_contract(address: str, chain: dict, api_key: str) -> bool:
@@ -166,12 +176,16 @@ def disqualify(row: dict) -> str | None:
 
 def scan_chain(chain: dict, api_key: str, canonical: set, limit: int) -> list:
     print(f"\n[{chain['key']}] kesif...")
-    seen = discover(chain, api_key)
+    seen, sent = discover(chain, api_key)
     print(f"  {len(seen)} benzersiz adres gorundu")
 
     # Sik gorunen = altyapi. Frekansa gore eliyoruz; sabit sayida "ilk N"
     # atmak yetmiyordu, adres havuzunun cogunlugu router/havuz cikiyordu.
-    pool_addrs = [a for a, n in seen.items() if n <= MAX_APPEARANCES][:CONTRACT_CHECK_CAP]
+    # Kalanlari gonderme sayisina gore siraliyoruz: takas yapan gonderir.
+    pool_addrs = sorted(
+        (a for a, n in seen.items() if n <= MAX_APPEARANCES),
+        key=lambda a: sent[a], reverse=True,
+    )[:CONTRACT_CHECK_CAP]
     print(f"  {len(pool_addrs)} adres altyapi olmayan aday (frekans <= {MAX_APPEARANCES})")
 
     with ThreadPoolExecutor(max_workers=10) as pool:
