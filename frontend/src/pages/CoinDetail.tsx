@@ -1,5 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { useState, useEffect, useRef, useMemo } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -147,10 +148,10 @@ export default function CoinDetail() {
 
   if (isError || !coin) return (
     <div className="flex flex-col items-center justify-center min-h-[500px] gap-5">
-      <div className="text-6xl drop-shadow-2xl">ğŸ”</div>
+      <div className="text-6xl drop-shadow-2xl">💀</div>
       <div className="text-2xl font-black text-[var(--text-main)] tracking-tight">Coin not found</div>
       <button onClick={() => navigate("/market")} className="px-6 py-2.5 rounded-full border border-[var(--border-base)] bg-white/5 text-[var(--text-main)] font-bold hover:bg-[var(--border-base)] transition-colors shadow-lg">
-        â† Back to Markets
+        ← Back to Markets
       </button>
     </div>
   );
@@ -180,13 +181,28 @@ export default function CoinDetail() {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30, filter: "blur(5px)" },
+    hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
     visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
+
+  const metaTitle = `${coin.name} (${coin.symbol.toUpperCase()}) Price: ${fmtPrice(coin.current_price)}`;
+  const metaDescription = `Live ${coin.name} price, charts, and market data. 24h change: ${fmtPct(change)}. View real-time CryptoNeko analytics.`;
 
   return (
     <div className="relative min-h-screen pb-24 overflow-x-hidden">
       
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={coin.image} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={coin.image} />
+      </Helmet>
+
       {/* BACKGROUND GLOWS (Stripe inspired mesh at the top) */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-30">
         <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-30 absolute -top-[100px] left-[10%]"></div>

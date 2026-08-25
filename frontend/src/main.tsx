@@ -76,23 +76,27 @@ const queryClient = new QueryClient({
   },
 })
 
+import { HelmetProvider } from 'react-helmet-async';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <PostHogProvider client={posthog}>
-      <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider 
-          theme={darkTheme({
-            accentColor: 'var(--accent)',
-            accentColorForeground: '#111',
-            borderRadius: 'large',
-            overlayBlur: 'small',
-          })}
-        >
-          <App />
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
-    </PostHogProvider>
+    <HelmetProvider>
+      <PostHogProvider client={posthog}>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider 
+              theme={darkTheme({
+                accentColor: 'var(--accent)',
+                accentColorForeground: '#111',
+                borderRadius: 'large',
+                overlayBlur: 'small',
+              })}
+            >
+              <App />
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </PostHogProvider>
+    </HelmetProvider>
   </StrictMode>,
 )
