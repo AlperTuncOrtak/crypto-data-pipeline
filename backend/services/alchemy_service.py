@@ -56,24 +56,31 @@ META_TIMEOUT = 6.0
 _LIFI_TOKENS_URL = "https://li.quest/v1/tokens?chains=" + ",".join(
     str(c["chain_id"]) for c in CHAINS
 )
-_CANONICAL_TTL = 6 * 3600
+# 1 saat: liste artik sadece "kanonik mi" sorusuna degil, kendi fiyat
+# akisimizin bilmedigi tokenlarin FIYATINA da kaynaklik ediyor.
+_CANONICAL_TTL = 3600
 # ponytail: surec ici cache — container yeniden basladiginda ilk istek
 # listeyi tekrar cekiyor. Cok worker'da paylasim gerekirse Redis'e tasi.
-_canonical_cache: Tuple[float, Set[Tuple[int, str]]] = (0.0, set())
+_canonical_cache: Tuple[float, Dict[Tuple[int, str], float]] = (0.0, {})
 
 
-def _is_canonical(balance: dict, canonical: Set[Tuple[int, str]]) -> bool:
+def _is_canonical(balance: dict, canonical) -> bool:
     """Native coin her zaman gercek; ERC-20 icin kontrat listede olmali."""
     if balance["contract_address"] == "native":
         return True
     return (balance["chain_id"], balance["contract_address"].lower()) in canonical
 
 
-def _canonical_tokens() -> Tuple[Set[Tuple[int, str]], bool]:
+def _canonical_tokens() -> Tuple[Dict[Tuple[int, str], float], bool]:
     """
-    (chain_id, kontrat_adresi) kumesi doner. Ikinci deger: liste
+    {(chain_id, kontrat_adresi): usd_fiyat} doner. Ikinci deger: liste
     tazelenemedi mi — o zaman fiyatlama eksik kalir ve bunu cagirana
     soyluyoruz, sessizce yanlis toplam uretmiyoruz.
+
+    Fiyat da tutuluyor cunku kendi akisimiz (OKX/Gate WS -> latest_prices)
+    yalnizca borsada listelenen sembolleri biliyor. cbBTC gibi sarmalanmis
+    tokenlar orada yok ve $0 fiyatlaniyordu: kullanicinin $0.30'luk cbBTC
+    bakiyesi tabloda "$0.00" gorunup toplamdan dusuyordu.
     """
     global _canonical_cache
     fetched_at, cached = _canonical_cache
@@ -84,7 +91,7 @@ def _canonical_tokens() -> Tuple[Set[Tuple[int, str]], bool]:
         resp = httpx.get(_LIFI_TOKENS_URL, timeout=20.0)
         resp.raise_for_status()
         canonical = {
-            (int(chain_id), t["address"].lower())
+            (int(chain_id), t["address"].lower()): float(t.get("priceUSD") or 0)
             for chain_id, tokens in (resp.json().get("tokens") or {}).items()
             for t in tokens
             if t.get("address") and (t.get("coinKey") or "") == (t.get("symbol") or "")
@@ -250,8 +257,18 @@ def get_wallet_balances(wallet_address: str) -> Dict[str, Any]:
             b["unpriced"] = True
             unpriced += 1
             continue
+        # Once kendi akisimiz (canli, saniyelik). Bilmiyorsa LI.FI'nin ayni
+        # kanonik kayittan gelen fiyati — kontrat bazli, yani sembolu calan
+        # bir klon bu yedege giremiyor.
         price = prices.get(b["symbol"], 0)
+        if not price and b["contract_address"] != "native":
+            price = canonical.get((b["chain_id"], b["contract_address"].lower()), 0)
+
+        b["price_usd"] = price
         b["usd_value"] = b["balance"] * price
+        if not price:
+            b["unpriced"] = True
+            unpriced += 1
         total_usd += b["usd_value"]
 
     balances.sort(key=lambda b: b["usd_value"], reverse=True)
@@ -290,11 +307,11 @@ if __name__ == "__main__":
                  "chain_id": 1, "symbol": "WBTC"}
     native = {"contract_address": "native", "chain_id": 1, "symbol": "ETH"}
 
-    canon = {(1, "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599")}
+    canon = {(1, "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"): 79000.0}
     assert not _is_canonical(fake_btc, canon), "sahte BTC fiyatlandi"
     assert not _is_canonical(fake_eth, canon), "sahte ETH fiyatlandi"
     assert _is_canonical(real_wbtc, canon), "gercek WBTC elendi"
     assert _is_canonical(native, canon), "native coin elendi"
     # Liste bos gelirse (LI.FI erisilemez) sadece native fiyatlanmali.
-    assert _is_canonical(native, set()) and not _is_canonical(real_wbtc, set())
+    assert _is_canonical(native, {}) and not _is_canonical(real_wbtc, {})
     print("canonical contract filter OK")

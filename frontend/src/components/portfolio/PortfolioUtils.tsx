@@ -223,6 +223,8 @@ export function calcHoldings(
     walletQty: number;
     sources: Set<string>;
     chains: ChainBalance[];
+    /** Price reported by the source, used when the market feed has none. */
+    fallbackPrice: number;
   };
   const bySymbol: Record<string, Agg> = {};
 
@@ -230,6 +232,7 @@ export function calcHoldings(
     walletQty: 0,
     sources: new Set<string>(),
     chains: [],
+    fallbackPrice: 0,
   });
 
   for (const wh of walletHoldings || []) {
@@ -239,6 +242,9 @@ export function calcHoldings(
     const agg = (bySymbol[sym] ||= blank());
     agg.walletQty += qty;
     agg.sources.add(wh.source || "Wallet");
+    if (!agg.fallbackPrice && Number(wh.price_usd) > 0) {
+      agg.fallbackPrice = Number(wh.price_usd);
+    }
 
     // Chain metadata only comes from on-chain sources; an exchange balance
     // must never inherit it, otherwise it would look withdrawable.
@@ -274,7 +280,9 @@ export function calcHoldings(
     if (qty <= 0.000001) continue;
 
     const market = priceMap[sym] || {};
-    const curPrice = market.price || 0;
+    // The market feed wins; a source-reported price only fills the gap for
+    // tokens it doesn't list (cbBTC and other wrapped assets).
+    const curPrice = market.price || agg.fallbackPrice || 0;
     const value = qty * curPrice;
 
     // Wallet balances carry no purchase history, so their cost basis is marked

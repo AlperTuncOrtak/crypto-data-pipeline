@@ -191,6 +191,10 @@ export function usePortfolioData(user: any, marketData: any[]) {
                 chain: b.chain || "ethereum",
                 chain_name: b.chain_name || "Ethereum",
                 chain_id: b.chain_id || 1,
+                // Our own feed only knows exchange-listed symbols; wrapped
+                // tokens like cbBTC priced at $0 and vanished from the total.
+                // The backend resolves those from the canonical token list.
+                price_usd: b.price_usd || 0,
                 contract_address: contract,
                 // Deliberately left undefined when the backend doesn't report
                 // decimals — an assumed 18 would encode a wrong transfer amount
