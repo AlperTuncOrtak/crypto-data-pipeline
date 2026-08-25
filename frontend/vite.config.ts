@@ -47,12 +47,16 @@ export default defineConfig({
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'framer-motion': ['framer-motion'],
-          'recharts': ['recharts'],
-          'web3-vendor': ['wagmi', 'viem', '@rainbow-me/rainbowkit', 'ethers'],
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei']
+        // Vite 8 bundles with rolldown, which only accepts the function form
+        // of manualChunks. The object form silently type-checks but throws
+        // "manualChunks is not a function" at build time.
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return
+          if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/.test(id)) return 'react-vendor'
+          if (id.includes('framer-motion')) return 'framer-motion'
+          if (id.includes('recharts')) return 'recharts'
+          if (/[\\/]node_modules[\\/](wagmi|viem|@rainbow-me|ethers)/.test(id)) return 'web3-vendor'
+          if (/[\\/]node_modules[\\/](three|@react-three)/.test(id)) return 'three-vendor'
         }
       }
     }

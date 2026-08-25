@@ -42,7 +42,8 @@ export function BaseGlassCard({
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+      // `as const` keeps this a 4-tuple; framer-motion rejects number[].
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }
     }
   };
 
