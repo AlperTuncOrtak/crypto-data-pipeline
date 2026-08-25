@@ -428,7 +428,8 @@
       "sync_failed": "Failed to connect to exchange."
     },
     "swap": {
-      "clear_stuck": "Clear stuck swaps (also clears local swap history)"
+      "unfinished": "Unfinished swaps",
+      "dismiss": "Dismiss this swap"
     }
   },
   "market": {

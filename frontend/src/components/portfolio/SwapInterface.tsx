@@ -6,7 +6,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import AITradeInsights from "../../components/market/AITradeInsights";
 import { useTheme } from "../../hooks/useTheme";
 import { useTranslation } from "react-i18next";
-import { Trash2 } from "lucide-react";
+import { X } from "lucide-react";
 
 // Must match the chains configured in main.tsx. The widget runs on the app's
 // own wagmi connection, so offering a chain wagmi cannot switch to would leave
@@ -78,21 +78,54 @@ const FEATURED_TOKENS: StaticToken[] = [
  * Where the widget persists in-flight swaps (zustand persist, no keyPrefix set
  * so the default prefix applies).
  *
- * A swap that never gets signed stays "Signature required" forever: the
- * widget only offers its own delete button once a route reaches Failed, so a
- * pending one cannot be dismissed from inside the widget at all.
+ * A swap that is never signed stays "Signature required" forever: the widget
+ * renders its own delete button only once a route reaches Failed, so a pending
+ * one has no dismiss path anywhere in its UI. That row lives inside the
+ * widget's own DOM, so the dismiss control has to sit outside it.
  */
 const ROUTES_STORAGE_KEY = "li.fi-widget-routes";
 
-const hasStoredRoutes = () => {
+/** Widget's RouteExecutionStatus bitflags: Idle 1, Pending 2, Done 4, Failed 8. */
+const STATUS_DONE = 4;
+
+interface StuckSwap {
+  id: string;
+  from: string;
+  to: string;
+}
+
+/** Unfinished routes only — completed ones are history worth keeping. */
+function readStuckSwaps(): StuckSwap[] {
   try {
     const raw = localStorage.getItem(ROUTES_STORAGE_KEY);
-    if (!raw) return false;
-    return Object.keys(JSON.parse(raw)?.state?.routes || {}).length > 0;
+    if (!raw) return [];
+    const routes = JSON.parse(raw)?.state?.routes || {};
+    return Object.entries(routes)
+      .filter(([, entry]: [string, any]) => !((entry?.status ?? 0) & STATUS_DONE))
+      .map(([id, entry]: [string, any]) => ({
+        id,
+        from: entry?.route?.fromToken?.symbol || "?",
+        to: entry?.route?.toToken?.symbol || "?",
+      }));
   } catch {
-    return false;
+    return [];
   }
-};
+}
+
+function deleteStuckSwap(id: string) {
+  try {
+    const raw = localStorage.getItem(ROUTES_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed?.state?.routes) {
+      delete parsed.state.routes[id];
+      localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(parsed));
+    }
+  } catch {
+    // A corrupt store is worth dropping entirely rather than leaving stuck.
+    localStorage.removeItem(ROUTES_STORAGE_KEY);
+  }
+}
 
 const ACCENT_COLORS: Record<string, string> = {
   purple: "#6366f1",
@@ -107,14 +140,14 @@ export default function SwapInterface() {
   const { theme, accent } = useTheme();
   const { t } = useTranslation();
   const { openConnectModal } = useConnectModal();
-  const [stuckSwaps, setStuckSwaps] = useState(hasStoredRoutes);
+  const [stuckSwaps, setStuckSwaps] = useState<StuckSwap[]>(readStuckSwaps);
   // Remounting drops the widget's in-memory copy; clearing storage alone
-  // would leave the stuck row on screen until a reload.
+  // would leave the stale row on screen until a reload.
   const [widgetKey, setWidgetKey] = useState(0);
 
-  const clearStuckSwaps = useCallback(() => {
-    localStorage.removeItem(ROUTES_STORAGE_KEY);
-    setStuckSwaps(false);
+  const dismissSwap = useCallback((id: string) => {
+    deleteStuckSwap(id);
+    setStuckSwaps(readStuckSwaps());
     setWidgetKey((k) => k + 1);
   }, []);
   const isLight = theme === "light";
@@ -157,14 +190,26 @@ export default function SwapInterface() {
         className="flex flex-col md:flex-row justify-center gap-6 mt-8 max-w-5xl mx-auto w-full pb-32 relative"
       >
         <div className="w-full max-w-[420px] flex flex-col gap-3">
-          {stuckSwaps && (
-            <button
-              onClick={clearStuckSwaps}
-              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl text-[12px] font-bold text-[var(--text-muted)] bg-[var(--bg-subtle)] border border-[var(--border-base)] hover:text-[var(--text-main)] hover:border-[var(--border-strong)] transition-colors"
-            >
-              <Trash2 size={13} />
-              {t("portfolio.swap.clear_stuck")}
-            </button>
+          {stuckSwaps.length > 0 && (
+            <div className="rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-base)] overflow-hidden">
+              <div className="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                {t("portfolio.swap.unfinished")}
+              </div>
+              {stuckSwaps.map((swap) => (
+                <div key={swap.id} className="flex items-center justify-between gap-2 px-3 py-2">
+                  <span className="text-[12px] font-bold text-[var(--text-main)] truncate">
+                    {swap.from} → {swap.to}
+                  </span>
+                  <button
+                    onClick={() => dismissSwap(swap.id)}
+                    title={t("portfolio.swap.dismiss")}
+                    className="p-1 rounded-lg text-[var(--text-faint)] hover:text-[var(--negative)] hover:bg-[var(--negative-muted)] transition-colors shrink-0"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         <div className="relative w-full rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-[var(--border-subtle)]">
           {/* The widget mounts its own <Routes> into the host router (it checks

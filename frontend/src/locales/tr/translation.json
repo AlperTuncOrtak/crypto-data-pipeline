@@ -428,7 +428,8 @@
       "sync_failed": "Borsaya bağlanılamadı."
     },
     "swap": {
-      "clear_stuck": "Takılı takasları temizle (yerel takas geçmişini de siler)"
+      "unfinished": "Tamamlanmamış takaslar",
+      "dismiss": "Bu takası kaldır"
     }
   },
   "market": {
