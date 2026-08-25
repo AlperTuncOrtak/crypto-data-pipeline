@@ -24,7 +24,7 @@ import httpx
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.services.alchemy_service import CHAINS, _canonical_tokens
+from backend.services.alchemy_service import CHAINS, _canonical_tokens, get_wallet_balances
 from backend.services.copy_signals import (
     _detect_swaps,
     _drop_spam,
@@ -91,10 +91,23 @@ MIN_SWAPS = 3                # bu kadar takas yoksa trader degil
 MAX_SWAPS = 150              # bu kadar cok takas = bot/MEV, kopyalanamaz
 MIN_DISTINCT_TOKENS = 2      # tek tokenli cuzdan cesitlendirme sunmaz
 MIN_VOLUME_USD = 2_000
-# Tum gecmiste bundan fazla gidis-donus = arbitraj/MEV botu. Yuksek
-# isabetle binlerce kucuk islem kopyalanabilir bir strateji degil;
-# takipci her birinde gas oder, bot ise mikro farklardan kazanir.
-BOT_ROUND_TRIPS = 300
+
+# Kopyalama oranli calisir: balina portfoyunun %P'sini bir isleme koyarsa,
+# $50'lik takipci de $50'nin %P'sini koyar. Yani belirleyici olan balinanin
+# islem BUYUKLUGU degil, isleminin kendi portfoyune ORANI.
+#
+# Base'de gas ~$0.02. Takipcinin islemi en az ~$1 olmali ki gas %2'de kalsin.
+# $50 x %2 = $1, yani balina tipik olarak portfoyunun en az %2'siyle islem
+# yapmali. Altindakiler teknik olarak "trader" olsa da kopyalanamaz.
+MIN_POSITION_PCT = 0.02
+
+# Mutlak taban: portfoy bilinmedigi durumlar icin kaba emniyet.
+MIN_AVG_TRADE_USD = 200
+
+# Gidis-donus sayisi artik tek basina eleme sebebi degil — asil olcu
+# yukaridaki oran. Bu esik yalnizca asiri uc durumlar icin duruyor:
+# on binlerce islem hicbir orantida kopyalanabilir degil.
+BOT_ROUND_TRIPS = 5_000
 
 HTTP_TIMEOUT = 20.0
 
@@ -289,6 +302,7 @@ def screen(address: str, chain: dict, api_key: str, canonical: set) -> dict | No
         "swaps": len(swaps),
         "tokens": len({s["symbol"] for s in swaps}),
         "volume": sum(s["usd_value"] for s in swaps),
+        "avg_trade": sum(s["usd_value"] for s in swaps) / len(swaps),
         "sample_days": len(days),
         "buys": sum(1 for s in swaps if s["side"] == "BUY"),
         "sells": sum(1 for s in swaps if s["side"] == "SELL"),
@@ -304,6 +318,9 @@ def disqualify(row: dict) -> str | None:
         return "tek token"
     if row["volume"] < MIN_VOLUME_USD:
         return "dusuk hacim"
+    if row["avg_trade"] < MIN_AVG_TRADE_USD:
+        # Oranli kopyalamada takipciye toz kalir.
+        return "islem cok kucuk"
     if row["sells"] == 0:
         # Hic satmayan cuzdan cikis sinyali uretmez — kopyalanacak bir sey yok.
         return "hic satmiyor"
@@ -396,11 +413,26 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
             print(f"       ({pnl['unmatched_sells']} satisin alisini gormedik — "
                   "borsadan/kopruden gelmis, hesaba katilmadi)")
 
-        # Gidis-donus sayisi, pencereye bagli takas sayisindan cok daha iyi
-        # bir bot gostergesi: tum gecmisi kapsiyor. Yuksek isabetle binlerce
-        # kucuk islem arbitraj botunun imzasi, kopyalanabilir bir strateji degil.
         if pnl["round_trips"] > BOT_ROUND_TRIPS:
             blocking.append(f"gecmiste {pnl['round_trips']} gidis-donus")
+
+        # ASIL OLCU: balinanin tipik islemi portfoyunun yuzde kaci.
+        # Kopyalama oranli oldugu icin takipcinin islem buyuklugu buna
+        # baglidir; $50'lik kullanici, portfoyunun %0.02'siyle islem yapan
+        # bir balinayi takip ederse 1 kuruslik emir uretir.
+        portfolio = (get_wallet_balances(addr) or {}).get("total_usd") or 0
+        avg_trade = max((r["avg_trade"] for r in passed), default=0)
+        if portfolio > 0 and avg_trade > 0:
+            pct = avg_trade / portfolio
+            note = "yeterli" if pct >= MIN_POSITION_PCT else "COK KUCUK"
+            print(f"  POZISYON: ortalama islem ${avg_trade:,.0f}, "
+                  f"portfoy ${portfolio:,.0f} -> %{pct * 100:.2f} ({note})")
+            print(f"            $50'lik takipci islem basina "
+                  f"~${50 * pct:.2f} alir")
+            if pct < MIN_POSITION_PCT:
+                blocking.append(f"pozisyon portfoyun %{pct * 100:.2f}'i")
+        elif portfolio == 0:
+            print("  POZISYON: portfoy okunamadi, oran hesaplanamadi")
 
         if blocking:
             print(f"  >>> ADAY DEGIL: {', '.join(blocking)}")
