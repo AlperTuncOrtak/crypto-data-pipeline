@@ -85,11 +85,18 @@ def _transfers_or_retry(url: str, chain_key: str, params: dict) -> list:
     try:
         return _rpc_transfers(url, {**params, "category": _categories(chain_key)})
     except Exception as e:
-        if chain_key in _NO_INTERNAL or "categor" not in str(e).lower():
+        if "categor" not in str(e).lower():
             raise
-        logger.info("%s: internal kategorisi desteklenmiyor, onsuz devam", chain_key)
-        _NO_INTERNAL.add(chain_key)
-        return _rpc_transfers(url, {**params, "category": _categories(chain_key)})
+        # Tekrar denemeyi _NO_INTERNAL uyeligine baglamak paralel
+        # calisirken kiriliyordu: ilk thread bayragi koyar, ikinci thread
+        # ayni hatayi alip "zaten biliniyor" diye yeniden denemeden
+        # firlatirdi. Tarayici cok thread'li oldugu icin Arbitrum verisi
+        # eksik geliyordu. Yedek liste artik acikca yaziliyor, dongu de
+        # olusamaz.
+        if chain_key not in _NO_INTERNAL:
+            logger.info("%s: internal kategorisi desteklenmiyor, onsuz devam", chain_key)
+            _NO_INTERNAL.add(chain_key)
+        return _rpc_transfers(url, {**params, "category": ["external", "erc20"]})
 
 
 def _fetch_chain_transfers(
