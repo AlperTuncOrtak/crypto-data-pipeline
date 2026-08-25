@@ -299,10 +299,12 @@ def main():
     if degraded:
         sys.exit("kanonik token listesi alinamadi — tarama anlamsiz olur")
 
-    chains = [
-        c for c in CHAINS
-        if c["key"] in CHEAP_CHAINS and (not args.chain or c["key"] == args.chain)
-    ]
+    # Kesif sadece ucuz aglarda: urun kullaniciyi oraya yonlendiriyor.
+    # DOGRULAMA ise tum aglara bakmali — bir cuzdanin mainnet'te islem
+    # yaptigini gormezsek "trader degil" diye yanlis eleriz. Nerede islem
+    # yaptigi ciktida zaten yaziyor, karari ona gore verirsin.
+    scope = CHAINS if args.check else [c for c in CHAINS if c["key"] in CHEAP_CHAINS]
+    chains = [c for c in scope if not args.chain or c["key"] == args.chain]
 
     if args.check:
         everything = check_addresses(args.check.split(","), api_key, canonical, chains)
