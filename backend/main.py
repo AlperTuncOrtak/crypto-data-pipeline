@@ -133,6 +133,35 @@ def market(request: Request, limit: int = 20):
     return get_latest_market(limit)
 
 
+import asyncio
+import json as _json
+
+@app.get("/market/stream")
+async def market_stream(request: Request, limit: int = 100):
+    """SSE endpoint — her 3 saniyede Redis'ten fiyat snapshot'i iter.
+    Frontend EventSource ile baglanir, polling'e gerek kalmaz."""
+    async def event_generator():
+        while True:
+            if await request.is_disconnected():
+                break
+            try:
+                data = get_latest_market(limit)
+                yield f"data: {_json.dumps(data)}\n\n"
+            except Exception:
+                pass
+            await asyncio.sleep(3)
+
+    from fastapi.responses import StreamingResponse as _SR
+    return _SR(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 from backend.services.leaderboard_service import generate_leaderboard
 
 @app.get("/portfolio/leaderboard")

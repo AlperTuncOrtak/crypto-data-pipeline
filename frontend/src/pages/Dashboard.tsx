@@ -9,6 +9,7 @@ import {
   useMarketStats,
   useTrending,
 } from "../hooks/useMarket";
+import { useMarketStream } from "../hooks/useMarketStream";
 import { useFearAndGreed } from "../hooks/useFearAndGreed";
 import { useGlobalHistory } from "../hooks/useGlobalHistory";
 import { useSparklines } from "../hooks/useSparklines";
@@ -127,6 +128,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const { data: coins } = useMarket();
+  // SSE stream — her 3 saniyede Redis'ten cache'i günceller (WUL-46)
+  useMarketStream();
   const { data: gainersData } = useGainers();
   const { data: losersData } = useLosers();
   const { data: statsData } = useMarketStats();
