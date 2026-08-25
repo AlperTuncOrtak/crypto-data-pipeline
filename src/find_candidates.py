@@ -31,6 +31,7 @@ from backend.services.copy_signals import (
     _fetch_chain_transfers,
     _rpc_transfers,
 )
+from backend.services.copy_history import analyse
 from backend.services.price_service import get_live_prices_sync
 
 logging.basicConfig(level=logging.WARNING, format="%(message)s")
@@ -241,6 +242,21 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
                 rows.append(row)
         if not found:
             print("  hicbir agda takas bulunamadi")
+            continue
+
+        # Gerceklesmis kar: sadece iki bacagini da gordugumuz gidis-donusler.
+        pnl = analyse(addr, chains, api_key, canonical)
+        if pnl["round_trips"]:
+            pct = pnl["pnl_pct"]
+            print(f"  KAR: {pnl['round_trips']} tam islem, "
+                  f"{pnl['wins']} karli (%{pnl['win_rate'] * 100:.0f}), "
+                  f"${pnl['pnl_usd']:,.0f} "
+                  f"({pct * 100:+.1f}% yatirilan sermayeye gore)")
+        else:
+            print("  KAR: olculemedi — tam gidis-donus yok")
+        if pnl["unmatched_sells"]:
+            print(f"       ({pnl['unmatched_sells']} satisin alisini gormedik — "
+                  "borsadan/kopruden gelmis, hesaba katilmadi)")
     return rows
 
 
