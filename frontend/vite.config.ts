@@ -45,5 +45,16 @@ export default defineConfig({
   ],
   build: {
     chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'framer-motion': ['framer-motion'],
+          'recharts': ['recharts'],
+          'web3-vendor': ['wagmi', 'viem', '@rainbow-me/rainbowkit', 'ethers'],
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei']
+        }
+      }
+    }
   }
 })
