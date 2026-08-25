@@ -18,6 +18,7 @@ bir faaliyeti olcmek olurdu.
 """
 import logging
 from collections import defaultdict, deque
+from datetime import datetime
 
 import httpx
 
@@ -127,10 +128,28 @@ def realized_pnl(swaps: list) -> dict:
 
     pnl = total_proceeds - total_cost
     open_positions = sum(1 for q in lots.values() if q)
+
+    # Aylik islem sikligi: takipcinin odeyecegi gas dogrudan buna bagli.
+    # $50 tahsisli bir kullanici Base'de islem basina ~$0.02 oduyor; ayda
+    # 40 islem tahsisin %1.6'si, 400 islem %16'si demek.
+    stamps = sorted(s["occurred_at"] for s in swaps if s.get("occurred_at"))
+    months = None
+    if len(stamps) >= 2:
+        try:
+            span = datetime.fromisoformat(str(stamps[-1])[:19]) - datetime.fromisoformat(
+                str(stamps[0])[:19]
+            )
+            months = max(span.days / 30.0, 1 / 30.0)
+        except ValueError:
+            months = None
+
     return {
         "round_trips": trips,
         "wins": wins,
         "win_rate": round(wins / trips, 3) if trips else None,
+        "first_at": stamps[0] if stamps else None,
+        "last_at": stamps[-1] if stamps else None,
+        "trades_per_month": round(len(swaps) / months, 1) if months else None,
         "cost_usd": round(total_cost, 2),
         "proceeds_usd": round(total_proceeds, 2),
         "pnl_usd": round(pnl, 2),
@@ -213,5 +232,17 @@ if __name__ == "__main__":
     b = swap("SELL", "FFF", 10, 200, "2026-01-02"); b["chain"] = "arbitrum"
     r = realized_pnl([a, b])
     assert r["round_trips"] == 0 and r["unmatched_sells"] == 1, r
+
+    # Islem sikligi: takipcinin gas maliyeti buna bagli.
+    r = realized_pnl([
+        swap("BUY", "GGG", 10, 100, "2026-01-01T00:00:00"),
+        swap("SELL", "GGG", 10, 120, "2026-03-01T00:00:00"),
+    ])
+    # 2 islem / ~2 ay
+    assert r["trades_per_month"] == 1.0, r
+    assert r["first_at"].startswith("2026-01-01") and r["last_at"].startswith("2026-03-01")
+
+    # Tek islemde siklik hesaplanamaz, uydurmuyoruz
+    assert realized_pnl([swap("BUY", "HHH", 1, 10, "2026-01-01T00:00:00")])["trades_per_month"] is None
 
     print("copy_history self-check OK")

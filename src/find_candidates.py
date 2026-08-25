@@ -24,7 +24,7 @@ import httpx
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.services.alchemy_service import CHAINS, _canonical_tokens, get_wallet_balances
+from backend.services.alchemy_service import CHAINS, _canonical_tokens
 from backend.services.copy_signals import (
     _detect_swaps,
     _drop_spam,
@@ -92,21 +92,22 @@ MAX_SWAPS = 150              # bu kadar cok takas = bot/MEV, kopyalanamaz
 MIN_DISTINCT_TOKENS = 2      # tek tokenli cuzdan cesitlendirme sunmaz
 MIN_VOLUME_USD = 2_000
 
-# Kopyalama oranli calisir: balina portfoyunun %P'sini bir isleme koyarsa,
-# $50'lik takipci de $50'nin %P'sini koyar. Yani belirleyici olan balinanin
-# islem BUYUKLUGU degil, isleminin kendi portfoyune ORANI.
+# Kopyalama sabit kesirle yapiliyor: takipci her sinyalde tahsisinin
+# sabit bir yuzdesini koyuyor. Bu yuzden balinanin islem BUYUKLUGU
+# takipciye yansimiyor — yansiyan sey her islemin GAS maliyeti.
 #
-# Base'de gas ~$0.02. Takipcinin islemi en az ~$1 olmali ki gas %2'de kalsin.
-# $50 x %2 = $1, yani balina tipik olarak portfoyunun en az %2'siyle islem
-# yapmali. Altindakiler teknik olarak "trader" olsa da kopyalanamaz.
-MIN_POSITION_PCT = 0.02
-
-# Mutlak taban: portfoy bilinmedigi durumlar icin kaba emniyet.
-MIN_AVG_TRADE_USD = 200
+# Once bunu portfoy oranina baglamayi denedim, payda yanlisti: portfoy
+# degeri BUGUNKU bakiye, islemler ise tum gecmise yayili. $67 bin'lik
+# islem yapip su an $132 tutan bir cuzdan %50.000 gibi sacma bir oran
+# uretiyordu.
+FOLLOWER_BUDGET_USD = 50
+GAS_PER_TRADE_USD = 0.02     # Base/L2 mertebesi
+# Ayda 40 islem = $0.80 gas = tahsisin %1.6'si. 400 islem = %16, kabul
+# edilemez. Esik urun kisitindan turuyor, sezgiden degil.
+MAX_TRADES_PER_MONTH = 40
 
 # Gidis-donus sayisi artik tek basina eleme sebebi degil — asil olcu
-# yukaridaki oran. Bu esik yalnizca asiri uc durumlar icin duruyor:
-# on binlerce islem hicbir orantida kopyalanabilir degil.
+# yukaridaki siklik. Bu esik yalnizca asiri uc durumlar icin.
 BOT_ROUND_TRIPS = 5_000
 
 HTTP_TIMEOUT = 20.0
@@ -318,9 +319,6 @@ def disqualify(row: dict) -> str | None:
         return "tek token"
     if row["volume"] < MIN_VOLUME_USD:
         return "dusuk hacim"
-    if row["avg_trade"] < MIN_AVG_TRADE_USD:
-        # Oranli kopyalamada takipciye toz kalir.
-        return "islem cok kucuk"
     if row["sells"] == 0:
         # Hic satmayan cuzdan cikis sinyali uretmez — kopyalanacak bir sey yok.
         return "hic satmiyor"
@@ -416,23 +414,17 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
         if pnl["round_trips"] > BOT_ROUND_TRIPS:
             blocking.append(f"gecmiste {pnl['round_trips']} gidis-donus")
 
-        # ASIL OLCU: balinanin tipik islemi portfoyunun yuzde kaci.
-        # Kopyalama oranli oldugu icin takipcinin islem buyuklugu buna
-        # baglidir; $50'lik kullanici, portfoyunun %0.02'siyle islem yapan
-        # bir balinayi takip ederse 1 kuruslik emir uretir.
-        portfolio = (get_wallet_balances(addr) or {}).get("total_usd") or 0
-        avg_trade = max((r["avg_trade"] for r in passed), default=0)
-        if portfolio > 0 and avg_trade > 0:
-            pct = avg_trade / portfolio
-            note = "yeterli" if pct >= MIN_POSITION_PCT else "COK KUCUK"
-            print(f"  POZISYON: ortalama islem ${avg_trade:,.0f}, "
-                  f"portfoy ${portfolio:,.0f} -> %{pct * 100:.2f} ({note})")
-            print(f"            $50'lik takipci islem basina "
-                  f"~${50 * pct:.2f} alir")
-            if pct < MIN_POSITION_PCT:
-                blocking.append(f"pozisyon portfoyun %{pct * 100:.2f}'i")
-        elif portfolio == 0:
-            print("  POZISYON: portfoy okunamadi, oran hesaplanamadi")
+        # ASIL OLCU: aylik islem sikligi. Kopyalama sabit kesirle
+        # yapildigi icin balinanin islem BUYUKLUGU takipciye yansimiyor;
+        # yansiyan sey her islemin gas maliyeti.
+        tpm = pnl.get("trades_per_month")
+        if tpm:
+            monthly_gas = tpm * GAS_PER_TRADE_USD
+            drag = monthly_gas / FOLLOWER_BUDGET_USD
+            print(f"  SIKLIK: ayda {tpm:.0f} islem -> ${FOLLOWER_BUDGET_USD:.0f} "
+                  f"tahsiste aylik ${monthly_gas:.2f} gas (%{drag * 100:.1f})")
+            if tpm > MAX_TRADES_PER_MONTH:
+                blocking.append(f"ayda {tpm:.0f} islem")
 
         if blocking:
             print(f"  >>> ADAY DEGIL: {', '.join(blocking)}")
