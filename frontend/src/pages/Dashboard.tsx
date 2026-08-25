@@ -297,11 +297,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* MAIN 12-COLUMN LAYOUT */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        {/* MAIN STACKED LAYOUT */}
+        <div className="flex flex-col gap-6">
           
-          {/* LEFT: TABLE (8 cols) */}
-          <div className="xl:col-span-8">
+          {/* TOP: TABLE (Full width) */}
+          <div className="w-full">
             <FadeIn delay={0.6} className="h-full">
               <BaseGlassCard className="flex flex-col h-full">
                 {/* Toolbar */}
