@@ -213,10 +213,42 @@ def scan_chain(chain: dict, api_key: str, canonical: set, limit: int) -> list:
     return keep
 
 
+def check_addresses(addresses: list, api_key: str, canonical: set, chains: list) -> list:
+    """
+    Elle bulunmus adresleri dogrular — kesif adimini atlar.
+
+    Is akisi genelde bu: adresi Dune/Arkham'da bulmak dakikalar suruyor,
+    zor olan "bu gercekten trader mi, bot mu, hic satiyor mu" sorusu.
+    Kesif verimi dusuk (%4), dogrulama ise kesin.
+    """
+    rows = []
+    for addr in addresses:
+        addr = addr.strip().lower()
+        if not addr:
+            continue
+        print(f"\n{addr}")
+        found = False
+        for chain in chains:
+            row = screen(addr, chain, api_key, canonical)
+            if not row:
+                continue
+            found = True
+            reason = disqualify(row)
+            verdict = f"ELENDI ({reason})" if reason else "GECTI"
+            print(f"  {chain['key']:<10} {row['swaps']:>3} takas  {row['tokens']} token  "
+                  f"al/sat {row['buys']}/{row['sells']}  ${row['volume']:>12,.0f}  {verdict}")
+            if not reason:
+                rows.append(row)
+        if not found:
+            print("  hicbir agda takas bulunamadi")
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--chain", help="tek ag (base/arbitrum/optimism/polygon)")
     ap.add_argument("--limit", type=int, default=25, help="ag basina taranacak aday")
+    ap.add_argument("--check", help="virgulle ayrilmis adresler — kesfi atla, sadece dogrula")
     args = ap.parse_args()
 
     api_key = os.getenv("ALCHEMY_API_KEY", "")
@@ -232,12 +264,15 @@ def main():
         if c["key"] in CHEAP_CHAINS and (not args.chain or c["key"] == args.chain)
     ]
 
-    everything = []
-    for chain in chains:
-        everything += scan_chain(chain, api_key, canonical, args.limit)
+    if args.check:
+        everything = check_addresses(args.check.split(","), api_key, canonical, chains)
+    else:
+        everything = []
+        for chain in chains:
+            everything += scan_chain(chain, api_key, canonical, args.limit)
 
     if not everything:
-        print("\nAday bulunamadi. --limit degerini artirmayi dene.")
+        print("\nKriterleri gecen adres yok.")
         return
 
     print("\n" + "=" * 78)
