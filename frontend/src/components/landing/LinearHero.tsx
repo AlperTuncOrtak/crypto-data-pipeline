@@ -65,19 +65,26 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
   const { data: coins } = useMarket(50);
 
   return (
-    <section className="relative flex flex-col overflow-hidden bg-[#020204]">
-      
-      {/* 🔮 Background Elements */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
-        {/* Subtle Global Noise */}
+    <section className="relative flex flex-col overflow-hidden bg-[#09090b]">
+
+      {/* ── Background Layer ── */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        {/* Subtle repeating dot-grid pattern */}
         <div 
-          className="absolute inset-0 z-20 opacity-[0.03] pointer-events-none mix-blend-overlay"
-          style={{ backgroundImage: `url("https://grainy-gradients.vercel.app/noise.svg")` }}
+          className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: "radial-gradient(circle at center, rgba(255,255,255,0.15) 1px, transparent 1px)",
+            backgroundSize: "24px 24px"
+          }}
         />
+
+        {/* Soft ambient radial glows centered behind content */}
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full bg-indigo-500/10 blur-[120px]" />
+        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-blue-500/10 blur-[100px]" />
       </div>
 
-      {/* ✨ Centered Content ✨ */}
-      <div className="relative z-20 flex flex-col items-center justify-start pt-32 w-full text-center">
+      {/* ── Centered Content ── */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[90vh] max-w-4xl mx-auto w-full px-6 pt-24 pb-16 text-center">
 
         {/* Casino-style Pill Badge */}
         <motion.div
@@ -85,13 +92,13 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           whileHover={{ scale: 1.04 }}
-          className="inline-flex items-center gap-2 pr-3 pl-1 py-1 rounded-full border border-white/[0.12] bg-[#111]/80 backdrop-blur-md mb-8 cursor-pointer group transition-colors hover:bg-[#222]/80 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+          className="inline-flex items-center gap-2 pr-3 pl-1 py-1 rounded-full border border-white/[0.12] bg-white/[0.04] backdrop-blur-md mb-8 cursor-pointer group transition-colors hover:bg-white/[0.08]"
         >
-          <span className="bg-white text-black font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-[10px]">
+          <span className="bg-white text-black font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
             New
           </span>
           <span className="text-[12px] font-medium text-white/80 group-hover:text-white transition-colors">
-            AI tools inside →
+            AI tools inside &rarr;
           </span>
         </motion.div>
 
@@ -99,8 +106,8 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
         <motion.h1
           initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[3rem] sm:text-[4.5rem] lg:text-[5.5rem] leading-[1.05] tracking-[-0.04em] font-bold text-white mb-6"
+          transition={{ duration: 0.95, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+          className="text-[3.5rem] sm:text-[4.5rem] lg:text-[5.5rem] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-6"
         >
           Unleash the Data.
           <br />
@@ -111,24 +118,24 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
         <motion.p
           initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[16px] md:text-[19px] text-[var(--text-muted)] leading-relaxed mb-10 max-w-2xl font-medium"
+          transition={{ duration: 0.8, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="text-[16px] md:text-[19px] text-[var(--text-muted)] font-medium leading-relaxed mb-12 max-w-2xl"
         >
           Your definitive toolkit for precision, insight, and dominance in crypto trading.
         </motion.p>
 
-        {/* Minimalist CTAs */}
+        {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto z-30"
+          transition={{ duration: 0.7, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto"
         >
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => { if (user) navigate("/dashboard"); else if (onAuthOpen) onAuthOpen("signup"); }}
-            className="flex items-center justify-center h-12 w-full sm:w-[150px] rounded-full border border-white/20 bg-[#0a0a0c]/50 text-white hover:bg-white/10 font-semibold text-[14px] transition-all backdrop-blur-md"
+            className="flex items-center justify-center h-12 w-full sm:w-[150px] rounded-full border border-white/20 bg-transparent text-white hover:bg-white/10 font-semibold text-[14px] transition-all backdrop-blur-sm"
           >
             Trade now
           </motion.button>
@@ -136,36 +143,17 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/market")}
-            className="flex items-center justify-center h-12 w-full sm:w-[150px] rounded-full bg-white text-black hover:bg-gray-200 font-bold text-[14px] transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            onClick={() => navigate("/docs")}
+            className="flex items-center justify-center h-12 w-full sm:w-[150px] rounded-full bg-white text-black hover:bg-gray-200 font-bold text-[14px] transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]"
           >
             Explore
           </motion.button>
         </motion.div>
 
-        {/* 🎨 The Cropped Cyber Cat Artwork */}
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-[1400px] mt-[-2rem] flex justify-center z-10 pointer-events-none"
-        >
-           {/* Fade out mask at the bottom so the image blends into the next section */}
-           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#020204] z-20" />
-           <img 
-              src="/hero-cat-cropped.png" 
-              alt="CryptoNeko Mascot" 
-              className="w-full h-auto object-cover opacity-95 mix-blend-screen"
-              style={{ maskImage: 'radial-gradient(ellipse at top, black 50%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse at top, black 60%, transparent 100%)' }}
-           />
-        </motion.div>
-
       </div>
 
-      {/* 📊 Metric Strip */}
-      <div className="relative z-30 bg-[#020204] pt-8">
-        <MetricStrip coins={coins as any[]} />
-      </div>
+      {/* ── Metric Strip ── */}
+      <MetricStrip coins={coins as any[]} />
     </section>
   );
 }
