@@ -1,4 +1,4 @@
-﻿import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useMarket } from "../hooks/useMarket";
@@ -9,11 +9,11 @@ import { LinearFooter } from "../components/landing/LinearFooter";
 import AnimatedLogo from "../components/layout/AnimatedLogo";
 
 const NAV_LINKS = [
-  { label: "Terminal",  to: "/dashboard" },
-  { label: "Markets",   to: "/market" },
-  { label: "Analytics", to: "/ai-analysis" },
-  { label: "Swap",      to: "/swap" },
+  { label: "About",     to: "#hero" },
+  { label: "Features",  to: "#features" },
   { label: "Pricing",   to: "/pricing" },
+  { label: "Contact",   to: "#footer" },
+  { label: "Blog",      to: "#" },
 ];
 
 export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {
@@ -22,74 +22,56 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
   const { data: coins } = useMarket(5);
 
   const { scrollYProgress } = useScroll();
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.08], [0.6, 1]);
-  const headerBg = useTransform(scrollYProgress, [0, 0.08], ["rgba(0,0,0,0)", "rgba(9,9,11,0.85)"]);
-
-  const btc = (coins as any[] | undefined)?.find((c: any) => c.symbol === "BTC");
-  const btcPrice = btc?.current_price
-    ? `$${Number(btc.current_price).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-    : null;
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] selection:bg-white/20 font-sans overflow-x-hidden relative">
-
+    <div className="min-h-screen bg-[#020204] text-[var(--text-main)] font-sans overflow-x-hidden relative selection:bg-[var(--accent)] selection:text-white">
+      
+      {/* Global noise */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay" />
 
-      {/* CAPSULE NAVBAR */}
-      <motion.div className="fixed top-0 left-0 right-0 z-50 px-4 pointer-events-none" style={{ opacity: headerOpacity }}>
-        <motion.div
-          style={{ backgroundColor: headerBg as any }}
-          className="mx-auto max-w-7xl mt-4 flex items-center justify-between backdrop-blur-xl border border-white/5 rounded-full px-6 py-2.5 pointer-events-auto shadow-2xl"
-        >
-          <div className="flex-shrink-0"><AnimatedLogo /></div>
+      {/* SAAS NAVBAR */}
+      <div className="absolute top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 pointer-events-auto flex items-center justify-between">
+        {/* Left: Logo */}
+        <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
+          <AnimatedLogo />
+        </div>
 
-          <nav className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map(({ label, to }) => (
-              <button
-                key={label}
-                onClick={() => navigate(to)}
-                className="relative px-4 py-2 text-[13px] font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors group"
-              >
-                {label}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[var(--accent)] rounded-t-full opacity-0 group-hover:w-3/4 group-hover:opacity-100 transition-all duration-300" />
-              </button>
-            ))}
-          </nav>
+        {/* Middle: Links */}
+        <nav className="hidden lg:flex items-center gap-8">
+          {NAV_LINKS.map(({ label, to }) => (
+            <button
+              key={label}
+              onClick={() => {
+                if (to.startsWith("#")) {
+                  document.querySelector(to)?.scrollIntoView({ behavior: "smooth" });
+                } else {
+                  navigate(to);
+                }
+              }}
+              className="text-[13px] font-medium text-white/60 hover:text-white transition-colors"
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
 
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="hidden md:flex items-center gap-3 mr-2">
-              {btcPrice && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)] animate-pulse" />
-                  <span className="text-[11px] font-mono font-medium text-[var(--text-main)]">{btcPrice} BTC</span>
-                </div>
-              )}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--positive)] animate-pulse" />
-                <span className="text-[11px] font-mono font-medium text-[var(--text-main)]">Live</span>
-              </div>
-            </div>
-
-            {loading ? null : user ? (
-              <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                onClick={() => navigate("/dashboard")}
-                className="px-5 py-2 rounded-full bg-white/[0.05] border border-white/10 text-[var(--text-main)] font-semibold text-[13px] hover:bg-white/[0.08] hover:border-white/20 transition-colors shadow-sm"
-              >
-                Enter Terminal
-              </motion.button>
-            ) : (
-              <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                onClick={() => onAuthOpen?.("login")}
-                className="px-5 py-2 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-[13px] transition-colors shadow-[0_0_15px_rgba(99,102,241,0.25)]"
-              >
-                Launch App
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
+        {/* Right: Actions */}
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <button
+            onClick={() => { if (user) navigate("/dashboard"); else if (onAuthOpen) onAuthOpen("signup"); }}
+            className="hidden md:flex items-center justify-center h-10 px-5 rounded-full border border-white/20 bg-transparent text-white hover:bg-white/10 font-medium text-[13px] transition-all backdrop-blur-sm"
+          >
+            Try for free
+          </button>
+          
+          <button
+            onClick={() => navigate("/docs")}
+            className="flex items-center justify-center h-10 px-5 rounded-full bg-white text-black hover:bg-gray-200 font-bold text-[13px] transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+          >
+            Get a demo
+          </button>
+        </div>
+      </div>
 
       <section id="hero"><LinearHero onAuthOpen={onAuthOpen} /></section>
       <section id="features"><LinearBento /></section>
