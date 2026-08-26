@@ -41,17 +41,33 @@ logging.basicConfig(level=logging.WARNING, format="%(message)s")
 # hedef kitle icin kopyalanabilir degil.
 CHEAP_CHAINS = {"base", "arbitrum", "optimism", "polygon"}
 
-# Kesif yemi: her agda en likit stablecoin/major. Bu tokenlarin son
-# transferlerinde gorunen adresler aday havuzunu olusturuyor.
+# Kesif yemi. Adresler frontend/src/components/portfolio/SwapInterface.tsx
+# icindeki FEATURED_TOKENS listesinden — LI.FI'nin kanonik kayitlarindan
+# uretilmis ve repoda zaten dogrulanmis. Elle adres yazmiyoruz.
+#
+# Iki token yerine bes: farkli tokenlarda farkli insanlar dolasiyor, ve
+# sadece USDC/WETH ornekleyince havuz stablecoin trafigine sikisiyordu.
 BAIT_TOKENS = {
     "base": ["0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",   # USDC
-             "0x4200000000000000000000000000000000000006"],  # WETH
-    "arbitrum": ["0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-                 "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"],
-    "optimism": ["0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
-                 "0x4200000000000000000000000000000000000006"],
-    "polygon": ["0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-                "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"],
+             "0x4200000000000000000000000000000000000006",   # WETH
+             "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",   # USDT
+             "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",   # DAI
+             "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"],  # WBTC
+    "arbitrum": ["0xaf88d065e77c8cC2239327C5EDb3A432268e5831",   # USDC
+                 "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",   # WETH
+                 "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",   # DAI
+                 "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",   # WBTC
+                 "0x912CE59144191C1204E64559FE8253a0e49E6548"],  # ARB
+    "optimism": ["0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",   # USDC
+                 "0x4200000000000000000000000000000000000006",   # WETH
+                 "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",   # USDT
+                 "0x68f180fcCe6836688e9084f035309E29Bf0A2095",   # WBTC
+                 "0x4200000000000000000000000000000000000042"],  # OP
+    "polygon": ["0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",   # USDC
+                "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",   # WETH
+                "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",   # USDT
+                "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",   # DAI
+                "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6"],  # WBTC
 }
 
 # --- Zaman dilimli kesif ---------------------------------------------
@@ -65,15 +81,19 @@ BAIT_TOKENS = {
 #
 # Cozum: ayni veri hacmini 30 GUNE serpistirmek. Toplam satir sayisi
 # benzer, zaman kapsami binlerce kat genis.
-DISCOVERY_DAYS = 30
-DISCOVERY_SLICES = 24        # 30 gune yayilmis ince pencere sayisi
-SLICE_TRANSFERS = 250        # dilim basina, yem token basina
+DISCOVERY_DAYS = 60
+DISCOVERY_SLICES = 30        # 60 gune yayilmis ince pencere sayisi
+SLICE_TRANSFERS = 200        # dilim basina, yem token basina
 
 # Bir adres dilimlerin bu kadar cogunda gorunuyorsa bot: insan trader
-# 24 dilimin 1-3'unde cikar, bot neredeyse hepsinde. Taramadan ONCE
+# dilimlerin 1-3'unde cikar, bot neredeyse hepsinde. Taramadan ONCE
 # eledigi icin bedava — ve kafadan konulmus gidis-donus esiginden cok
 # daha saglam bir olcu.
-MAX_SLICE_PRESENCE = 6
+#
+# Oran olarak tutuluyor: dilim sayisini degistirince sabit bir esik
+# sessizce siki ya da gevsek hale gelirdi.
+MAX_SLICE_RATIO = 0.25
+MAX_SLICE_PRESENCE = max(int(DISCOVERY_SLICES * MAX_SLICE_RATIO), 2)
 
 SCREEN_SEED = 300            # aday basina giden transfer penceresi
 SCREEN_MAX = 600             # aday basina gelen transfer penceresi
