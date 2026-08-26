@@ -65,22 +65,20 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
   const { data: coins } = useMarket(50);
 
   return (
-    <section className="relative flex flex-col overflow-hidden bg-[#09090b]">
+    <section className="relative flex flex-col overflow-hidden bg-black">
 
       {/* ── Background Layer ── */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {/* Subtle repeating dot-grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: "radial-gradient(circle at center, rgba(255,255,255,0.15) 1px, transparent 1px)",
-            backgroundSize: "24px 24px"
-          }}
-        />
-
-        {/* Soft ambient radial glows centered behind content */}
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full bg-indigo-500/10 blur-[120px]" />
-        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-blue-500/10 blur-[100px]" />
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
+        {/* The Clean 3D Crypto Neko Artwork */}
+        <div className="absolute top-[25%] md:top-[15%] w-full max-w-[1000px] aspect-square flex items-center justify-center z-0 opacity-[0.85] mix-blend-screen">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_70%)] z-10" />
+          <img 
+            src="/hero-bg.jpg" 
+            alt="Crypto Terminal" 
+            className="w-full h-full object-cover object-center"
+            style={{ maskImage: 'radial-gradient(circle, black 40%, transparent 70%)', WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 70%)' }}
+          />
+        </div>
       </div>
 
       {/* ── Centered Content ── */}
