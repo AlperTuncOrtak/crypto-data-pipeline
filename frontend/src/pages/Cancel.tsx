@@ -6,7 +6,7 @@ export default function Cancel() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-32 pb-24 flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] pt-32 pb-24 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--negative)]/10 blur-[120px] rounded-full pointer-events-none" />
 

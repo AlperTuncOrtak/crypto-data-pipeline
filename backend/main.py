@@ -102,7 +102,8 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-from backend.routers import whale, stripe_router, wallet, copy
+from backend.routers import whale, stripe_router, wallet, copy, promo_router
+app.include_router(promo_router.router, prefix='/api/promo')
 
 app.include_router(whale.router)
 app.include_router(stripe_router.router)

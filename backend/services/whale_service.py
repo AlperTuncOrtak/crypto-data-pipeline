@@ -80,52 +80,35 @@ def generate_mock_whale_tx():
     if random.random() < 0.85:
         # Massive anomaly tx
         usd_val = random.uniform(500_000, 10_000_000)
-    else:
-        # Small standard tx (which should get filtered out by model)
-        usd_val = random.uniform(500, 45_000)
-        
-    # Evaluate features using Isolation Forest
-    features = np.array([[usd_val, is_stable]])
-    prediction = anomaly_detector.predict(features)[0] # 1 = normal, -1 = anomaly
-    
-    # If the model thinks it is a normal transaction, return None (filtered out)
-    if prediction == 1:
-        return None
-        
-    # Otherwise, it's a verified ML Anomaly! Generate the metadata.
-    amount = usd_val / token["price"]
-    label_info = random.choice(LABELS)
-    label, color, sentiment = label_info
-    
-    # Format amount based on decimals
-    if token["decimals"] == 0:
-        amount_str = f"{amount:,.2f}"
-    elif token["decimals"] == 8:
-        amount_str = f"{amount:,.0f}"
-    else:
-        amount_str = f"{amount:,.2f}"
-        
-    return {
-        "id": f"tx_{random.randint(10000, 99999)}",
-        "token": token["symbol"],
-        "amount": amount_str,
-        "amount_usd": f"${usd_val:,.0f}",
-        "label": f"ML: {label}",  # Tagged with ML to show the classifier tagged it
-        "color": color,
-        "sentiment": sentiment,
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
-
+import json
+import websockets
 async def whale_data_generator():
-    """Generates and yields only ML-detected anomaly transactions indefinitely."""
+    url = 'wss://stream.binance.com:9443/ws/btcusdt@trade/ethusdt@trade/solusdt@trade'
     while True:
-        tx = generate_mock_whale_tx()
-        if tx is not None:
-            yield tx
-            await asyncio.sleep(random.uniform(2.0, 5.0))
-        else:
-            # If it was filtered out, check again quickly
-            await asyncio.sleep(0.1)
+        try:
+            async with websockets.connect(url) as ws:
+                while True:
+                    msg = await ws.recv()
+                    data = json.loads(msg)
+                    price = float(data['p'])
+                    qty = float(data['q'])
+                    usd_val = price * qty
+                    if usd_val > 50000:
+                        is_buy = not data['m']
+                        yield {
+                            'id': str(data['t']),
+                            'token': data['s'].replace('USDT', ''),
+                            'amount': f'{qty:,.2f}',
+                            'amount_usd': f'${usd_val:,.0f}',
+                            'timestamp': datetime.now(timezone.utc).isoformat(),
+                            'label': 'Whale Buy' if is_buy else 'Whale Sell',
+                            'color': 'emerald' if is_buy else 'rose'
+                        }
+        except websockets.exceptions.ConnectionClosed:
+            await asyncio.sleep(2)
+        except Exception as e:
+            print(f'Whale WS Error: {e}')
+            await asyncio.sleep(2)
 
 # ---------------------------------------------------------------------------
 # WALLET ANALYSIS (Whale X-Ray)
@@ -358,3 +341,4 @@ def analyze_wallet(address: str) -> dict:
         "ai_summary": summary_text,
         "risk_score": risk,
     }
+

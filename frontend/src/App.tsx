@@ -18,6 +18,7 @@ import MobileNav from "./components/layout/MobileNav";
 import { Navigate } from "react-router-dom";
 
 import { Toaster } from "sonner";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
@@ -50,7 +51,6 @@ import AuthModal from "./components/ui/AuthModal";
 import { ThemeProvider, useTheme } from "./hooks/useTheme";
 import AIChatWidget from "./components/ai/AIChatWidget";
 
-import { usePushNotifications } from "./hooks/usePushNotifications";
 
 function AppInner() {
   usePushNotifications();
@@ -155,7 +155,7 @@ function AppInner() {
         />
       )}
 
-      <div className="flex-1 flex flex-col min-w-0 h-screen relative z-10">
+      <div className="flex-1 flex flex-col min-w-0 h-[100dvh] relative z-10">
         {location.pathname !== "/onboarding" && location.pathname !== "/" && location.pathname !== "/terminal" && (
           <TopHeader onMobileMenuToggle={() => setSidebarOpen(true)} />
         )}

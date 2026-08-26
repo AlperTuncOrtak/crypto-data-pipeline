@@ -38,13 +38,20 @@ export default function TopHeader({ onMobileMenuToggle }: { onMobileMenuToggle?:
   // Format the path into a breadcrumb
   const pathParts = location.pathname.split('/').filter(Boolean);
   let pageName = pathParts.length > 0 
-    ? pathParts[0].charAt(0).toUpperCase() + pathParts[0].slice(1)
-    : 'Dashboard';
-  
-  if (location.pathname === '/') pageName = 'Overview';
+    ? pathParts[0].charAt(0).toUpperCase() + pathParts[0].slice(1) 
+    : 'Terminal';
+
+  if (pageName === 'Ai-analysis') pageName = 'AI Agent';
+  if (pageName === 'Swap') pageName = 'DEX Swap';
 
   return (
-    <div className="h-[60px] flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.04] bg-[#09090b]/60 backdrop-blur-xl sticky top-0 z-40">
+    <div 
+      className="flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.04] bg-[#09090b]/60 backdrop-blur-xl sticky top-0 z-40"
+      style={{ 
+        minHeight: '60px',
+        paddingTop: 'env(safe-area-inset-top)'
+      }}
+    >
       
       {/* Left: Breadcrumbs & Mobile Toggle */}
       <div className="flex items-center gap-2 sm:gap-4">

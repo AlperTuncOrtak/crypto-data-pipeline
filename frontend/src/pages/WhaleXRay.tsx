@@ -49,7 +49,7 @@ export default function WhaleXRay() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-20 px-6 lg:px-12 relative overflow-hidden">
       
       {/* Background Cinematic Glow */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">

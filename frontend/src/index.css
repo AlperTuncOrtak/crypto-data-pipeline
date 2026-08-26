@@ -196,6 +196,9 @@ body {
   overflow-x: hidden;
   padding-bottom: env(safe-area-inset-bottom);
   overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -451,4 +454,10 @@ h4 { font-weight: 600; letter-spacing: -0.015em; }
 
 
 :root { --foreground: var(--text-main); --surface: var(--bg-elevated); }
+
+
+input, textarea { user-select: auto; }
+
+
+main { overscroll-behavior-y: none; }
 

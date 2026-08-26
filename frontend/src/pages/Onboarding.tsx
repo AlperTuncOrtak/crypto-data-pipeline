@@ -56,7 +56,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] overflow-hidden flex items-center justify-center font-sans">
+    <div className="relative min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] overflow-hidden flex items-center justify-center font-sans">
       {/* Background Mesh */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-40">
         <div className="absolute top-[-10%] left-[20%] w-[800px] h-[500px] bg-[var(--accent)] blur-[180px] rounded-full opacity-30 animate-pulse" style={{ animationDuration: '8s' }} />

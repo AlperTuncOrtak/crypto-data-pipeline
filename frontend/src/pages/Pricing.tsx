@@ -132,10 +132,14 @@ const PricingSwitch = ({ isYearly, onSwitch }: { isYearly: boolean, onSwitch: (v
 // ─── MAIN PRICING PAGE ─────────────────────────────────────
 import { PricingSection } from '../components/ui/pricing';
 
+import PromoCodeModal from '../components/ui/PromoCodeModal';
+
 export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
+  const { user, profile } = useAuth();
+  const currentPlan = profile?.plan || 'free';
   const { t } = useTranslation();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const { plan: currentPlan, user } = useAuth();
+  const [isPromoOpen, setIsPromoOpen] = useState(false);
   
   const handleSubscribe = async (planId: string, isMonthly: boolean) => {
     if (!user) {
@@ -181,8 +185,25 @@ export default function Pricing({ onAuthOpen }: { onAuthOpen?: () => void }) {
   }));
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] overflow-x-hidden pt-24 pb-32">
+    <div className="relative min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] overflow-x-hidden pt-24 pb-32">
       <PricingSection plans={pricingPlans} title="Find the Perfect Plan" description="Select the ideal package for your needs and start building today." />
+      
+      <div className="mt-12 flex justify-center">
+        <button
+          onClick={() => {
+            if (!user) {
+              if (onAuthOpen) onAuthOpen();
+              return;
+            }
+            setIsPromoOpen(true);
+          }}
+          className="text-[var(--text-muted)] hover:text-[var(--text-main)] underline text-sm transition-colors"
+        >
+          Have a Promo Code or Free Trial?
+        </button>
+      </div>
+
+      <PromoCodeModal isOpen={isPromoOpen} onClose={() => setIsPromoOpen(false)} />
     </div>
   );
 }

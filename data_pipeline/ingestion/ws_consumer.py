@@ -10,8 +10,13 @@ import websockets
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("ws_consumer")
 
-# Configuration
-SYMBOLS = ["btcusdt", "ethusdt", "solusdt", "bnbusdt", "xrpusdt"]
+# Configuration - Top 20 High Volume Coins
+SYMBOLS = [
+    "btcusdt", "ethusdt", "solusdt", "bnbusdt", "xrpusdt", 
+    "adausdt", "avaxusdt", "dogeusdt", "dotusdt", "linkusdt",
+    "maticusdt", "shibusdt", "trxusdt", "ltcusdt", "uniusdt",
+    "atomusdt", "xlmusdt", "nearusdt", "aptusdt", "filusdt"
+]
 BATCH_SIZE = 5000  # Save to parquet every 5000 records
 SAVE_INTERVAL = 60  # OR every 60 seconds
 DATA_LAKE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data_lake", "raw_trades")

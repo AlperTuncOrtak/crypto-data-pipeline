@@ -83,7 +83,7 @@ export default function WidgetBuilder() {
   // PRO Guard
   if (!isPro && !isEnterprise) {
     return (
-      <div className="min-h-screen pt-24 px-6 pb-20 flex flex-col items-center justify-center text-center">
+      <div className="min-h-[100dvh] pt-24 px-6 pb-20 flex flex-col items-center justify-center text-center">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -122,7 +122,7 @@ export default function WidgetBuilder() {
   };
 
   return (
-    <div className="min-h-screen pt-24 px-6 pb-20 w-full">
+    <div className="min-h-[100dvh] pt-24 px-6 pb-20 w-full">
       <div className="max-w-[1400px] mx-auto w-full">
         
         {/* Header */}

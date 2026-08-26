@@ -1084,7 +1084,7 @@ export default function AIAnalysis() {
   return (
     <div
       ref={revealRef}
-      className="relative min-h-screen text-[var(--text-main)] pt-24 pb-32 px-6"
+      className="relative min-h-[100dvh] text-[var(--text-main)] pt-24 pb-32 px-6"
     >
       <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none z-0">
         <div 

@@ -125,6 +125,41 @@ export default function AddSourceModal({
 
                 <div className="grid grid-cols-1 gap-6">
                   <div>
+                    <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3">Watch EVM Wallet</p>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="0x..." 
+                        value={walletInput}
+                        onChange={(e) => setWalletInput(e.target.value)}
+                        className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--accent)]"
+                      />
+                      <button
+                        disabled={!walletInput.startsWith('0x') || walletInput.length !== 42 || isConnecting}
+                        onClick={async () => {
+                          setIsConnecting(true);
+                          try {
+                            const res = await apiClient.post('/wallets/link', { wallet_address: walletInput });
+                            if (res.data) {
+                              setWallets(prev => [...prev, walletInput]);
+                              setWalletInput('');
+                              onClose();
+                            }
+                          } catch (e) {
+                            console.error(e);
+                            alert("Failed to link wallet. It may already be linked.");
+                          } finally {
+                            setIsConnecting(false);
+                          }
+                        }}
+                        className="bg-[var(--accent)] text-white px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-50"
+                      >
+                        {isConnecting ? 'Linking...' : 'Watch'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
                     <p className="text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3">{t("portfolio.add_source_modal.csv_section")}</p>
                     <input type="file" ref={fileRef} accept=".csv" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); onClose(); }} />
                     <button 

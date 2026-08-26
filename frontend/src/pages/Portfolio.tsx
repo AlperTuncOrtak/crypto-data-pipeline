@@ -275,7 +275,7 @@ export default function Portfolio() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] pt-24 pb-32 overflow-x-hidden selection:bg-[var(--accent)]/30 relative font-sans">
+    <div className="min-h-[100dvh] bg-[var(--bg-base)] pt-24 pb-32 overflow-x-hidden selection:bg-[var(--accent)]/30 relative font-sans">
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[var(--accent)]/[0.04] rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[var(--accent)]/[0.03] rounded-full blur-[120px] pointer-events-none" />
 

@@ -189,7 +189,7 @@ export default function CoinDetail() {
   const metaDescription = `Live ${coin.name} price, charts, and market data. 24h change: ${fmtPct(change)}. View real-time CryptoNeko analytics.`;
 
   return (
-    <div className="relative min-h-screen pb-24 overflow-x-hidden">
+    <div className="relative min-h-[100dvh] pb-24 overflow-x-hidden">
       
       <Helmet>
         <title>{metaTitle}</title>

@@ -110,3 +110,24 @@ CREATE TABLE IF NOT EXISTS price_history_archive (
     CONSTRAINT fk_archive_coin
         FOREIGN KEY (coin_id) REFERENCES coins(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE IF NOT EXISTS user_device_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    token TEXT NOT NULL,
+    platform VARCHAR(50),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, token(255))
+);
+
+CREATE TABLE IF NOT EXISTS features_vwap (
+    id SERIAL PRIMARY KEY,
+    symbol VARCHAR(50) NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    vwap_1h NUMERIC NOT NULL,
+    total_volume NUMERIC NOT NULL,
+    buy_volume NUMERIC NOT NULL,
+    sell_volume NUMERIC NOT NULL,
+    anomaly_score NUMERIC DEFAULT 0.0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(symbol, timestamp)
+);

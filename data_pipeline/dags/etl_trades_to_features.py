@@ -4,10 +4,10 @@ import glob
 import pandas as pd
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 import sqlalchemy
 
 DATA_LAKE_DIR = "/opt/airflow/data_lake/raw_trades"
-DB_CONN_STR = os.getenv("MYSQL_URL", "mysql+pymysql://root:root@host.docker.internal:3306/cryptodb")
 
 default_args = {
     'owner': 'airflow',
@@ -66,7 +66,8 @@ def process_trades_to_vwap():
     print(f"Calculated features for {len(features)} groups.")
     
     # Write to database
-    engine = sqlalchemy.create_engine(DB_CONN_STR)
+    hook = PostgresHook(postgres_conn_id="airflow_db")
+    engine = hook.get_sqlalchemy_engine()
     with engine.begin() as conn:
         features.to_sql('features_vwap', con=conn, if_exists='append', index=False)
         

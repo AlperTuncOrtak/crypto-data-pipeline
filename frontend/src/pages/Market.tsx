@@ -166,7 +166,7 @@ export default function Market({ isWatched, toggleWatchlist }: any) {
   );
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
+    <div className="relative min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] pt-24 pb-32 px-6 lg:px-12 overflow-x-hidden font-sans">
       {/* BACKGROUND GLOWS (Stripe inspired mesh at the top) */}
       <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 overflow-hidden flex justify-center opacity-40">
         <div className="w-[800px] h-[300px] bg-[var(--accent)] blur-[150px] rounded-[100%] opacity-20 absolute -top-[100px] left-[10%]"></div>

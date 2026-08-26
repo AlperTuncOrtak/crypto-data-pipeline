@@ -144,7 +144,7 @@ export default function GlobalSidebar({ onSearchOpen, onAuthOpen }: { onSearchOp
 
   return (
     <div 
-      className={`relative bg-[var(--bg-base)] h-screen border-r border-[var(--border-base)] flex-col hidden md:flex shrink-0 font-sans transition-[width] duration-300 ease-in-out z-[100] ${isCollapsed ? 'w-[68px]' : 'w-[260px]'}`}
+      className={`relative bg-[var(--bg-base)] h-[100dvh] border-r border-[var(--border-base)] flex-col hidden md:flex shrink-0 font-sans transition-[width] duration-300 ease-in-out z-[100] ${isCollapsed ? 'w-[68px]' : 'w-[260px]'}`}
     >
       {/* Header Area */}
       <div className={`h-[60px] flex items-center px-5 shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>

@@ -31,7 +31,7 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
     : null;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-main)] selection:bg-white/20 font-sans overflow-x-hidden relative">
+    <div className="min-h-[100dvh] bg-[var(--bg-base)] text-[var(--text-main)] selection:bg-white/20 font-sans overflow-x-hidden relative">
 
       <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay" />
 

@@ -108,7 +108,7 @@ export default function Pro() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#020817] text-white selection:bg-[var(--accent)]/30 font-sans overflow-x-hidden">
+    <div className="relative min-h-[100dvh] bg-[#020817] text-white selection:bg-[var(--accent)]/30 font-sans overflow-x-hidden">
       <BackgroundGlows />
       
       <div className="relative z-10 max-w-[1000px] mx-auto px-6">
