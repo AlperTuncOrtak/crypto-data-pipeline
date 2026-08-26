@@ -1,30 +1,17 @@
 # 🚀 CryptoNeko - Gelecek Yol Haritası ve Görevler (TODO)
 
-## 🚨 [EN YÜKSEK ÖNCELİK / TOP PRIORITY #1] - Kasa Cüzdanı & Komisyon Ayarı (Swap Treasury)
-> **DİKKAT (Alper ve AI Agentları):** Swap modülündeki komisyon kesintisi ve para tahsilat sistemi tamamlanmıştır. İlk yapılması gereken iş `.env` dosyasına gerçek kasa cüzdan adresini ve komisyon oranını eklemektir.
+## 🚨 [EN YÜKSEK ÖNCELİK / TOP PRIORITY #1] - Swap Komisyonu (LI.FI integrator fee)
+> **DİKKAT (Alper ve AI Agentları):** Projede TEK swap var: Portfolio > Swap
+> sekmesindeki LI.FI widget'i (`frontend/src/components/portfolio/SwapInterface.tsx`).
+> Ayri `/swap` sayfasi ve onun 0x proxy'si (`/api/swap/quote`) 2026-08-26'da silindi.
+> `ZEROEX_API_KEY` / `TREASURY_ADDRESS` / `FEE_PERCENTAGE` artik hicbir yerde
+> okunmuyor; `VITE_0X_API_KEY` / `VITE_TREASURY_ADDRESS` / `VITE_FEE_PERCENTAGE`
+> de kullanilmiyor — Vercel'de veya .env'de tanimliysa silin.
 
-- [ ] **Kasa Cüzdan Adresi ve Komisyon Oranı Tanımlaması:**
-  - Bu değerler artık **backend'de** tanımlanıyor. `backend/.env` (ve VPS'teki `.env`) içine:
-    ```env
-    # 0x Aggregator API anahtarı — SADECE backend'de durur, frontend'e verilmez
-    ZEROEX_API_KEY="..."
-
-    # Swap komisyonunun aktarılacağı cüzdan (Metamask/EVM):
-    TREASURY_ADDRESS="0xSizinCuzdanAdresiniz..."
-
-    # Platform komisyon yüzdesi (0.005 = %0.5, 0.01 = %1):
-    FEE_PERCENTAGE="0.005"
-    ```
-  - **Nasıl Çalışıyor:** `frontend/src/pages/Swap.tsx` artık 0x'e doğrudan gitmiyor;
-    `apiClient.get("/api/swap/quote")` ile backend proxy'sini çağırıyor. Proxy
-    (`backend/main.py`) API key'i sunucuda tutar ve `feeRecipient` +
-    `buyTokenPercentageFee` parametrelerini kendisi ekler.
-  - **NEDEN DEĞİŞTİ:** Eskiden key `VITE_0X_API_KEY` olarak frontend'deydi. `VITE_`
-    öneki olan her değişken JS bundle'ına gömülür ve tarayıcıdan okunabilir —
-    yani key'i yayınlamak demekti. `VITE_0X_API_KEY` / `VITE_TREASURY_ADDRESS` /
-    `VITE_FEE_PERCENTAGE` artık kullanılmıyor, Vercel'de tanımlıysa silin.
-  - Backend key tanımlı değilse Swap sayfası "Estimated price only" uyarısıyla
-    yerel tahmin gösterir; işlem yapılabilir rota vermez.
+- [ ] **Komisyon su an SIFIR.** LI.FI widget'i `integrator: "crypto-data-pipeline"`
+  ile calisiyor ama `fee` parametresi verilmiyor, yani swap'lardan gelir yok.
+  Kesinti icin LI.FI'da integrator kaydi + fee anlasmasi gerekiyor; sonrasinda
+  `widgetConfig`'e `fee: 0.005` eklemek yeterli.
 
 ---
 

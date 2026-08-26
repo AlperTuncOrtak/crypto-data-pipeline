@@ -1368,51 +1368,6 @@ async def binance_sync(request: Request, req: BinanceSyncRequest, user: dict = D
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-# -----------------------
-# SWAP ENDPOINTS
-# -----------------------
-@app.get("/api/swap/quote")
-@limiter.limit("30/minute")
-async def get_swap_quote(
-    request: Request,
-    sellToken: str,
-    buyToken: str,
-    sellAmount: str,
-    user: dict = Depends(verify_token),
-):
-    """
-    0x API üzerinden swap teklifi alir.
-    API Key'i frontend yerine backend'de gizleyerek güvenliği saglar ve
-    zorunlu komisyon (fee) parametrelerini ekler.
-
-    Auth zorunlu: her cagri bizim 0x API kotamizdan dusuyor.
-    """
-    import os
-    
-    # Environment variables
-    API_KEY = os.getenv("ZEROEX_API_KEY")
-    FEE_RECIPIENT = os.getenv("TREASURY_ADDRESS", "0x0000000000000000000000000000000000000000")
-    FEE_PERCENTAGE = os.getenv("FEE_PERCENTAGE", "0.005")
-
-    # If no API key is configured (dev environment fallback), simulate the response structure
-    if not API_KEY or API_KEY == "YOUR_0X_API_KEY_HERE":
-        raise HTTPException(status_code=501, detail="0x API Key is not configured on the backend.")
-        
-    url = f"https://api.0x.org/swap/v1/quote?sellToken={sellToken}&buyToken={buyToken}&sellAmount={sellAmount}&feeRecipient={FEE_RECIPIENT}&buyTokenPercentageFee={FEE_PERCENTAGE}"
-    headers = {
-        "0x-api-key": API_KEY
-    }
-    
-    async with httpx.AsyncClient() as client:
-        try:
-            resp = await client.get(url, headers=headers)
-            resp.raise_for_status()
-            return resp.json()
-        except httpx.HTTPStatusError as e:
-            raise HTTPException(status_code=e.response.status_code, detail=f"0x API Error: {e.response.text}")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
 @app.post("/api/exchanges/sync")
 @limiter.limit("10/minute")
 async def api_exchange_sync(

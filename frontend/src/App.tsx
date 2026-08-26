@@ -22,7 +22,6 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Market = lazy(() => import("./pages/Market"));
 const Alerts = lazy(() => import("./pages/Alerts"));
-const Swap = lazy(() => import("./pages/Swap"));
 const WhaleXRay = lazy(() => import("./pages/WhaleXRay"));
 const CopyTrading = lazy(() => import("./pages/CopyTrading"));
 const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
@@ -177,7 +176,8 @@ function AppInner() {
             <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[var(--bg-base)]"><div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
               <Routes>
                 <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/swap" element={<Swap />} />
+                {/* Tek swap var, o da Portfolio'nun icinde. Eski link/bookmark bozulmasin. */}
+                <Route path="/swap" element={<Navigate to="/portfolio?tab=swap" replace />} />
               {/* Public */}
               <Route
                 path="/"

@@ -1,7 +1,11 @@
 # 🚨 CRITICAL DIRECTIVE (TOP PRIORITY FOR AGENTS)
 - **Monetization & Treasury Wallet Setup:**
-  When configuring `.env` or deploying the project, ensure `VITE_TREASURY_ADDRESS` (the EVM wallet address to receive 0.5% swap fees) and `VITE_FEE_PERCENTAGE="0.005"` are configured in `frontend/.env`. This enables instant decentralized revenue from DEX swaps directly to the team treasury.
-  **CRITICAL BLOCKER:** The backend absolutely requires `ZEROEX_API_KEY` in `backend/.env` for swaps to work. Without it, the `/api/swap/quote` endpoint returns a 501 error and the app makes no money. Always remind the user or check for this key if they mention "Swap", "Dex", or "Trading".
+  Projede tek swap var: Portfolio > Swap sekmesindeki LI.FI widget'i
+  (`frontend/src/components/portfolio/SwapInterface.tsx`). Ayri `/swap` sayfasi ve
+  onun 0x proxy'si (`/api/swap/quote`) silindi — `ZEROEX_API_KEY`,
+  `TREASURY_ADDRESS`, `FEE_PERCENTAGE` ve `VITE_*` karsiliklari artik okunmuyor,
+  bunlari isteme. Swap komisyonu su an SIFIR: gelir icin LI.FI integrator fee
+  anlasmasi + `widgetConfig`'e `fee` eklenmesi gerekiyor (bkz. todo.md #1).
 
 # UI & Design Rules
 - **Landing Page Animations:** When adding any new element, card, or feature to the Landing Page, MUST ALWAYS add micro animations (e.g., `framer-motion` hover effects, floating animations with `y: [0, -10, 0]`, or interactive scaling). Static UI elements are NOT allowed on the landing page; everything must feel alive and premium.
