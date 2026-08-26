@@ -100,11 +100,16 @@ MIN_VOLUME_USD = 2_000
 # degeri BUGUNKU bakiye, islemler ise tum gecmise yayili. $67 bin'lik
 # islem yapip su an $132 tutan bir cuzdan %50.000 gibi sacma bir oran
 # uretiyordu.
-FOLLOWER_BUDGET_USD = 50
+DEFAULT_BUDGET_USD = 50      # --budget ile degistirilir
 GAS_PER_TRADE_USD = 0.02     # Base/L2 mertebesi
-# Ayda 40 islem = $0.80 gas = tahsisin %1.6'si. 400 islem = %16, kabul
-# edilemez. Esik urun kisitindan turuyor, sezgiden degil.
-MAX_TRADES_PER_MONTH = 40
+# Aylik gas, tahsisin en fazla bu kadari olsun.
+MAX_GAS_DRAG = 0.02
+
+# Butceden BAGIMSIZ tavan. Butce buyudukce gas sorunu cozulur, GECIKME
+# cozulmez: tarayici 5 dakikada bir bakiyor, gunde 10+ islem yapan bir
+# cuzdanin stratejisi o gecikmeyle kopyalanamaz. Zengin kullanici icin
+# bile anlamsiz oldugu icin butce hesabinin disinda duruyor.
+FREQUENCY_CEILING = 300      # ayda, ~gunde 10
 
 # Gidis-donus sayisi artik tek basina eleme sebebi degil — asil olcu
 # yukaridaki siklik. Bu esik yalnizca asiri uc durumlar icin.
@@ -361,7 +366,8 @@ def scan_chain(chain: dict, api_key: str, canonical: set, limit: int) -> list:
     return keep
 
 
-def check_addresses(addresses: list, api_key: str, canonical: set, chains: list) -> list:
+def check_addresses(addresses: list, api_key: str, canonical: set, chains: list,
+                    budget: float = DEFAULT_BUDGET_USD) -> list:
     """
     Elle bulunmus adresleri dogrular — kesif adimini atlar.
 
@@ -424,11 +430,20 @@ def check_addresses(addresses: list, api_key: str, canonical: set, chains: list)
         tpm = pnl.get("trades_per_month")
         if tpm:
             monthly_gas = tpm * GAS_PER_TRADE_USD
-            drag = monthly_gas / FOLLOWER_BUDGET_USD
-            print(f"  SIKLIK: ayda {tpm:.0f} islem -> ${FOLLOWER_BUDGET_USD:.0f} "
-                  f"tahsiste aylik ${monthly_gas:.2f} gas (%{drag * 100:.1f})")
-            if tpm > MAX_TRADES_PER_MONTH:
-                blocking.append(f"ayda {tpm:.0f} islem")
+            drag = monthly_gas / budget
+            budget_cap = budget * MAX_GAS_DRAG / GAS_PER_TRADE_USD
+            print(f"  SIKLIK: ayda {tpm:.0f} islem -> ${budget:.0f} tahsiste "
+                  f"aylik ${monthly_gas:.2f} gas (%{drag * 100:.1f})")
+
+            if tpm > FREQUENCY_CEILING:
+                # Butce ne olursa olsun: 5 dk gecikmeyle kopyalanamaz.
+                blocking.append(f"ayda {tpm:.0f} islem (gecikme siniri)")
+            elif tpm > budget_cap:
+                # Sadece BU butcede olmuyor — hangi tahsisten itibaren
+                # oldugunu soylemek Faz 2.5'in is mantiginin ta kendisi.
+                need = tpm * GAS_PER_TRADE_USD / MAX_GAS_DRAG
+                print(f"          ${need:,.0f} tahsisten itibaren uygun")
+                blocking.append(f"${budget:.0f} icin fazla sik")
 
         if blocking:
             print(f"  >>> ADAY DEGIL: {', '.join(blocking)}")
@@ -445,6 +460,8 @@ def main():
     ap.add_argument("--chain", help="tek ag (base/arbitrum/optimism/polygon)")
     ap.add_argument("--limit", type=int, default=25, help="ag basina taranacak aday")
     ap.add_argument("--check", help="virgulle ayrilmis adresler — kesfi atla, sadece dogrula")
+    ap.add_argument("--budget", type=float, default=DEFAULT_BUDGET_USD,
+                    help="takipcinin tahsisi (USD). Islem sikligi esigi buna gore hesaplanir")
     args = ap.parse_args()
 
     api_key = os.getenv("ALCHEMY_API_KEY", "")
@@ -463,7 +480,8 @@ def main():
     chains = [c for c in scope if not args.chain or c["key"] == args.chain]
 
     if args.check:
-        everything = check_addresses(args.check.split(","), api_key, canonical, chains)
+        everything = check_addresses(args.check.split(","), api_key, canonical,
+                                     chains, args.budget)
     else:
         everything = []
         for chain in chains:
