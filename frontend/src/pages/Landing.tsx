@@ -11,9 +11,9 @@ import AnimatedLogo from "../components/layout/AnimatedLogo";
 const NAV_LINKS = [
   { label: "About",     to: "#hero" },
   { label: "Features",  to: "#features" },
+  { label: "Degen Score", to: "/degen-score" },
   { label: "Pricing",   to: "/pricing" },
   { label: "Contact",   to: "#footer" },
-  { label: "Blog",      to: "#" },
 ];
 
 export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) => void }) {

@@ -34,6 +34,7 @@ const Pro = lazy(() => import("./pages/Pro"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const CreateAlert = lazy(() => import("./pages/CreateAlert"));
+const DegenScore = lazy(() => import("./pages/DegenScore"));
 import SearchCommand from "./components/ui/SearchCommand";
 import DisclaimerModal from "./components/DisclaimerModal";
 const Settings = lazy(() => import("./pages/Settings"));
@@ -188,15 +189,19 @@ function AppInner() {
                   }} />
                 }
               />
-              <Route
-                path="/dashboard"
-                element={
-                  <Dashboard />
-                }
-              />
-              <Route
-                path="/market"
-                element={
+                <Route
+                  path="/dashboard"
+                  element={
+                    <Dashboard />
+                  }
+                />
+                <Route
+                  path="/degen-score"
+                  element={<DegenScore />}
+                />
+                <Route
+                  path="/market"
+                  element={
                   <Market />
                 }
               />
