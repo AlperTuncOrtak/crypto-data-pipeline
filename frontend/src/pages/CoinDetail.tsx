@@ -12,7 +12,6 @@ import {
   Brain
 } from "lucide-react";
 import { Component as CandleChart } from "../components/ui/candle-chart";
-import RangeNavigator from "../components/ui/range-navigator";
 import { useAuth } from "../hooks/useAuth";
 import CryptoNews from "../components/market/CryptoNews";
 import AIPulse from "../components/ai/AIPulse";
@@ -348,14 +347,33 @@ export default function CoinDetail() {
                 ) : chartType === "pro" ? (
                    <CandleChart symbol={coin.symbol} mid={Number(coin.current_price)} data={simpleChartData} fill={true} chrome={false} />
                 ) : (
-                  <div className="w-full h-[400px]">
-                    <RangeNavigator 
-                      values={simpleChartData.map((d: any) => d.price)}
-                      endDate={new Date(simpleChartData[simpleChartData.length - 1]?.time || Date.now())}
-                      color={chartColor}
-                      className="w-full h-full"
-                    />
-                  </div>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={simpleChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={chartColor} stopOpacity={0.35} />
+                          <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="time" tickFormatter={t => fmtChartTime(t, range)} stroke="transparent" tick={{ fill: "var(--text-muted)", fontSize: 11, fontWeight: 600 }} dy={15} />
+                      <YAxis
+                        tickFormatter={v => {
+                          const n = Number(v);
+                          if (n >= 1000) return `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                          if (n >= 1) return `$${n.toFixed(2)}`;
+                          return `$${n.toFixed(4)}`;
+                        }}
+                        stroke="transparent"
+                        tick={{ fill: "var(--text-muted)", fontSize: 11, fontWeight: 700 }}
+                        width={80}
+                        domain={([min, max]: any) => { const p = (max - min) * 0.05 || min * 0.001; return [min - p, max + p]; }}
+                      />
+                      <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                      <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={3} fill="url(#cg)" dot={false}
+                        activeDot={{ r: 6, fill: chartColor, stroke: "var(--bg-base)", strokeWidth: 4 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 )}
               </div>
             </motion.div>
