@@ -65,89 +65,108 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
   const { data: coins } = useMarket(50);
 
   return (
-    <section className="relative flex flex-col overflow-hidden bg-[#09090b]">
-
-      {/* ── Background Layer ── */}
+    <section className="relative flex flex-col items-center overflow-hidden bg-[#020204]">
+      {/* Background Layer: Massive Ambient Glows similar to Nansen's background */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {/* Subtle repeating dot-grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: "radial-gradient(circle at center, rgba(255,255,255,0.15) 1px, transparent 1px)",
-            backgroundSize: "24px 24px"
-          }}
-        />
-
-        {/* Soft ambient radial glows centered behind content */}
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full bg-indigo-500/10 blur-[120px]" />
-        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-blue-500/10 blur-[100px]" />
+        {/* Deep, large radial glow in the center top using our accent color */}
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[90vw] h-[70vw] max-w-[1200px] max-h-[800px] rounded-[100%] bg-[var(--accent)]/15 blur-[150px]" />
       </div>
 
-      {/* ── Centered Content ── */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[90vh] max-w-4xl mx-auto w-full px-6 pt-24 pb-16 text-center">
-
-        {/* Casino-style Pill Badge */}
+      {/* Hero Content */}
+      <div className="relative z-10 flex flex-col items-center justify-start min-h-screen w-full pt-32 pb-20 text-center px-4">
+        
+        {/* Nansen-style Pill Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          whileHover={{ scale: 1.04 }}
-          className="inline-flex items-center gap-2 pr-3 pl-1 py-1 rounded-full border border-white/[0.12] bg-white/[0.04] backdrop-blur-md mb-8 cursor-pointer group transition-colors hover:bg-white/[0.08]"
+          className="px-4 py-1.5 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/5 text-[var(--accent)] text-[11px] font-bold tracking-widest uppercase mb-8"
         >
-          <span className="bg-white text-black font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
-            New
-          </span>
-          <span className="text-[12px] font-medium text-white/80 group-hover:text-white transition-colors">
-            AI tools inside &rarr;
-          </span>
+          CryptoNeko Web App
         </motion.div>
 
-        {/* Pure White Bold H1 */}
+        {/* Massive Bold Wide H1 */}
         <motion.h1
-          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.95, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[3.5rem] sm:text-[4.5rem] lg:text-[5.5rem] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="text-5xl md:text-7xl lg:text-[90px] leading-[0.95] tracking-[-0.04em] font-black text-white mb-6 max-w-5xl"
         >
-          Unleash the Data.
-          <br />
-          Seize the Future.
+          Agentic Trading with <br className="hidden md:block"/>
+          Onchain Intelligence
         </motion.h1>
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.8, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[16px] md:text-[19px] text-[var(--text-muted)] font-medium leading-relaxed mb-12 max-w-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-base md:text-xl text-white/50 font-medium leading-relaxed mb-10 max-w-2xl"
         >
-          Your definitive toolkit for precision, insight, and dominance in crypto trading.
+          Trade alongside the largest onchain dataset of labeled wallets out in the market. See how top traders are positioning and go from discovery to execution, instantly.
         </motion.p>
 
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
+        {/* Single CTA Button like Nansen */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { if (user) navigate("/dashboard"); else if (onAuthOpen) onAuthOpen("signup"); }}
+          className="px-8 py-4 rounded-full bg-[var(--accent)] text-white font-bold text-[15px] shadow-[0_0_40px_rgba(99,102,241,0.4)] hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] transition-all"
         >
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => { if (user) navigate("/dashboard"); else if (onAuthOpen) onAuthOpen("signup"); }}
-            className="flex items-center justify-center h-12 w-full sm:w-[150px] rounded-full border border-white/20 bg-transparent text-white hover:bg-white/10 font-semibold text-[14px] transition-all backdrop-blur-sm"
-          >
-            Trade now
-          </motion.button>
+          Launch Web App
+        </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/docs")}
-            className="flex items-center justify-center h-12 w-full sm:w-[150px] rounded-full bg-white text-black hover:bg-gray-200 font-bold text-[14px] transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]"
-          >
-            Explore
-          </motion.button>
+        {/* Massive Floating App Mockup */}
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5, type: "spring", stiffness: 100 }}
+          className="relative w-full max-w-[1000px] mx-auto mt-20 z-20"
+        >
+          <div className="relative w-full aspect-[16/9] rounded-[24px] border border-white/10 bg-[#0a0a0f] shadow-2xl overflow-hidden flex flex-col">
+            {/* MacOS style window header */}
+            <div className="h-10 border-b border-white/5 flex items-center px-4 gap-2 bg-white/[0.01]">
+              <div className="w-3 h-3 rounded-full bg-white/10" />
+              <div className="w-3 h-3 rounded-full bg-white/10" />
+              <div className="w-3 h-3 rounded-full bg-white/10" />
+            </div>
+            {/* Fake Dashboard Body */}
+            <div className="flex-1 flex p-4 gap-4">
+              {/* Fake Sidebar */}
+              <div className="w-[200px] border-r border-white/5 flex flex-col gap-3 pr-4 hidden md:flex">
+                <div className="h-6 w-full rounded-md bg-white/5" />
+                <div className="h-6 w-3/4 rounded-md bg-[var(--accent)]/20" />
+                <div className="h-6 w-full rounded-md bg-white/5" />
+                <div className="h-6 w-5/6 rounded-md bg-white/5" />
+              </div>
+              {/* Fake Main Content */}
+              <div className="flex-1 flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <div className="h-[120px] flex-1 rounded-xl border border-white/5 bg-white/[0.02]" />
+                  <div className="h-[120px] flex-1 rounded-xl border border-white/5 bg-white/[0.02]" />
+                  <div className="h-[120px] flex-1 rounded-xl border border-white/5 bg-white/[0.02]" />
+                </div>
+                {/* Fake Chart area */}
+                <div className="flex-1 rounded-xl border border-[var(--accent)]/20 bg-gradient-to-b from-[var(--accent)]/5 to-transparent relative overflow-hidden">
+                  <svg className="absolute bottom-0 w-full h-[60%] opacity-50" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <path d="M0,100 L0,50 Q25,20 50,60 T100,30 L100,100 Z" fill="url(#gradient)" />
+                    <defs>
+                      <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.5"/>
+                        <stop offset="100%" stopColor="var(--accent)" stopOpacity="0"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Subtle reflection/shadow below mockup */}
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-20 bg-[var(--accent)]/20 blur-[60px]" />
         </motion.div>
 
       </div>
