@@ -88,81 +88,81 @@ export default function AlphaTerminal() {
           </div>
         </div>
 
-        {/* Feed Cards */}
-        {FEED_ITEMS.map((item) => (
-          <motion.div 
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative flex flex-col rounded-[28px] overflow-hidden bg-[#0c0c12] border border-white/5 transition-all hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)] hover:-translate-y-1"
-          >
-            {/* Dynamic Accent Color Border Top/Glow */}
-            <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: item.typeColor }} />
-            <div className="absolute top-0 left-0 w-full h-32 opacity-10 pointer-events-none" style={{ background: `linear-gradient(180deg, ${item.typeColor} 0%, transparent 100%)` }} />
+        {/* Feed Cards - CSS GRID like 21st.dev */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          {FEED_ITEMS.map((item) => (
+            <motion.div 
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative flex flex-col rounded-[24px] overflow-hidden bg-[#151419] transition-all hover:-translate-y-1 shadow-lg"
+              style={{ minHeight: "320px" }}
+            >
+              {/* Top Right Ambient Glow (The signature 21st.dev effect) */}
+              <div 
+                className="absolute top-0 right-0 w-[200px] h-[200px] rounded-full blur-[60px] opacity-40 pointer-events-none"
+                style={{ background: `radial-gradient(circle, ${item.typeColor} 0%, transparent 70%)`, transform: "translate(20%, -20%)" }}
+              />
 
-            {/* Card Header (Date & Type) */}
-            <div className="flex items-center justify-between px-6 pt-6 pb-2">
-              <span className="text-[12px] font-bold tracking-widest uppercase px-3 py-1 rounded-full bg-white/5" style={{ color: item.typeColor }}>
-                {item.type}
-              </span>
-              <span className="text-[12px] font-medium text-white/40 flex items-center gap-1.5">
-                <Clock size={13} /> {item.time}
-              </span>
-            </div>
-
-            {/* Card Body (Title, Desc, Progress) */}
-            <div className="px-6 py-4 flex-1">
-              <h2 className="text-xl font-bold text-white mb-2 leading-snug">{item.title}</h2>
-              <p className="text-[14px] text-white/60 leading-relaxed font-medium mb-6">
-                {item.content}
-              </p>
-
-              {/* Progress Bar (AI Conviction) */}
-              <div className="flex flex-col gap-2 bg-white/[0.02] rounded-xl p-4 border border-white/5">
-                <div className="flex justify-between items-center text-[12px] font-bold">
-                  <span className="text-white/50 flex items-center gap-1"><BrainCircuit size={14}/> AI Conviction</span>
-                  <span style={{ color: item.typeColor }}>{item.confidence}%</span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${item.confidence}%` }}
-                    transition={{ duration: 1, delay: 0.2 }}
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: item.typeColor }}
-                  />
-                </div>
+              {/* Card Header (Date & 3 Dots) */}
+              <div className="flex items-center justify-between px-6 pt-6 pb-2 relative z-10">
+                <span className="text-[13px] font-medium text-white/70">
+                  {item.time} &bull; <span style={{ color: item.typeColor, fontWeight: 700 }}>{item.type}</span>
+                </span>
+                <button className="text-white/50 hover:text-white transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                    <path fillRule="evenodd" d="M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
-            </div>
 
-            {/* Card Footer (Coin Logo Left, Swap Button Right) */}
-            <div className="mt-2 p-4 mx-2 mb-2 bg-white/[0.03] rounded-2xl border border-white/5 flex items-center justify-between">
-              
-              {/* Bottom Left: Coin Identifiers */}
-              <div className="flex items-center gap-3 pl-2">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-white text-[12px] shadow-lg border border-white/10" style={{ backgroundColor: item.typeColor }}>
-                  {item.actionToken.substring(0,3)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-bold text-white">{item.actionToken}</span>
-                  <span className="text-[11px] text-white/40 uppercase font-semibold">{item.actionType} Target</span>
+              {/* Card Body (Center Aligned) */}
+              <div className="px-6 py-6 flex-1 flex flex-col justify-center items-center text-center relative z-10">
+                <h3 className="text-[22px] font-bold text-white mb-1 leading-tight">{item.title}</h3>
+                <p className="text-[14px] text-white/50 mb-8 max-w-[90%]">
+                  {item.content.substring(0, 80)}...
+                </p>
+
+                {/* Progress Bar (Minimalist) */}
+                <div className="w-full flex flex-col gap-2 mt-auto">
+                  <div className="flex justify-between items-center text-[13px] font-semibold">
+                    <span className="text-white">AI Conviction</span>
+                    <span className="text-white/70">{item.confidence}%</span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${item.confidence}%` }}
+                      transition={{ duration: 1, delay: 0.2 }}
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: item.typeColor }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom Right: Execute Button (Like countdownText) */}
-              <button
-                onClick={() => setSelectedToken(item.actionToken)}
-                className="flex items-center gap-2 px-6 py-3 rounded-[14px] font-bold text-[14px] transition-all hover:scale-[1.02] active:scale-95 text-black"
-                style={{ 
-                  backgroundColor: "white",
-                  boxShadow: `0 8px 20px rgba(255,255,255,0.15)`
-                }}
-              >
-                Execute <ArrowRightLeft size={16} />
-              </button>
-            </div>
-          </motion.div>
-        ))}
+              {/* Card Footer (Darker, Avatars & Outline Button) */}
+              <div className="mt-auto px-6 py-5 bg-[#100f13] border-t border-white/5 flex items-center justify-between relative z-10">
+                
+                {/* Coin Logo (replacing avatars) */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-white text-[10px] shadow-lg ring-2 ring-[#100f13]" style={{ backgroundColor: item.typeColor }}>
+                    {item.actionToken.substring(0,3)}
+                  </div>
+                  <span className="text-[13px] font-bold text-white/80">{item.actionToken}</span>
+                </div>
+
+                {/* Execute Button (replacing countdown) */}
+                <button
+                  onClick={() => setSelectedToken(item.actionToken)}
+                  className="px-5 py-2 rounded-full text-[13px] font-semibold transition-all hover:bg-white hover:text-black border border-white/20 text-white"
+                >
+                  Execute ⇄
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
       </div>
 
