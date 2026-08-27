@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Activity, Brain, TrendingUp, BarChart2, Zap, Shield, Globe } from "lucide-react";
 import { BaseGlassCard, SectionHeader, BentoGridWrapper, MetricStrip } from "../ui/EthenaDesign";
+import RangeNavigator from "../ui/range-navigator";
 
 // ─── CARD 1: AI Whale Radar ─────────────────────────────────────────────
 function WhaleRadar() {
@@ -85,13 +86,11 @@ function WhaleRadar() {
 
 // ─── CARD 2: Portfolio PnL (SVG Equity Curve) ───────────────────────────
 function EquityCurve() {
-  const path = "M 0 80 C 40 75, 80 65, 120 60 S 180 40, 220 35 S 290 20, 320 15 S 370 10, 400 8";
-  const areaPath = `${path} L 400 100 L 0 100 Z`;
   const [pnl] = useState({ value: "+34.7%", usd: "+$12,490", period: "90d" });
 
   return (
-    <div className="flex-1 mt-4 relative flex flex-col overflow-hidden">
-      <div className="flex items-center justify-between relative z-10 px-1">
+    <div className="flex-1 mt-4 relative flex flex-col overflow-hidden justify-between">
+      <div className="flex items-center justify-between relative z-10 px-1 mb-2">
         <div>
           <div className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-semibold">{pnl.period} Return</div>
           <div className="text-[32px] font-medium font-mono tracking-tight text-white mt-1 leading-none">{pnl.value}</div>
@@ -102,45 +101,8 @@ function EquityCurve() {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 h-[65%] w-full">
-        {/* Minimal grid lines */}
-        <div className="absolute inset-0 border-t border-white/[0.03]" />
-        <div className="absolute top-1/2 left-0 w-full h-px bg-white/[0.03]" />
-        
-        <svg viewBox="0 0 400 100" className="w-full h-full relative z-10" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="equity-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgb(99,102,241)" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="rgb(99,102,241)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <motion.path
-            d={areaPath}
-            fill="url(#equity-fill)"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5, delay: 0.3 }}
-          />
-          <motion.path
-            d={path}
-            fill="none"
-            stroke="rgb(129,140,248)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 1.8, ease: "easeOut", delay: 0.2 }}
-          />
-          <motion.circle
-            cx="400" cy="8" r="4"
-            fill="#09090b"
-            stroke="rgb(129,140,248)"
-            strokeWidth="2"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 1.8 }}
-          />
-        </svg>
+      <div className="w-full flex-1 flex flex-col items-center justify-end overflow-visible">
+        <RangeNavigator className="scale-[1.1] origin-bottom" color="#6366f1" />
       </div>
     </div>
   );
