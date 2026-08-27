@@ -94,46 +94,68 @@ export default function AlphaTerminal() {
             key={item.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="group bg-[#0a0a0f] border border-white/10 hover:border-white/20 rounded-[24px] p-6 transition-all shadow-xl hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)] relative overflow-hidden"
+            className="bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.03] hover:border-white/[0.08] rounded-[32px] p-5 sm:p-7 transition-all flex flex-col gap-5 shadow-2xl"
           >
-            {/* Subtle card glow based on type */}
-            <div className="absolute top-0 left-0 w-full h-1" style={{ background: `linear-gradient(90deg, ${item.typeColor}, transparent)` }} />
-            
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-md bg-white/5" style={{ color: item.typeColor }}>
-                {item.type}
-              </span>
-              <span className="text-[11px] font-medium text-white/40 flex items-center gap-1">
-                <Clock size={12} /> {item.time}
-              </span>
-            </div>
+            {/* Top Row: Coin Info & Signal */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                {/* Beautiful Coin Icon */}
+                <div className="relative w-14 h-14 rounded-full p-[2px] shadow-xl" style={{ background: `linear-gradient(135deg, ${item.typeColor}, transparent)` }}>
+                  <div className="w-full h-full rounded-full bg-[#0a0a0f] flex items-center justify-center border border-white/10">
+                    <span className="font-black text-white text-[15px]">{item.actionToken}</span>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-[#020204] flex items-center justify-center" style={{ backgroundColor: item.typeColor }}>
+                    {item.actionType === 'BUY' ? <TrendingUp size={12} className="text-black" strokeWidth={3}/> : <TrendingDown size={12} className="text-black" strokeWidth={3}/>}
+                  </div>
+                </div>
 
-            <h2 className="text-xl font-bold mb-3 leading-snug">{item.title}</h2>
-            <p className="text-[14px] text-white/60 leading-relaxed mb-6">
-              {item.content}
-            </p>
-
-            {/* Footer of Card */}
-            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-              <div className="flex items-center gap-2">
-                <BrainCircuit size={16} className="text-white/40" />
-                <span className="text-[12px] font-mono text-white/40">AI Conviction:</span>
-                <span className="text-[14px] font-bold" style={{ color: item.confidence > 80 ? '#10b981' : '#f59e0b' }}>
-                  {item.confidence}%
-                </span>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-bold text-[18px] sm:text-[20px] text-white tracking-tight">{item.title}</h3>
+                  </div>
+                  <div className="flex items-center gap-2 text-[13px] font-medium text-white/50">
+                    <span className="flex items-center gap-1.5"><Clock size={12} /> {item.time}</span>
+                    <span>&bull;</span>
+                    <span style={{ color: item.typeColor }}>{item.type}</span>
+                  </div>
+                </div>
               </div>
 
+              {/* Conviction Score */}
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <BrainCircuit size={12} /> AI Score
+                </span>
+                <span className="text-2xl font-black text-white leading-none">
+                  {item.confidence}<span className="text-sm text-white/30">/100</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Analysis Content */}
+            <div className="bg-black/30 border border-white/5 rounded-[20px] p-5">
+              <p className="text-[14px] sm:text-[15px] text-white/70 leading-relaxed font-medium">
+                {item.content}
+              </p>
+            </div>
+
+            {/* Action Row */}
+            <div className="flex items-center gap-3 pt-2">
               <button
                 onClick={() => setSelectedToken(item.actionToken)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-[13px] transition-all"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3.5 rounded-[18px] font-bold text-[15px] transition-all hover:scale-[1.02] active:scale-95"
                 style={{ 
-                  background: item.actionType === 'BUY' ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)',
-                  color: item.actionType === 'BUY' ? '#10b981' : '#f43f5e',
-                  border: `1px solid ${item.actionType === 'BUY' ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)'}`
+                  backgroundColor: "white",
+                  color: "black",
+                  boxShadow: `0 10px 30px rgba(255,255,255,0.15)`
                 }}
               >
-                {item.actionType === 'BUY' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                Execute {item.actionToken}
+                {item.actionType === 'BUY' ? `Buy ${item.actionToken}` : `Sell ${item.actionToken}`}
+                <ArrowRightLeft size={16} />
+              </button>
+              
+              <button className="px-6 py-3.5 rounded-[18px] bg-white/5 hover:bg-white/10 border border-white/5 text-white/60 font-semibold transition-all">
+                Dismiss
               </button>
             </div>
           </motion.div>
