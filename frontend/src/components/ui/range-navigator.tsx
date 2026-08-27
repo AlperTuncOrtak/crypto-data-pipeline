@@ -160,7 +160,7 @@ export default function RangeNavigator({
   const crossesYear = dayAt(win.start).getFullYear() !== dayAt(win.end).getFullYear()
 
   return (
-    <div className={`w-full max-w-[560px] ${className}`}>
+    <div className={`w-full h-full flex flex-col justify-center ${className}`}>
       {title && (
         <div className="mb-1 flex items-baseline px-1">
           <span className="text-[13px] font-medium" style={{ color: TEXT }}>
@@ -173,7 +173,9 @@ export default function RangeNavigator({
         ref={mainRef}
         width="100%"
         height="100%"
+        style={{ flexGrow: 1, minHeight: 0 }}
         viewBox={`0 0 ${W} ${MAIN_H}`}
+        preserveAspectRatio="none"
         className="block"
         onPointerMove={onMainMove}
         onPointerLeave={() => setHover(null)}
@@ -257,8 +259,10 @@ export default function RangeNavigator({
       <svg
         ref={navRef}
         width="100%"
-        height="100%"
+        height="46"
+        style={{ flexShrink: 0 }}
         viewBox={`0 0 ${W} ${NAV_H}`}
+        preserveAspectRatio="none"
         className="mt-1 block touch-none select-none"
       >
         <path
