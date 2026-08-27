@@ -150,7 +150,7 @@ export default function SwapInterface() {
     setStuckSwaps(readStuckSwaps());
     setWidgetKey((k) => k + 1);
   }, []);
-  const isLight = theme === "light";
+  
   const currentAccent = ACCENT_COLORS[accent] || "#6366f1";
 
   const widgetConfig: WidgetConfig = useMemo(
@@ -158,52 +158,57 @@ export default function SwapInterface() {
       integrator: "crypto-data-pipeline",
       variant: "compact",
       subvariant: "default",
-      appearance: isLight ? "light" : "dark",
+      appearance: "dark",
       hiddenUI: ["appearance", "language", "poweredBy"],
       chains: { allow: SUPPORTED_CHAINS },
       tokens: { featured: FEATURED_TOKENS },
-      // Hands wallet connection back to the app. Without this the widget opens
-      // its own connector list and the user would have to connect a second
-      // time even though the portfolio already has their wallet.
+      fee: 0.005, // 0.5% fee
       walletConfig: { onConnect: () => openConnectModal?.() },
       theme: {
         palette: {
-          mode: isLight ? "light" : "dark",
+          mode: "dark",
           primary: { main: currentAccent },
           background: {
-            paper: isLight ? "#ffffff" : "#18181b", // var(--bg-elevated)
-            default: isLight ? "#fafaf9" : "#09090b", // var(--bg-base)
+            paper: "#09090b", // Match absolute background
+            default: "#000000",
           },
+          grey: {
+            800: "#18181b", // Subtle borders
+          }
         },
-        shape: { borderRadius: 24, borderRadiusSecondary: 16 },
+        shape: { borderRadius: 16, borderRadiusSecondary: 12 },
         typography: { fontFamily: "inherit" },
       },
     }),
-    [isLight, currentAccent, openConnectModal]
+    [currentAccent, openConnectModal]
   );
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Background Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--accent)]/10 blur-[120px] rounded-full pointer-events-none" />
+
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row justify-center gap-6 mt-8 max-w-5xl mx-auto w-full pb-32 relative"
+        className="flex flex-col lg:flex-row items-start justify-center gap-12 mt-12 max-w-6xl mx-auto w-full pb-32 relative z-10"
       >
-        <div className="w-full max-w-[420px] flex flex-col gap-3">
+        {/* Left: The Swap Widget */}
+        <div className="w-full max-w-[480px] flex flex-col gap-4">
           {stuckSwaps.length > 0 && (
-            <div className="rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-base)] overflow-hidden">
-              <div className="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+            <div className="rounded-xl bg-white/[0.02] border border-white/10 overflow-hidden backdrop-blur-md">
+              <div className="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
                 {t("portfolio.swap.unfinished")}
               </div>
               {stuckSwaps.map((swap) => (
-                <div key={swap.id} className="flex items-center justify-between gap-2 px-3 py-2">
-                  <span className="text-[12px] font-bold text-[var(--text-main)] truncate">
-                    {swap.from} → {swap.to}
+                <div key={swap.id} className="flex items-center justify-between gap-2 px-4 py-3 border-t border-white/5">
+                  <span className="text-[13px] font-semibold text-[var(--text-main)] truncate">
+                    {swap.from} &rarr; {swap.to}
                   </span>
                   <button
                     onClick={() => dismissSwap(swap.id)}
                     title={t("portfolio.swap.dismiss")}
-                    className="p-1 rounded-lg text-[var(--text-faint)] hover:text-[var(--negative)] hover:bg-[var(--negative-muted)] transition-colors shrink-0"
+                    className="p-1.5 rounded-md text-[var(--text-faint)] hover:text-[var(--negative)] hover:bg-[var(--negative)]/10 transition-colors shrink-0"
                   >
                     <X size={14} />
                   </button>
@@ -211,26 +216,25 @@ export default function SwapInterface() {
               ))}
             </div>
           )}
-        <div className="relative w-full rounded-[24px] z-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-[var(--border-subtle)]">
-          {/* The widget mounts its own <Routes> into the host router (it checks
-              useInRouterContext and only falls back to MemoryRouter when there
-              is none). Its home path is '/', so the route that renders this
-              component must be a splat — see App.tsx "/portfolio/*". Without
-              it the widget matched /portfolio against its own routes and
-              rendered its 404 page. */}
-          <LiFiWidget key={widgetKey} integrator="crypto-data-pipeline" config={widgetConfig} />
-        </div>
+
+          <div className="relative w-full rounded-[16px] z-10 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.08] bg-[#09090b]">
+            <LiFiWidget key={widgetKey} integrator="crypto-data-pipeline" config={widgetConfig} />
+          </div>
         </div>
 
-        {/* Market Signals */}
-        <div className="w-full md:w-[300px] shrink-0">
-          <AITradeInsights
-            onApplySuggestion={(tokenSymbol) => {
-              // The widget owns its own form state and exposes no imperative
-              // API to preset it, so the insights panel stays advisory.
-              console.log("AI suggested token:", tokenSymbol);
-            }}
-          />
+        {/* Right: Market Signals */}
+        <div className="w-full lg:w-[340px] shrink-0 mt-2 lg:mt-0">
+          <div className="mb-4">
+            <h3 className="text-[15px] font-bold text-white mb-1">AI Alpha Signals</h3>
+            <p className="text-[12px] text-white/50">Real-time trading opportunities</p>
+          </div>
+          <div className="rounded-[16px] border border-white/[0.08] bg-[#09090b] shadow-[0_0_30px_rgba(0,0,0,0.3)] overflow-hidden">
+            <AITradeInsights
+              onApplySuggestion={(tokenSymbol) => {
+                console.log("AI suggested token:", tokenSymbol);
+              }}
+            />
+          </div>
         </div>
       </motion.div>
     </div>
