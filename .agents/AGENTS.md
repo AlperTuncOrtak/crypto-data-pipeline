@@ -42,3 +42,13 @@ Rules:
 Not lazy about: understanding the problem (read it fully and trace the real flow before picking a rung, a small diff you don't understand is just laziness dressed up as efficiency), input validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs (the platform is never the spec ideal, a clock drifts, a sensor reads off), anything explicitly requested. Lazy code without its check is unfinished: non-trivial logic leaves ONE runnable check behind, the smallest thing that fails if the logic breaks (an assert-based demo/self-check or one small test file; no frameworks, no fixtures). Trivial one-liners need no test.
 
 (Yes, this file also applies to agents working on the ponytail repo itself. Especially to them.)
+
+# STRICT 'APPLE / SMOOTH' DESIGN DOCTRINE (ANTI-AI SLOP)
+- **What User Wants:** The UI must feel 'Apple-like', 'smooth', and 'premium'. No generic AI generated slop.
+- **Execution:**
+  1. Extreme typography control (tracking, leading, weight contrast).
+  2. Framer Motion SPRING physics for everything (stiffness: 400, damping: 30) instead of linear CSS transitions.
+  3. 1px ultra-subtle translucent borders (white/5) and OLED pitch-black backgrounds.
+  4. Generous whitespace and padding. No cramped layouts.
+  5. Interactive micro-animations (scale 1.02 on hover, subtle opacity shifts) to make it feel alive and fluid.
+  6. NO heavy box-shadows, NO arbitrary neon glows, NO 'cards inside cards' generic slop.
