@@ -4,7 +4,6 @@ import { ArrowRight, BarChart3, Activity, Radio, Database, TrendingUp, Zap } fro
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useMarket } from "../../hooks/useMarket";
-import { BackgroundPaths } from "../ui/background-paths";
 
 // ─── Animated Number Counter ──────────────────────────────────────────────────
 function AnimCounter({ to, prefix = "", suffix = "", dec = 0 }: { to: number; prefix?: string; suffix?: string; dec?: number }) {
@@ -67,13 +66,112 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
 
   return (
     <section className="relative flex flex-col items-center overflow-hidden bg-[#020204]">
-      {/* Hero Content replaced with BackgroundPaths */}
-      <BackgroundPaths 
-        title="Agentic Trading"
-        subtitle="Trade alongside the largest onchain dataset of labeled wallets out in the market. See how top traders are positioning and go from discovery to execution, instantly."
-      />
+      {/* Background Layer: Massive Ambient Glows similar to Nansen's background */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        {/* Deep, large radial glow in the center top using our accent color */}
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[90vw] h-[70vw] max-w-[1200px] max-h-[800px] rounded-[100%] bg-[var(--accent)]/15 blur-[150px]" />
+      </div>
 
-      {/* Metric Strip */}
+      {/* Hero Content */}
+      <div className="relative z-10 flex flex-col items-center justify-start min-h-screen w-full pt-32 pb-20 text-center px-4">
+        
+        {/* Nansen-style Pill Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="px-4 py-1.5 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/5 text-[var(--accent)] text-[11px] font-bold tracking-widest uppercase mb-8"
+        >
+          CryptoNeko Web App
+        </motion.div>
+
+        {/* Massive Bold Wide H1 */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="text-5xl md:text-7xl lg:text-[90px] leading-[0.95] tracking-[-0.04em] font-black text-white mb-6 max-w-5xl"
+        >
+          Agentic Trading with <br className="hidden md:block"/>
+          Onchain Intelligence
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-base md:text-xl text-white/50 font-medium leading-relaxed mb-10 max-w-2xl"
+        >
+          Trade alongside the largest onchain dataset of labeled wallets out in the market. See how top traders are positioning and go from discovery to execution, instantly.
+        </motion.p>
+
+        {/* Single CTA Button like Nansen */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { if (user) navigate("/dashboard"); else if (onAuthOpen) onAuthOpen("signup"); }}
+          className="px-8 py-4 rounded-full bg-[var(--accent)] text-white font-bold text-[15px] shadow-[0_0_40px_rgba(99,102,241,0.4)] hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] transition-all"
+        >
+          Launch Web App
+        </motion.button>
+
+        {/* Massive Floating App Mockup */}
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5, type: "spring", stiffness: 100 }}
+          className="relative w-full max-w-[1000px] mx-auto mt-20 z-20"
+        >
+          <div className="relative w-full aspect-[16/9] rounded-[24px] border border-white/10 bg-[#0a0a0f] shadow-2xl overflow-hidden flex flex-col">
+            {/* MacOS style window header */}
+            <div className="h-10 border-b border-white/5 flex items-center px-4 gap-2 bg-white/[0.01]">
+              <div className="w-3 h-3 rounded-full bg-white/10" />
+              <div className="w-3 h-3 rounded-full bg-white/10" />
+              <div className="w-3 h-3 rounded-full bg-white/10" />
+            </div>
+            {/* Fake Dashboard Body */}
+            <div className="flex-1 flex p-4 gap-4">
+              {/* Fake Sidebar */}
+              <div className="w-[200px] border-r border-white/5 flex flex-col gap-3 pr-4 hidden md:flex">
+                <div className="h-6 w-full rounded-md bg-white/5" />
+                <div className="h-6 w-3/4 rounded-md bg-[var(--accent)]/20" />
+                <div className="h-6 w-full rounded-md bg-white/5" />
+                <div className="h-6 w-5/6 rounded-md bg-white/5" />
+              </div>
+              {/* Fake Main Content */}
+              <div className="flex-1 flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <div className="h-[120px] flex-1 rounded-xl border border-white/5 bg-white/[0.02]" />
+                  <div className="h-[120px] flex-1 rounded-xl border border-white/5 bg-white/[0.02]" />
+                  <div className="h-[120px] flex-1 rounded-xl border border-white/5 bg-white/[0.02]" />
+                </div>
+                {/* Fake Chart area */}
+                <div className="flex-1 rounded-xl border border-[var(--accent)]/20 bg-gradient-to-b from-[var(--accent)]/5 to-transparent relative overflow-hidden">
+                  <svg className="absolute bottom-0 w-full h-[60%] opacity-50" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <path d="M0,100 L0,50 Q25,20 50,60 T100,30 L100,100 Z" fill="url(#gradient)" />
+                    <defs>
+                      <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.5"/>
+                        <stop offset="100%" stopColor="var(--accent)" stopOpacity="0"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Subtle reflection/shadow below mockup */}
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-20 bg-[var(--accent)]/20 blur-[60px]" />
+        </motion.div>
+
+      </div>
+
+      {/* ── Metric Strip ── */}
       <MetricStrip coins={coins as any[]} />
     </section>
   );
