@@ -96,6 +96,8 @@ function StatRow({ label, value, valueColor }: { label: string; value: string; v
 }
 
 // â”€â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import PriceTargetFan from "../components/ui/price-target-fan";
+
 export default function CoinDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -388,7 +390,17 @@ export default function CoinDetail() {
               </div>
               <div className="p-6">
                 {isPro ? (
-                  <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-8">
+                    <div className="bg-[var(--bg-overlay)] p-6 rounded-2xl border border-[var(--border-subtle)]">
+                      <PriceTargetFan 
+                        currentPrice={Number(coin.current_price)} 
+                        targets={[
+                          { key: 'Bull Case', price: Number(coin.current_price) * 1.35, analysts: 12, color: 'var(--positive)' },
+                          { key: 'Consensus', price: Number(coin.current_price) * 1.12, analysts: 28, color: 'var(--accent)' },
+                          { key: 'Bear Case', price: Number(coin.current_price) * 0.85, analysts: 5, color: 'var(--negative)' },
+                        ]}
+                      />
+                    </div>
                     <AIAnalysisBox slug={coin.slug} coinName={coin.name} symbol={coin.symbol} brandColor={brandColor} />
                     <HypeRealityWidget symbol={coin.symbol} />
                     <AIPulse slug={slug} />
