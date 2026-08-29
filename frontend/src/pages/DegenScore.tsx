@@ -58,9 +58,16 @@ export default function DegenScore() {
     });
   };
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(`I got ranked as a ${result?.rank.name} with a Degen Score of ${result?.score} on CryptoNeko! Check your wallet at cryptoneko.com/degen-score`);
-    alert("Copied to clipboard! Ready to share on X.");
+  const shareOnX = () => {
+    const text = encodeURIComponent(`I got ranked as a ${result?.rank.name} with a Degen Score of ${result?.score} on CryptoNeko! 🐈‍⬛🔥\n\nCheck your wallet's on-chain score:`);
+    const url = encodeURIComponent(`https://cryptoneko.com/degen-score`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const shareOnFarcaster = () => {
+    const text = encodeURIComponent(`I got ranked as a ${result?.rank.name} with a Degen Score of ${result?.score} on CryptoNeko! 🐈‍⬛🔥\n\nCheck your wallet's on-chain score:`);
+    const embedUrl = encodeURIComponent(`https://cryptoneko.com/degen-score`);
+    window.open(`https://warpcast.com/~/compose?text=${text}&embeds[]=${embedUrl}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -179,12 +186,17 @@ export default function DegenScore() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
-                    <button onClick={copyLink} className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-[var(--accent)] text-white font-bold hover:bg-[var(--accent-hover)] transition-colors shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                      <Share2 size={16} /> Share on X
+                  <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+                    <button onClick={shareOnX} className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-black text-white font-bold hover:bg-zinc-900 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] border border-white/10">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className="w-4 h-4"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></g></svg>
+                      Share on X
                     </button>
-                    <button onClick={() => setResult(null)} className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 border border-white/10 font-bold transition-colors">
-                      <RefreshCcw size={16} /> Analyze Another
+                    <button onClick={shareOnFarcaster} className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-[#855DCD] text-white font-bold hover:bg-[#724bb8] transition-colors shadow-[0_0_20px_rgba(133,93,205,0.3)]">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.24.24H5.76A5.76 5.76 0 0 0 0 6v12a5.76 5.76 0 0 0 5.76 5.76h12.48A5.76 5.76 0 0 0 24 18V6a5.76 5.76 0 0 0-5.76-5.76zM15 16.5a1.5 1.5 0 0 1-3 0v-1.5h-3a1.5 1.5 0 0 1 0-3h6a1.5 1.5 0 0 1 0 3h-3v1.5zm1.5-6h-9a1.5 1.5 0 0 1 0-3h9a1.5 1.5 0 0 1 0 3z" fill="currentColor"/></svg>
+                      Warpcast
+                    </button>
+                    <button onClick={() => setResult(null)} className="w-12 flex-shrink-0 flex items-center justify-center h-12 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 border border-white/10 font-bold transition-colors">
+                      <RefreshCcw size={16} />
                     </button>
                   </div>
                 </div>
