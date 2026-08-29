@@ -346,10 +346,11 @@ export default function Dashboard() {
                           const isUp = change >= 0;
                           return (
                             <motion.div
-                              key={coin.symbol + i}
+                              layout
+                              key={coin.symbol}
                               initial={{ opacity: 0, y: 8 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.3, delay: i * 0.04, ease: "easeOut" }}
+                              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                               onClick={() => coin.slug && navigate(`/coin/${coin.slug}`)}
                               className="grid grid-cols-[50px_2fr_130px_110px_140px_130px_100px] gap-4 px-6 py-4 border-b border-white/[0.04] last:border-0 items-center cursor-pointer hover:bg-white/[0.015] transition-colors group"
                             >

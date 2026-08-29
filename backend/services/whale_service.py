@@ -83,31 +83,68 @@ def generate_mock_whale_tx():
 import json
 import websockets
 async def whale_data_generator():
-    url = 'wss://stream.binance.com:9443/ws/btcusdt@trade/ethusdt@trade/solusdt@trade'
+    """
+    Connects to live Ethereum blockchain (public RPC), listens for new blocks,
+    fetches block transactions, and yields large ETH transfers (> 15 ETH) one by one
+    to create a continuous stream of real on-chain whale activity.
+    """
+    import httpx
+    
+    ws_url = 'wss://ethereum-rpc.publicnode.com'
+    http_url = 'https://cloudflare-eth.com'
+    
     while True:
         try:
-            async with websockets.connect(url) as ws:
-                while True:
-                    msg = await ws.recv()
-                    data = json.loads(msg)
-                    price = float(data['p'])
-                    qty = float(data['q'])
-                    usd_val = price * qty
-                    if usd_val > 50000:
-                        is_buy = not data['m']
-                        yield {
-                            'id': str(data['t']),
-                            'token': data['s'].replace('USDT', ''),
-                            'amount': f'{qty:,.2f}',
-                            'amount_usd': f'${usd_val:,.0f}',
-                            'timestamp': datetime.now(timezone.utc).isoformat(),
-                            'label': 'Whale Buy' if is_buy else 'Whale Sell',
-                            'color': 'emerald' if is_buy else 'rose'
-                        }
+            async with websockets.connect(ws_url) as ws:
+                # Subscribe to new block headers
+                sub_req = {"jsonrpc": "2.0", "id": 1, "method": "eth_subscribe", "params": ["newHeads"]}
+                await ws.send(json.dumps(sub_req))
+                await ws.recv() # Wait for subscription confirmation
+                
+                async with httpx.AsyncClient() as client:
+                    while True:
+                        msg = await ws.recv()
+                        data = json.loads(msg)
+                        if "params" in data and "result" in data["params"]:
+                            block_hash = data["params"]["result"]["hash"]
+                            
+                            # Fetch full block with transactions
+                            block_req = {"jsonrpc": "2.0", "id": 2, "method": "eth_getBlockByHash", "params": [block_hash, True]}
+                            try:
+                                resp = await client.post(http_url, json=block_req)
+                                block_data = resp.json()
+                                if "result" in block_data and block_data["result"] and "transactions" in block_data["result"]:
+                                    txs = block_data["result"]["transactions"]
+                                    
+                                    # Filter whale txs (> 15 ETH)
+                                    whales = []
+                                    for tx in txs:
+                                        value_wei = int(tx.get("value", "0x0"), 16)
+                                        value_eth = value_wei / 1e18
+                                        if value_eth > 15: # ~ $45k+
+                                            whales.append({
+                                                'id': tx["hash"],
+                                                'token': 'ETH',
+                                                'amount': f'{value_eth:,.2f}',
+                                                'amount_usd': f'${value_eth * 3000:,.0f}', # Approximate ETH price
+                                                'timestamp': datetime.now(timezone.utc).isoformat(),
+                                                'label': 'Whale Transfer' if not tx.get("to") else ('DEX Swap' if str(tx.get("to")).lower() in KNOWN_ADDRESSES else 'Smart Contract' if len(tx.get("input", "")) > 10 else 'Wallet Transfer'),
+                                                'color': 'purple' if value_eth > 100 else 'emerald' if not tx.get("to") else 'cyan'
+                                            })
+                                    
+                                    # Yield them smoothly over the next 12 seconds
+                                    if whales:
+                                        delay = min(10.0 / len(whales), 1.5)
+                                        for w in whales:
+                                            yield w
+                                            await asyncio.sleep(delay)
+                            except Exception as e:
+                                print(f"Error fetching block {block_hash}: {e}")
+                                
         except websockets.exceptions.ConnectionClosed:
             await asyncio.sleep(2)
         except Exception as e:
-            print(f'Whale WS Error: {e}')
+            print(f'On-Chain WS Error: {e}')
             await asyncio.sleep(2)
 
 # ---------------------------------------------------------------------------
