@@ -23,6 +23,75 @@ import { FearGreedModal } from "../components/dashboard/FearGreedModal";
 import { GlobalStatsModal } from "../components/dashboard/GlobalStatsModal";
 import { WhaleFeed } from "../components/dashboard/WhaleFeed";
 import { BaseGlassCard } from "../components/ui/EthenaDesign";
+import { OfferCarousel, type Offer } from "../components/ui/offer-carousel";
+
+const AI_ALPHA_SIGNALS: Offer[] = [
+  {
+    id: 1,
+    imageSrc: "https://images.unsplash.com/photo-1621504450181-5d356f61d307?q=80&w=1974&auto=format&fit=crop",
+    imageAlt: "Bitcoin Abstract",
+    tag: "Strong Buy",
+    tagColor: "var(--positive)",
+    title: "BTC Breakout Impending",
+    description: "On-chain metrics show massive whale accumulation in the last 48 hours. Expecting a +12% move.",
+    brandLogoSrc: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
+    brandName: "Bitcoin",
+    promoCode: "Trade BTC",
+    href: "/coin/bitcoin",
+  },
+  {
+    id: 2,
+    imageSrc: "https://images.unsplash.com/photo-1622630998477-20b41cd5e114?q=80&w=2074&auto=format&fit=crop",
+    imageAlt: "Solana Network",
+    tag: "Momentum",
+    tagColor: "var(--accent)",
+    title: "SOL Network Activity Spike",
+    description: "DEX volumes on Solana are up 300%. AI predicts short-term volatility. Good for scalp trading.",
+    brandLogoSrc: "https://cryptologos.cc/logos/solana-sol-logo.png",
+    brandName: "Solana",
+    promoCode: "Trade SOL",
+    href: "/coin/solana",
+  },
+  {
+    id: 3,
+    imageSrc: "https://images.unsplash.com/photo-1639762681485-074b7f4ec672?q=80&w=2070&auto=format&fit=crop",
+    imageAlt: "Ethereum Merge",
+    tag: "Whale Alert",
+    tagColor: "var(--warning, #f59e0b)",
+    title: "ETH Smart Money Exit",
+    description: "Three major wallets just moved 50k ETH to Binance. Short-term downside expected.",
+    brandLogoSrc: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+    brandName: "Ethereum",
+    promoCode: "Hedge ETH",
+    href: "/coin/ethereum",
+  },
+  {
+    id: 4,
+    imageSrc: "https://images.unsplash.com/photo-1642104704074-907c0698cbd9?q=80&w=2070&auto=format&fit=crop",
+    imageAlt: "Chainlink",
+    tag: "Accumulation",
+    tagColor: "var(--positive)",
+    title: "LINK Accumulation Zone",
+    description: "Retail is selling but institutional wallets are adding. Classic Wyckoff accumulation pattern.",
+    brandLogoSrc: "https://cryptologos.cc/logos/chainlink-link-logo.png",
+    brandName: "Chainlink",
+    promoCode: "Swap LINK",
+    href: "/coin/chainlink",
+  },
+  {
+    id: 5,
+    imageSrc: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1969&auto=format&fit=crop",
+    imageAlt: "Arbitrum",
+    tag: "Airdrop Alpha",
+    tagColor: "#a855f7",
+    title: "Arbitrum Ecosystem",
+    description: "TVL is skyrocketing. AI detects capital rotation into ARB ecosystem tokens.",
+    brandLogoSrc: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
+    brandName: "Arbitrum",
+    promoCode: "Explore ARB",
+    href: "/coin/arbitrum",
+  }
+];
 
 // ─── HELPERS ────────────────────────────────────────────────
 function fmt(n: number) {
@@ -233,10 +302,17 @@ export default function Dashboard() {
           </div>
         </FadeIn>
 
-
+        {/* AI ALPHA SIGNALS CAROUSEL */}
+        <div className="w-full max-w-[1360px] mx-auto mt-12 px-4 relative z-10">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
+            <h2 className="text-xl font-bold tracking-tight text-white">AI Alpha Signals</h2>
+          </div>
+          <OfferCarousel offers={AI_ALPHA_SIGNALS} />
+        </div>
 
         {/* METRIC STRIP */}
-        <div className="w-full relative z-10 border border-white/[0.06] rounded-[20px] bg-[#09090b]/60 backdrop-blur-xl mb-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="w-full max-w-[1360px] mx-auto mt-12 relative z-10 border border-white/[0.06] rounded-[20px] bg-[#09090b]/60 backdrop-blur-xl mb-10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           <div className="flex flex-col lg:flex-row items-stretch divide-y lg:divide-y-0 lg:divide-x divide-white/[0.06]">
             
             {/* Market Cap */}
