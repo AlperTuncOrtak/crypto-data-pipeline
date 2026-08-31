@@ -196,13 +196,16 @@ type SortKey = "rank" | "price" | "change" | "volume" | "mcap";
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const { data: coins } = useMarket();
+  const { data: coins, isLoading: coinsLoading } = useMarket();
   // SSE stream — her 3 saniyede Redis'ten cache'i günceller (WUL-46)
   useMarketStream();
-  const { data: gainersData } = useGainers();
-  const { data: losersData } = useLosers();
+
+  const { data: gainersData, isLoading: gainersLoading } = useGainers();
+  const { data: losersData, isLoading: losersLoading } = useLosers();
+  const { data: trendingData, isLoading: trendingLoading } = useTrending();
   const { data: statsData } = useMarketStats();
-  const { data: trendingData } = useTrending();
+  
+  const isAnyLoading = coinsLoading || gainersLoading || losersLoading || trendingLoading;
   const { data: fng, history: fngHistory } = useFearAndGreed();
   const { data: globalHistory } = useGlobalHistory(30);
 
@@ -414,7 +417,12 @@ export default function Dashboard() {
 
                     {/* Body */}
                     <div className="flex flex-col pb-4">
-                      {filtered.length === 0 ? (
+                      {isAnyLoading ? (
+                        <div className="p-16 flex flex-col items-center justify-center gap-4 text-white/30 font-medium text-[13px]">
+                          <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+                          <span>Loading market data...</span>
+                        </div>
+                      ) : filtered.length === 0 ? (
                         <div className="p-16 text-center text-white/30 font-medium text-[13px]">No assets found.</div>
                       ) : (
                         filtered.slice(0, 15).map((coin: any, i: number) => {
