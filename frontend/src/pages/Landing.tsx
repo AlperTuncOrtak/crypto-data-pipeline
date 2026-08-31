@@ -25,8 +25,8 @@ export default function Landing({ onAuthOpen }: { onAuthOpen?: (mode: string) =>
   return (
     <div className="min-h-screen bg-[#020204] text-[var(--text-main)] font-sans overflow-x-hidden relative selection:bg-[var(--accent)] selection:text-white">
       
-      {/* Global noise */}
-      <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay" />
+      {/* Global noise - removed mix-blend-overlay to fix extreme GPU lag */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.01]" />
 
       {/* SAAS NAVBAR */}
       <div className="absolute top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 pointer-events-auto flex items-center justify-between">

@@ -66,11 +66,8 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
 
   return (
     <section className="relative flex flex-col items-center overflow-hidden bg-[#020204]">
-      {/* Background Layer: Massive Ambient Glows similar to Nansen's background */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {/* Deep, large radial glow in the center top using our accent color */}
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[90vw] h-[70vw] max-w-[1200px] max-h-[800px] rounded-[100%] bg-[var(--accent)]/15 blur-[150px]" />
-      </div>
+      {/* Background Layer: Extremely lightweight radial gradient instead of heavy blur */}
+      <div className="pointer-events-none absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80vw] h-[60vw] max-w-[1000px] rounded-[100%] bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.08)_0%,transparent_70%)] z-0" />
 
       {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center justify-start min-h-screen w-full pt-32 pb-20 text-center px-4">
@@ -165,8 +162,7 @@ export function LinearHero({ onAuthOpen }: { onAuthOpen?: (mode: string) => void
             </div>
           </div>
           
-          {/* Subtle reflection/shadow below mockup */}
-          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-20 bg-[var(--accent)]/20 blur-[60px]" />
+          {/* Reflection removed for performance */}
         </motion.div>
 
       </div>
