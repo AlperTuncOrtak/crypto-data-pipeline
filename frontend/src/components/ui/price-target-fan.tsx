@@ -36,7 +36,7 @@ export default function PriceTargetFan({
   targets?: Target[];
   className?: string;
 }) {
-  const CURRENT = currentPrice;
+  const CURRENT = currentPrice || 100;
   const TARGETS = targets;
 
   // deterministic weekly history ending exactly at CURRENT

@@ -375,11 +375,11 @@ export default function CoinDetail() {
                   <div className="flex flex-col gap-8">
                     <div className="bg-[var(--bg-overlay)] p-6 rounded-2xl border border-[var(--border-subtle)]">
                       <PriceTargetFan 
-                        currentPrice={Number(coin.current_price)} 
+                        currentPrice={Number(coin.current_price || 0)} 
                         targets={[
-                          { key: 'Bull Case', price: Number(coin.current_price) * 1.35, analysts: 12, color: 'var(--positive)' },
-                          { key: 'Consensus', price: Number(coin.current_price) * 1.12, analysts: 28, color: 'var(--accent)' },
-                          { key: 'Bear Case', price: Number(coin.current_price) * 0.85, analysts: 5, color: 'var(--negative)' },
+                          { key: 'Bull Case', price: Number(coin.current_price || 0) * 1.35, analysts: 12, color: 'var(--positive)' },
+                          { key: 'Consensus', price: Number(coin.current_price || 0) * 1.12, analysts: 28, color: 'var(--accent)' },
+                          { key: 'Bear Case', price: Number(coin.current_price || 0) * 0.85, analysts: 5, color: 'var(--negative)' },
                         ]}
                       />
                     </div>

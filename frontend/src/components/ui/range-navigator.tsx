@@ -69,7 +69,24 @@ export default function RangeNavigator({
   const reduced = useReducedMotion()
   const series = values?.length ? values : DEMO_SERIES
   const LEN = series.length
-  const [win, setWin] = useState({ start: Math.max(0, LEN - 1 - initialWindow), end: LEN - 1 })
+  const [winState, setWin] = useState({ start: Math.max(0, LEN - 1 - initialWindow), end: LEN - 1 })
+  
+  // Safeguard against data changing length after mount
+  const win = useMemo(() => {
+    let s = winState.start;
+    let e = winState.end;
+    if (e >= LEN) {
+      e = LEN - 1;
+      s = Math.max(0, e - initialWindow);
+    }
+    return { start: s, end: Math.max(s, e) };
+  }, [winState, LEN, initialWindow]);
+  
+  useEffect(() => {
+    if (values?.length) {
+      setWin({ start: Math.max(0, values.length - 1 - initialWindow), end: values.length - 1 });
+    }
+  }, [values?.length, initialWindow]);
   const [hover, setHover] = useState<number | null>(null)
   const navRef = useRef<SVGSVGElement>(null)
   const mainRef = useRef<SVGSVGElement>(null)
