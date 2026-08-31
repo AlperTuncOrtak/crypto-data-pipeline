@@ -1,7 +1,22 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../../api/client";
-import { Bot, Sparkles, AlertTriangle, CheckCircle, BarChart2 } from "lucide-react";
+import { Bot, Sparkles, AlertTriangle, CheckCircle, BarChart2, Zap } from "lucide-react";
+import {
+  getSubColor,
+  RSIGauge,
+  BBBar,
+  MACDIndicator,
+  EMAIndicator,
+} from "./Indicators";
+
+// parse_signal() sadece bullish/bearish/hold/neutral dondurur — buy/sell yok.
+const SIGNAL_COLORS = {
+  bullish: "#10b981",
+  bearish: "#ef4444",
+  hold: "#f5a623",
+  neutral: "#f5a623",
+};
 
 export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
   const { t } = useTranslation();
@@ -149,7 +164,7 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
             {/* Signal */}
             <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
               <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Signal</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: data.signal?.includes("buy") ? "#10b981" : data.signal?.includes("sell") ? "#ef4444" : "#f5a623", textTransform: "capitalize" }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: SIGNAL_COLORS[data.signal] || "#f5a623", textTransform: "capitalize" }}>
                 {data.signal?.replace("_", " ")}
               </div>
             </div>
@@ -180,6 +195,71 @@ export default function AIAnalysisBox({ slug, coinName, symbol, brandColor }) {
             </h4>
             {data.summary}
           </div>
+
+          {/* Altfins sinyalleri + pandas-ta degerleri */}
+          {data.technical_data && (
+            <div style={{ background: "rgba(255,255,255,0.02)", padding: 20, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)", marginTop: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                <Zap size={14} style={{ color: "var(--accent)" }} />
+                <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)" }}>
+                  {t("ai_analysis.technical_indicators", "Technical Indicators")}
+                </span>
+              </div>
+
+              {[
+                {
+                  label: t("ai_analysis.rsi", "RSI"),
+                  signal: data.technical_data.rsi_signal,
+                  detail: data.technical_data.rsi_detail,
+                  extra: <RSIGauge value={data.technical_data.rsi} />,
+                },
+                {
+                  label: t("ai_analysis.macd", "MACD"),
+                  signal: data.technical_data.macd_trend,
+                  detail: data.technical_data.macd_detail,
+                  extra: <MACDIndicator trend={data.technical_data.macd_trend} />,
+                },
+                {
+                  label: t("ai_analysis.bb", "Bollinger Bands"),
+                  signal: data.technical_data.bb_signal,
+                  detail: data.technical_data.bb_detail,
+                  extra: <BBBar position={data.technical_data.bb_position} />,
+                },
+                {
+                  label: t("ai_analysis.stoch", "Stochastic"),
+                  signal: data.technical_data.stoch_signal,
+                  detail: data.technical_data.stoch_detail,
+                  extra: null,
+                },
+                {
+                  label: t("ai_analysis.ema_trend", "EMA Trend"),
+                  signal: data.technical_data.ema_trend,
+                  detail: null,
+                  extra: <EMAIndicator trend={data.technical_data.ema_trend} />,
+                },
+              ].map(({ label, signal, detail, extra }) => (
+                <div key={label} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: getSubColor(signal), textTransform: "capitalize" }}>
+                      {signal?.replace(/_/g, " ") || "—"}
+                    </span>
+                  </div>
+                  {detail && (
+                    <div style={{ fontSize: 11, marginTop: 4, color: "var(--text-muted)", opacity: 0.7 }}>{detail}</div>
+                  )}
+                  {extra}
+                </div>
+              ))}
+
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 10, color: "var(--text-muted)", opacity: 0.7 }}>
+                <span>
+                  Altfins · {data.technical_data.data_points || 0} {t("ai_analysis.data_points", "data points")}
+                </span>
+                <span>{t("ai_analysis.not_financial_advice", "Not financial advice.")}</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
