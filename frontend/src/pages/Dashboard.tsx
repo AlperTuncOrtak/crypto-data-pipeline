@@ -24,6 +24,7 @@ import { GlobalStatsModal } from "../components/dashboard/GlobalStatsModal";
 import { WhaleFeed } from "../components/dashboard/WhaleFeed";
 import { BaseGlassCard } from "../components/ui/EthenaDesign";
 import { OfferCarousel, type Offer } from "../components/ui/offer-carousel";
+import CryptoDashboard from "../components/ui/crypto-dashboard";
 
 const AI_ALPHA_SIGNALS: Offer[] = [
   {
@@ -377,6 +378,11 @@ export default function Dashboard() {
             </div>
 
           </div>
+        </div>
+
+        {/* INTEGRATED CRYPTO DASHBOARD */}
+        <div className="w-full max-w-[1360px] mx-auto mt-4 mb-8">
+          <CryptoDashboard />
         </div>
 
         {/* MAIN STACKED LAYOUT */}

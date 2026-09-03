@@ -17,6 +17,7 @@ import TransactionHistory from "../components/portfolio/TransactionHistory";
 import TaxReport from "../components/portfolio/TaxReport";
 
 import { usePortfolioData } from "../hooks/usePortfolioData";
+import { useHaptics } from "../hooks/useHaptics";
 import { apiClient } from '../api/client';
 import { calcBuyingPower, calcAllocation, calcTax, parseCSV } from '../components/portfolio/PortfolioUtils';
 
@@ -49,6 +50,7 @@ export default function Portfolio() {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: marketData } = useMarket(500);
+  const haptics = useHaptics();
 
   const initialTab = (searchParams.get("tab") || "overview") as TabId;
   const [activeTab, setActiveTab] = useState<TabId>(
@@ -56,6 +58,7 @@ export default function Portfolio() {
   );
 
   const handleTabChange = (tab: TabId) => {
+    haptics.impactLight();
     setActiveTab(tab);
     setSearchParams(tab === "overview" ? {} : { tab });
   };

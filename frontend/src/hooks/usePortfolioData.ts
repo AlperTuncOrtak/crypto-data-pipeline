@@ -50,11 +50,16 @@ export function usePortfolioData(user: any, marketData: any[]) {
       });
   }, [user]);
 
-  // ponytail: manual ETH address input removed — Alchemy handles everything.
-  useEffect(() => { localStorage.removeItem("crypto_neko_wallets"); }, []);
-  const wallets: string[] = [];
-  const walletHoldings: any[] = [];
-  const setWallets = () => {};
+  // --- BACKEND LINKED WALLET (Alchemy) ---
+  const [alchemyHoldings, setAlchemyHoldings] = useState<any[]>([]);
+  const [alchemyWallet, setAlchemyWallet] = useState<string | null>(null);
+  const [alchemyFetchKey, setAlchemyFetchKey] = useState(0);
+  
+  const refetchWallet = useCallback(() => setAlchemyFetchKey(k => k + 1), []);
+
+  const wallets: string[] = alchemyWallet ? [alchemyWallet] : [];
+  const walletHoldings: any[] = alchemyHoldings; // alias for backwards compatibility
+  const setWallets = () => {}; 
   const isFetchingWallet = false;
 
   // --- LIVE WALLET BALANCES (WAGMI) ---
@@ -136,9 +141,6 @@ export function usePortfolioData(user: any, marketData: any[]) {
   }, [isConnected, address, chainId, ethBalance, tokenBalances, erc20Tokens]);
 
   // --- BINANCE (read-only balance sync) ---
-  // ponytail: API keys are NOT persisted any more. They used to sit in
-  // localStorage in plain text and re-sync on every mount; any XSS on the page
-  // could read them. Keys now live only in memory for the current session.
   const [isSyncingBinance, setIsSyncingBinance] = useState(false);
   const [binanceHoldings, setBinanceHoldings] = useState<any[]>([]);
 
@@ -148,28 +150,21 @@ export function usePortfolioData(user: any, marketData: any[]) {
     if (!key || !secret) return;
     setIsSyncingBinance(true);
     try {
-      const resp = await apiClient.post("/portfolio/binance-sync", { api_key: key, api_secret: secret });
-      if (resp.data.ok && resp.data.balances) {
-        setBinanceHoldings(
-          resp.data.balances.map((b: any) => ({
-            symbol: b.symbol,
-            quantity: b.quantity,
-            source: "Binance",
-            withdrawable: false,
-          }))
-        );
+      const res = await apiClient.post("/api/exchanges/sync", {
+        exchange_id: "binance", api_key: key, secret
+      });
+      if (res.data?.length > 0) {
+        const h = res.data.map((b: any) => ({
+          source: "Binance", symbol: b.asset, quantity: b.free, price_usd: 0,
+        }));
+        setBinanceHoldings(h);
       }
-    } catch (e) {
-      console.error("Binance sync failed:", e);
+    } catch (e: any) {
+      console.error("Binance sync failed:", e?.response?.status || e.message);
     } finally {
       setIsSyncingBinance(false);
     }
   }, []);
-
-  // --- BACKEND LINKED WALLET (Alchemy) ---
-  const [alchemyHoldings, setAlchemyHoldings] = useState<any[]>([]);
-  const [alchemyWallet, setAlchemyWallet] = useState<string | null>(null);
-  const [alchemyFetchKey, setAlchemyFetchKey] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -177,11 +172,12 @@ export function usePortfolioData(user: any, marketData: any[]) {
     const fetchLinkedWallet = async () => {
       try {
         const res = await apiClient.get("/wallets/portfolio");
-        if (res.data?.portfolio?.balances?.length > 0) {
-          setAlchemyWallet(res.data.wallet || null);
+        if (res.data?.wallet) {
+          setAlchemyWallet(res.data.wallet);
+        }
+        if (res.data?.portfolio?.balances) {
           setAlchemyHoldings(
             res.data.portfolio.balances.map((b: any) => {
-              // "native" is Alchemy's marker for the chain's own coin (ETH).
               const isNative = b.contract_address === "native";
               const contract = isNative ? undefined : b.contract_address;
               return {
@@ -191,22 +187,15 @@ export function usePortfolioData(user: any, marketData: any[]) {
                 chain: b.chain || "ethereum",
                 chain_name: b.chain_name || "Ethereum",
                 chain_id: b.chain_id || 1,
-                // Our own feed only knows exchange-listed symbols; wrapped
-                // tokens like cbBTC priced at $0 and vanished from the total.
-                // The backend resolves those from the canonical token list.
                 price_usd: b.price_usd || 0,
+                decimals: decimalsForContract(contract),
                 contract_address: contract,
-                // Deliberately left undefined when the backend doesn't report
-                // decimals — an assumed 18 would encode a wrong transfer amount
-                // for tokens like USDC. Withdraw treats "unknown" as not
-                // sendable rather than guessing.
-                decimals: isNative ? 18 : b.decimals ?? decimalsForContract(contract),
               };
             })
           );
+        } else {
+          setAlchemyHoldings([]);
         }
-        // ponytail: don't clear alchemyHoldings if backend returns empty —
-        // user_wallets might not be linked yet
       } catch (e: any) {
         console.error("Linked wallet fetch failed:", e?.response?.status || e.message);
       }
@@ -256,6 +245,8 @@ export function usePortfolioData(user: any, marketData: any[]) {
     walletHoldings,
     web3Holdings,
     alchemyHoldings,
-    binanceHoldings
+    binanceHoldings,
+    alchemyWallet,
+    refetchWallet
   };
 }

@@ -162,7 +162,10 @@ export default function SwapInterface() {
       hiddenUI: ["appearance", "language", "poweredBy"],
       chains: { allow: SUPPORTED_CHAINS },
       tokens: { featured: FEATURED_TOKENS },
-      fee: 0.005, // 0.5% fee
+      feeConfig: {
+        fee: 0.005,
+        name: "CryptoNeko"
+      },
       walletConfig: { onConnect: () => openConnectModal?.() },
       theme: {
         palette: {

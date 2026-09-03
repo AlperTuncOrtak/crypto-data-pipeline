@@ -8,7 +8,7 @@
 > okunmuyor; `VITE_0X_API_KEY` / `VITE_TREASURY_ADDRESS` / `VITE_FEE_PERCENTAGE`
 > de kullanilmiyor — Vercel'de veya .env'de tanimliysa silin.
 
-- [ ] **Komisyon su an SIFIR.** LI.FI widget'i `integrator: "crypto-data-pipeline"`
+- [x] **Komisyon su an SIFIR.** LI.FI widget'i `integrator: "crypto-data-pipeline"`
   ile calisiyor ama `fee` parametresi verilmiyor, yani swap'lardan gelir yok.
   Kesinti icin LI.FI'da integrator kaydi + fee anlasmasi gerekiyor; sonrasinda
   `widgetConfig`'e `fee: 0.005` eklemek yeterli.
@@ -46,7 +46,7 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 ### 1. Uçtan Uca Data Engineering & Machine Learning Pipeline (Whale Anomaly Detection)
 - [x] **Faz 1: ETL Pipeline (MVP / Veri Ambarı)**: Kapsamı yönetilebilir tutmak adına tüm coinler yerine **sadece en yüksek hacimli Top 20-50 coin (BTC, ETH vb.)** ile sınırlanarak; Gate.io / Bybit / OKX WebSocket'lerinden saniyede akan *Trade (Alım/Satım)* ve *Fiyat Tick* verilerini alıp temizleyerek Data Warehouse'a (BigQuery/Postgres) düzenli aktaran minimal Airflow yapısının kurulması.
 - [x] **Faz 2: Feature Engineering**: Toplanan ham "Trade Tick" verileri üzerinde özellik mühendisliği yapılarak modelin anlayabileceği "Hacim Sıçramaları", "Zaman Ağırlıklı Ortalamalar (VWAP)" ve "Anormal İşlem Boyutları" gibi veri noktalarının üretilmesi.
-- [ ] **Faz 3: Özel ML Modeli (Anomaly Detection)**: Gerçekleşmesi çok zor olan "kesin fiyat tahmini" yerine, somut ve ölçülebilir bir problem olan "Balina Hareketlerinin Tespiti" (Anomaly Detection / Unsupervised Learning - Isolation Forest vb.) üzerine odaklanan bir Makine Öğrenmesi modelinin eğitilip Whale X-Ray modülüne bağlanması.
+- [x] **Faz 3: Özel ML Modeli (Anomaly Detection)**: Gerçekleşmesi çok zor olan "kesin fiyat tahmini" yerine, somut ve ölçülebilir bir problem olan "Balina Hareketlerinin Tespiti" (Anomaly Detection / Unsupervised Learning - Isolation Forest vb.) üzerine odaklanan bir Makine Öğrenmesi modelinin eğitilip Whale X-Ray modülüne bağlanması.
 - [x] **Faz 4: Değerlendirme & Backtesting (Ground Truth & Başarı Ölçütü)**: Unsupervised (etiketsiz) veride klasik 'doğruluk (accuracy)' ölçülemeyeceği için;
   - Modelin işaretlediği anomalilerin (Whale Alert API veya on-chain verileri gibi) **gerçek dış kaynaklarla (Ground Truth) çapraz doğrulanması**.
   - Performansın "Accuracy" yerine **"Tespit Oranı (Hit Rate) ve Precision@k"** gibi doğru metriklerle ölçümlenerek raporlanması.
@@ -62,7 +62,7 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
   - [x] Capacitor.js kullanarak mevcut React uygulamasını App Store / Google Play'e yüklenebilecek formata getir.
   - [x] Alt menü (Bottom Navigation) ve kaydırma (Swipe) jestleri ekle.
   - [x] Mobil cihazlarda dokunmatik titreşim (Haptic Feedback) API'sini entegre et.
-  - [ ] **Mobil Uygulama Testleri:** Xcode ve Android Studio üzerinde derleyip, gerçek cihaz/simülatör testlerinin (UI/UX, Stripe Modal, Haptics) yapılması.
+  - [x] **Mobil Uygulama Testleri:** Xcode ve Android Studio üzerinde derleyip, gerçek cihaz/simülatör testlerinin (UI/UX, Stripe Modal, Haptics) yapılması.
 
 ## 📌 Sonraki Aşama (Backlog)
 
@@ -80,4 +80,10 @@ Uygulamanın ana iskeleti "Premium Bento Box" ve "Cinematic Glow" UI standartlar
 
 - [x] TODO: Fix Live VPS Deployment & Docker SSL issues for AI Portfolio Engine (AI Rebalance live API 404/SSL errors)
 - [x] Landing page hero section'a güzel bir animasyon eklenecek.
-- [ ] Portfolio sayfasındaki sorunlar giderilecek. (Örnek Cüzdan: 0x00000000219ab540356cBB839Cbe05303d7705Fa)
+- [x] Portfolio sayfasındaki sorunlar giderilecek. (Örnek Cüzdan: 0x00000000219ab540356cBB839Cbe05303d7705Fa)
+
+## 🚀 Faz 5: İleri Düzey Finans & Otonom Sistemler (Yeni Macera)
+- [ ] **BIO-15:** Telegram Whale Alert Bot (Balina Alarmları) - ML modeli anomali bulduğunda Telegrama bildirim atacak.
+- [ ] **BIO-16:** Otomatik Copy Trading (DeFi) - Başarılı balinaların cüzdanlarını 1inch/LI.FI ile otomatik kopyalama.
+- [ ] **BIO-17:** Sosyal Medya & Duyarlılık Analizi (X/Twitter Sentiment) - Groq/LLM ile canlı duyarlılık haritası.
+- [ ] **BIO-18:** Oyunlaştırma ve Sosyal Lig (Leaderboard) - Kullanıcıların P&L tabloları ve rekabetçi rozet sistemi.

@@ -248,13 +248,16 @@ export default function WhaleXRay() {
 
                   <div className="space-y-3">
                     {data?.transactions?.map((tx: any, i: number) => (
-                      <div key={i} className="flex items-center justify-between p-4 rounded-3xl bg-white/[0.02] border border-white/[0.02] hover:bg-white/[0.04] transition-colors">
+                      <div key={i} className={`flex items-center justify-between p-4 rounded-3xl border transition-colors ${tx.is_anomaly ? 'bg-orange-500/10 border-orange-500/30 hover:bg-orange-500/20' : 'bg-white/[0.02] border-white/[0.02] hover:bg-white/[0.04]'}`}>
                         <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'buy' ? 'bg-[var(--positive)]/10 text-[var(--positive)]' : tx.type === 'sell' ? 'bg-[var(--negative)]/10 text-[var(--negative)]' : 'bg-[var(--accent)]/10 text-[var(--accent)]'}`}>
-                            {tx.type === 'buy' ? <ArrowDownRight size={18} /> : tx.type === 'sell' ? <ArrowUpRight size={18} /> : <TrendingUp size={18} />}
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.is_anomaly ? 'bg-orange-500/20 text-orange-500' : tx.type === 'buy' ? 'bg-[var(--positive)]/10 text-[var(--positive)]' : tx.type === 'sell' ? 'bg-[var(--negative)]/10 text-[var(--negative)]' : 'bg-[var(--accent)]/10 text-[var(--accent)]'}`}>
+                            {tx.is_anomaly ? <AlertTriangle size={18} /> : tx.type === 'buy' ? <ArrowDownRight size={18} /> : tx.type === 'sell' ? <ArrowUpRight size={18} /> : <TrendingUp size={18} />}
                           </div>
                           <div>
-                            <p className="text-[var(--text-main)] font-bold capitalize">{tx.type} {tx.token}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-[var(--text-main)] font-bold capitalize">{tx.type} {tx.token}</p>
+                              {tx.is_anomaly && <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-500">ML Anomaly</span>}
+                            </div>
                             <p className="text-xs text-[var(--text-muted)]">{tx.dex}</p>
                           </div>
                         </div>

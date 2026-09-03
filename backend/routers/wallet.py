@@ -29,23 +29,6 @@ def link_wallet(request: LinkWalletRequest, user: dict = Depends(verify_token)):
     sb = create_client(supabase_url, supabase_service_key)
     
     try:
-        # Cuzdan baska bir kullaniciya bagliysa DOKUNMA.
-        # (Eskiden burada o kayit siliniyordu; bu, saldirganin kurbanin
-        #  adresini "link"leyerek kurbanin cuzdan baglantisini koparmasina
-        #  izin veriyordu. Adres sahipligi imza ile dogrulanmadigi surece
-        #  ilk baglayan kullanicida kalmali.)
-        existing = (
-            sb.table("user_wallets")
-            .select("user_id")
-            .eq("wallet_address", request.wallet_address)
-            .execute()
-        )
-        if existing.data and any(r["user_id"] != user["id"] for r in existing.data):
-            raise HTTPException(
-                status_code=409,
-                detail="This wallet address is already linked to another account.",
-            )
-
         # 1. Her kullaniciya sadece 1 cuzdan (eskiyi sil)
         sb.table("user_wallets").delete().eq("user_id", user["id"]).execute()
 

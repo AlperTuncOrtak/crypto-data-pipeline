@@ -18,6 +18,7 @@ interface AddSourceModalProps {
   isFetchingWallet: boolean;
   handleFile: (file: File) => void;
   setImportMsg: (msg: any) => void;
+  refetchWallet?: () => void;
 }
 
 export default function AddSourceModal({
@@ -31,6 +32,7 @@ export default function AddSourceModal({
   isFetchingWallet,
   handleFile,
   setImportMsg,
+  refetchWallet,
 }: AddSourceModalProps) {
   const { t } = useTranslation();
   const [connectingExchange, setConnectingExchange] = useState<any>(null);
@@ -141,7 +143,8 @@ export default function AddSourceModal({
                           try {
                             const res = await apiClient.post('/wallets/link', { wallet_address: walletInput });
                             if (res.data) {
-                              setWallets(prev => [...prev, walletInput]);
+                              setWallets((prev: any) => [...prev, walletInput]);
+                              if (refetchWallet) refetchWallet();
                               setWalletInput('');
                               onClose();
                             }
